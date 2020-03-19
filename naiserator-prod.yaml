@@ -1,0 +1,55 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: behandler-elektronisk-kommunikasjon
+  namespace: default
+  labels:
+    team: {{team}}
+spec:
+  image: "docker.pkg.github.com/navikt/behandler-elektronisk-kommunikasjon:{{tag}}"
+  replicas:
+    min: 1
+    max: 4
+    cpuThresholdPercentage: 90
+  port: 8080
+  liveness:
+    path: /is_alive
+    initialDelay: 10
+    timeout: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /is_ready
+    initialDelay: 30
+    periodSeconds: 5
+    timeout: 5
+  prometheus:
+    enabled: true
+    path: /prometheus
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  vault:
+    enabled: true
+  webproxy: true
+  ingresses:
+    - "https://behandler-elektronisk-kommunikasjon.nais.adeo.no"
+  env:
+    - name: CLIENT_ID
+      value: c509facf-5195-409e-9e95-26cc498005f7
+    - name: AADACCESSTOKEN_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
+    - name: AADDISCOVERY_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+    - name: JWT_ISSUER
+      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
+    - name: DATABASE_URL
+      value: jdbc:oracle:thin:@a01dbfl030.adeo.no:1521/emottak
+    - name: DATABASE_PREFIX
+      value: emottak
+    - name: ALLOWED_APP_IDS
+      value: 9d4d6e11-1717-44f7-b76c-1a671847bb32
