@@ -1,4 +1,4 @@
-[![Build status](https://github.com/navikt/behandler-elektronisk-kommunikasjon/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)](https://github.com/navikt/behandler-elektronisk-kommunikasjon/workflows/Deploy%20to%20dev%20and%20prod/badge.svg)
+![Deploy to dev and prod](https://github.com/navikt/emottak-admin/workflows/Deploy%20to%20dev%20and%20prod/badge.svg?branch=master)
 # emottak-admin
 Application for getting out messages from emottak database
 
@@ -6,21 +6,15 @@ Application for getting out messages from emottak database
 * Kotlin
 * Ktor
 * Gradle
-* Spek
-* Vault
-* Oracle DB
 
 #### Requirements
 
-* JDK 11
+* JDK 12
 
 ## Getting started
 #### Running locally
 `./gradlew run`
 
-## Add new clients to consume api
-https://github.com/navikt/IaC/tree/master/Azure/registerApplication
-And and then add clients in the list of authorizedUsers in the code
 
 #### Build and run tests
 To build locally and run the integration tests you can simply run `./gradlew shadowJar` or on windows 
@@ -30,7 +24,7 @@ To build locally and run the integration tests you can simply run `./gradlew sha
 Creating a docker image should be as simple as `docker build -t emottak-admin .`
 
 #### Running a docker image
-`docker run --rm -it -p 8080:8080 behandler-elektronisk-kommunikasjon`
+`docker run --rm -it -p 8080:8080 emottak-admin`
 
 ## Contact us
 ### Code/project related questions can be sent to
