@@ -12,6 +12,9 @@ fun DatabaseInterface.hentMeldinger(
             connection.prepareStatement(
                     """
                 SELECT MOTTAK_ID FROM $databasePrefix.MELDING
+                WHERE ROLE = 'Sykmelder'
+                AND SERVICE = 'Sykmelding'
+                AND ACTION = 'Registrering'
                 """
             ).use {
                 it.executeQuery().toList { toMeldingInfo() }
