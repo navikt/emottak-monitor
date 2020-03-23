@@ -30,11 +30,13 @@ fun main() {
 
     applicationServer.start()
 
+    applicationState.ready = true
+
+    log.info("Starter med å kjøre dabasespørring")
     val messageQueryService = MessageQueryService(database, environment.databasePrefix)
 
     val messageInfo = messageQueryService.hentMeldinger()
 
-    log.info("Henter ut den første mottakiden info: ${messageInfo.firstOrNull()?.mottakid}")
+    log.info("Hentet ut den første mottakiden info: ${messageInfo.firstOrNull()?.mottakid}")
 
-    applicationState.ready = true
 }

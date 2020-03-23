@@ -11,7 +11,7 @@ fun DatabaseInterface.hentMeldinger(
         connection.use { connection ->
             connection.prepareStatement(
                     """
-                SELECT mottak_id FROM $databasePrefix.MELDING
+                SELECT MOTTAK_ID FROM $databasePrefix.MELDING
                 """
             ).use {
                 it.executeQuery().toList { toMeldingInfo() }
@@ -20,5 +20,5 @@ fun DatabaseInterface.hentMeldinger(
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
         MeldingInfo(
-                getString("mottak_id")
+                getString("MOTTAK_ID")
         )
