@@ -32,4 +32,4 @@ Creating a docker image should be as simple as `docker build -t emottak-admin .`
 
 
 ### For NAV employees
-We are available at the Slack channel .....
+We are available at the Slack channel #integrasjon

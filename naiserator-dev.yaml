@@ -36,5 +36,5 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: oracle/data/dev/creds/emottakadmin_u-user
+      - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
