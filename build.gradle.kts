@@ -10,15 +10,8 @@ val ktorVersion = "1.3.1"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "6.1"
 val prometheusVersion = "0.5.0"
-val spekVersion = "2.0.8"
 val micrometerRegistryPrometheusVersion = "1.1.5"
-val nimbusjosejwtVersion = "7.5.1"
-val spekjunitVersion = "1.1.5"
-val javaxAnnotationApiVersion = "1.3.2"
-val jaxwsToolsVersion = "2.3.1"
-val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val javaxJaxwsApiVersion = "2.2.1"
-val javaxActivationVersion = "1.1.1"
+val junitJupiterVersion = "5.6.0"
 
 plugins {
     kotlin("jvm") version "1.3.50"
@@ -50,17 +43,14 @@ dependencies {
     implementation ("ch.qos.logback:logback-classic:$logbackVersion")
     implementation ("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
-    testImplementation ("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
-    testImplementation ("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
-
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
+    testImplementation ("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+       testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(group = "org.eclipse.jetty")
     }
-    testRuntimeOnly ("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    testRuntimeOnly ("org.jetbrains.spek:spek-junit-platform-engine:$spekjunitVersion")
 }
 
 
@@ -80,9 +70,7 @@ tasks {
     }
 
     withType<Test> {
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
+        useJUnit()
         testLogging {
             showStandardStreams = true
         }
