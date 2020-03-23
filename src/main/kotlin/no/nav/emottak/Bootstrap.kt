@@ -38,5 +38,4 @@ fun main() {
     val messageInfo = messageQueryService.hentMeldinger()
 
     log.info("Hentet ut den første mottakiden info: ${messageInfo.firstOrNull()?.mottakid}")
-
 }

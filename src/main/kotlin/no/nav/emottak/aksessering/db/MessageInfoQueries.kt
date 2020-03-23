@@ -11,10 +11,10 @@ fun DatabaseInterface.hentMeldinger(
         connection.use { connection ->
             connection.prepareStatement(
                     """
-                SELECT MOTTAK_ID FROM $databasePrefix.MELDING
-                WHERE ROLE = 'Sykmelder'
-                AND SERVICE = 'Sykmelding'
-                AND ACTION = 'Registrering'
+                    SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
+                    FROM $databasePrefix.MELDING 
+                    WHERE DATOMOTTAT >= to_timestamp('2020-03-23 00:01:00','YYYY-MM-DD HH24:MI:SS.FF')
+                    AND DATOMOTTAT <= to_timestamp('2020-03-23 23:59:00','YYYY-MM-DD HH24:MI:SS.FF')
                 """
             ).use {
                 it.executeQuery().toList { toMeldingInfo() }
@@ -23,5 +23,9 @@ fun DatabaseInterface.hentMeldinger(
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
         MeldingInfo(
-                getString("MOTTAK_ID")
+                getString("ROLE"),
+                getString("SERVICE"),
+                getString("ACTION"),
+                getString("MOTTAK_ID"),
+                getString("DATOMOTTAT")
         )
