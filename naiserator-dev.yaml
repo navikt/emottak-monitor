@@ -33,3 +33,8 @@ spec:
     requests:
       cpu: 100m
       memory: 128Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: oracle/data/dev/creds/emottakadmin_u-user
+        mountPath: /secrets/emottak-admin/credentials

@@ -35,3 +35,8 @@ spec:
       memory: 128Mi
   ingresses:
     - "https://emottak-admin.nais.adeo.no"
+  vault:
+    enabled: true
+    paths:
+      - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
+        mountPath: /secrets/emottak-admin/credentials
