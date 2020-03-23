@@ -12,6 +12,8 @@ val logstashEncoderVersion = "6.1"
 val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.1.5"
 val junitJupiterVersion = "5.6.0"
+val ojdbc8Version = "19.3.0.0"
+val hikariVersion = "3.3.1"
 
 plugins {
     kotlin("jvm") version "1.3.50"
@@ -42,6 +44,9 @@ dependencies {
 
     implementation ("ch.qos.logback:logback-classic:$logbackVersion")
     implementation ("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+
+    implementation ("com.zaxxer:HikariCP:$hikariVersion")
+    implementation ("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
 
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation ("org.amshove.kluent:kluent:$kluentVersion")

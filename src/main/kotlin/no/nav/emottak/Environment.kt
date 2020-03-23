@@ -2,7 +2,9 @@ package no.nav.emottak
 
 data class Environment(
 
-    val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt()
+    val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt(),
+    val databaseUrl: String = getEnvVar("DATABASE_URL"),
+    val databasePrefix: String = getEnvVar("DATABASE_PREFIX")
 )
 
 data class VaultCredentials(

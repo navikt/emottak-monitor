@@ -40,3 +40,8 @@ spec:
     paths:
       - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
+  env:
+    - name: DATABASE_URL
+      value: jdbc:oracle:thin:@a01dbfl030.adeo.no:1521/emottak
+    - name: DATABASE_PREFIX
+      value: emottak
