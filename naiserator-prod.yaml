@@ -33,13 +33,13 @@ spec:
     requests:
       cpu: 100m
       memory: 512Mi
-  ingresses:
-    - "https://emottak-admin.nais.adeo.no"
   vault:
     enabled: true
     paths:
       - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
+  ingresses:
+    - "https://emottak-admin.nais.adeo.local/hentmeldinger"
   env:
     - name: DATABASE_URL
       value: jdbc:oracle:thin:@a01dbfl030.adeo.no:1521/emottak
