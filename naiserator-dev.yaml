@@ -38,6 +38,7 @@ spec:
     paths:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
+  webproxy: true
   ingresses:
     - "https://emottak-admin.nais.preprod.local"
   env:
@@ -54,4 +55,4 @@ spec:
     - name: DATABASE_PREFIX
       value: emottak_q1
     - name: ALLOWED_APP_IDS
-      value: a99ce657-bce8-4f11-8dd6-5624038f4820
+      value: c35dd346-0d3d-4b68-b883-a324c0b1098d
