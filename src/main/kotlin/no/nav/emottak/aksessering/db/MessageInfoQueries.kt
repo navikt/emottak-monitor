@@ -1,22 +1,23 @@
-package no.nav.syfo.aksessering.db
+package no.nav.emottak.aksessering.db
 
 import java.sql.ResultSet
-import no.nav.syfo.db.DatabaseInterface
-import no.nav.syfo.db.toList
-import no.nav.syfo.services.MeldingInfo
+import java.time.LocalDateTime
+import no.nav.emottak.db.DatabaseInterface
+import no.nav.emottak.db.toList
+import no.nav.emottak.services.MeldingInfo
 
 fun DatabaseInterface.hentMeldinger(
-    databasePrefix: String
+    databasePrefix: String,
+    fom: LocalDateTime,
+    tom: LocalDateTime
 ): List<MeldingInfo> =
         connection.use { connection ->
-            connection.prepareStatement(
-                    """
+            connection.prepareStatement("""
                     SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
                     FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT >= to_timestamp('2020-03-23 00:01:00','YYYY-MM-DD HH24:MI:SS.FF')
-                    AND DATOMOTTAT <= to_timestamp('2020-03-23 23:59:00','YYYY-MM-DD HH24:MI:SS.FF')
-                """
-            ).use {
+                    WHERE DATOMOTTAT >= to_timestamp($fom)
+                    AND DATOMOTTAT <= to_timestamp($tom)
+                """).use {
                 it.executeQuery().toList { toMeldingInfo() }
             }
         }

@@ -1,12 +1,13 @@
-package no.nav.syfo.services
+package no.nav.emottak.services
 
-import no.nav.syfo.aksessering.db.hentMeldinger
-import no.nav.syfo.db.DatabaseInterface
+import java.time.LocalDateTime
+import no.nav.emottak.aksessering.db.hentMeldinger
+import no.nav.emottak.db.DatabaseInterface
 
 class MessageQueryService(
-    private val database: DatabaseInterface,
+    private val databaseInterface: DatabaseInterface,
     private val databasePrefix: String
 ) {
-    fun hentMeldinger(): List<MeldingInfo> =
-        database.hentMeldinger(databasePrefix)
+    fun meldinger(fom: LocalDateTime, tom: LocalDateTime): List<MeldingInfo> =
+        databaseInterface.hentMeldinger(databasePrefix, fom, tom)
 }

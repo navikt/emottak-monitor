@@ -7,13 +7,17 @@ val coroutinesVersion = "1.2.2"
 val jacksonVersion = "2.9.7"
 val kluentVersion = "1.39"
 val ktorVersion = "1.3.1"
+val spekVersion = "2.0.8"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "6.1"
 val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.1.5"
+val nimbusjosejwtVersion = "7.5.1"
+val spekjunitVersion = "1.1.5"
 val junitJupiterVersion = "5.6.0"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "3.3.1"
+val mockkVersion = "1.9.3"
 
 plugins {
     kotlin("jvm") version "1.3.50"
@@ -41,6 +45,12 @@ dependencies {
 
     implementation ("io.ktor:ktor-server-netty:$ktorVersion")
     implementation ("io.ktor:ktor-jackson:$ktorVersion")
+    implementation ("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation ("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation ("io.ktor:ktor-auth:$ktorVersion")
+    implementation ("io.ktor:ktor-auth-jwt:$ktorVersion")
 
     implementation ("ch.qos.logback:logback-classic:$logbackVersion")
     implementation ("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
@@ -50,6 +60,12 @@ dependencies {
 
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation ("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation ("io.mockk:mockk:$mockkVersion")
+    testImplementation ("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation ("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
+    testImplementation ("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
+    testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")

@@ -7,10 +7,12 @@ import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.ktor.util.InternalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import no.nav.emottak.application.ApplicationState
 
+@InternalAPI
 fun Routing.registerNaisApi(
     applicationState: ApplicationState,
     readynessCheck: () -> Boolean = { applicationState.ready },

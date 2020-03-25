@@ -5,6 +5,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
+import io.ktor.util.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
 import org.amshove.kluent.shouldEqual
@@ -12,6 +13,7 @@ import org.junit.Test
 
 internal class SelfTest {
 
+    @InternalAPI
     @Test
     internal fun `Returns ok on is_alive`() {
         with(TestApplicationEngine()) {
@@ -28,6 +30,7 @@ internal class SelfTest {
         }
     }
 
+    @InternalAPI
     @Test
     internal fun `Returns ok in is_ready`() {
         with(TestApplicationEngine()) {
@@ -44,6 +47,7 @@ internal class SelfTest {
         }
     }
 
+    @InternalAPI
     @Test
     internal fun `Returns internal server error when liveness check fails`() {
         with(TestApplicationEngine()) {
@@ -60,6 +64,7 @@ internal class SelfTest {
         }
     }
 
+    @InternalAPI
     @Test
     internal fun `Returns internal server error when readyness check fails`() {
         with(TestApplicationEngine()) {

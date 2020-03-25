@@ -1,5 +1,4 @@
-package no.nav.syfo.services
-
+package no.nav.emottak.services
 data class MeldingInfo(
     val role: String,
     val service: String,
