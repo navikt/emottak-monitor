@@ -4,7 +4,7 @@ import java.sql.ResultSet
 import java.time.LocalDateTime
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.services.MeldingInfo
+import no.nav.emottak.model.MeldingInfo
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
@@ -23,10 +23,10 @@ fun DatabaseInterface.hentMeldinger(
         }
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
-        MeldingInfo(
-                getString("ROLE"),
-                getString("SERVICE"),
-                getString("ACTION"),
-                getString("MOTTAK_ID"),
-                getString("DATOMOTTAT")
-        )
+    MeldingInfo(
+        getString("ROLE"),
+        getString("SERVICE"),
+        getString("ACTION"),
+        getString("MOTTAK_ID"),
+        getString("DATOMOTTAT")
+    )

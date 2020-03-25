@@ -28,14 +28,16 @@ class MeldingerApiSpek : Spek({
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
-        val environment = Environment(8080,
-                jwtIssuer = "https://sts.issuer.net/myid",
-                appIds = "2,3".split(","),
-                clientId = "1",
-                aadAccessTokenUrl = "",
-                aadDiscoveryUrl = "",
-                databaseUrl = "",
-                databasePrefix = "")
+        val environment = Environment(
+            8080,
+            jwtIssuer = "https://sts.issuer.net/myid",
+            appIds = "2,3".split(","),
+            clientId = "1",
+            aadAccessTokenUrl = "",
+            aadDiscoveryUrl = "",
+            databaseUrl = "",
+            databasePrefix = ""
+        )
         val path = "src/test/resources/jwkset.json"
         val uri = Paths.get(path).toUri().toURL()
         val jwkProvider = JwkProviderBuilder(uri).build()
@@ -46,7 +48,7 @@ class MeldingerApiSpek : Spek({
             }
         }
         receiver.application.setupAuth(environment, jwkProvider)
-        receiver.application.routing { authenticate { registerMeldingerApi() } }
+        receiver.application.routing { authenticate { registerMeldingerApi(messageQueryService) } }
 
         return receiver.block()
     }
@@ -61,12 +63,16 @@ class MeldingerApiSpek : Spek({
             }
 
             it("should return 200 OK") {
-                with(handleRequest(HttpMethod.Get, "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10") {
-                    addHeader(
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
+                    ) {
+                        addHeader(
                             "Authorization",
                             "Bearer ${genereateJWT("2", "1")}"
-                    )
-                }) {
+                        )
+                    }) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
@@ -74,8 +80,8 @@ class MeldingerApiSpek : Spek({
             it("Should return 401 Unauthorized when appId not allowed") {
                 with(handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
                     addHeader(
-                            "Authorization",
-                            "Bearer ${genereateJWT("5", "1")}"
+                        "Authorization",
+                        "Bearer ${genereateJWT("5", "1")}"
                     )
                 }) {
                     response.status() shouldBe HttpStatusCode.Unauthorized

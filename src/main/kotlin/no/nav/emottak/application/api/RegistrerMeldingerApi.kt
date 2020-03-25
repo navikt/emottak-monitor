@@ -9,11 +9,11 @@ import io.ktor.routing.route
 import io.ktor.util.InternalAPI
 import io.ktor.util.toLocalDateTime
 import java.text.SimpleDateFormat
-import no.nav.emottak.FetchDatabase
 import no.nav.emottak.log
+import no.nav.emottak.services.MessageQueryService
 
 @InternalAPI
-fun Route.registerMeldingerApi() {
+fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
         get("/hentmeldinger") {
 
@@ -36,9 +36,9 @@ fun Route.registerMeldingerApi() {
 
             log.info("Starter med å kjøre dabasespørring")
 
-            val meldinger = FetchDatabase.fetchMessages(fom, tom)
-
+            val meldinger = meldingService.meldinger(fom, tom)
             log.info("Hentet ut den første mottakiden info: ${meldinger.firstOrNull()?.mottakid}")
+            call.respond(meldinger)
         }
     }
 }

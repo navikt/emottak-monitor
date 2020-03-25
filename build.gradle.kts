@@ -14,7 +14,6 @@ val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.1.5"
 val nimbusjosejwtVersion = "7.5.1"
 val spekjunitVersion = "1.1.5"
-val junitJupiterVersion = "5.6.0"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "3.3.1"
 val mockkVersion = "1.9.3"
@@ -41,35 +40,30 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutinesVersion")
-    implementation ("io.micrometer:micrometer-registry-prometheus:$micrometerRegistryPrometheusVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerRegistryPrometheusVersion")
 
-    implementation ("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation ("io.ktor:ktor-jackson:$ktorVersion")
-    implementation ("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation ("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
-    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation ("io.ktor:ktor-auth:$ktorVersion")
-    implementation ("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
 
-    implementation ("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation ("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
-    implementation ("com.zaxxer:HikariCP:$hikariVersion")
-    implementation ("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+    implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
 
-    testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation ("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation ("io.mockk:mockk:$mockkVersion")
-    testImplementation ("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation ("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
-    testImplementation ("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
-    testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-       testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
 }
@@ -91,7 +85,9 @@ tasks {
     }
 
     withType<Test> {
-        useJUnit()
+        useJUnitPlatform {
+            includeEngines("spek2")
+        }
         testLogging {
             showStandardStreams = true
         }
