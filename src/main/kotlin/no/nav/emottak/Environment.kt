@@ -9,7 +9,6 @@ data class Environment(
     val aadDiscoveryUrl: String = getEnvVar("AADDISCOVERY_URL"),
     val jwkKeysUrl: String = getEnvVar("JWKKEYS_URL", "https://login.microsoftonline.com/common/discovery/keys"),
     val jwtIssuer: String = getEnvVar("JWT_ISSUER"),
-    val clientId: String = getEnvVar("CLIENT_ID"),
     val databaseUrl: String = getEnvVar("DATABASE_URL"),
     val databasePrefix: String = getEnvVar("DATABASE_PREFIX"),
     val emottakAdminFrontEndUrl: String = getEnvVar("EMOTTAK_ADMIN_FRONTEND_URL"),
