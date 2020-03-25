@@ -63,15 +63,6 @@ fun createApplicationEngine(
             host(env.emottakAdminFrontEndUrl, schemes = listOf("https", "https"))
             allowCredentials = true
         }
-        install(CORS) {
-            method(HttpMethod.Get)
-            method(HttpMethod.Post)
-            method(HttpMethod.Put)
-            method(HttpMethod.Options)
-            header("Content-Type")
-            host(env.emottakAdminFrontEndUrl, schemes = listOf("https", "https"))
-            allowCredentials = true
-        }
         routing {
             registerNaisApi(applicationState)
             authenticate("jwt") {
