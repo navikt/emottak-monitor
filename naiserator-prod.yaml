@@ -39,9 +39,19 @@ spec:
       - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
   ingresses:
-    - "https://emottak-admin.nais.adeo.local/hentmeldinger"
+    - "https://emottak-admin.nais.adeo.local"
   env:
+    - name: CLIENT_ID
+      value: c509facf-5195-409e-9e95-26cc498005f7
+    - name: AADACCESSTOKEN_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
+    - name: AADDISCOVERY_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+    - name: JWT_ISSUER
+      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
     - name: DATABASE_URL
       value: jdbc:oracle:thin:@a01dbfl030.adeo.no:1521/emottak
     - name: DATABASE_PREFIX
       value: emottak
+    - name: ALLOWED_APP_IDS
+      value: 9d4d6e11-1717-44f7-b76c-1a671847bb32

@@ -1,10 +1,10 @@
-package no.nav.syfo.aksessering.db
+package no.nav.emottak.aksessering.db
 
 import java.sql.ResultSet
 import java.time.LocalDateTime
-import no.nav.syfo.db.DatabaseInterface
-import no.nav.syfo.db.toList
-import no.nav.syfo.services.MeldingInfo
+import no.nav.emottak.db.DatabaseInterface
+import no.nav.emottak.db.toList
+import no.nav.emottak.services.MeldingInfo
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
