@@ -12,15 +12,16 @@ data class Environment(
     val clientId: String = getEnvVar("CLIENT_ID"),
     val databaseUrl: String = getEnvVar("DATABASE_URL"),
     val databasePrefix: String = getEnvVar("DATABASE_PREFIX"),
-    val appIds: List<String> = getEnvVar("ALLOWED_APP_IDS", "")
-        .split(",")
-        .map { it.trim() }
+    val emottakAdminFrontEndUrl: String = getEnvVar("EMOTTAK_ADMIN_FRONTEND_URL"),
+    val oidcWellKnownUriPath: String = getEnvVar("OID_WELL_KNOWN_URI"),
+    val emottakAdminClientIdPath: String = getEnvVar("EMOTTAK_AMDIN_CLIENT_PATH")
 )
 
-data class VaultCredentials(
+data class VaultSecrets(
     val databaseUsername: String,
-    val databasePassword: String
-
+    val databasePassword: String,
+    val oidcWellKnownUri: String,
+    val emottakAmdinClientId: String
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =

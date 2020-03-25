@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.application.install
 import io.ktor.auth.authenticate
 import io.ktor.features.ContentNegotiation
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
@@ -28,16 +29,13 @@ class MeldingerApiSpek : Spek({
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
-        val environment = Environment(
-            8080,
-            jwtIssuer = "https://sts.issuer.net/myid",
-            appIds = "2,3".split(","),
-            clientId = "1",
-            aadAccessTokenUrl = "",
-            aadDiscoveryUrl = "",
-            databaseUrl = "",
-            databasePrefix = ""
+        val vaultSecrest = VaultSecrets(
+            databasePassword = "username",
+            databaseUsername = "password",
+            oidcWellKnownUri = "https://sts.issuer.net/myid",
+            emottakAmdinClientId = "clientId"
         )
+
         val path = "src/test/resources/jwkset.json"
         val uri = Paths.get(path).toUri().toURL()
         val jwkProvider = JwkProviderBuilder(uri).build()
@@ -47,8 +45,12 @@ class MeldingerApiSpek : Spek({
                 registerKotlinModule()
             }
         }
-        receiver.application.setupAuth(environment, jwkProvider)
-        receiver.application.routing { authenticate { registerMeldingerApi(messageQueryService) } }
+        receiver.application.setupAuth(vaultSecrest, jwkProvider, "https://sts.issuer.net/myid")
+        receiver.application.routing {
+            authenticate("jwt") {
+                registerMeldingerApi(messageQueryService)
+            }
+        }
 
         return receiver.block()
     }
@@ -68,10 +70,7 @@ class MeldingerApiSpek : Spek({
                         HttpMethod.Get,
                         "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
                     ) {
-                        addHeader(
-                            "Authorization",
-                            "Bearer ${genereateJWT("2", "1")}"
-                        )
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -81,7 +80,7 @@ class MeldingerApiSpek : Spek({
                 with(handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
                     addHeader(
                         "Authorization",
-                        "Bearer ${genereateJWT("5", "1")}"
+                        "Bearer ${generateJWT("5", "1")}"
                     )
                 }) {
                     response.status() shouldBe HttpStatusCode.Unauthorized

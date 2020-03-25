@@ -4,28 +4,43 @@ import com.auth0.jwk.JwkProvider
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.auth.Principal
+import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
-import no.nav.emottak.Environment
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import net.logstash.logback.argument.StructuredArguments
+import no.nav.emottak.VaultSecrets
+import no.nav.emottak.log
 
-val log: Logger = LoggerFactory.getLogger("no.nav.emottak.application.authentication")
-
-fun Application.setupAuth(environment: Environment, jwkProvider: JwkProvider) {
+fun Application.setupAuth(
+    vaultSecrets: VaultSecrets,
+    jwkProvider: JwkProvider,
+    issuer: String
+) {
     install(Authentication) {
-        jwt {
-            verifier(jwkProvider, environment.jwtIssuer)
+        jwt(name = "jwt") {
+            verifier(jwkProvider, issuer)
             validate { credentials ->
-                val appId: String = credentials.payload.getClaim("appid").asString()
-                log.info("authorization attempt for $appId")
-                if (appId in environment.appIds && environment.clientId in credentials.payload.audience) {
-                    log.info("authorization ok")
-                    return@validate JWTPrincipal(credentials.payload)
+                when {
+                    hasEmottakAdminClientIdAudience(credentials, vaultSecrets) -> JWTPrincipal(credentials.payload)
+                    else -> {
+                        unauthorized(credentials)
+                    }
                 }
-                log.info("authorization failed")
-                return@validate null
             }
         }
     }
+}
+
+fun unauthorized(credentials: JWTCredential): Principal? {
+    log.warn(
+        "Auth: Unexpected audience for jwt {}, {}",
+        StructuredArguments.keyValue("issuer", credentials.payload.issuer),
+        StructuredArguments.keyValue("audience", credentials.payload.audience)
+    )
+    return null
+}
+
+fun hasEmottakAdminClientIdAudience(credentials: JWTCredential, vaultSecrets: VaultSecrets): Boolean {
+    return credentials.payload.audience.contains(vaultSecrets.emottakAmdinClientId)
 }

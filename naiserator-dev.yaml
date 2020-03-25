@@ -38,12 +38,14 @@ spec:
     paths:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-admin/credentials
+      - kvPath: /azuread/data/dev/creds/emottak-admin
+        mountPath: /secrets/azuread/emottak-admin
+      - kvPath: /kv/preprod/fss/emottak-admin/default
+        mountPath: /secrets/default
   webproxy: true
   ingresses:
     - "https://emottak-admin.nais.preprod.local"
   env:
-    - name: CLIENT_ID
-      value: 9c95e7d7-b603-4aeb-a2f6-678ef5259248
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
     - name: AADDISCOVERY_URL
@@ -54,5 +56,9 @@ spec:
       value: jdbc:oracle:thin:@a01dbfl033.adeo.no:1521/emottak_q1
     - name: DATABASE_PREFIX
       value: emottak_q1
-    - name: ALLOWED_APP_IDS
-      value: c35dd346-0d3d-4b68-b883-a324c0b1098d
+    - name: EMOTTAK_ADMIN_FRONTEND_URL
+      value: emottak-admin-frontend.nais.preprod.local
+    - name: EMOTTAK_AMDIN_CLIENT_PATH
+      value: /secrets/azuread/emottak-admin/client_id
+    - name: OID_WELL_KNOWN_URI
+      value: /secrets/default/oidcWellKnownUri

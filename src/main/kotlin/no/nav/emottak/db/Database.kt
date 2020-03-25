@@ -5,11 +5,11 @@ import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
 import java.sql.ResultSet
 import no.nav.emottak.Environment
-import no.nav.emottak.VaultCredentials
+import no.nav.emottak.VaultSecrets
 
 class Database(
     private val env: Environment,
-    private val vaultCredentiala: VaultCredentials
+    private val vaultCredentiala: VaultSecrets
 ) : DatabaseInterface {
 
     private val dataSource: HikariDataSource

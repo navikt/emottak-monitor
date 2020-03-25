@@ -18,10 +18,12 @@ const val keyId = "localhost-signer"
 
 /* Utsteder en Bearer-token (En slik vi ber AzureAd om). OBS: Det er viktig at KeyId matcher kid i jwkset.json
  */
-fun genereateJWT(
+fun generateJWT(
     consumerClientId: String,
     audience: String,
-    expiry: LocalDateTime? = LocalDateTime.now().plusHours(1)
+    expiry: LocalDateTime? = LocalDateTime.now().plusHours(1),
+    subject: String = "subject",
+    issuer: String = "https://sts.issuer.net/myid"
 ): String? {
     val now = Date()
     val key = getDefaultRSAKey()
@@ -29,16 +31,16 @@ fun genereateJWT(
 
     return JWT.create()
         .withKeyId(keyId)
-        .withSubject("subject")
-        .withIssuer("https://sts.issuer.net/myid")
+        .withSubject(subject)
+        .withIssuer(issuer)
         .withAudience(audience)
         .withJWTId(UUID.randomUUID().toString())
         .withClaim("ver", "1.0")
         .withClaim("nonce", "myNonce")
         .withClaim("auth_time", now)
         .withClaim("nbf", now)
+        .withClaim("azp", consumerClientId)
         .withClaim("iat", now)
-        .withClaim("appid", consumerClientId)
         .withClaim("exp", Date.from(expiry?.atZone(ZoneId.systemDefault())?.toInstant()))
         .sign(alg)
 }

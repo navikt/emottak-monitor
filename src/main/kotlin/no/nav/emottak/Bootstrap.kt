@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 import no.nav.emottak.application.ApplicationServer
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.createApplicationEngine
+import no.nav.emottak.application.getWellKnown
 import no.nav.emottak.db.Database
 import no.nav.emottak.services.MessageQueryService
 import no.nav.emottak.util.getFileAsString
@@ -21,22 +22,27 @@ val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakAdmin")
 fun main() {
     val environment = Environment()
 
-    val jwkProvider = JwkProviderBuilder(URL(environment.jwkKeysUrl))
+    val vaultSecrets = VaultSecrets(
+        databasePassword = getFileAsString("/secrets/emottak-admin/credentials/password"),
+        databaseUsername = getFileAsString("/secrets/emottak-admin/credentials/username"),
+        oidcWellKnownUri = getFileAsString(environment.oidcWellKnownUriPath),
+        emottakAmdinClientId = getFileAsString(environment.emottakAdminClientIdPath)
+    )
+
+    val wellKnown = getWellKnown(vaultSecrets.oidcWellKnownUri)
+    val jwkProvider = JwkProviderBuilder(URL(wellKnown.jwks_uri))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
 
-    val databaseVaultSecrets = VaultCredentials(
-        databasePassword = getFileAsString("/secrets/emottak-admin/credentials/password"),
-        databaseUsername = getFileAsString("/secrets/emottak-admin/credentials/username")
-    )
-
-    val database = Database(environment, databaseVaultSecrets)
+    val database = Database(environment, vaultSecrets)
     val messageQueryService = MessageQueryService(database, environment.databasePrefix)
 
     val applicationState = ApplicationState()
 
-    val applicationEngine = createApplicationEngine(environment, applicationState, jwkProvider, messageQueryService)
+    val applicationEngine = createApplicationEngine(
+        environment, applicationState, vaultSecrets,
+        jwkProvider, wellKnown.issuer, messageQueryService)
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 
     applicationServer.start()
