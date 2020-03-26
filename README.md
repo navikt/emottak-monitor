@@ -6,14 +6,11 @@ Application for getting out messages from emottak database
 * Kotlin
 * Ktor
 * Gradle
+* Azure
 
 #### Requirements
 
 * JDK 12
-
-## Getting started
-#### Running locally
-`./gradlew run`
 
 
 #### Build and run tests

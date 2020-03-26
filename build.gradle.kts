@@ -30,10 +30,7 @@ repositories {
     jcenter()
     maven(url = "https://dl.bintray.com/kotlin/ktor")
     maven(url = "https://dl.bintray.com/spekframework/spek-dev")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
     maven(url = "https://repo1.maven.org/maven2/")
-    maven(url = "https://oss.sonatype.org/content/groups/staging/")
-
 }
 
 dependencies {
@@ -90,7 +87,7 @@ tasks {
         }
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "12"
     }
 
     withType<Test> {

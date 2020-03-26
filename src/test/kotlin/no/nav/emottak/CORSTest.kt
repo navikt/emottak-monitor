@@ -1,4 +1,4 @@
-package no.nav.syfo.api
+package no.nav.emottak
 
 import io.ktor.application.install
 import io.ktor.features.CORS
