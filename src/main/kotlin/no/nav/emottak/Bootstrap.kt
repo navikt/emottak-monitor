@@ -23,8 +23,8 @@ fun main() {
     val environment = Environment()
 
     val vaultSecrets = VaultSecrets(
-        databasePassword = getFileAsString("/secrets/emottak-admin/credentials/password"),
-        databaseUsername = getFileAsString("/secrets/emottak-admin/credentials/username"),
+        databasePassword = getFileAsString("/secrets/emottak-monitor/credentials/password"),
+        databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
         oidcWellKnownUri = getFileAsString(environment.oidcWellKnownUriPath),
         emottakAmdinClientId = getFileAsString(environment.emottakAdminClientIdPath)
     )

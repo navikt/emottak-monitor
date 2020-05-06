@@ -1,5 +1,5 @@
-![Deploy to dev and prod](https://github.com/navikt/emottak-admin/workflows/Deploy%20to%20dev%20and%20prod/badge.svg?branch=master)
-# emottak-admin
+![Deploy to dev and prod](https://github.com/navikt/emottak-monitor/workflows/Deploy%20to%20dev%20and%20prod/badge.svg?branch=master)
+# emottak-monitor
 Application for getting out messages from emottak database
 
 ## Technologies used
@@ -18,10 +18,10 @@ To build locally and run the integration tests you can simply run `./gradlew sha
 `gradlew.bat shadowJar`
 
 #### Creating a docker image
-Creating a docker image should be as simple as `docker build -t emottak-admin .`
+Creating a docker image should be as simple as `docker build -t emottak-monitor .`
 
 #### Running a docker image
-`docker run --rm -it -p 8080:8080 emottak-admin`
+`docker run --rm -it -p 8080:8080 emottak-monitor`
 
 ## Contact us
 ### Code/project related questions can be sent to

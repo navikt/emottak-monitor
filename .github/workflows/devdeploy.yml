@@ -5,7 +5,7 @@ on:
       - '*'
       - '!master'
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/emottak-admin:${{ github.sha }}
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/emottak-monitor:${{ github.sha }}
 
 jobs:
   build:

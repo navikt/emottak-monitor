@@ -4,7 +4,7 @@ data class Environment(
 
     val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt(),
     val applicationThreads: Int = getEnvVar("APPLICATION_THREADS", "1").toInt(),
-    val applicationName: String = getEnvVar("NAIS_APP_NAME", "emottak-admin"),
+    val applicationName: String = getEnvVar("NAIS_APP_NAME", "emottak-monitor"),
     val aadAccessTokenUrl: String = getEnvVar("AADACCESSTOKEN_URL"),
     val aadDiscoveryUrl: String = getEnvVar("AADDISCOVERY_URL"),
     val jwkKeysUrl: String = getEnvVar("JWKKEYS_URL", "https://login.microsoftonline.com/common/discovery/keys"),

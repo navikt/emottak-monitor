@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: emottak-admin
+  name: emottak-monitor
   namespace: default
   labels:
     team: integrasjon
@@ -37,14 +37,14 @@ spec:
     enabled: true
     paths:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
-        mountPath: /secrets/emottak-admin/credentials
-      - kvPath: /azuread/data/dev/creds/emottak-admin
-        mountPath: /secrets/azuread/emottak-admin
-      - kvPath: /kv/preprod/fss/emottak-admin/default
+        mountPath: /secrets/emottak-monitor/credentials
+      - kvPath: /azuread/data/dev/creds/emottak-monitor
+        mountPath: /secrets/azuread/emottak-monitor
+      - kvPath: /kv/preprod/fss/emottak-monitor/default
         mountPath: /secrets/default
   webproxy: true
   ingresses:
-    - "https://emottak-admin.nais.preprod.local"
+    - "https://emottak-monitor.nais.preprod.local"
   env:
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
@@ -57,8 +57,8 @@ spec:
     - name: DATABASE_PREFIX
       value: emottak_q1
     - name: EMOTTAK_ADMIN_FRONTEND_URL
-      value: emottak-admin-frontend.nais.preprod.local
+      value: emottak-monitor-frontend.nais.preprod.local
     - name: EMOTTAK_AMDIN_CLIENT_PATH
-      value: /secrets/azuread/emottak-admin/client_id
+      value: /secrets/azuread/emottak-monitor/client_id
     - name: OID_WELL_KNOWN_URI
       value: /secrets/default/oidcWellKnownUri

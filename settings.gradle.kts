@@ -1,1 +1,1 @@
-rootProject.name = "emottak-admin"
+rootProject.name = "emottak-monitor"
