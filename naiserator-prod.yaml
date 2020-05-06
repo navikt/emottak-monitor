@@ -44,7 +44,7 @@ spec:
         mountPath: /secrets/default
   webproxy: true
   ingresses:
-    - "https://emottak-admin.nais.adeo.local"
+    - "https://emottak-admin.prod-fss.nais.io"
   env:
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
