@@ -30,4 +30,4 @@ Creating a docker image should be as simple as `docker build -t emottak-monitor 
 
 
 ### For NAV employees
-We are available at the Slack channel #integrasjon
+We are available at the Slack channel #team-emottak 
