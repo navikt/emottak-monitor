@@ -4,7 +4,7 @@ metadata:
   name: emottak-monitor
   namespace: default
   labels:
-    team: integrasjon
+    team: team-emottak
 spec:
   image: {{ image }}
   replicas:
