@@ -15,13 +15,13 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.util.InternalAPI
 import io.mockk.mockk
-import java.nio.file.Paths
 import no.nav.emottak.application.api.registerMeldingerApi
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.services.MessageQueryService
 import org.amshove.kluent.shouldBe
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import java.nio.file.Paths
 
 @InternalAPI
 class MeldingerApiSpek : Spek({
@@ -32,7 +32,6 @@ class MeldingerApiSpek : Spek({
         val vaultSecrest = VaultSecrets(
             databasePassword = "username",
             databaseUsername = "password",
-            oidcWellKnownUri = "https://sts.issuer.net/myid",
             emottakAmdinClientId = "clientId"
         )
 
@@ -58,8 +57,10 @@ class MeldingerApiSpek : Spek({
     describe("Validate meldinger with authentication") {
         withTestApplicationForApi(TestApplicationEngine()) {
             it("Should return 401 Unauthorized") {
-                with(handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
-                }) {
+                with(
+                    handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
+                    }
+                ) {
                     response.status() shouldBe HttpStatusCode.Unauthorized
                 }
             }
@@ -71,18 +72,21 @@ class MeldingerApiSpek : Spek({
                         "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }) {
+                    }
+                ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
 
             it("Should return 401 Unauthorized when appId not allowed") {
-                with(handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
-                    addHeader(
-                        "Authorization",
-                        "Bearer ${generateJWT("5", "1")}"
-                    )
-                }) {
+                with(
+                    handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
+                        addHeader(
+                            "Authorization",
+                            "Bearer ${generateJWT("5", "1")}"
+                        )
+                    }
+                ) {
                     response.status() shouldBe HttpStatusCode.Unauthorized
                 }
             }

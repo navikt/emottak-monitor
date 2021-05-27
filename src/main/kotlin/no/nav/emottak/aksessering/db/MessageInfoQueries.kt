@@ -1,10 +1,10 @@
 package no.nav.emottak.aksessering.db
 
-import java.sql.ResultSet
-import java.time.LocalDateTime
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
 import no.nav.emottak.model.MeldingInfo
+import java.sql.ResultSet
+import java.time.LocalDateTime
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,

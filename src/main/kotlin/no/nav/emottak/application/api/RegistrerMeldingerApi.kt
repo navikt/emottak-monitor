@@ -8,9 +8,9 @@ import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.util.InternalAPI
 import io.ktor.util.toLocalDateTime
-import java.text.SimpleDateFormat
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
+import java.text.SimpleDateFormat
 
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
