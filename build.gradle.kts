@@ -23,7 +23,7 @@ plugins {
     kotlin("jvm") version "1.5.10"
     id("org.jmailen.kotlinter") version "3.3.0"
     id("com.diffplug.gradle.spotless") version "3.24.0"
-    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 repositories {
