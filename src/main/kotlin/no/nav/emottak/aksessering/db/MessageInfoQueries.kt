@@ -11,16 +11,18 @@ fun DatabaseInterface.hentMeldinger(
     fom: LocalDateTime,
     tom: LocalDateTime
 ): List<MeldingInfo> =
-        connection.use { connection ->
-            connection.prepareStatement("""
+    connection.use { connection ->
+        connection.prepareStatement(
+            """
                     SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
                     FROM $databasePrefix.MELDING 
                     WHERE DATOMOTTAT >= to_timestamp($fom)
                     AND DATOMOTTAT <= to_timestamp($tom)
-                """).use {
-                it.executeQuery().toList { toMeldingInfo() }
-            }
+                """
+        ).use {
+            it.executeQuery().toList { toMeldingInfo() }
         }
+    }
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
     MeldingInfo(
