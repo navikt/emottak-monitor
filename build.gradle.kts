@@ -13,14 +13,15 @@ val logstashEncoderVersion = "6.1"
 val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.1.5"
 val nimbusjosejwtVersion = "7.5.1"
-val spekjunitVersion = "1.1.5"
+val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "3.3.1"
-val mockkVersion = "1.9.3"
+val mockkVersion = "1.11.0"
+val kotlinVersion = "1.5.10"
 
 plugins {
-    kotlin("jvm") version "1.3.50"
-    id("org.jmailen.kotlinter") version "2.1.1"
+    kotlin("jvm") version "1.5.10"
+    id("org.jmailen.kotlinter") version "3.3.0"
     id("com.diffplug.gradle.spotless") version "3.24.0"
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
@@ -34,11 +35,9 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutinesVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerRegistryPrometheusVersion")
-
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
