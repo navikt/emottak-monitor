@@ -19,7 +19,7 @@ data class Environment(
 data class VaultSecrets(
     val databaseUsername: String,
     val databasePassword: String,
-    val oidcWellKnownUri: String,
+    // val oidcWellKnownUri: String,
     val emottakAmdinClientId: String
 )
 

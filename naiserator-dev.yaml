@@ -61,4 +61,4 @@ spec:
     - name: EMOTTAK_AMDIN_CLIENT_PATH
       value: /secrets/azuread/emottak-monitor/client_id
     - name: OID_WELL_KNOWN_URI
-      value: /secrets/default/oidcWellKnownUri
+      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
