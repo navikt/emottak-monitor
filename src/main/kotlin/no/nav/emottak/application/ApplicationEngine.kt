@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.authenticate
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
@@ -62,8 +63,13 @@ fun createApplicationEngine(
         }
         routing {
             registerNaisApi(applicationState)
-            // authenticate("jwt") {
-            registerMeldingerApi(meldingService)
-            // }
+
+            if (env.isDevelopment) {
+                registerMeldingerApi(meldingService)
+            } else {
+                authenticate("jwt") {
+                    registerMeldingerApi(meldingService)
+                }
+            }
         }
     }

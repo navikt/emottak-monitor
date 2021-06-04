@@ -66,3 +66,5 @@ spec:
       value: emottak_q1
     - name: EMOTTAK_ADMIN_FRONTEND_URL
       value: emottak-monitor-frontend.nais.preprod.local
+    - name: DEVELOPMENT
+      value: true
