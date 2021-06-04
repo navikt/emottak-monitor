@@ -29,10 +29,12 @@ class MeldingerApiSpek : Spek({
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
-        val vaultSecrest = VaultSecrets(
-            databasePassword = "username",
-            databaseUsername = "password",
-            emottakAmdinClientId = "clientId"
+        val env = Environment(
+            emottakMonitorClientId = "clientId",
+            databaseUrl = "http://localhost:8080",
+            databasePrefix = "db",
+            emottakFrontEndUrl = "http://localhost:8080",
+            oidcWellKnownUriUrl = "https://sts.issuer.net/myid",
         )
 
         val path = "src/test/resources/jwkset.json"
@@ -44,7 +46,7 @@ class MeldingerApiSpek : Spek({
                 registerKotlinModule()
             }
         }
-        receiver.application.setupAuth(vaultSecrest, jwkProvider, "https://sts.issuer.net/myid")
+        receiver.application.setupAuth(env, jwkProvider, "https://sts.issuer.net/myid")
         receiver.application.routing {
             authenticate("jwt") {
                 registerMeldingerApi(messageQueryService)

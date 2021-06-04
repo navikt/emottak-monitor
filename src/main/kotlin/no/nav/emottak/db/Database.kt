@@ -9,7 +9,7 @@ import java.sql.ResultSet
 
 class Database(
     private val env: Environment,
-    private val vaultCredentiala: VaultSecrets
+    private val vaultCredentials: VaultSecrets
 ) : DatabaseInterface {
 
     private val dataSource: HikariDataSource
@@ -21,8 +21,8 @@ class Database(
         dataSource = HikariDataSource(
             HikariConfig().apply {
                 jdbcUrl = env.databaseUrl
-                username = vaultCredentiala.databaseUsername
-                password = vaultCredentiala.databasePassword
+                username = vaultCredentials.databaseUsername
+                password = vaultCredentials.databasePassword
                 maximumPoolSize = 3
                 isAutoCommit = false
                 driverClassName = "oracle.jdbc.OracleDriver"

@@ -38,27 +38,31 @@ spec:
     paths:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-monitor/credentials
-      - kvPath: /azuread/data/dev/creds/emottak-monitor
-        mountPath: /secrets/azuread/emottak-monitor
-      - kvPath: /kv/preprod/fss/emottak-monitor/default
-        mountPath: /secrets/default
   webproxy: true
   ingresses:
     - "https://emottak-monitor.nais.preprod.local"
+  azure:
+    application:
+      enabled: true
+# Frontend config
+#      claims:
+#        groups:
+#          - id: "cbe3ea8d-a684-41c0-8a3d-276aa8b1dd31"
+      tenant: nav.no
+  #accessPolicy:
+  #  inbound:
+  #    rules:
+  #      - application: emottak-monitor-frontend
   env:
-    - name: AADACCESSTOKEN_URL
-      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
-    - name: AADDISCOVERY_URL
-      value: https://login.microsoftonline.com/navq.onmicrosoft.com/.well-known/openid-configuration
-    - name: JWT_ISSUER
-      value: https://sts.windows.net/966ac572-f5b7-4bbe-aa88-c76419c0f851/
+   # - name: AADACCESSTOKEN_URL
+   #   value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
+   # - name: AADDISCOVERY_URL
+   #   value: https://login.microsoftonline.com/navq.onmicrosoft.com/.well-known/openid-configuration
+   # - name: JWT_ISSUER
+   #   value: https://sts.windows.net/966ac572-f5b7-4bbe-aa88-c76419c0f851/
     - name: DATABASE_URL
       value: jdbc:oracle:thin:@a01dbfl033.adeo.no:1521/emottak_q1
     - name: DATABASE_PREFIX
       value: emottak_q1
     - name: EMOTTAK_ADMIN_FRONTEND_URL
       value: emottak-monitor-frontend.nais.preprod.local
-    - name: EMOTTAK_AMDIN_CLIENT_PATH
-      value: /secrets/azuread/emottak-monitor/client_id
-    - name: OID_WELL_KNOWN_URI
-      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration

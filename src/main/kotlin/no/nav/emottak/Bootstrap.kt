@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
-val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakAdmin")
+val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
 
 @InternalAPI
 @KtorExperimentalAPI
@@ -25,11 +25,9 @@ fun main() {
     val vaultSecrets = VaultSecrets(
         databasePassword = getFileAsString("/secrets/emottak-monitor/credentials/password"),
         databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
-        // oidcWellKnownUri = getFileAsString(environment.oidcWellKnownUriPath),
-        emottakAmdinClientId = getFileAsString(environment.emottakAdminClientIdPath)
     )
 
-    val wellKnown = getWellKnown(environment.oidcWellKnownUriPath)
+    val wellKnown = getWellKnown(environment.oidcWellKnownUriUrl)
     val jwkProvider = JwkProviderBuilder(URL(wellKnown.jwks_uri))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
@@ -41,11 +39,15 @@ fun main() {
     val applicationState = ApplicationState()
 
     val applicationEngine = createApplicationEngine(
-        environment, applicationState, vaultSecrets,
-        jwkProvider, wellKnown.issuer, messageQueryService
+        environment,
+        applicationState,
+        jwkProvider,
+        wellKnown.issuer,
+        messageQueryService
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 
     applicationServer.start()
     applicationState.ready = true
+    log.info("Application started")
 }
