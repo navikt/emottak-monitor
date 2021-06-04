@@ -40,7 +40,7 @@ spec:
         mountPath: /secrets/emottak-monitor/credentials
   webproxy: true
   ingresses:
-    - "https://emottak-monitor.nais.preprod.local"
+    - "https://emottak-monitor.dev.intern.nav.no"
   azure:
     application:
       enabled: true
