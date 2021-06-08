@@ -52,9 +52,11 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Get, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "invalid-host")
-            }) {
+            with(
+                handleRequest(HttpMethod.Get, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "invalid-host")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual null
                 response.content shouldEqual "I'm ready! :)"
@@ -76,9 +78,11 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Get, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "")
-            }) {
+            with(
+                handleRequest(HttpMethod.Get, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual null
                 response.content shouldEqual "I'm ready! :)"
@@ -99,9 +103,11 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Get, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
-            }) {
+            with(
+                handleRequest(HttpMethod.Get, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual "https://syfosmmanuell.nais.preprod.local"
                 response.content shouldEqual "I'm ready! :)"
@@ -122,9 +128,11 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Get, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "null")
-            }) {
+            with(
+                handleRequest(HttpMethod.Get, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "null")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual "*"
                 response.content shouldEqual "I'm ready! :)"
@@ -146,10 +154,12 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Options, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
-                addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
-            }) {
+            with(
+                handleRequest(HttpMethod.Options, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
+                    addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual "https://syfosmmanuell.nais.preprod.local"
                 response.headers[HttpHeaders.AccessControlAllowHeaders] shouldEqual "Content-Type"
@@ -172,10 +182,12 @@ internal class CORSTest {
             applicationState.alive = true
             application.routing { registerNaisApi(applicationState) }
 
-            with(handleRequest(HttpMethod.Options, "/is_ready") {
-                addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
-                addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
-            }) {
+            with(
+                handleRequest(HttpMethod.Options, "/is_ready") {
+                    addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
+                    addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
+                }
+            ) {
                 response.status() shouldEqual HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldEqual "https://syfosmmanuell.nais.preprod.local"
                 response.headers[HttpHeaders.Vary] shouldEqual HttpHeaders.Origin

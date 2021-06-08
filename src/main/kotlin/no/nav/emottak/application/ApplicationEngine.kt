@@ -21,7 +21,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.InternalAPI
 import no.nav.emottak.Environment
-import no.nav.emottak.VaultSecrets
 import no.nav.emottak.application.api.registerMeldingerApi
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.log
@@ -31,13 +30,12 @@ import no.nav.emottak.services.MessageQueryService
 fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
-    vaultSecrets: VaultSecrets,
     jwkProvider: JwkProvider,
     issuer: String,
     meldingService: MessageQueryService
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
-        setupAuth(vaultSecrets, jwkProvider, issuer)
+        setupAuth(env, jwkProvider, issuer)
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -60,13 +58,18 @@ fun createApplicationEngine(
             method(HttpMethod.Put)
             method(HttpMethod.Options)
             header("Content-Type")
-            host(env.emottakAdminFrontEndUrl, schemes = listOf("https", "https"))
+            host(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
             allowCredentials = true
         }
         routing {
             registerNaisApi(applicationState)
-            authenticate("jwt") {
+
+            if (env.isDevelopment) {
                 registerMeldingerApi(meldingService)
+            } else {
+                authenticate("jwt") {
+                    registerMeldingerApi(meldingService)
+                }
             }
         }
     }
