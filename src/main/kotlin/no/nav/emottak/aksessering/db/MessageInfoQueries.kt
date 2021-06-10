@@ -18,8 +18,8 @@ fun DatabaseInterface.hentMeldinger(
             """
                     SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
                     FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT >= to_timestamp($fom)
-                    AND DATOMOTTAT <= to_timestamp($tom)
+                    WHERE DATOMOTTAT >= to_timestamp(${fom})
+                    AND DATOMOTTAT <= to_timestamp(${tom})
                 """
         ).use {
             it.executeQuery().toList { toMeldingInfo() }
