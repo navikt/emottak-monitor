@@ -23,12 +23,10 @@ fun DatabaseInterface.hentMeldinger(
                 """
         ).use {
             val resultset = it.executeQuery() //.toList { toMeldingInfo() }
-            if(resultset.last()) {
-                log.info("Returned rows: ${resultset.row}")
+            while(resultset.next()) {
+                log.info("Returned row: ${resultset.row}")
             }
-            else {
-                log.info("Returned no rows :(")
-            }
+            log.info("Finished checking rows...")
             resultset.toList { toMeldingInfo() }
         }
     }
