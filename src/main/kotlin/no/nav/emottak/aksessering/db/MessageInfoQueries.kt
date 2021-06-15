@@ -2,11 +2,9 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.log
 import no.nav.emottak.model.MeldingInfo
 import java.sql.ResultSet
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
@@ -23,7 +21,7 @@ fun DatabaseInterface.hentMeldinger(
                 """
         ).use {
             it.executeQuery().toList { toMeldingInfo() }
-            }
+        }
     }
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
