@@ -38,7 +38,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             val meldinger = meldingService.meldinger(fom, tom)
             log.info("Meldinger size : ${meldinger.size}")
             log.info("Meldinger : $meldinger")
-            log.info("Hentet ut den første mottakident info: ${meldinger.firstOrNull()?.mottakid}")
+            log.info("Hentet ut den første mottakident info: ${meldinger.firstOrNull()?.mottak_id}")
             call.respond(meldinger)
         }
     }
