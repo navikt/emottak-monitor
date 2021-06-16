@@ -16,7 +16,7 @@ fun DatabaseInterface.hentMeldinger(
             """
                     SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
                     FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT between (?, ?)
+                    WHERE DATOMOTTAT between ? and ?
                 """
         )
         statement.setObject(1, fom)
