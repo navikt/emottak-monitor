@@ -14,9 +14,9 @@ fun DatabaseInterface.hentMeldinger(
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
-                    SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
-                    FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT between ? and ?
+                    SELECT MOTTAK_ID, HENDELSEDATO, TILLEGSINFO 
+                    FROM $databasePrefix.LOGG
+                    WHERE HENDELSEDATO between ? and ?
                 """
         )
         statement.setObject(1, fom)
@@ -28,9 +28,7 @@ fun DatabaseInterface.hentMeldinger(
 
 fun ResultSet.toMeldingInfo(): MeldingInfo =
     MeldingInfo(
-        getString("ROLE"),
-        getString("SERVICE"),
-        getString("ACTION"),
         getString("MOTTAK_ID"),
-        getString("DATOMOTTAT")
+        getString("HENDELSEDATO"),
+        getString("TILLEGSINFO")
     )
