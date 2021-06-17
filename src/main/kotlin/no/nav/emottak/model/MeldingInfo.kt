@@ -1,7 +1,9 @@
 package no.nav.emottak.model
 
 data class MeldingInfo(
-    val mottakid: String?,
-    val hendelsedato: String,
-    val tillegsinfo: String
+    val role: String,
+    val service: String,
+    val action: String,
+    val mottakid: String,
+    val datomottak: String
 )
