@@ -1,0 +1,86 @@
+[
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95637.1",
+    "datomottak": "2021-01-01 10:15:20.447553"
+  },
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95638.1",
+    "datomottak": "2021-01-01 10:15:20.66167"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95639",
+    "datomottak": "2021-01-01 10:15:21.221521"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95640",
+    "datomottak": "2021-01-01 10:15:21.322115"
+  },
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95641.1",
+    "datomottak": "2021-01-01 10:15:35.796372"
+  },
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95642.1",
+    "datomottak": "2021-01-01 10:15:35.866568"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95643",
+    "datomottak": "2021-01-01 10:15:36.529687"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95644",
+    "datomottak": "2021-01-01 10:15:36.881222"
+  },
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95645.1",
+    "datomottak": "2021-01-01 10:15:46.46387"
+  },
+  {
+    "role": "Behandler",
+    "service": "BehandlerKrav",
+    "action": "OppgjorsMelding",
+    "mottakid": "2101011015hels95646.1",
+    "datomottak": "2021-01-01 10:15:46.530192"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95647",
+    "datomottak": "2021-01-01 10:15:46.979458"
+  },
+  {
+    "role": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "action": "Svarmelding",
+    "mottakid": "2101011015navm95648",
+    "datomottak": "2021-01-01 10:15:47.090862"
+  }
+]
