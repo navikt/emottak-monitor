@@ -2941,8 +2941,8 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browserslist@4.14.2:
-  version "4.14.2"
+browserslist@4.16.5:
+  version "4.16.5"
   resolved "https://registry.npmjs.org/browserslist/-/browserslist-4.14.2.tgz"
   integrity sha512-HI4lPveGKUR0x2StIz+2FXfDk9SfVMrxn6PLh1JeGUwcuoDkdKZebWiyLRJ68iIPDpMI4JLVDf7S7XzslgWOhw==
   dependencies:
@@ -5243,8 +5243,8 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
-glob-parent@^3.1.0:
-  version "3.1.0"
+glob-parent@^5.1.2:
+  version "5.1.2"
   resolved "https://registry.npmjs.org/glob-parent/-/glob-parent-3.1.0.tgz"
   integrity sha1-nmr2KZ2NO9K9QEMIMr0RPfkGxa4=
   dependencies:
@@ -7527,8 +7527,8 @@ normalize-range@^0.1.2:
   resolved "https://registry.npmjs.org/normalize-range/-/normalize-range-0.1.2.tgz"
   integrity sha1-LRDAa9/TEuqXd2laTShDlFa3WUI=
 
-normalize-url@1.9.1:
-  version "1.9.1"
+normalize-url@4.5.1:
+  version "4.5.1"
   resolved "https://registry.npmjs.org/normalize-url/-/normalize-url-1.9.1.tgz"
   integrity sha1-LMDWazHqIwNkWENuNiDYWVTGbDw=
   dependencies:
@@ -8733,8 +8733,8 @@ postcss-values-parser@^2.0.0, postcss-values-parser@^2.0.1:
     indexes-of "^1.0.1"
     uniq "^1.0.1"
 
-postcss@7.0.21:
-  version "7.0.21"
+postcss@7.0.36:
+  version "7.0.36"
   resolved "https://registry.npmjs.org/postcss/-/postcss-7.0.21.tgz"
   integrity sha512-uIFtJElxJo29QC753JzhidoAhvp/e/Exezkdhfmt8AymWT6/5B7W1WmponYWkHk2eg6sONyTch0A3nkMPun3SQ==
   dependencies:
