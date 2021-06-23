@@ -2,7 +2,7 @@ name: "Build and deploy emottak-monitor-frontend"
 on:
   push:
     branches:
-    - "main"
+    - "master"
 env:
   "IMAGE": "docker.pkg.github.com/${{ github.repository }}/emottak-monitor-frontend:${{\
     \ github.sha }}"
