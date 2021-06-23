@@ -24,7 +24,7 @@ class MeldingList extends Component {
                             <button aria-label="Sorter MottakID stigende">MottakID</button>
                         </th>
                         <th role="columnheader" aria-sort="none">
-                            <button aria-label="Sorter DatoMottak stigende">DatoMottak</button>
+                            <button aria-label="Sorter DatoMottak stigende">DatoMottat</button>
                         </th>
                         </tr>
                     </thead>
@@ -35,7 +35,7 @@ class MeldingList extends Component {
                                 <td>{meldingDetail.service}</td>
                                 <td>{meldingDetail.action}</td>
                                 <td>{meldingDetail.mottakid}</td>
-                                <td>{meldingDetail.datomottak}</td>
+                                <td>{meldingDetail.datomottat}</td>
                             </tr>
                 })}
                 </tbody>
