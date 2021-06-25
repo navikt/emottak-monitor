@@ -1,6 +1,8 @@
 import React from "react"
+import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
-import Data from "./data/meldinger.json"
+import DBMessages from "./data/meldinger.json"
+
 
 const useSortableData = (items, config = null) => {
     const [sortConfig, setSortConfig] = React.useState(config);
@@ -36,8 +38,8 @@ const useSortableData = (items, config = null) => {
     return { items: sortedItems, requestSort, sortConfig };
 };
 
-const ProductTable = (props) => {
-    const { items, requestSort, sortConfig } = useSortableData(props.products);
+const MessagesTable = (props) => {
+    const { items, requestSort, sortConfig } = useSortableData(props.messages);
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
             return;
@@ -87,13 +89,13 @@ const ProductTable = (props) => {
             </tr>
             </thead>
             <tbody>
-            {items.map((meldingDetail)=>{
+            {items.map((MessageDetails)=>{
                 return  <tr>
-                    <td className="tabell__td--sortert">{meldingDetail.role}</td>
-                    <td>{meldingDetail.service}</td>
-                    <td>{meldingDetail.action}</td>
-                    <td>{meldingDetail.mottakid}</td>
-                    <td>{meldingDetail.datomottat}</td>
+                    <td className="tabell__td--sortert">{MessageDetails.role}</td>
+                    <td>{MessageDetails.service}</td>
+                    <td>{MessageDetails.action}</td>
+                    <td>{MessageDetails.mottakid}</td>
+                    <td>{MessageDetails.datomottat}</td>
                 </tr>
             })}
             </tbody>
@@ -104,8 +106,18 @@ const ProductTable = (props) => {
 export default function App() {
     return (
         <div className="App">
-            <h1>eMottak meldinger</h1>
-            <ProductTable products={Data}/>
+            <Switch>
+                <Route exact path="/">
+                    <h1>eMottak meldinger</h1>
+                    <MessagesTable messages={DBMessages}/>
+                </Route>
+                <Route exact path="/isalive">
+                    <h1>Alive</h1>
+                </Route>
+                <Route exact path="/isready">
+                    <h1>Ready</h1>
+                </Route>
+            </Switch>
         </div>
     );
 }
