@@ -8,16 +8,6 @@ metadata:
 spec:
   image: {{image}}
   port: 8080
-  liveness:
-    path: "/isalive"
-    port: 8080
-    initialDelay: 20
-    timeout: 60
-  readiness:
-    path: "/isready"
-    port: 8080
-    initialDelay: 20
-    timeout: 60
   replicas:
     min: 2
     max: 2
@@ -35,8 +25,3 @@ spec:
     {{#each ingresses as |url|}}
       - {{url}}
     {{/each}}
-  azure:
-    application:
-      enabled: true
-  elastic:
-    instance: "emottak-monitor-frontend"
