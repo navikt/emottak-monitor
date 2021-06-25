@@ -104,6 +104,7 @@ const ProductTable = (props) => {
 export default function App() {
     return (
         <div className="App">
+            <h1>eMottak meldinger</h1>
             <ProductTable products={Data}/>
         </div>
     );
