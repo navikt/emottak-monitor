@@ -20,7 +20,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "PORT=8080 craco start",
     "build": "craco build",
     "start2": "react-scripts start",
     "build2": "react-scripts build",

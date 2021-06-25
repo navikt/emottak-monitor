@@ -7,15 +7,15 @@ metadata:
     "team": "team-emottak"
 spec:
   image: {{image}}
-  port: 3000
+  port: 8080
   liveness:
     path: "/isalive"
-    port: 3000
+    port: 8080
     initialDelay: 20
     timeout: 60
   readiness:
     path: "/isready"
-    port: 3000
+    port: 8080
     initialDelay: 20
     timeout: 60
   replicas:
