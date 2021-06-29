@@ -4,9 +4,28 @@ import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import axios from "axios"
 
-const getMessages = async () => {
-    return await axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10');
+function getMessages() {
+    let data;
+    axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10')
+        .then(response => {data = response.data});
+    return data
 }
+
+// const getMessages = async () => {
+//     try {
+//         return await axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10');
+//     } catch (error) {
+//         console.error(error)
+//     }
+// }
+//
+// const messages = async () => {
+//     const messageResponse = await getMessages()
+//     if(messageResponse.data) {
+//         console.log(`Got ${Object.entries(messageResponse.data).length} messages`)
+//         return messageResponse.data
+//     }
+// }
 
 export default function App() {
     return (
@@ -15,7 +34,7 @@ export default function App() {
                 <Route exact path="/">
                     <h1>eMottak meldinger</h1>
                     {/*<MessagesTable messages={DBMessages}/>*/}
-                    <MessagesTable messages={getMessages().data.message}/>
+                    <MessagesTable messages={getMessages()}/>
                 </Route>
                 <Route exact path="/isalive" status={200}>
                     <h1>Alive</h1>
