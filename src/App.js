@@ -8,6 +8,7 @@ function getMessages() {
     let data;
     axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10')
         .then(response => {data = response.data});
+    console.log(data)
     return data
 }
 
