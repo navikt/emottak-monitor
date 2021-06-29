@@ -1,16 +1,13 @@
-import React from "react"
+import React, { useState}  from "react"
 import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import axios from "axios"
 
-function getMessages() {
-    let data;
-    axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10')
-        .then(response => {data = response.data});
-    console.log(data)
-    return data
-}
+//function getMessages() {
+//    axios.get("https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10")
+//        .then(response => { this.setState({messages : response.data})});
+//    }
 
 // const getMessages = async () => {
 //     try {
@@ -29,13 +26,19 @@ function getMessages() {
 // }
 
 export default function App() {
+    const [messages, setMessages] = useState([])
+    axios.get("https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10")
+            .then(response => {
+                setMessages(response.data)
+            });
+    console.log("Messages = " + messages)
     return (
         <div className="App">
             <Switch>
                 <Route exact path="/">
                     <h1>eMottak meldinger</h1>
                     {/*<MessagesTable messages={DBMessages}/>*/}
-                    <MessagesTable messages={getMessages()}/>
+                    <MessagesTable messages={messages}/>
                 </Route>
                 <Route exact path="/isalive" status={200}>
                     <h1>Alive</h1>
