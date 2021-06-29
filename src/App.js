@@ -1,8 +1,12 @@
 import React from "react"
 import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
-import DBMessages from "./data/meldinger.json"
 import MessagesTable from "./MessagesTable";
+import axios from "axios"
+
+const getMessages = async () => {
+    return await axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10');
+}
 
 export default function App() {
     return (
@@ -10,7 +14,8 @@ export default function App() {
             <Switch>
                 <Route exact path="/">
                     <h1>eMottak meldinger</h1>
-                    <MessagesTable messages={DBMessages}/>
+                    {/*<MessagesTable messages={DBMessages}/>*/}
+                    <MessagesTable messages={getMessages().data.message}/>
                 </Route>
                 <Route exact path="/isalive" status={200}>
                     <h1>Alive</h1>

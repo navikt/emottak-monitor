@@ -11,6 +11,7 @@ exports.isAlive = () => {
 exports.metrics = () => {
     return (req, res) => {
         res.set('Content-Type', prometheus.register.contentType)
+        console.log("Starter logging ...")
         res.end(prometheus.register.metrics())
     }
 }

@@ -25,3 +25,11 @@ spec:
     {{#each ingresses as |url|}}
       - {{url}}
     {{/each}}
+  tracing:
+    enabled: true
+  accessPolicy:
+    outbound:
+      external:
+        - host: https://emottak-monitor.dev.intern.nav.no
+#      rules:
+#        - application: emottak-monitor
