@@ -5,5 +5,5 @@ data class MeldingInfo(
     val service: String,
     val action: String,
     val mottakid: String,
-    val datomottak: String
+    val datomottat: String
 )
