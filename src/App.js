@@ -27,10 +27,6 @@ import axios from "axios"
 
 export default function App() {
     const [messages, setMessages] = useState([])
-    axios.get("https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10")
-            .then(response => {
-                setMessages(response.data)
-            });
     console.log("Messages = " + messages)
     return (
         <div className="App">
