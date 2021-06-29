@@ -65,6 +65,6 @@ spec:
     - name: DATABASE_PREFIX
       value: nmt3
     - name: EMOTTAK_ADMIN_FRONTEND_URL
-      value: emottak-monitor-frontend.nais.preprod.local
+      value: emottak-monitor-frontend.dev.intern.nav.no
     - name: DEVELOPMENT
       value: "true"
