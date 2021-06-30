@@ -3,34 +3,24 @@ import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import axios from "axios"
+//import AdvancedDatePicker from "./AdvancedDatePicker"
+import {Datepicker, isISODateString} from "nav-datovelger";
+import TimePicker from 'react-time-picker';
 
-//function getMessages() {
-//    axios.get("https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10")
-//        .then(response => { this.setState({messages : response.data})});
-//    }
-
-// const getMessages = async () => {
-//     try {
-//         return await axios.get('https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10');
-//     } catch (error) {
-//         console.error(error)
-//     }
-// }
-//
-// const messages = async () => {
-//     const messageResponse = await getMessages()
-//     if(messageResponse.data) {
-//         console.log(`Got ${Object.entries(messageResponse.data).length} messages`)
-//         return messageResponse.data
-//     }
-// }
 
 export default function App() {
     const [messages, setMessages] = useState([])
+    const [fom, setFom] = useState('');
+    const [tom, setTom] = useState('');
+    const [fromTime, setFromTime] = useState('10:00:00');
+    const [toTime, setToTime] = useState('12:00:00');
+
     useEffect(()=> {
-        axios.get("https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=01-01-2021%2010:10:10&toDate=01-01-2021%2010:16:10")
-        .then(response => { setMessages(response.data)});
-    },[])
+        if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
+                .then(response => { setMessages(response.data)});
+        }
+    },[fom, tom, fromTime, toTime])
 
     console.log("Messages = " + messages)
     return (
@@ -38,7 +28,44 @@ export default function App() {
             <Switch>
                 <Route exact path="/">
                     <h1>eMottak meldinger</h1>
-                    {/*<MessagesTable messages={DBMessages}/>*/}
+                    <div>
+                        <div>FOM:
+                            <Datepicker
+                                locale={'nb'}
+                                inputId="datepicker-input"
+                                value={fom}
+                                onChange={setFom}
+                                inputProps={{
+                                    name: 'dateInput',
+                                    'aria-invalid': fom !== '' && isISODateString(fom) === false,
+                                }}
+                                calendarSettings={{ showWeekNumbers: false }}
+                                showYearSelector={true}
+                            />
+                            <TimePicker
+                                onChange={setFromTime}
+                                value={fromTime}
+                            />
+                        </div>
+                        <div>TOM:
+                            <Datepicker
+                                locale={'nb'}
+                                inputId="datepicker-input"
+                                value={tom}
+                                onChange={setTom}
+                                inputProps={{
+                                    name: 'dateInput',
+                                    'aria-invalid': tom !== '' && isISODateString(tom) === false,
+                                }}
+                                calendarSettings={{ showWeekNumbers: false }}
+                                showYearSelector={true}
+                            />
+                            <TimePicker
+                                onChange={setToTime}
+                                value={toTime}
+                            />
+                        </div>
+                    </div>
                     <MessagesTable messages={messages}/>
                 </Route>
                 <Route exact path="/isalive" status={200}>
