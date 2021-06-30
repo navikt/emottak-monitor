@@ -35,9 +35,10 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             val tom = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(toDate).toLocalDateTime()
 
             log.info("Starter med å kjøre dabasespørring")
-
             val meldinger = meldingService.meldinger(fom, tom)
-            log.info("Hentet ut den første mottakiden info: ${meldinger.firstOrNull()?.mottakid}")
+            log.info("Meldinger size : ${meldinger.size}")
+            log.info("Meldinger : $meldinger")
+            log.info("Hentet ut den første mottakident info: ${meldinger.firstOrNull()?.mottakid}")
             call.respond(meldinger)
         }
     }

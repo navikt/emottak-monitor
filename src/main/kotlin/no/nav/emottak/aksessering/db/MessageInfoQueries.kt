@@ -12,14 +12,17 @@ fun DatabaseInterface.hentMeldinger(
     tom: LocalDateTime
 ): List<MeldingInfo> =
     connection.use { connection ->
-        connection.prepareStatement(
+        val statement = connection.prepareStatement(
             """
                     SELECT ROLE, SERVICE, ACTION, MOTTAK_ID, DATOMOTTAT 
                     FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT >= to_timestamp($fom)
-                    AND DATOMOTTAT <= to_timestamp($tom)
+                    WHERE DATOMOTTAT between ? and ?
+                    AND ROLE is not null
                 """
-        ).use {
+        )
+        statement.setObject(1, fom)
+        statement.setObject(2, tom)
+        statement.use {
             it.executeQuery().toList { toMeldingInfo() }
         }
     }
