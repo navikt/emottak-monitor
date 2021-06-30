@@ -11,7 +11,7 @@ import TimePicker from 'react-time-picker';
 export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
-    const [tom, setTom] = useState(new Date().toLo() + '');
+    const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
     const [fromTime, setFromTime] = useState('10:00:00');
     const [toTime, setToTime] = useState('12:00:00');
 
