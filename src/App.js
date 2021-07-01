@@ -14,7 +14,7 @@ export default function App() {
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
     const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
     const [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '00:00:00');
-    const [toTime, setToTime] = useState(new Date().toLocaleDateString() + '00:00:00');
+    const [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '00:00:00');
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
