@@ -13,8 +13,8 @@ export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
     const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
-    const [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '00:00:00');
-    const [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '00:00:00');
+    const [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '');
+    const [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '');
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
