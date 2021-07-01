@@ -25,14 +25,14 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(HttpStatusCode.BadRequest)
             }
 
-            val fom = SimpleDateFormat("dd-MM-yyyy HH:mm").parse(fromDate).toLocalDateTime()
+            val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
 
             if (toDate.isNullOrEmpty()) {
                 log.info("Mangler parameter: to date")
                 call.respond(HttpStatusCode.BadRequest)
             }
 
-            val tom = SimpleDateFormat("dd-MM-yyyy HH:mm").parse(toDate).toLocalDateTime()
+            val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
 
             log.info("Starter med å kjøre dabasespørring")
             val meldinger = meldingService.meldinger(fom, tom)
