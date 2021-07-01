@@ -8,17 +8,17 @@ import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from 'react-time-picker';
 
 
+
 export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
     const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
-    const [fromTime, setFromTime] = useState('10:00');
-    const [toTime, setToTime] = useState('12:00');
-    const sek = ':00'
+    const [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '00:00:00');
+    const [toTime, setToTime] = useState(new Date().toLocaleDateString() + '00:00:00');
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
-            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}${sek}&toDate=${tom}%20${toTime}${sek}`)
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                 .then(response => { setMessages(response.data)});
         }
     },[fom, tom, fromTime, toTime])
