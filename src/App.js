@@ -12,12 +12,13 @@ export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
     const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
-    const [fromTime, setFromTime] = useState('10:00:00');
-    const [toTime, setToTime] = useState('12:00:00');
+    const [fromTime, setFromTime] = useState('10:00');
+    const [toTime, setToTime] = useState('12:00');
+    const sek = '00'
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
-            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}%20${sek}&toDate=${tom}%20${toTime}%20${sek}`)
                 .then(response => { setMessages(response.data)});
         }
     },[fom, tom, fromTime, toTime])
