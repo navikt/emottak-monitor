@@ -14,7 +14,7 @@ fun DatabaseInterface.hentMeldinger(
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
-                    SELECT DATOMOTTAT, MOTTAK_ID, ROLE, SERVICE, ACTION, REFERANSEPARAM 
+                    SELECT DATOMOTTAT, MOTTAK_ID, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, CORRELATION_ID 
                     FROM $databasePrefix.MELDING 
                     WHERE DATOMOTTAT between ? and ?
                     AND ROLE is not null
@@ -34,5 +34,7 @@ fun ResultSet.toMeldingInfo(): MeldingInfo =
         getString("ROLE"),
         getString("SERVICE"),
         getString("ACTION"),
-        getString("REFERANSEPARAM")
+        getString("REFERANSEPARAM"),
+        getString("EBCOMNAVN"),
+        getString("CORRELATION_ID")
     )
