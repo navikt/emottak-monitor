@@ -12,7 +12,6 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -22,6 +21,15 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+#timetable {
+  background-color: #61dafb;
+  padding: 15px;
+}
+
+#timetable th {
+  text-align: right;
 }
 
 .App-link {

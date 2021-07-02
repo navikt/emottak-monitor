@@ -11,9 +11,22 @@ const MessagesTable = (props) => {
     };
     return (
         <table className="tabell tabell--stripet">
-            <caption>Meldinger</caption>
             <thead>
             <tr>
+                <th>
+                    <button
+                        type="button"
+                        onClick={() => requestSort('datomottat')}
+                        className={getClassNamesFor('datomottat')}>Mottat
+                    </button>
+                </th>
+                <th>
+                    <button
+                        type="button"
+                        onClick={() => requestSort('mottakid')}
+                        className={getClassNamesFor('mottakid')}>Mottak-id
+                    </button>
+                </th>
                 <th>
                     <button
                         type="button"
@@ -38,15 +51,22 @@ const MessagesTable = (props) => {
                 <th>
                     <button
                         type="button"
-                        onClick={() => requestSort('mottakid')}
-                        className={getClassNamesFor('mottakid')}>MottakId
+                        onClick={() => requestSort('referanse')}
+                        className={getClassNamesFor('referanse')}>Referanse
                     </button>
                 </th>
                 <th>
                     <button
                         type="button"
-                        onClick={() => requestSort('datomottat')}
-                        className={getClassNamesFor('datomottat')}>Datomottat
+                        onClick={() => requestSort('avsender')}
+                        className={getClassNamesFor('avsender')}>Avsender
+                    </button>
+                </th>
+                <th>
+                    <button
+                        type="button"
+                        onClick={() => requestSort('cpaid')}
+                        className={getClassNamesFor('cpaid')}>CPA-id
                     </button>
                 </th>
             </tr>
@@ -54,14 +74,21 @@ const MessagesTable = (props) => {
             <tbody>
             {items.map((MessageDetails)=>{
                 return  <tr>
-                    <td className="tabell__td--sortert">{MessageDetails.role}</td>
+                    <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
+                    <td>{MessageDetails.mottakid}</td>
+                    <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
-                    <td>{MessageDetails.mottakid}</td>
-                    <td>{MessageDetails.datomottat}</td>
+                    <td>{MessageDetails.referanse}</td>
+                    <td>{MessageDetails.avsender}</td>
+                    <td>{MessageDetails.cpaid}</td>
                 </tr>
             })}
             </tbody>
+            <caption>
+                {items.map((MessageDetails)=>{
+                return MessageDetails.size})} meldinger
+            </caption>
         </table>
     );
 };
