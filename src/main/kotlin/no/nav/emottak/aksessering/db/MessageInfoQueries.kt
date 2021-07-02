@@ -18,6 +18,7 @@ fun DatabaseInterface.hentMeldinger(
                     FROM $databasePrefix.MELDING 
                     WHERE DATOMOTTAT between ? and ?
                     AND ROLE is not null
+                    AND REFERANSEPARAM is not null
                 """
         )
         statement.setObject(1, fom)
