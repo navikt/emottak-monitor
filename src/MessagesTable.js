@@ -3,6 +3,7 @@ import React from "react";
 
 const MessagesTable = (props) => {
     const { items, requestSort, sortConfig } = TableSorting(props.messages);
+    let messagesLength = 0;
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
             return;
@@ -73,6 +74,7 @@ const MessagesTable = (props) => {
             </thead>
             <tbody>
             {items.map((MessageDetails)=>{
+                messagesLength = MessageDetails.length
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
                     <td>{MessageDetails.mottakid}</td>
@@ -86,8 +88,7 @@ const MessagesTable = (props) => {
             })}
             </tbody>
             <caption>
-                {items.map((MessageDetails)=>{
-                return MessageDetails.size})} meldinger
+                {messagesLength} meldinger
             </caption>
         </table>
     );
