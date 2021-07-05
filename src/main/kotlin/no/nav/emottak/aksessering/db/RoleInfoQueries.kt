@@ -6,7 +6,6 @@ import no.nav.emottak.model.RoleInfo
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
-
 fun DatabaseInterface.getRoles(
     databasePrefix: String,
     fom: LocalDateTime,

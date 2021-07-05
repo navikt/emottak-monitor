@@ -36,7 +36,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
             log.info("Starter med å kjøre dabasespørring")
             val meldinger = meldingService.meldinger(fom, tom)
-            val roles = meldingService.roles(fom, tom)
+            val roles = meldingService.role(fom, tom)
             log.info("Meldinger size : ${meldinger.size}")
             log.info("Role size : ${roles.size}")
             log.info("Service size : ${roles.size}")

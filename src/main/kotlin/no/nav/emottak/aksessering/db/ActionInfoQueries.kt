@@ -3,10 +3,8 @@ package no.nav.emottak.aksessering.db
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
 import no.nav.emottak.model.ActionInfo
-import no.nav.emottak.model.RoleInfo
 import java.sql.ResultSet
 import java.time.LocalDateTime
-
 
 fun DatabaseInterface.getActions(
     databasePrefix: String,
