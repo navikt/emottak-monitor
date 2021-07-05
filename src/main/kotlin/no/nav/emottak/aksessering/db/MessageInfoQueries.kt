@@ -19,6 +19,7 @@ fun DatabaseInterface.hentMeldinger(
                     WHERE DATOMOTTAT between ? and ?
                     AND ROLE is not null
                     AND REFERANSEPARAM is not null
+                    AND CORRELATION_ID is not null
                 """
         )
         statement.setObject(1, fom)
