@@ -3,7 +3,7 @@ import React from "react";
 
 const MessagesTable = (props) => {
     const { items, requestSort, sortConfig } = TableSorting(props.messages);
-    let messagesLength = 5;
+    let messagesLength = 0;
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
             return;
