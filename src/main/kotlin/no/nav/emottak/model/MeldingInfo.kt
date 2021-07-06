@@ -6,7 +6,7 @@ data class MeldingInfo(
     val role: String? = null,
     val service: String? = null,
     val action: String? = null,
-    val referanse: String,
-    val avsender: String,
-    val cpaid: String
+    val referanse: String? = null,
+    val avsender: String? = null,
+    val cpaid: String? = null
 )
