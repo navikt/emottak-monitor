@@ -27,6 +27,9 @@ import java.nio.file.Paths
 class MeldingerApiSpek : Spek({
     val messageQueryService: MessageQueryService = mockk()
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
+    io.mockk.coEvery { messageQueryService.role(any(), any()) } returns getRoles()
+    io.mockk.coEvery { messageQueryService.service(any(), any()) } returns getServices()
+    io.mockk.coEvery { messageQueryService.action(any(), any()) } returns getActions()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
         val env = Environment(
@@ -71,7 +74,46 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
+                        "/v1/hentmeldinger?fromDate=01-01-2021 10:10&toDate=01-01-2021 10:16"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/getroles?fromDate=01-01-2021 10:10&toDate=01-01-2021 10:16"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/getservices?fromDate=01-01-2021 10:10&toDate=01-01-2021 10:16"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/getactions?fromDate=01-01-2021 10:10&toDate=01-01-2021 10:16"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }
