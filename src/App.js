@@ -6,6 +6,7 @@ import axios from "axios"
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from 'react-time-picker';
 import './App.css';
+import { Select } from 'nav-frontend-skjema'
 
 export default function App() {
     const [messages, setMessages] = useState([])
@@ -21,7 +22,13 @@ export default function App() {
         }
     },[fom, tom, fromTime, toTime])
 
-    console.log("Messages = " + messages)
+    let uniqueRoles = [...new Set(messages.map(({role})=> role))]
+    let uniqueServices = [...new Set(messages.map(({service})=> service))]
+    let uniqueActions = [...new Set(messages.map(({action})=> action))]
+
+
+
+console.log("Messages = " + messages)
     return (
         <div className="App">
             <Switch>
@@ -73,6 +80,30 @@ export default function App() {
                              </tr>
                          </table>
                      </div>
+                    <div>
+                        <Select label="filtrer på rolle?">
+                            <option value="">Velg rolle</option>
+                            {uniqueRoles.map((role)=>{
+                                return <option value={role}>{role}</option>
+                            })}
+                        </Select>
+                    </div>
+                    <div>
+                        <Select label="filtrer på service?">
+                            <option value="">Velg service</option>
+                            {uniqueServices.map((service)=>{
+                                return <option value={service}>{service}</option>
+                            })}
+                        </Select>
+                    </div>
+                    <div>
+                        <Select label="filtrer på action?">
+                            <option value="">Velg action</option>
+                            {uniqueActions.map((action)=>{
+                                return <option value={action}>{action}</option>
+                            })}
+                        </Select>
+                    </div>
                      <MessagesTable messages={messages}/>
                 </Route>
                 <Route exact path="/isalive" status={200}>
