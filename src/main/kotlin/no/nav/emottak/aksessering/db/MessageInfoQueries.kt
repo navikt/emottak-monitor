@@ -17,9 +17,6 @@ fun DatabaseInterface.hentMeldinger(
                     SELECT DATOMOTTAT, MOTTAK_ID, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, CORRELATION_ID 
                     FROM $databasePrefix.MELDING 
                     WHERE DATOMOTTAT between ? and ?
-                    AND ROLE is not null
-                    AND REFERANSEPARAM is not null
-                    AND CORRELATION_ID is not null
                 """
         )
         statement.setObject(1, fom)
