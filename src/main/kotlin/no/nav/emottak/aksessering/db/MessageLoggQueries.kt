@@ -16,7 +16,7 @@ fun DatabaseInterface.getMessageLogg(
                 SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.HENDELSE_ID 
                 FROM $databasePrefix.LOGG 
                 INNER JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID 
-                WHERE LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO DESC;
+                WHERE LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO DESC
                 """
         )
         statement.setObject(1, mottakid)
