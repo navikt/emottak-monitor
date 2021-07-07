@@ -26,6 +26,7 @@
 #timetable {
   background-color: #61dafb;
   padding: 15px;
+  border-style: double;
 }
 
 #timetable th {
