@@ -36,10 +36,26 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
             log.info("Starter med å kjøre dabasespørring")
             val meldinger = meldingService.meldinger(fom, tom)
+            //val logg = meldingService.messagelogg()
+
             log.info("Meldinger size : ${meldinger.size}")
             log.info("Meldinger : $meldinger")
             log.info("Hentet ut den første mottakident info: ${meldinger.firstOrNull()?.mottakid}")
             call.respond(meldinger)
         }
+        get("/hentlogg") {
+            val mottakid = call.request.queryParameters.get("mottakId")
+            if (mottakid.isNullOrEmpty()) {
+                log.info("Mangler parameter: motrakid")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+
+            log.info("Henter hendelseslogg for ${mottakid}")
+            val logg = meldingService.messagelogg(mottakid)
+
+            log.info("Antall hendelser for ${mottakid}: ${logg.size}")
+            call.respond(logg)
+        }
+
     }
 }

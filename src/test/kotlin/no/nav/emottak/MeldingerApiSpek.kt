@@ -27,6 +27,7 @@ import java.nio.file.Paths
 class MeldingerApiSpek : Spek({
     val messageQueryService: MessageQueryService = mockk()
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
+    io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
         val env = Environment(
@@ -72,6 +73,19 @@ class MeldingerApiSpek : Spek({
                     handleRequest(
                         HttpMethod.Get,
                         "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentlogg?mottakId=123456789012345678901"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }
