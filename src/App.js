@@ -9,7 +9,6 @@ import './App.css';
 import { Select } from 'nav-frontend-skjema'
 
 
-
 export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
@@ -66,8 +65,9 @@ export default function App() {
             <Switch>
             <Route exact path="/">
                 <h1>eMottak meldinger</h1>
-                <div>
-                    <table  id={"timetable"}>
+                <div className="row">
+                    <div className="column">
+                        <table id={"timetable"}>
                         <tr>
                             <th>Fra og med dato: </th>
                             <th>
@@ -112,7 +112,7 @@ export default function App() {
                         </tr>
                     </table>
                 </div>
-                <div>
+                <div className="column">
                     <table>
                         <tr>
                             <th>
@@ -138,6 +138,7 @@ export default function App() {
                             </th>
                         </tr>
                     </table>
+                </div>
                 </div>
                      <MessagesTable messages={visibleMessages}/>
                 </Route>
