@@ -54,16 +54,6 @@ export default function App() {
         }
     },[fom, tom, fromTime, toTime])
 
-    useEffect(()=> {
-        if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
-            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?mottakId=${toTime}`)
-                .then(response => {
-                    setMessages(response.data);
-                });
-        }
-    },[fom, tom, fromTime, toTime])
-
-
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
     let uniqueActions = [...new Set(messages.map(({action})=> action))]

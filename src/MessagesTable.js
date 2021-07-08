@@ -78,8 +78,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails)=>{
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    Dette er en <Lenke href="#">tekstlenke</Lenke> i en setning.
-                    <td> <Lenke href="https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=2107071008navm40623">{MessageDetails.mottakid}</Lenke> </td>
+                    <td> <Lenke href='https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId={MessageDetails.mottakid}'>{MessageDetails.mottakid}</Lenke> </td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
