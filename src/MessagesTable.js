@@ -78,7 +78,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails)=>{
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    <td> <Lenke href='https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId={MessageDetails.mottakid}'>{MessageDetails.mottakid}</Lenke> </td>
+                    <td> <Lenke href='https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=@{MessageDetails.mottakid}'>{MessageDetails.mottakid}</Lenke> </td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
