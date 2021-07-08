@@ -1,5 +1,6 @@
 import TableSorting from "./TableSorting";
 import React from "react";
+import Lenke from 'nav-frontend-lenker';
 
 const MessagesTable = (props) => {
     const { items, requestSort, sortConfig } = TableSorting(props.messages);
@@ -77,7 +78,8 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails)=>{
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    <td>{MessageDetails.mottakid}</td>
+                    Dette er en <Lenke href="#">tekstlenke</Lenke> i en setning.
+                    <td> <Lenke href="https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=2107071008navm40623">{MessageDetails.mottakid}</Lenke> </td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>

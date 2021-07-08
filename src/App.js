@@ -8,17 +8,16 @@ import TimePicker from 'react-time-picker';
 import './App.css';
 import { Select } from 'nav-frontend-skjema'
 
-
 export default function App() {
     const [messages, setMessages] = useState([])
     const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
     const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
     let [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '');
-    let  [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '');
-    let  [role, setRole] = useState('');
-    let  [service, setService] = useState('');
-    let  [action, setAction] = useState('');
-    let  [visibleMessages, setVisibleMessages] = useState(messages);
+    let [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '');
+    let [role, setRole] = useState('');
+    let [service, setService] = useState('');
+    let [action, setAction] = useState('');
+    let [visibleMessages, setVisibleMessages] = useState(messages);
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
@@ -54,6 +53,16 @@ export default function App() {
                 });
         }
     },[fom, tom, fromTime, toTime])
+
+    useEffect(()=> {
+        if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?mottakId=${toTime}`)
+                .then(response => {
+                    setMessages(response.data);
+                });
+        }
+    },[fom, tom, fromTime, toTime])
+
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
