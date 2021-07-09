@@ -1,8 +1,22 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import { useParams } from "react-router-dom";
 import TableSorting from "./TableSorting";
+import axios from "axios";
 
 const LoggTable = (props) => {
-    const {items} = TableSorting(props.messages);
+    const { mottakid } = useParams();
+    const [loggMessages, setLoggMessages] = useState([])
+
+    useEffect(()=> {
+        if(mottakid) {
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${mottakid}`)
+                .then(response => {
+                    setLoggMessages(response.data);
+                });
+        }
+    },[mottakid])
+
+    const {items} = TableSorting(loggMessages);
 
     return (
         <table className="tabell tabell--stripet">
@@ -14,16 +28,11 @@ const LoggTable = (props) => {
             </tr>
             </thead>
             <tbody>
-            {items.map((MessageDetails)=>{
+            {items.map((LogDetails)=>{
                 return  <tr>
-                    <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    <td>{MessageDetails.mottakid}</td>
-                    <td>{MessageDetails.role}</td>
-                    <td>{MessageDetails.service}</td>
-                    <td>{MessageDetails.action}</td>
-                    <td>{MessageDetails.referanse}</td>
-                    <td>{MessageDetails.avsender}</td>
-                    <td>{MessageDetails.cpaid}</td>
+                    <td className="tabell__td--sortert">{LogDetails.hendelsesdato}</td>
+                    <td>{LogDetails.hendelsesbeskrivelse}</td>
+                    <td>{LogDetails.hendelsesid}</td>
                 </tr>
             })}
             </tbody>

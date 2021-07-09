@@ -7,6 +7,7 @@ import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from 'react-time-picker';
 import './App.css';
 import { Select } from 'nav-frontend-skjema'
+import LoggTable from "./LoggTable";
 
 export default function App() {
     const [messages, setMessages] = useState([])
@@ -141,6 +142,7 @@ export default function App() {
                 </div>
                      <MessagesTable messages={visibleMessages}/>
                 </Route>
+                <Route exact path="/logg/:mottakid" component={LoggTable} />
                 <Route exact path="/isalive" status={200}>
                     <h1>Alive</h1>
                 </Route>
