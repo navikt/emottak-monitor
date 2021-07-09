@@ -11,8 +11,10 @@ import LoggTable from "./LoggTable";
 
 export default function App() {
     const [messages, setMessages] = useState([])
-    const [fom, setFom] = useState(new Date().toLocaleDateString() + '');
-    const [tom, setTom] = useState(new Date().toLocaleDateString() + '');
+    const [fom, setFom] = useState(new Date().toLocaleDateString('nb', {
+        month: '2-digit',day: '2-digit',year: 'numeric'}) + '');
+    const [tom, setTom] = useState(new Date().toLocaleDateString('nb', {
+        month: '2-digit',day: '2-digit',year: 'numeric'}) + '');
     let [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '');
     let [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '');
     let [role, setRole] = useState('');

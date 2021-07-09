@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 import TableSorting from "./TableSorting";
 import axios from "axios";
+import Lenke from "nav-frontend-lenker";
 
 const LoggTable = (props) => {
     const { mottakid } = useParams();
@@ -19,25 +20,29 @@ const LoggTable = (props) => {
     const {items} = TableSorting(loggMessages);
 
     return (
-        <table className="tabell tabell--stripet">
-            <thead>
-            <tr>
-                <th/> hendelsesdato
-                <th/> hendelsesbeskrivelse
-                <th/> hendelsesid
-            </tr>
-            </thead>
-            <tbody>
-            {items.map((LogDetails)=>{
-                return  <tr>
-                    <td className="tabell__td--sortert">{LogDetails.hendelsesdato}</td>
-                    <td>{LogDetails.hendelsesbeskrivelse}</td>
-                    <td>{LogDetails.hendelsesid}</td>
+        <div>
+            <p><Lenke href={`/`}>Tilbake til forsiden</Lenke></p>
+            <h1>Hendelsesdetaljer</h1>
+            <table className="tabell tabell--stripet">
+                <thead>
+                <tr>
+                    <th>Dato</th>
+                    <th>Beskrivelse</th>
+                    <th>ID</th>
                 </tr>
-            })}
-            </tbody>
-            <caption>Hendeleseslogg</caption>
-        </table>
+                </thead>
+                <tbody>
+                {items.map((LogDetails)=>{
+                    return  <tr>
+                        <td className="tabell__td--sortert">{LogDetails.hendelsesdato}</td>
+                        <td>{LogDetails.hendelsesbeskrivelse}</td>
+                        <td>{LogDetails.hendelsesid}</td>
+                    </tr>
+                })}
+                </tbody>
+                <caption>Hendeleseslogg</caption>
+            </table>
+        </div>
     );
 };
 export default LoggTable;
