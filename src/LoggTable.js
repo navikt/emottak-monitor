@@ -1,14 +1,16 @@
-import TableSorting from "./TableSorting";
 import React from "react";
+import TableSorting from "./TableSorting";
 
 const LoggTable = (props) => {
+    const {items} = TableSorting(props.messages);
+
     return (
         <table className="tabell tabell--stripet">
             <thead>
             <tr>
                 <th/> hendelsesdato
-                <th/>hendelsesbeskrivelse
-                <th/>hendelsesdid
+                <th/> hendelsesbeskrivelse
+                <th/> hendelsesid
             </tr>
             </thead>
             <tbody>
@@ -25,10 +27,8 @@ const LoggTable = (props) => {
                 </tr>
             })}
             </tbody>
-            <caption>
-                {messagesLength} meldinger
-            </caption>
+            <caption>Hendeleseslogg</caption>
         </table>
     );
 };
-export default MessagesTable;
+export default LoggTable;

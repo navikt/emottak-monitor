@@ -3,8 +3,10 @@ import React from "react";
 import Lenke from 'nav-frontend-lenker';
 
 const MessagesTable = (props) => {
+
     const { items, requestSort, sortConfig } = TableSorting(props.messages);
     let messagesLength = 0;
+
     if(items.length) {messagesLength = items.length}
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
@@ -12,6 +14,7 @@ const MessagesTable = (props) => {
         }
         return sortConfig.key === name ? sortConfig.direction : undefined;
     };
+
     return (
         <table className="tabell tabell--stripet">
             <thead>
@@ -78,7 +81,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails)=>{
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    <td> <Lenke href='https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=@MessageDetails.mottakid'>{MessageDetails.mottakid}</Lenke> </td>
+                    <td> <Lenke href={`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${MessageDetails.mottakid}`}>{MessageDetails.mottakid}</Lenke> </td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
