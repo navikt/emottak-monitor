@@ -8,6 +8,7 @@ import TimePicker from 'react-time-picker';
 import './App.css';
 import { Select } from 'nav-frontend-skjema'
 import LoggTable from "./LoggTable";
+import Lenke from "nav-frontend-lenker";
 
 export default function App() {
     const [messages, setMessages] = useState([])
@@ -64,9 +65,10 @@ export default function App() {
     console.log("Messages = " + messages)
     return (
         <div className="App">
+            <p><Lenke href={`/`}>eMottak Monitor</Lenke></p>
             <Switch>
             <Route exact path="/">
-                <h1>eMottak meldinger</h1>
+                <h1>Meldinger</h1>
                 <div className="row">
                     <div className="column">
                         <table id={"timetable"}>
