@@ -81,8 +81,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails)=>{
                 return  <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    if (messageDetails.loggcount > 0)
-                    <td> <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid}</Lenke> </td>
+                    <td>" . ($value['messageDetails.loggcount']=="0" ? 'MessageDetails.mottakid' :  '<Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid}</Lenke>') . "</td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
