@@ -4,10 +4,12 @@ import Lenke from 'nav-frontend-lenker';
 
 const MessagesTable = (props) => {
 
-    const { items, requestSort, sortConfig } = TableSorting(props.messages);
+    const {items, requestSort, sortConfig} = TableSorting(props.messages);
     let messagesLength = 0;
 
-    if(items.length) {messagesLength = items.length}
+    if (items.length) {
+        messagesLength = items.length
+    }
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
             return;
@@ -78,11 +80,12 @@ const MessagesTable = (props) => {
             </tr>
             </thead>
             <tbody>
-            {items.map((MessageDetails)=>{
-                return  <tr>
+            {items.map((MessageDetails) => {
+                return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
                     <td>
-                        $(messageDetails.loggcount) == 0 ? {MessageDetails.mottakid} :  <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid}</Lenke>
+                        $({messageDetails.loggcount} == 0) ? {MessageDetails.mottakid} :
+                        <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke>
                     </td>
 
                     <td>{MessageDetails.role}</td>
