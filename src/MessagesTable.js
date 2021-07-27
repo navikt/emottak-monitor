@@ -84,7 +84,7 @@ const MessagesTable = (props) => {
                 return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
                     <td>
-                        if ($(messageDetails.loggcount) == 0) ? {MessageDetails.mottakid} :
+                        $(messageDetails.loggcount) == 0 ? {MessageDetails.mottakid} :
                         <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke>
                     </td>
 
