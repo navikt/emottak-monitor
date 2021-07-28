@@ -20,7 +20,7 @@ const LoggTable = (props) => {
 
     return (
         <div>
-            <h1>Hendelsesdetaljer</h1>
+            <h1>Hendelsesdetaljer for mottak-id : ${mottakid}</h1>
             <table className="tabell tabell--stripet">
                 <thead>
                 <tr>
