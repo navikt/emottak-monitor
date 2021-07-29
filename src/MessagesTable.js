@@ -103,8 +103,8 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    {logginstance}
-                    {loggdetails}
+                    test 1 {logginstance}
+                    test 2 {loggdetails}
                     <td>${ logginstance ? MessageDetails.mottakid : <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke> }</td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
