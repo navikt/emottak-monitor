@@ -1,8 +1,28 @@
 import TableSorting from "./TableSorting";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Lenke from 'nav-frontend-lenker';
+import {useParams} from "react-router-dom";
+import axios from "axios";
 
 const MessagesTable = (props) => {
+
+    const { mottakid } = useParams();
+    const [loggdetails, setLoggDdetails] = useState([])
+
+    useEffect(()=> {
+        if(mottakid) {
+            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${mottakid}`)
+                .then(response => {
+                    setLoggDdetails(response.data);
+                });
+        }
+    },[mottakid])
+
+    const {loggItems} = TableSorting(loggdetails);
+    let logginstance = false;
+    if (loggItems > 0){
+        logginstance = true
+    }
 
     const {items, requestSort, sortConfig} = TableSorting(props.messages);
     let messagesLength = 0;
@@ -83,7 +103,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    <td>${ items.length ? MessageDetails.mottakid : <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke> }</td>
+                    <td>${ logginstance ? MessageDetails.mottakid : <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke> }</td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
@@ -95,6 +115,7 @@ const MessagesTable = (props) => {
             </tbody>
             <caption>
                 {messagesLength} meldinger
+                {loggdetails.length} logg innslag
             </caption>
         </table>
     );
