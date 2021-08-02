@@ -46,7 +46,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         get("/hentlogg") {
             val mottakid = call.request.queryParameters.get("mottakId")
             if (mottakid.isNullOrEmpty()) {
-                log.info("Mangler parameter: motrakid")
+                log.info("Mangler parameter: mottakid")
                 call.respond(HttpStatusCode.BadRequest)
             }
 

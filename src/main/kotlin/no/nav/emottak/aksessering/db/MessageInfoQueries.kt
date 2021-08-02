@@ -14,9 +14,10 @@ fun DatabaseInterface.hentMeldinger(
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
-                    SELECT DATOMOTTAT, MOTTAK_ID, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, CORRELATION_ID 
-                    FROM $databasePrefix.MELDING 
-                    WHERE DATOMOTTAT between ? and ?
+                    SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
+                    MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.CORRELATION_ID,
+                    (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL FROM $databasePrefix.MELDING 
+                    WHERE MELDING.DATOMOTTAT BETWEEN ? AND ?
                 """
         )
         statement.setObject(1, fom)
@@ -35,5 +36,6 @@ fun ResultSet.toMeldingInfo(): MeldingInfo =
         getString("ACTION"),
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
-        getString("CORRELATION_ID")
+        getString("CORRELATION_ID"),
+        getInt("ANTALL")
     )
