@@ -158,7 +158,7 @@ export default function App() {
                             <th>
                                 <Select id={"select"} onChange={event => filterStatus(event.target.value)}>
                                     <option value="">Velg status</option>
-                                    {uniqueActions.map((status)=>{
+                                    {uniqueStatus.map((status)=>{
                                         return <option value={status}>{status}</option>})}
                                 </Select>
                             </th>
