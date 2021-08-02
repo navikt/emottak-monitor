@@ -75,6 +75,7 @@ export default function App() {
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
     let uniqueActions = [...new Set(messages.map(({action})=> action))]
+    let uniqueStatus = [...new Set(messages.map(({status})=> status))]
 
     console.log("Messages = " + messages)
     return (
