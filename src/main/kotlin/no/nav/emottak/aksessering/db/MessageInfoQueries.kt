@@ -16,7 +16,9 @@ fun DatabaseInterface.hentMeldinger(
             """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
                     MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.CORRELATION_ID,
-                    (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL FROM $databasePrefix.MELDING 
+                    (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL 
+                    (SELECT STATUS.STATUSTEXT from $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
+                    FROM $databasePrefix.MELDING 
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ?
                 """
         )
@@ -37,5 +39,6 @@ fun ResultSet.toMeldingInfo(): MeldingInfo =
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
         getString("CORRELATION_ID"),
-        getInt("ANTALL")
+        getInt("ANTALL"),
+        getString("STATUS")
     )

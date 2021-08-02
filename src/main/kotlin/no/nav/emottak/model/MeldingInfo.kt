@@ -9,5 +9,6 @@ data class MeldingInfo(
     val referanse: String? = null,
     val avsender: String? = null,
     val cpaid: String? = null,
-    val antall: Int
+    val antall: Int,
+    val status: String? = null
 )
