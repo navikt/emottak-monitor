@@ -21,6 +21,7 @@ export default function App() {
     let [role, setRole] = useState('');
     let [service, setService] = useState('');
     let [action, setAction] = useState('');
+    let [status, setStatus] = useState('');
     let [visibleMessages, setVisibleMessages] = useState(messages);
 
     function filterRole(selectedRole) {
@@ -28,7 +29,8 @@ export default function App() {
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
-                (action === '' || MessageDetails.action === action))
+                (action === '' || MessageDetails.action === action) &&
+                (status === '' || MessageDetails.status === status))
         })]);
     }
     function filterService(selectedService) {
@@ -36,7 +38,8 @@ export default function App() {
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (selectedService === '' || MessageDetails.service === selectedService) &&
-                (action === '' || MessageDetails.action === action))
+                (action === '' || MessageDetails.action === action) &&
+                (status === '' || MessageDetails.status === status))
         })]);
     }
     function filterAction(selectedAction) {
@@ -44,7 +47,18 @@ export default function App() {
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
-                (selectedAction === '' || MessageDetails.action === selectedAction))
+                (selectedAction === '' || MessageDetails.action === selectedAction) &&
+                (status === '' || MessageDetails.status === status))
+        })]);
+    }
+
+    function filterStatus(selectedStatus) {
+        setStatus(selectedStatus)
+        setVisibleMessages([...messages.filter(function (MessageDetails) {
+            return ((role === '' || MessageDetails.role === role) &&
+                (service === '' || MessageDetails.service === service) &&
+                (action === '' || MessageDetails.action === action) &&
+                (selectedStatus === '' || MessageDetails.status === selectedStatus))
         })]);
     }
 
@@ -138,6 +152,13 @@ export default function App() {
                                     <option value="">Velg action</option>
                                         {uniqueActions.map((action)=>{
                                         return <option value={action}>{action}</option>})}
+                                </Select>
+                            </th>
+                            <th>
+                                <Select id={"select"} onChange={event => filterStatus(event.target.value)}>
+                                    <option value="">Velg status</option>
+                                    {uniqueActions.map((status)=>{
+                                        return <option value={status}>{status}</option>})}
                                 </Select>
                             </th>
                         </tr>

@@ -1,44 +1,13 @@
 import TableSorting from "./TableSorting";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import Lenke from 'nav-frontend-lenker';
-import {useParams} from "react-router-dom";
-import axios from "axios";
-
-const getLoggItems = (props) => {
-    let loggDetails
-    axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${props}`)
-        .then(response => {
-            loggDetails = response.data;
-        });
-    return loggDetails
-}
 
 const MessagesTable = (props) => {
 
-    const { mottakid } = useParams();
-    const [loggdetails, setLoggDdetails] = useState([])
-
-    useEffect(()=> {
-        if(mottakid) {
-            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${mottakid}`)
-                .then(response => {
-                    setLoggDdetails(response.data);
-                });
-        }
-    },[mottakid])
-
-    const {loggItems} = TableSorting(loggdetails);
-    let logginstance = false;
-    if (loggItems > 0){
-        logginstance = true
-    }
-
-    const {items, requestSort, sortConfig} = TableSorting(props.messages);
+    const { items, requestSort, sortConfig } = TableSorting(props.messages);
     let messagesLength = 0;
 
-    if (items.length) {
-        messagesLength = items.length
-    }
+    if(items.length) {messagesLength = items.length}
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
             return;
@@ -106,34 +75,25 @@ const MessagesTable = (props) => {
                         className={getClassNamesFor('cpaid')}>CPA-id
                     </button>
                 </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('antall')}
-                        className={getClassNamesFor('antall')}>Antall
-                    </button>
-                </th>
             </tr>
             </thead>
             <tbody>
             {items.map((MessageDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    {getLoggItems(MessageDetails.mottakid)}
-                    <td>${ logginstance ? MessageDetails.mottakid : <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke> }</td>
+                    {MessageDetails.antall}
+                    <td><Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke></td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
                     <td>{MessageDetails.action}</td>
                     <td>{MessageDetails.referanse}</td>
                     <td>{MessageDetails.avsender}</td>
                     <td>{MessageDetails.cpaid}</td>
-                    <td>{MessageDetails.antall}</td>
                 </tr>
             })}
             </tbody>
             <caption>
                 {messagesLength} meldinger
-                {loggdetails.length} logg innslag
             </caption>
         </table>
     );
