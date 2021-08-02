@@ -4,6 +4,15 @@ import Lenke from 'nav-frontend-lenker';
 import {useParams} from "react-router-dom";
 import axios from "axios";
 
+const getLoggItems = (props) => {
+    let loggDetails
+    axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentlogg?mottakId=${props}`)
+        .then(response => {
+            loggDetails = response.data;
+        });
+    return loggDetails
+}
+
 const MessagesTable = (props) => {
 
     const { mottakid } = useParams();
@@ -103,8 +112,7 @@ const MessagesTable = (props) => {
             {items.map((MessageDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{MessageDetails.datomottat}</td>
-                    {loggItems}
-                    {messagesLength}
+                    {getLoggItems(MessageDetails.mottakid)}
                     <td>${ logginstance ? MessageDetails.mottakid : <Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke> }</td>
                     <td>{MessageDetails.role}</td>
                     <td>{MessageDetails.service}</td>
@@ -112,6 +120,7 @@ const MessagesTable = (props) => {
                     <td>{MessageDetails.referanse}</td>
                     <td>{MessageDetails.avsender}</td>
                     <td>{MessageDetails.cpaid}</td>
+                    <td>{MessageDetails.antall}</td>
                 </tr>
             })}
             </tbody>
