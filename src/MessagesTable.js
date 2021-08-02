@@ -106,6 +106,13 @@ const MessagesTable = (props) => {
                         className={getClassNamesFor('cpaid')}>CPA-id
                     </button>
                 </th>
+                <th>
+                    <button
+                        type="button"
+                        onClick={() => requestSort('antall')}
+                        className={getClassNamesFor('antall')}>Antall
+                    </button>
+                </th>
             </tr>
             </thead>
             <tbody>
