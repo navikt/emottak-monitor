@@ -1,5 +1,5 @@
 import React, { useState, useEffect }  from "react"
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import axios from "axios"
@@ -11,18 +11,42 @@ import LoggTable from "./LoggTable";
 import Lenke from "nav-frontend-lenker";
 
 export default function App() {
+    const search = useLocation().search;
+
+    const fomParam = new URLSearchParams(search).get('fom');
+    const tomParam = new URLSearchParams(search).get('tom');
+    const fromTimeParam = new URLSearchParams(search).get('fromTime');
+    const toTimeParam = new URLSearchParams(search).get('toTime');
+
     const [messages, setMessages] = useState([])
-    const [fom, setFom] = useState(new Date().toLocaleDateString('nb', {
-        month: '2-digit',day: '2-digit',year: 'numeric'}) + '');
-    const [tom, setTom] = useState(new Date().toLocaleDateString('nb', {
-        month: '2-digit',day: '2-digit',year: 'numeric'}) + '');
-    let [fromTime, setFromTime] = useState(new Date().toLocaleTimeString() + '');
-    let [toTime, setToTime] = useState(new Date().toLocaleTimeString() + '');
+    const [fom, setFom] = useState(initialDate(fomParam));
+    const [tom, setTom] = useState(initialDate(tomParam));
+    let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
+    let [toTime, setToTime] = useState(initialTime(toTimeParam));
     let [role, setRole] = useState('');
     let [service, setService] = useState('');
     let [action, setAction] = useState('');
     let [status, setStatus] = useState('');
     let [visibleMessages, setVisibleMessages] = useState(messages);
+
+    const history = useHistory();
+
+    function initialDate(dateParam) {
+        if(dateParam) {
+            return dateParam
+        } else {
+            return new Date().toLocaleDateString('nb', {
+                month: '2-digit',day: '2-digit',year: 'numeric'}) + ''
+        }
+    }
+
+    function initialTime(timeParam) {
+        if(timeParam) {
+            return timeParam
+        } else {
+            return new Date().toLocaleTimeString() + ''
+        }
+    }
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
@@ -64,13 +88,14 @@ export default function App() {
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
+            history.push(`/?fom=${fom}&tom=${tom}&fromTime=${fromTime}&toTime=${toTime}`)
             axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                 .then(response => {
                     setMessages(response.data);
                     setVisibleMessages(response.data)
                 });
         }
-    },[fom, tom, fromTime, toTime])
+    },[fom, tom, fromTime, toTime, history])
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
