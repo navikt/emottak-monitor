@@ -2,20 +2,11 @@ import React  from "react"
 import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
-// import axios from "axios"
-// import {Datepicker, isISODateString} from "nav-datovelger";
-// import TimePicker from 'react-time-picker';
 import './App.css';
-// import { Select } from 'nav-frontend-skjema'
 import LoggTable from "./LoggTable";
-// import Lenke from "nav-frontend-lenker";
 
 export default function App() {
 
-
-
-
-    // console.log("Messages = " + messages)
     return (
         <div className="App">
             <Switch>

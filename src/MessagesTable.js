@@ -1,5 +1,5 @@
 import TableSorting from "./TableSorting";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback } from "react";
 import Lenke from 'nav-frontend-lenker';
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
@@ -10,8 +10,8 @@ import axios from "axios";
 const MessagesTable = (props) => {
     const search = useLocation().search;
 
-    const fomParam = new URLSearchParams(search).get('fom');
-    const tomParam = new URLSearchParams(search).get('tom');
+    const fomParam = new URLSearchParams(search).get('fromDate');
+    const tomParam = new URLSearchParams(search).get('toDate');
     const fromTimeParam = new URLSearchParams(search).get('fromTime');
     const toTimeParam = new URLSearchParams(search).get('toTime');
 
@@ -47,6 +47,7 @@ const MessagesTable = (props) => {
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
+        pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -56,6 +57,7 @@ const MessagesTable = (props) => {
     }
     function filterService(selectedService) {
         setService(selectedService)
+        pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (selectedService === '' || MessageDetails.service === selectedService) &&
@@ -65,6 +67,7 @@ const MessagesTable = (props) => {
     }
     function filterAction(selectedAction) {
         setAction(selectedAction)
+        pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -75,6 +78,7 @@ const MessagesTable = (props) => {
 
     function filterStatus(selectedStatus) {
         setStatus(selectedStatus)
+        pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -83,16 +87,20 @@ const MessagesTable = (props) => {
         })]);
     }
 
+    const pushHistory = useCallback(() => {
+        history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
+    }, [fom, tom, fromTime, toTime, action, history]);
+
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
-            history.push(`/?fom=${fom}&tom=${tom}&fromTime=${fromTime}&toTime=${toTime}`)
+            pushHistory()
             axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                 .then(response => {
                     setMessages(response.data);
                     setVisibleMessages(response.data)
                 });
         }
-    },[fom, tom, fromTime, toTime, history])
+    },[fom, tom, fromTime, toTime, pushHistory])
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
