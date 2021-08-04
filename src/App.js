@@ -12,6 +12,7 @@ export default function App() {
             <Switch>
                 <Route exact path="/" component={MessagesTable} />
                 <Route exact path="/logg/:mottakid" component={LoggTable} />
+                <Route exact path="/cpa/:cpaid" component={CpaTable} />
                 <Route exact path="/isalive" status={200}>
                     <h1>Alive</h1>
                 </Route>
