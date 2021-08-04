@@ -56,6 +56,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("Antall hendelser for ${mottakid}: ${logg.size}")
             call.respond(logg)
         }
+        get("/hentcpa") {
+            val cpaid = call.request.queryParameters.get("cpaId")
+            if (cpaid.isNullOrEmpty()) {
+                log.info("Mangler parameter: cpaid")
+                call.respond(HttpStatusCode.BadRequest)
+            }
 
+            log.info("Henter cpa info for ${cpaid}")
+            val cpaInfo = meldingService.messagecpa(cpaid)
+
+            log.info("Partner id for ${cpaid}: ${cpaInfo.first()}")
+            call.respond(cpaInfo)
+        }
     }
 }
