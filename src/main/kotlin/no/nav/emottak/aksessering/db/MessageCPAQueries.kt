@@ -29,6 +29,7 @@ fun DatabaseInterface.getMessageCPA(
 fun ResultSet.toMessageCPAInfo(): MessageCPAInfo =
     MessageCPAInfo(
         getString("PARTNERID"),
+        getString("NAVN"),
         getString("PARTNERHERID"),
         getString("PARTNERORGNUMMER")
     )
