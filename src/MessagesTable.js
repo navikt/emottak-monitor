@@ -274,7 +274,7 @@ const MessagesTable = (props) => {
                     <td>{MessageDetails.action}</td>
                     <td>{MessageDetails.referanse}</td>
                     <td>{MessageDetails.avsender}</td>
-                    <td><Lenke href={`/logg/${MessageDetails.cpaid}`}>{MessageDetails.cpaid} </Lenke></td>
+                    <td><Lenke href={`/cpa/${MessageDetails.cpaid}`}>{MessageDetails.cpaid} </Lenke></td>
                 </tr>
             })}
             </tbody>
