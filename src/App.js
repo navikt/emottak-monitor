@@ -4,6 +4,7 @@ import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import './App.css';
 import LoggTable from "./LoggTable";
+import CpaTable from "./CpaTable";
 
 export default function App() {
 
