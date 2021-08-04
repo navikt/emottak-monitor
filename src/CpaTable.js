@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import TableSorting from "./TableSorting";
 import axios from "axios";
 
-const LoggTable = (props) => {
+const CpaTable = (props) => {
     const { cpaid } = useParams();
     const [cpaInfo, setCpaInfo] = useState([])
 
@@ -45,4 +45,4 @@ const LoggTable = (props) => {
         </div>
     );
 };
-export default LoggTable;
+export default CpaTable;
