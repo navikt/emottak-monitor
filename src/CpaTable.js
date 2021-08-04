@@ -35,8 +35,8 @@ const LoggTable = (props) => {
                     return  <tr>
                         <td className="tabell__td--sortert">{cpaDetails.partnerid}</td>
                         <td>{cpaDetails.navn}</td>
-                        <td>{cpaDetails.herid}</td>
-                        <td>{cpaDetails.orgnr}</td>
+                        <td>{cpaDetails.partnerherid}</td>
+                        <td>{cpaDetails.partnerorgnummer}</td>
                     </tr>
                 })}
                 </tbody>
