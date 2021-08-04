@@ -15,7 +15,7 @@ fun DatabaseInterface.getMessageCPA(
         val statement = connection.prepareStatement(
             """
                 SELECT PARTNER.PARTNER_ID, PARTNER.NAVN, PARTNER.HER_ID, PARTNER.ORGNUMMER 
-                FROM PARTNER_CPA, PARTNER 
+                FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER 
                 WHERE PARTNER_CPA.PARTNER_ID = PARTNER.PARTNER_ID
                 AND PARTNER_CPA.CPA_ID = ?
                 """
