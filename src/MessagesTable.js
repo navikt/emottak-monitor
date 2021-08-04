@@ -89,7 +89,7 @@ const MessagesTable = (props) => {
 
     const pushHistory = useCallback(() => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
-    }, [fom, tom, fromTime, toTime, action, history]);
+    }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
