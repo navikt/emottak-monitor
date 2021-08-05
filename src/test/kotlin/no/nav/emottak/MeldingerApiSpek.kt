@@ -28,6 +28,7 @@ class MeldingerApiSpek : Spek({
     val messageQueryService: MessageQueryService = mockk()
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
     io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
+    io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
         val env = Environment(

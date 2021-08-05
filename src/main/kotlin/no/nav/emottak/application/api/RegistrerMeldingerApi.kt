@@ -66,7 +66,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("Henter cpa info for ${cpaid}")
             val cpaInfo = meldingService.messagecpa(cpaid)
 
-            log.info("Partner id for ${cpaid}: ${cpaInfo.first()}")
+            log.info("Partner id for ${cpaid}: ${cpaInfo.size}")
             call.respond(cpaInfo)
         }
     }
