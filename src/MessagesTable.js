@@ -47,7 +47,7 @@ const MessagesTable = (props) => {
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
-        pushHistory()
+        //pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -57,7 +57,7 @@ const MessagesTable = (props) => {
     }
     function filterService(selectedService) {
         setService(selectedService)
-        pushHistory()
+        //pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (selectedService === '' || MessageDetails.service === selectedService) &&
@@ -67,7 +67,7 @@ const MessagesTable = (props) => {
     }
     function filterAction(selectedAction) {
         setAction(selectedAction)
-        pushHistory()
+        //pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -78,7 +78,7 @@ const MessagesTable = (props) => {
 
     function filterStatus(selectedStatus) {
         setStatus(selectedStatus)
-        pushHistory()
+        //pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -89,7 +89,7 @@ const MessagesTable = (props) => {
 
     const pushHistory = useCallback(() => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
-    }, [fom, tom, fromTime, toTime, role, service, action, status]);
+    }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
