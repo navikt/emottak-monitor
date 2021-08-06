@@ -24,10 +24,10 @@ const MessagesTable = (props) => {
     const [tom, setTom] = useState(initialDate(tomParam));
     let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
     let [toTime, setToTime] = useState(initialTime(toTimeParam));
-    let [role, setRole] = useState(initialRole(roleParam));
-    let [service, setService] = useState(initialService(serviceParam));
-    let [action, setAction] = useState(initialAction(actionParam));
-    let [status, setStatus] = useState(initialStatus(statusParam));
+    let [role, setRole] = useState(initialFilter(roleParam));
+    let [service, setService] = useState(initialFilter(serviceParam));
+    let [action, setAction] = useState(initialFilter(actionParam));
+    let [status, setStatus] = useState(initialFilter(statusParam));
     let [visibleMessages, setVisibleMessages] = useState(messages);
 
     const history = useHistory();
@@ -49,33 +49,9 @@ const MessagesTable = (props) => {
         }
     }
 
-    function initialRole(roleParam) {
-        if(roleParam) {
-            return roleParam
-        } else {
-            return ''
-        }
-    }
-
-    function initialService(serviceParam) {
-        if(serviceParam) {
-            return serviceParam
-        } else {
-            return ''
-        }
-    }
-
-    function initialAction(actionParam) {
-        if(actionParam) {
-            return actionParam
-        } else {
-            return ''
-        }
-    }
-
-    function initialStatus(statusParam) {
-        if(statusParam) {
-            return statusParam
+    function initialFilter(filterString) {
+        if(filterString) {
+            return filterString
         } else {
             return ''
         }
@@ -83,7 +59,7 @@ const MessagesTable = (props) => {
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
-        pushHistory()
+        pushHistoryParam('role', selectedRole)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -93,7 +69,7 @@ const MessagesTable = (props) => {
     }
     function filterService(selectedService) {
         setService(selectedService)
-        pushHistory()
+        pushHistoryParam('service', selectedService)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (selectedService === '' || MessageDetails.service === selectedService) &&
@@ -103,7 +79,7 @@ const MessagesTable = (props) => {
     }
     function filterAction(selectedAction) {
         setAction(selectedAction)
-        pushHistory()
+        pushHistoryParam('action', selectedAction)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -114,7 +90,7 @@ const MessagesTable = (props) => {
 
     function filterStatus(selectedStatus) {
         setStatus(selectedStatus)
-        pushHistory()
+        pushHistoryParam('status', selectedStatus)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -126,6 +102,12 @@ const MessagesTable = (props) => {
     const pushHistory = useCallback(() => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
     }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
+
+    const pushHistoryParam = useCallback((key, value) => {
+        let searchParams = new URLSearchParams(search);
+        searchParams.set(key, value);
+        history.push(searchParams.toString());
+    }, [search, history]);
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
