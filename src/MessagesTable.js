@@ -24,10 +24,14 @@ const MessagesTable = (props) => {
     const [tom, setTom] = useState(initialDate(tomParam));
     let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
     let [toTime, setToTime] = useState(initialTime(toTimeParam));
-    let [role, setRole] = useState(initialFilter(roleParam));
-    let [service, setService] = useState(initialFilter(serviceParam));
-    let [action, setAction] = useState(initialFilter(actionParam));
-    let [status, setStatus] = useState(initialFilter(statusParam));
+    //let [role, setRole] = useState(initialFilter(roleParam));
+    let [role, setRole] = useState('');
+    //let [service, setService] = useState(initialFilter(serviceParam));
+    let [service, setService] = useState('');
+    //let [action, setAction] = useState(initialFilter(actionParam));
+    let [action, setAction] = useState('');
+    //let [status, setStatus] = useState(initialFilter(statusParam));
+    let [status, setStatus] = useState('');
     let [visibleMessages, setVisibleMessages] = useState(messages);
 
     const history = useHistory();
