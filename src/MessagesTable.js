@@ -59,7 +59,7 @@ const MessagesTable = (props) => {
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
-        //pushHistory()
+        pushHistory()
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
