@@ -59,7 +59,7 @@ const MessagesTable = (props) => {
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
-        pushHistoryParam('role', selectedRole)
+        pushQueryParam(search, history, 'role', selectedRole)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -69,7 +69,7 @@ const MessagesTable = (props) => {
     }
     function filterService(selectedService) {
         setService(selectedService)
-        pushHistoryParam('service', selectedService)
+        pushQueryParam(search, history, 'service', selectedService)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (selectedService === '' || MessageDetails.service === selectedService) &&
@@ -79,7 +79,7 @@ const MessagesTable = (props) => {
     }
     function filterAction(selectedAction) {
         setAction(selectedAction)
-        pushHistoryParam('action', selectedAction)
+        pushQueryParam(search, history, 'action', selectedAction)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -90,7 +90,7 @@ const MessagesTable = (props) => {
 
     function filterStatus(selectedStatus) {
         setStatus(selectedStatus)
-        pushHistoryParam('status', selectedStatus)
+        pushQueryParam(search, history, 'status', selectedStatus)
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -103,11 +103,11 @@ const MessagesTable = (props) => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
     }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
 
-    const pushHistoryParam = useCallback((key, value) => {
+    const pushQueryParam = ((search, history, key, value) => {
         let searchParams = new URLSearchParams(search);
         searchParams.set(key, value);
         history.push(searchParams.toString());
-    }, [search, history]);
+    });
 
     useEffect(()=> {
         if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
@@ -190,28 +190,28 @@ const MessagesTable = (props) => {
             <table>
                 <tr>
                     <th>
-                        <Select id={"select"} onChange={event => filterRole(event.target.value)}>
+                        <Select id={"select"} onChange={event => filterRole(event.target.value)} selected={role}>
                             <option value="">Velg rolle</option>
                             {uniqueRoles.map((role)=>{
                                 return <option value={role}>{role}</option>})}
                         </Select>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterService(event.target.value)}>
+                        <Select id={"select"} onChange={event => filterService(event.target.value)} selected={service}>
                             <option value="">Velg service</option>
                             {uniqueServices.map((service)=>{
                                 return <option value={service}>{service}</option>})}
                         </Select>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterAction(event.target.value)}>
+                        <Select id={"select"} onChange={event => filterAction(event.target.value)}  selected={action}>
                             <option value="">Velg action</option>
                             {uniqueActions.map((action)=>{
                                 return <option value={action}>{action}</option>})}
                         </Select>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterStatus(event.target.value)}>
+                        <Select id={"select"} onChange={event => filterStatus(event.target.value)} selected={status}>
                             <option value="">Velg status</option>
                             {uniqueStatus.map((status)=>{
                                 return <option value={status}>{status}</option>})}
