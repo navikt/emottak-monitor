@@ -24,7 +24,7 @@ const MessagesTable = (props) => {
     const [tom, setTom] = useState(initialDate(tomParam));
     let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
     let [toTime, setToTime] = useState(initialTime(toTimeParam));
-    let [role, setRole] = useState(roleParam);
+    let [role, setRole] = useState(initialRole(roleParam));
     let [service, setService] = useState(serviceParam);
     let [action, setAction] = useState(actionParam);
     let [status, setStatus] = useState(statusParam);
@@ -46,6 +46,14 @@ const MessagesTable = (props) => {
             return timeParam
         } else {
             return new Date().toLocaleTimeString() + ''
+        }
+    }
+
+    function initialRole(roleParam) {
+        if(roleParam) {
+            return roleParam
+        } else {
+            return ''
         }
     }
 
