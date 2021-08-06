@@ -106,7 +106,7 @@ const MessagesTable = (props) => {
     const pushQueryParam = ((search, history, key, value) => {
         let searchParams = new URLSearchParams(search);
         searchParams.set(key, value);
-        history.push(searchParams.toString());
+        history.push(`?${searchParams.toString()}`);
     });
 
     useEffect(()=> {
