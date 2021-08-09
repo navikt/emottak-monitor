@@ -99,6 +99,7 @@ const MessagesTable = (props) => {
         })]);
     }
 
+/*
     function applyFilter() {
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
@@ -107,6 +108,7 @@ const MessagesTable = (props) => {
                 (status === '' || MessageDetails.status === status))
         })])
     }
+*/
 
     const pushHistory = useCallback(() => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
@@ -133,8 +135,6 @@ const MessagesTable = (props) => {
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
     let uniqueActions = [...new Set(messages.map(({action})=> action))]
     let uniqueStatus = [...new Set(messages.map(({status})=> status))]
-
-    applyFilter()
 
     const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
     let messagesLength = 0;
