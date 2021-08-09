@@ -99,7 +99,7 @@ const MessagesTable = (props) => {
         })]);
     }
 
-    function addFilter() {
+    function applyFilter() {
         setVisibleMessages([...messages.filter(function (MessageDetails) {
             return ((role === '' || MessageDetails.role === role) &&
                 (service === '' || MessageDetails.service === service) &&
@@ -133,6 +133,8 @@ const MessagesTable = (props) => {
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
     let uniqueActions = [...new Set(messages.map(({action})=> action))]
     let uniqueStatus = [...new Set(messages.map(({status})=> status))]
+
+    applyFilter()
 
     const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
     let messagesLength = 0;
