@@ -126,9 +126,8 @@ const MessagesTable = (props) => {
                     setMessages(response.data);
                     setVisibleMessages(response.data)
                 });
-            addFilter()
         }
-    },[fom, tom, fromTime, toTime, pushHistory, addFilter])
+    },[fom, tom, fromTime, toTime, pushHistory])
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
