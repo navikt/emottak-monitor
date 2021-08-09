@@ -115,7 +115,7 @@ const MessagesTable = (props) => {
             axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                 .then(response => {
                     setMessages(response.data);
-                    setVisibleMessages(response.data)
+                    //setVisibleMessages(response.data)
                 });
         }
     },[fom, tom, fromTime, toTime, pushHistory])
