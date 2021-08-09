@@ -99,6 +99,15 @@ const MessagesTable = (props) => {
         })]);
     }
 
+    function addFilter() {
+        setVisibleMessages([...messages.filter(function (MessageDetails) {
+            return ((role === '' || MessageDetails.role === role) &&
+                (service === '' || MessageDetails.service === service) &&
+                (action === '' || MessageDetails.action === action) &&
+                (status === '' || MessageDetails.status === status))
+        })])
+    }
+
     const pushHistory = useCallback(() => {
         history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
     }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
@@ -114,11 +123,12 @@ const MessagesTable = (props) => {
             pushHistory()
             axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                 .then(response => {
-                    setMessages(response.data)
-                    //;setVisibleMessages(response.data)
+                    setMessages(response.data);
+                    setVisibleMessages(response.data)
                 });
+            addFilter()
         }
-    },[fom, tom, fromTime, toTime, pushHistory])
+    },[fom, tom, fromTime, toTime, pushHistory, addFilter])
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
