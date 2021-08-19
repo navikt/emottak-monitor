@@ -15,11 +15,9 @@ fun DatabaseInterface.hentMeldinger(
         val statement = connection.prepareStatement(
             """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
-                    MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN,
+                    MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL, 
-                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS,
-                    (SELECT PARTNER_CPA.CPA_ID FROM $databasePrefix.PARTNER_CPA, $databasePrefix.ABONNEMENT 
-                    WHERE ABONNEMENT.PARTNER_ID = PARTNER_CPA.PARTNER_ID AND MELDING.MOTTAK_ID = ABONNEMENT.MOTTAK_ID) AS CPA
+                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ?
                 """
@@ -40,7 +38,7 @@ fun ResultSet.toMeldingInfo(): MeldingInfo =
         getString("ACTION"),
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
-        getString("CPA"),
+        getString("CPA_ID"),
         getInt("ANTALL"),
         getString("STATUS")
     )
