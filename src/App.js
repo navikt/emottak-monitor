@@ -2,6 +2,7 @@ import React  from "react"
 import { Route, Switch } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
+import EventsTable from "./EventsTable";
 import './App.css';
 import LoggTable from "./LoggTable";
 import CpaTable from "./CpaTable";
@@ -12,6 +13,7 @@ export default function App() {
         <div className="App">
             <Switch>
                 <Route exact path="/" component={MessagesTable} />
+                <Route exact path="/" component={EventsTable} />
                 <Route exact path="/logg/:mottakid" component={LoggTable} />
                 <Route exact path="/cpa/:cpaid" component={CpaTable} />
                 <Route exact path="/isalive" status={200}>
