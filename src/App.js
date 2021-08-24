@@ -13,7 +13,7 @@ export default function App() {
         <div className="App">
             <Switch>
                 <Route exact path="/" component={MessagesTable} />
-                <Route exact path="/" component={EventsTable} />
+                <Route exact path="/events" component={EventsTable} />
                 <Route exact path="/logg/:mottakid" component={LoggTable} />
                 <Route exact path="/cpa/:cpaid" component={CpaTable} />
                 <Route exact path="/isalive" status={200}>
