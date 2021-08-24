@@ -16,32 +16,46 @@ import java.text.SimpleDateFormat
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
         get("/hentmeldinger") {
-
             val fromDate = call.request.queryParameters.get("fromDate")
             val toDate = call.request.queryParameters.get("toDate")
-
             if (fromDate.isNullOrEmpty()) {
                 log.info("Mangler parameter: from date")
                 call.respond(HttpStatusCode.BadRequest)
             }
-
             val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
-
             if (toDate.isNullOrEmpty()) {
                 log.info("Mangler parameter: to date")
                 call.respond(HttpStatusCode.BadRequest)
             }
-
             val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
 
-            log.info("Starter med å kjøre dabasespørring")
+            log.info("Kjører dabasespørring for å hente meldinger...")
             val meldinger = meldingService.meldinger(fom, tom)
             //val logg = meldingService.messagelogg()
 
-            log.info("Meldinger size : ${meldinger.size}")
-            log.info("Meldinger : $meldinger")
-            log.info("Hentet ut den første mottakident info: ${meldinger.firstOrNull()?.mottakid}")
+            log.info("Meldinger antall : ${meldinger.size}")
+            log.info("Henter ut den første mottakident info: ${meldinger.firstOrNull()?.mottakid}")
             call.respond(meldinger)
+        }
+        get("/henthendelser") {
+            val fromDate = call.request.queryParameters.get("fromDate")
+            val toDate = call.request.queryParameters.get("toDate")
+            if (fromDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: from date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
+            if (toDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: to date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
+
+            log.info("Kjører dabasespørring for å hente hendelser...")
+            val hendelser = meldingService.hendelser(fom, tom)
+
+            log.info("Hendelser antall : ${hendelser.size}")
+            call.respond(hendelser)
         }
         get("/hentlogg") {
             val mottakid = call.request.queryParameters.get("mottakId")

@@ -2,8 +2,10 @@ package no.nav.emottak.services
 
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
+import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.db.DatabaseInterface
+import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MeldingInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageLoggInfo
@@ -15,6 +17,8 @@ class MessageQueryService(
 ) {
     fun meldinger(fom: LocalDateTime, tom: LocalDateTime): List<MeldingInfo> =
         databaseInterface.hentMeldinger(databasePrefix, fom, tom)
+    fun hendelser(fom: LocalDateTime, tom: LocalDateTime): List<HendelseInfo> =
+        databaseInterface.hentHendelser(databasePrefix, fom, tom)
     fun messagelogg(mottakid: String?): List<MessageLoggInfo> =
         databaseInterface.getMessageLogg(databasePrefix, mottakid)
     fun messagecpa(cpaid: String?): List<MessageCPAInfo> =
