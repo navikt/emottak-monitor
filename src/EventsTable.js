@@ -231,14 +231,6 @@ const EventsTable = (props) => {
         </div>
     </div>
         <table className="tabell tabell--stripet">
-
-            mottakid: String,
-            val role: String? = null,
-            val service: String? = null,
-            val action: String? = null,
-            val referanse: String? = null,
-            val avsender: String? = null
-
             <thead>
             <tr>
                 <th>

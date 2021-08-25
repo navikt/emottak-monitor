@@ -4,6 +4,8 @@ import Lenke from 'nav-frontend-lenker';
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
+import {Flatknapp} from "nav-frontend-knapper";
+import NavFrontendSpinner from "nav-frontend-spinner";
 import {useHistory, useLocation} from "react-router-dom";
 import axios from "axios";
 
@@ -147,11 +149,14 @@ const MessagesTable = (props) => {
 
     return (
         <div>
-        <h1>Meldinger</h1>
-    <div className="row">
-        <div className="column">
-            <table id={"timetable"}>
-                <tr>
+            <table>
+                <Flatknapp><Lenke href={`/events`}>Hendelser</Lenke></Flatknapp>
+            </table>
+            <h1>Meldinger</h1>
+            <div className="row">
+            <div className="column">
+                <table id={"timetable"}>
+                    <tr>
                     <th>Fra og med dato: </th>
                     <th>
                         <Datepicker
@@ -172,7 +177,7 @@ const MessagesTable = (props) => {
                             value={fromTime}/>
                     </th>
                 </tr>
-                <tr>
+                    <tr>
                     <th>Til og med:</th>
                     <th>
                         <Datepicker
@@ -193,43 +198,43 @@ const MessagesTable = (props) => {
                             value={toTime}/>
                     </th>
                 </tr>
-            </table>
-        </div>
-        <div className="column">
-            <table>
-                <tr>
-                    <th>
+                </table>
+            </div>
+            <div className="column">
+                <table>
+                    <tr>
+                        <th>
                         <Select id={"select"} onChange={event => filterRole(event.target.value)} selected={role}>
                             <option value="">Velg rolle</option>
                             {uniqueRoles.map((role)=>{
                                 return <option value={role}>{role}</option>})}
                         </Select>
                     </th>
-                    <th>
+                        <th>
                         <Select id={"select"} onChange={event => filterService(event.target.value)} selected={service}>
                             <option value="">Velg service</option>
                             {uniqueServices.map((service)=>{
                                 return <option value={service}>{service}</option>})}
                         </Select>
                     </th>
-                    <th>
+                        <th>
                         <Select id={"select"} onChange={event => filterAction(event.target.value)}  selected={action}>
                             <option value="">Velg action</option>
                             {uniqueActions.map((action)=>{
                                 return <option value={action}>{action}</option>})}
                         </Select>
                     </th>
-                    <th>
+                        <th>
                         <Select id={"select"} onChange={event => filterStatus(event.target.value)} selected={status}>
                             <option value="">Velg status</option>
                             {uniqueStatus.map((status)=>{
                                 return <option value={status}>{status}</option>})}
                         </Select>
                     </th>
-                </tr>
-            </table>
+                    </tr>
+                </table>
+            </div>
         </div>
-    </div>
         <table className="tabell tabell--stripet">
             <thead>
             <tr>
@@ -305,11 +310,12 @@ const MessagesTable = (props) => {
                 </tr>
             })}
             </tbody>
+            <NavFrontendSpinner/>
             <caption>
                 {messagesLength} meldinger
             </caption>
         </table>
-        </div>
+    </div>
     );
 };
 export default MessagesTable;
