@@ -60,51 +60,51 @@ const EventsTable = (props) => {
     function filterRole(selectedRole) {
         setRole(selectedRole)
         pushQueryParam(search, history, 'role', selectedRole)
-        setVisibleEvents([...events.filter(function (MessageDetails) {
-            return ((selectedRole === '' || MessageDetails.role === selectedRole) &&
-                (service === '' || MessageDetails.service === service) &&
-                (action === '' || MessageDetails.action === action) &&
-                (status === '' || MessageDetails.status === status))
+        setVisibleEvents([...events.filter(function (EventDetails) {
+            return ((selectedRole === '' || EventDetails.role === selectedRole) &&
+                (service === '' || EventDetails.service === service) &&
+                (action === '' || EventDetails.action === action) &&
+                (status === '' || EventDetails.status === status))
         })]);
     }
     function filterService(selectedService) {
         setService(selectedService)
         pushQueryParam(search, history, 'service', selectedService)
-        setVisibleEvents([...events.filter(function (MessageDetails) {
-            return ((role === '' || MessageDetails.role === role) &&
-                (selectedService === '' || MessageDetails.service === selectedService) &&
-                (action === '' || MessageDetails.action === action) &&
-                (status === '' || MessageDetails.status === status))
+        setVisibleEvents([...events.filter(function (EventDetails) {
+            return ((role === '' || EventDetails.role === role) &&
+                (selectedService === '' || EventDetails.service === selectedService) &&
+                (action === '' || EventDetails.action === action) &&
+                (status === '' || EventDetails.status === status))
         })]);
     }
     function filterAction(selectedAction) {
         setAction(selectedAction)
         pushQueryParam(search, history, 'action', selectedAction)
-        setVisibleEvents([...events.filter(function (MessageDetails) {
-            return ((role === '' || MessageDetails.role === role) &&
-                (service === '' || MessageDetails.service === service) &&
-                (selectedAction === '' || MessageDetails.action === selectedAction) &&
-                (status === '' || MessageDetails.status === status))
+        setVisibleEvents([...events.filter(function (EventDetails) {
+            return ((role === '' || EventDetails.role === role) &&
+                (service === '' || EventDetails.service === service) &&
+                (selectedAction === '' || EventDetails.action === selectedAction) &&
+                (status === '' || EventDetails.status === status))
         })]);
     }
 
     function filterStatus(selectedStatus) {
         setStatus(selectedStatus)
         pushQueryParam(search, history, 'status', selectedStatus)
-        setVisibleEvents([...events.filter(function (MessageDetails) {
-            return ((role === '' || MessageDetails.role === role) &&
-                (service === '' || MessageDetails.service === service) &&
-                (action === '' || MessageDetails.action === action) &&
-                (selectedStatus === '' || MessageDetails.status === selectedStatus))
+        setVisibleEvents([...events.filter(function (EventDetails) {
+            return ((role === '' || EventDetails.role === role) &&
+                (service === '' || EventDetails.service === service) &&
+                (action === '' || EventDetails.action === action) &&
+                (selectedStatus === '' || EventDetails.status === selectedStatus))
         })]);
     }
 
     const applyFilter = useCallback((newEvents) => {
-        setVisibleEvents([...newEvents.filter(function (MessageDetails) {
-            return ((role === '' || MessageDetails.role === role) &&
-                (service === '' || MessageDetails.service === service) &&
-                (action === '' || MessageDetails.action === action) &&
-                (status === '' || MessageDetails.status === status))
+        setVisibleEvents([...newEvents.filter(function (EventDetails) {
+            return ((role === '' || EventDetails.role === role) &&
+                (service === '' || EventDetails.service === service) &&
+                (action === '' || EventDetails.action === action) &&
+                (status === '' || EventDetails.status === status))
         })])
     }, [role, service, action, status]);
 
