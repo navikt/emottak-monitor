@@ -127,7 +127,6 @@ const EventsTable = (props) => {
                 });
         }
     },[fom, tom, fromTime, toTime, pushHistory, applyFilter])
-    alert("Hello after useEffect");
     let uniqueRoles = [...new Set(events.map(({role})=> role))]
     let uniqueServices = [...new Set(events.map(({service})=> service))]
     let uniqueActions = [...new Set(events.map(({action})=> action))]
