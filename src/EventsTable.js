@@ -1,6 +1,6 @@
 import TableSorting from "./TableSorting";
 import React, {useEffect, useState, useCallback } from "react";
-import Lenke from 'nav-frontend-lenker';
+import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
@@ -9,7 +9,6 @@ import axios from "axios";
 
 const EventsTable = (props) => {
     const search = useLocation().search;
-
     const fomParam = new URLSearchParams(search).get('fromDate');
     const tomParam = new URLSearchParams(search).get('toDate');
     const fromTimeParam = new URLSearchParams(search).get('fromTime');
@@ -109,13 +108,13 @@ const EventsTable = (props) => {
     }, [role, service, action, status]);
 
     const pushHistory = useCallback(() => {
-        history.push(`/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
+        history.push(`/events?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`)
     }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
 
     const pushQueryParam = ((search, history, key, value) => {
         let searchParams = new URLSearchParams(search);
         searchParams.set(key, value);
-        history.push(`?${searchParams.toString()}`);
+        history.push(`/events?${searchParams.toString()}`);
     });
 
     useEffect(()=> {
@@ -128,7 +127,7 @@ const EventsTable = (props) => {
                 });
         }
     },[fom, tom, fromTime, toTime, pushHistory, applyFilter])
-
+    alert("Hello after useEffect");
     let uniqueRoles = [...new Set(events.map(({role})=> role))]
     let uniqueServices = [...new Set(events.map(({service})=> service))]
     let uniqueActions = [...new Set(events.map(({action})=> action))]

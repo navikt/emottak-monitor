@@ -1,11 +1,11 @@
 import TableSorting from "./TableSorting";
 import React, {useEffect, useState, useCallback } from "react";
-import Lenke from 'nav-frontend-lenker';
+import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
 import {Flatknapp} from "nav-frontend-knapper";
-import NavFrontendSpinner from "nav-frontend-spinner";
+//import NavFrontendSpinner from "nav-frontend-spinner";
 import {useHistory, useLocation} from "react-router-dom";
 import axios from "axios";
 
@@ -310,7 +310,6 @@ const MessagesTable = (props) => {
                 </tr>
             })}
             </tbody>
-            <NavFrontendSpinner/>
             <caption>
                 {messagesLength} meldinger
             </caption>
