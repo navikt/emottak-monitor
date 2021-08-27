@@ -154,7 +154,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input"
+                            inputId-2="datepicker-input"
                             value={fom}
                             onChange={setFom}
                             inputProps={{
@@ -175,7 +175,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input"
+                            inputId-2="datepicker-input"
                             value={tom}
                             onChange={setTom}
                             inputProps={{
@@ -301,7 +301,7 @@ const EventsTable = (props) => {
                 return <tr>
                     <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
                     <td><Lenke href={`/logg/${EventDetails.hendelsedeskr}`}>{EventDetails.hendelsedeskr} </Lenke></td>
-                    <td><Lenke href={`/logg/${EventDetails.tilleggsinfo}`}>{EventDetails.tilleggsinfo} </Lenke></td>
+                    <td><Lenke href={`/logg/${EventDetails.tillegsinfo}`}>{EventDetails.tillegsinfo} </Lenke></td>
                     <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
                     <td>{EventDetails.role}</td>
                     <td>{EventDetails.service}</td>

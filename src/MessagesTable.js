@@ -4,7 +4,7 @@ import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
-import {Flatknapp} from "nav-frontend-knapper";
+//import {Flatknapp} from "nav-frontend-knapper";
 //import NavFrontendSpinner from "nav-frontend-spinner";
 import {useHistory, useLocation} from "react-router-dom";
 import axios from "axios";
@@ -120,16 +120,24 @@ const MessagesTable = (props) => {
         history.push(`?${searchParams.toString()}`);
     });
 
-    useEffect(()=> {
-        if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
-            pushHistory()
-            axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
-                .then(response => {
-                    setMessages(response.data);
-                    applyFilter(response.data)
-                });
-        }
-    },[fom, tom, fromTime, toTime, pushHistory, applyFilter])
+    //this.setState({ loading: true }, () => {
+
+        useEffect(() => {
+            if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
+                pushHistory()
+                axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
+                    .then(response => {
+                        setMessages(response.data);
+                        applyFilter(response.data);
+                        this.setState({
+                            loading: false
+                        })
+
+                    });
+            }
+        }, [fom, tom, fromTime, toTime, pushHistory, applyFilter])
+
+    //});
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
@@ -149,10 +157,6 @@ const MessagesTable = (props) => {
 
     return (
         <div>
-            <table>
-                <Flatknapp><Lenke href={`/events`}>Hendelser</Lenke></Flatknapp>
-            </table>
-            <h1>Meldinger</h1>
             <div className="row">
             <div className="column">
                 <table id={"timetable"}>
@@ -161,7 +165,7 @@ const MessagesTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input"
+                            inputId-1="datepicker-input"
                             value={fom}
                             onChange={setFom}
                             inputProps={{
@@ -182,7 +186,7 @@ const MessagesTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input"
+                            inputId-1="datepicker-input"
                             value={tom}
                             onChange={setTom}
                             inputProps={{
@@ -235,86 +239,86 @@ const MessagesTable = (props) => {
                 </table>
             </div>
         </div>
-        <table className="tabell tabell--stripet">
-            <thead>
-            <tr>
+                <table className="tabell tabell--stripet">
+                <thead>
+                <tr>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('datomottat')}
-                        className={getClassNamesFor('datomottat')}>Mottat
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('datomottat')}
+                className={getClassNamesFor('datomottat')}>Mottat
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('mottakid')}
-                        className={getClassNamesFor('mottakid')}>Mottak-id
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('mottakid')}
+                className={getClassNamesFor('mottakid')}>Mottak-id
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('role')}
-                        className={getClassNamesFor('role')}>Role
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('role')}
+                className={getClassNamesFor('role')}>Role
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('service')}
-                        className={getClassNamesFor('service')}>Service
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('service')}
+                className={getClassNamesFor('service')}>Service
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('action')}
-                        className={getClassNamesFor('action')}>Action
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('action')}
+                className={getClassNamesFor('action')}>Action
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('referanse')}
-                        className={getClassNamesFor('referanse')}>Referanse
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('referanse')}
+                className={getClassNamesFor('referanse')}>Referanse
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('avsender')}
-                        className={getClassNamesFor('avsender')}>Avsender
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('avsender')}
+                className={getClassNamesFor('avsender')}>Avsender
+                </button>
                 </th>
                 <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('cpaid')}
-                        className={getClassNamesFor('cpaid')}>CPA-id
-                    </button>
+                <button
+                type="button"
+                onClick={() => requestSort('cpaid')}
+                className={getClassNamesFor('cpaid')}>CPA-id
+                </button>
                 </th>
-            </tr>
-            </thead>
-            <tbody>
+                </tr>
+                </thead>
+                <tbody>
             {items.map((MessageDetails) => {
                 return <tr>
-                    <td className="tabell__td--sortert">{MessageDetails.datomottat.substr(0,23)}</td>
-                    <td><Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke></td>
-                    <td>{MessageDetails.role}</td>
-                    <td>{MessageDetails.service}</td>
-                    <td>{MessageDetails.action}</td>
-                    <td>{MessageDetails.referanse}</td>
-                    <td>{MessageDetails.avsender}</td>
-                    <td><Lenke href={`/cpa/${MessageDetails.cpaid}`}>{MessageDetails.cpaid} </Lenke></td>
+                <td className="tabell__td--sortert">{MessageDetails.datomottat.substr(0, 23)}</td>
+                <td><Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke></td>
+                <td>{MessageDetails.role}</td>
+                <td>{MessageDetails.service}</td>
+                <td>{MessageDetails.action}</td>
+                <td>{MessageDetails.referanse}</td>
+                <td>{MessageDetails.avsender}</td>
+                <td><Lenke href={`/cpa/${MessageDetails.cpaid}`}>{MessageDetails.cpaid} </Lenke></td>
                 </tr>
             })}
-            </tbody>
-            <caption>
-                {messagesLength} meldinger
-            </caption>
-        </table>
-    </div>
+                </tbody>
+                <caption>
+            {messagesLength} meldinger
+                </caption>
+                </table>
+        </div>
     );
 };
 export default MessagesTable;
