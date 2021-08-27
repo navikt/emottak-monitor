@@ -31,6 +31,7 @@ const MessagesTable = (props) => {
     let [status, setStatus] = useState(initialFilter(statusParam));
     let [visibleMessages, setVisibleMessages] = useState(messages);
     let [loading, setLoading] = useState(true);
+    let [errormessage, setErrormessage] = useState('');
 
     const history = useHistory();
 
@@ -120,9 +121,7 @@ const MessagesTable = (props) => {
         history.push(`?${searchParams.toString()}`);
     });
 
-    //this.setState({ loading: true }, () => {
-
-        useEffect(() => {
+            useEffect(() => {
             setLoading(true)
             if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
                 pushHistory()
@@ -130,12 +129,16 @@ const MessagesTable = (props) => {
                     .then(response => {
                         setMessages(response.data);
                         applyFilter(response.data);
-                        setLoading(false)
-                    });
+                        setLoading(false);
+                        setErrormessage('')
+                    })
+                    .catch((error) => {
+                        console.log(error); //Logs a string: Error: Request failed with status code 404
+                        setLoading(false);
+                        setErrormessage(error.toString())
+                });
             }
         }, [fom, tom, fromTime, toTime, pushHistory, applyFilter])
-
-    //});
 
     let uniqueRoles = [...new Set(messages.map(({role})=> role))]
     let uniqueServices = [...new Set(messages.map(({service})=> service))]
@@ -318,6 +321,7 @@ const MessagesTable = (props) => {
                 </caption>
                 </table>
             {loading && <NavFrontendSpinner /> }
+            {errormessage && <p>{errormessage}</p> }
         </div>
     );
 };
