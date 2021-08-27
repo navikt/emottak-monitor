@@ -1,5 +1,5 @@
 import React  from "react"
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useHistory } from 'react-router-dom'
 import "nav-frontend-tabell-style";
 import MessagesTable from "./MessagesTable";
 import EventsTable from "./EventsTable";
@@ -12,14 +12,15 @@ import { useState } from "react";
 
 export default function App() {
 
+    const history = useHistory();
     const [tabState, setTabState] = useState(0);
     const handleTabs = (value) => {
         setTabState(value);
         if (value === 0){
-            return (<Route exact path="/" component={MessagesTable} />)
+            history.push("/");
         }
         if (value === 1){
-            return (<Route exact path="/" component={EventsTable} />)
+            history.push("/events");
         }
     }
     return (

@@ -154,7 +154,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId-2="datepicker-input"
+                            inputId="datepicker-input-fom"
                             value={fom}
                             onChange={setFom}
                             inputProps={{
@@ -175,7 +175,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId-2="datepicker-input"
+                            inputId="datepicker-input-tom"
                             value={tom}
                             onChange={setTom}
                             inputProps={{

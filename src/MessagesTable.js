@@ -4,8 +4,7 @@ import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
-//import {Flatknapp} from "nav-frontend-knapper";
-//import NavFrontendSpinner from "nav-frontend-spinner";
+import NavFrontendSpinner from "nav-frontend-spinner";
 import {useHistory, useLocation} from "react-router-dom";
 import axios from "axios";
 
@@ -31,6 +30,7 @@ const MessagesTable = (props) => {
     let [action, setAction] = useState(initialFilter(actionParam));
     let [status, setStatus] = useState(initialFilter(statusParam));
     let [visibleMessages, setVisibleMessages] = useState(messages);
+    let [loading, setLoading] = useState(true);
 
     const history = useHistory();
 
@@ -123,16 +123,14 @@ const MessagesTable = (props) => {
     //this.setState({ loading: true }, () => {
 
         useEffect(() => {
+            setLoading(true)
             if (fom !== '' && tom !== '' && fromTime !== '' && toTime !== '') {
                 pushHistory()
                 axios.get(`https://emottak-monitor.dev.intern.nav.no/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`)
                     .then(response => {
                         setMessages(response.data);
                         applyFilter(response.data);
-                        this.setState({
-                            loading: false
-                        })
-
+                        setLoading(false)
                     });
             }
         }, [fom, tom, fromTime, toTime, pushHistory, applyFilter])
@@ -157,6 +155,7 @@ const MessagesTable = (props) => {
 
     return (
         <div>
+            <h1>Meldinger</h1>
             <div className="row">
             <div className="column">
                 <table id={"timetable"}>
@@ -165,7 +164,7 @@ const MessagesTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId-1="datepicker-input"
+                            inputId="datepicker-input-fom"
                             value={fom}
                             onChange={setFom}
                             inputProps={{
@@ -186,7 +185,7 @@ const MessagesTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId-1="datepicker-input"
+                            inputId="datepicker-input-tom"
                             value={tom}
                             onChange={setTom}
                             inputProps={{
@@ -301,7 +300,7 @@ const MessagesTable = (props) => {
                 </tr>
                 </thead>
                 <tbody>
-            {items.map((MessageDetails) => {
+            {loading === false && items.map((MessageDetails) => {
                 return <tr>
                 <td className="tabell__td--sortert">{MessageDetails.datomottat.substr(0, 23)}</td>
                 <td><Lenke href={`/logg/${MessageDetails.mottakid}`}>{MessageDetails.mottakid} </Lenke></td>
@@ -318,6 +317,7 @@ const MessagesTable = (props) => {
             {messagesLength} meldinger
                 </caption>
                 </table>
+            {loading && <NavFrontendSpinner /> }
         </div>
     );
 };
