@@ -1,4 +1,5 @@
 import TableSorting from "./TableSorting";
+import {initialDate, initialTime, initialFilter} from "./util";
 import React, {useEffect, useState, useCallback } from "react";
 import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
@@ -34,31 +35,6 @@ const MessagesTable = (props) => {
     let [errormessage, setErrormessage] = useState('');
 
     const history = useHistory();
-
-    function initialDate(dateParam) {
-        if(dateParam) {
-            return dateParam
-        } else {
-            return new Date().toLocaleDateString('nb', {
-                month: '2-digit',day: '2-digit',year: 'numeric'}) + ''
-        }
-    }
-
-    function initialTime(timeParam) {
-        if(timeParam) {
-            return timeParam
-        } else {
-            return new Date().toLocaleTimeString() + ''
-        }
-    }
-
-    function initialFilter(filterString) {
-        if(filterString) {
-            return filterString
-        } else {
-            return ''
-        }
-    }
 
     function filterRole(selectedRole) {
         setRole(selectedRole)
@@ -160,25 +136,25 @@ const MessagesTable = (props) => {
         <div>
             <h1>Meldinger</h1>
             <div className="row">
-            <div className="column">
-                <table id={"timetable"}>
+                <div className="column">
+                    <table id={"timetable"}>
                     <tr>
-                    <th>Fra og med dato: </th>
-                    <th>
-                        <Datepicker
-                            locale={'nb'}
-                            inputId="datepicker-input-fom"
-                            value={fom}
-                            onChange={setFom}
-                            inputProps={{
-                                name: 'dateInput',
-                                'aria-invalid': fom !== '' && isISODateString(fom) === false,
-                            }}
-                            calendarSettings={{ showWeekNumbers: false }}
-                            showYearSelector={true}/>
-                    </th>
-                    <th>
-                        <TimePicker
+                        <th>Fra og med dato: </th>
+                        <th>
+                            <Datepicker
+                                locale={'nb'}
+                                inputId="datepicker-input-fom"
+                                value={fom}
+                                onChange={setFom}
+                                inputProps={{
+                                    name: 'dateInput',
+                                    'aria-invalid': fom !== '' && isISODateString(fom) === false,
+                                }}
+                                calendarSettings={{ showWeekNumbers: false }}
+                                showYearSelector={true} />
+                        </th>
+                        <th>
+                            <TimePicker
                             onChange={setFromTime}
                             value={fromTime}/>
                     </th>

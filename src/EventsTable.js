@@ -1,5 +1,6 @@
 import TableSorting from "./TableSorting";
 import React, {useEffect, useState, useCallback } from "react";
+import {initialDate, initialTime, initialFilter} from "./util";
 import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
 import TimePicker from "react-time-picker";
@@ -31,12 +32,12 @@ const EventsTable = (props) => {
 
     const history = useHistory();
 
+/*
     function initialDate(dateParam) {
         if(dateParam) {
             return dateParam
         } else {
-            return new Date().toLocaleDateString('nb', {
-                month: '2-digit',day: '2-digit',year: 'numeric'}) + ''
+            return ISODate()
         }
     }
 
@@ -55,7 +56,7 @@ const EventsTable = (props) => {
             return ''
         }
     }
-
+*/
     function filterRole(selectedRole) {
         setRole(selectedRole)
         pushQueryParam(search, history, 'role', selectedRole)
@@ -154,7 +155,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input-fom"
+                            inputId="datepicker-event-input-fom"
                             value={fom}
                             onChange={setFom}
                             inputProps={{
@@ -175,7 +176,7 @@ const EventsTable = (props) => {
                     <th>
                         <Datepicker
                             locale={'nb'}
-                            inputId="datepicker-input-tom"
+                            inputId="datepicker-event-input-tom"
                             value={tom}
                             onChange={setTom}
                             inputProps={{
