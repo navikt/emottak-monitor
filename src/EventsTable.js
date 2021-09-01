@@ -3,7 +3,7 @@ import React, {useEffect, useState, useCallback } from "react";
 import {initialDate, initialTime, initialFilter} from "./util";
 import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
-import { Collapse, CardBody, Card } from "reactstrap";
+import { Collapse, Button, CardBody, Card } from "reactstrap";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
 import {useHistory, useLocation} from "react-router-dom";
@@ -280,18 +280,17 @@ const EventsTable = (props) => {
             </thead>
             <tbody>
             {items.map((EventDetails) => {
-                return <tr>
+                return <td>
                     <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-
-                    <td> color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>EventDetails.hendelsedeskr}</td>
-                    <Collapse isOpen={isOpen}>
-                        <Card>
-                            <CardBody>
-                                {EventDetails.tillegsinfo}
-                            </CardBody>
-                        </Card>
-                    </Collapse>
-
+                    <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>EventDetails.hendelsedeskr}</Button>
+                        <Collapse isOpen={isOpen}>
+                            <Card>
+                                <CardBody>
+                                    {EventDetails.tillegsinfo}
+                                </CardBody>
+                            </Card>
+                        </Collapse>
+                    </td>
                     <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
                     <td>{EventDetails.role}</td>
                     <td>{EventDetails.service}</td>
