@@ -3,6 +3,7 @@ import React, {useEffect, useState, useCallback } from "react";
 import {initialDate, initialTime, initialFilter} from "./util";
 import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
+import { Collapse, CardBody, Card } from "reactstrap";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
 import {useHistory, useLocation} from "react-router-dom";
@@ -19,7 +20,12 @@ const EventsTable = (props) => {
     const actionParam = new URLSearchParams(search).get('action');
     const statusParam = new URLSearchParams(search).get('status');
 
-    const [events, setEvents] = useState([])
+    const [events, setEvents] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggle = () => setIsOpen(!isOpen);
+
+
     const [fom, setFom] = useState(initialDate(fomParam));
     const [tom, setTom] = useState(initialDate(tomParam));
     let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
@@ -32,31 +38,6 @@ const EventsTable = (props) => {
 
     const history = useHistory();
 
-/*
-    function initialDate(dateParam) {
-        if(dateParam) {
-            return dateParam
-        } else {
-            return ISODate()
-        }
-    }
-
-    function initialTime(timeParam) {
-        if(timeParam) {
-            return timeParam
-        } else {
-            return new Date().toLocaleTimeString() + ''
-        }
-    }
-
-    function initialFilter(filterString) {
-        if(filterString) {
-            return filterString
-        } else {
-            return ''
-        }
-    }
-*/
     function filterRole(selectedRole) {
         setRole(selectedRole)
         pushQueryParam(search, history, 'role', selectedRole)
@@ -301,8 +282,16 @@ const EventsTable = (props) => {
             {items.map((EventDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-                    <td><Lenke href={`/logg/${EventDetails.hendelsedeskr}`}>{EventDetails.hendelsedeskr} </Lenke></td>
-                    <td><Lenke href={`/logg/${EventDetails.tillegsinfo}`}>{EventDetails.tillegsinfo} </Lenke></td>
+
+                    <td> color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>EventDetails.hendelsedeskr}</td>
+                    <Collapse isOpen={isOpen}>
+                        <Card>
+                            <CardBody>
+                                {EventDetails.tillegsinfo}
+                            </CardBody>
+                        </Card>
+                    </Collapse>
+
                     <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
                     <td>{EventDetails.role}</td>
                     <td>{EventDetails.service}</td>
