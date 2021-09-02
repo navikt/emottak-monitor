@@ -128,182 +128,173 @@ const EventsTable = (props) => {
     return (
         <div>
         <h1>Hendelser</h1>
-    <div className="row">
-        <div className="column">
-            <table id={"timetable"}>
-                <tr>
-                    <th>Fra og med dato: </th>
-                    <th>
-                        <Datepicker
-                            locale={'nb'}
-                            inputId="datepicker-event-input-fom"
-                            value={fom}
-                            onChange={setFom}
-                            inputProps={{
-                                name: 'dateInput',
-                                'aria-invalid': fom !== '' && isISODateString(fom) === false,
-                            }}
-                            calendarSettings={{ showWeekNumbers: false }}
-                            showYearSelector={true}/>
-                    </th>
-                    <th>
-                        <TimePicker
-                            onChange={setFromTime}
-                            value={fromTime}/>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Til og med:</th>
-                    <th>
-                        <Datepicker
-                            locale={'nb'}
-                            inputId="datepicker-event-input-tom"
-                            value={tom}
-                            onChange={setTom}
-                            inputProps={{
-                                name: 'dateInput',
-                                'aria-invalid': tom !== '' && isISODateString(tom) === false,
-                            }}
-                            calendarSettings={{ showWeekNumbers: false }}
-                            showYearSelector={true}/>
-                    </th>
-                    <th>
-                        <TimePicker
-                            onChange={setToTime}
-                            value={toTime}/>
-                    </th>
-                </tr>
-            </table>
+        <div className="row">
+            <div className="column">
+                <table id={"timetable"}>
+                    <tr>
+                        <th>Fra og med dato: </th>
+                        <th>
+                            <Datepicker
+                                locale={'nb'}
+                                inputId="datepicker-event-input-fom"
+                                value={fom}
+                                onChange={setFom}
+                                inputProps={{
+                                    name: 'dateInput',
+                                    'aria-invalid': fom !== '' && isISODateString(fom) === false,
+                                }}
+                                calendarSettings={{ showWeekNumbers: false }}
+                                showYearSelector={true}/>
+                        </th>
+                        <th>
+                            <TimePicker
+                                onChange={setFromTime}
+                                value={fromTime}/>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Til og med:</th>
+                        <th>
+                            <Datepicker
+                                locale={'nb'}
+                                inputId="datepicker-event-input-tom"
+                                value={tom}
+                                onChange={setTom}
+                                inputProps={{
+                                    name: 'dateInput',
+                                    'aria-invalid': tom !== '' && isISODateString(tom) === false,
+                                }}
+                                calendarSettings={{ showWeekNumbers: false }}
+                                showYearSelector={true}/>
+                        </th>
+                        <th>
+                            <TimePicker
+                                onChange={setToTime}
+                                value={toTime}/>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <div className="column">
+                <table>
+                    <tr>
+                        <th>
+                            <Select id={"select"} onChange={event => filterRole(event.target.value)} selected={role}>
+                                <option value="">Velg rolle</option>
+                                {uniqueRoles.map((role)=>{
+                                    return <option value={role}>{role}</option>})}
+                            </Select>
+                        </th>
+                        <th>
+                            <Select id={"select"} onChange={event => filterService(event.target.value)} selected={service}>
+                                <option value="">Velg service</option>
+                                {uniqueServices.map((service)=>{
+                                    return <option value={service}>{service}</option>})}
+                            </Select>
+                        </th>
+                        <th>
+                            <Select id={"select"} onChange={event => filterAction(event.target.value)}  selected={action}>
+                                <option value="">Velg action</option>
+                                {uniqueActions.map((action)=>{
+                                    return <option value={action}>{action}</option>})}
+                            </Select>
+                        </th>
+                        <th>
+                            <Select id={"select"} onChange={event => filterStatus(event.target.value)} selected={status}>
+                                <option value="">Velg status</option>
+                                {uniqueStatus.map((status)=>{
+                                    return <option value={status}>{status}</option>})}
+                            </Select>
+                        </th>
+                    </tr>
+                </table>
+            </div>
         </div>
-        <div className="column">
-            <table>
+            <table className="tabell tabell--stripet">
+                <thead>
                 <tr>
                     <th>
-                        <Select id={"select"} onChange={event => filterRole(event.target.value)} selected={role}>
-                            <option value="">Velg rolle</option>
-                            {uniqueRoles.map((role)=>{
-                                return <option value={role}>{role}</option>})}
-                        </Select>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('hendelsedato')}
+                            className={getClassNamesFor('hendelsedato')}>Mottat
+                        </button>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterService(event.target.value)} selected={service}>
-                            <option value="">Velg service</option>
-                            {uniqueServices.map((service)=>{
-                                return <option value={service}>{service}</option>})}
-                        </Select>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('hendelsedeskr')}
+                            className={getClassNamesFor('hendelsedeskr')}>Hendelse1
+                        </button>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterAction(event.target.value)}  selected={action}>
-                            <option value="">Velg action</option>
-                            {uniqueActions.map((action)=>{
-                                return <option value={action}>{action}</option>})}
-                        </Select>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('mottakid')}
+                            className={getClassNamesFor('mottakid')}>Mottak-id
+                        </button>
                     </th>
                     <th>
-                        <Select id={"select"} onChange={event => filterStatus(event.target.value)} selected={status}>
-                            <option value="">Velg status</option>
-                            {uniqueStatus.map((status)=>{
-                                return <option value={status}>{status}</option>})}
-                        </Select>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('role')}
+                            className={getClassNamesFor('role')}>Role
+                        </button>
+                    </th>
+                    <th>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('service')}
+                            className={getClassNamesFor('service')}>Service
+                        </button>
+                    </th>
+                    <th>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('action')}
+                            className={getClassNamesFor('action')}>Action
+                        </button>
+                    </th>
+                    <th>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('referanse')}
+                            className={getClassNamesFor('referanse')}>Referanse
+                        </button>
+                    </th>
+                    <th>
+                        <button
+                            type="button"
+                            onClick={() => requestSort('avsender')}
+                            className={getClassNamesFor('avsender')}>Avsender
+                        </button>
                     </th>
                 </tr>
-            </table>
-        </div>
-    </div>
-        <table className="tabell tabell--stripet">
-            <thead>
-            <tr>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('hendelsedato')}
-                        className={getClassNamesFor('hendelsedato')}>Mottat
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('hendelsedeskr')}
-                        className={getClassNamesFor('hendelsedeskr')}>Hendelse1
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('hendelsedeskr')}
-                        className={getClassNamesFor('tilleggsinfo')}>Hendelse2
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('mottakid')}
-                        className={getClassNamesFor('mottakid')}>Mottak-id
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('role')}
-                        className={getClassNamesFor('role')}>Role
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('service')}
-                        className={getClassNamesFor('service')}>Service
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('action')}
-                        className={getClassNamesFor('action')}>Action
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('referanse')}
-                        className={getClassNamesFor('referanse')}>Referanse
-                    </button>
-                </th>
-                <th>
-                    <button
-                        type="button"
-                        onClick={() => requestSort('avsender')}
-                        className={getClassNamesFor('avsender')}>Avsender
-                    </button>
-                </th>
-            </tr>
             </thead>
             <tbody>
-            {items.map((EventDetails) => {
-                return <tr>
-                    <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-                    <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
-                        <Collapse isOpen={isOpen}>
-                            <Card>
-                                <CardBody>
-                                    Statisk tekst...
-                                </CardBody>
-                            </Card>
-                        </Collapse>
-                    </td>
-                    <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
-                    <td>{EventDetails.role}</td>
-                    <td>{EventDetails.service}</td>
-                    <td>{EventDetails.action}</td>
-                    <td>{EventDetails.referanse}</td>
-                    <td>{EventDetails.avsender}</td>
-                </tr>
-            })}
-            </tbody>
-            <caption>
-                {eventsLength} hendelser
-            </caption>
-        </table>
+                {items.map((EventDetails) => {
+                    return <tr>
+                        <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
+                        <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
+                            <Collapse isOpen={isOpen}>
+                                <Card>
+                                    <CardBody>{EventDetails.tillegsinfo}</CardBody>
+                                </Card>
+                            </Collapse>
+                        </td>
+                        <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
+                        <td>{EventDetails.role}</td>
+                        <td>{EventDetails.service}</td>
+                        <td>{EventDetails.action}</td>
+                        <td>{EventDetails.referanse}</td>
+                        <td>{EventDetails.avsender}</td>
+                    </tr>
+                })}
+                </tbody>
+                <caption>
+                    {eventsLength} hendelser
+                </caption>
+            </table>
         </div>
     );
 };
