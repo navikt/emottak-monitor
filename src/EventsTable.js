@@ -275,13 +275,15 @@ const EventsTable = (props) => {
                 {items.map((EventDetails) => {
                     return <tr>
                         <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-                        <td><Button color="primary" onClick={() => toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
-                            <Collapse isOpen={isOpen}>
-                                <Card>
-                                    <CardBody>{EventDetails.tillegsinfo}</CardBody>
-                                </Card>
-                            </Collapse>
-                        </td>
+                        <div>
+                            <td><Button color="primary" onClick={() => toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
+                                <Collapse isOpen={isOpen}>
+                                    <Card>
+                                        <CardBody>{EventDetails.tillegsinfo}</CardBody>
+                                    </Card>
+                                </Collapse>
+                            </td>
+                        </div>
                         <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
                         <td>{EventDetails.role}</td>
                         <td>{EventDetails.service}</td>
