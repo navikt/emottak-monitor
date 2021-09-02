@@ -286,7 +286,7 @@ const EventsTable = (props) => {
                         <Collapse isOpen={isOpen}>
                             <Card>
                                 <CardBody>
-                                    {EventDetails.tillegsinfo}
+                                    Statisk tekst...
                                 </CardBody>
                             </Card>
                         </Collapse>
