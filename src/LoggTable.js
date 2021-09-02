@@ -32,7 +32,7 @@ const LoggTable = (props) => {
                 <tbody>
                 {items.map((LogDetails)=>{
                     return  <tr>
-                        <td className="tabell__td--sortert">{LogDetails.hendelsesdato}</td>
+                        <td className="tabell__td--sortert">{LogDetails.hendelsesdato.substr(0, 23)}</td>
                         <td>{LogDetails.hendelsesbeskrivelse}</td>
                         <td>{LogDetails.hendelsesid}</td>
                     </tr>
@@ -43,4 +43,4 @@ const LoggTable = (props) => {
         </div>
     );
 };
-export default LoggTable;
+export default LoggTable
