@@ -282,7 +282,7 @@ const EventsTable = (props) => {
             {items.map((EventDetails) => {
                 return <tr>
                     <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-                    <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>EventDetails.hendelsedeskr}</Button>
+                    <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
                         <Collapse isOpen={isOpen}>
                             <Card>
                                 <CardBody>
