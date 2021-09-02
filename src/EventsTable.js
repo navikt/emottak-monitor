@@ -21,8 +21,8 @@ const EventsTable = (props) => {
     const statusParam = new URLSearchParams(search).get('status');
 
     const [events, setEvents] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
 
+    const [isOpen, setIsOpen] = useState(false);
     const toggle = () => setIsOpen(!isOpen);
 
 
