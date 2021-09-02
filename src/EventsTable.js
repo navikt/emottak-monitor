@@ -1,9 +1,9 @@
 import TableSorting from "./TableSorting";
-import React, {useEffect, useState, useCallback } from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {initialDate, initialTime, initialFilter} from "./util";
 import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
-import { Collapse, Button, CardBody, Card } from "reactstrap";
+import {Collapse, Button, CardBody, Card} from "reactstrap";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
 import {useHistory, useLocation} from "react-router-dom";
@@ -275,7 +275,7 @@ const EventsTable = (props) => {
                 {items.map((EventDetails) => {
                     return <tr>
                         <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
-                        <td><Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
+                        <td><Button color="primary" onClick={() => toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
                             <Collapse isOpen={isOpen}>
                                 <Card>
                                     <CardBody>{EventDetails.tillegsinfo}</CardBody>
