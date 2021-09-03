@@ -1,9 +1,9 @@
 import TableSorting from "./TableSorting";
 import React, {useEffect, useState, useCallback} from "react";
 import {initialDate, initialTime, initialFilter} from "./util";
-import Lenke from "nav-frontend-lenker";
+//import Lenke from "nav-frontend-lenker";
 import {Datepicker, isISODateString} from "nav-datovelger";
-import {Collapse, Button, CardText, Card} from "reactstrap";
+import {Collapse, Button, CardBody, Card} from "reactstrap";
 import TimePicker from "react-time-picker";
 import {Select} from "nav-frontend-skjema";
 import {useHistory, useLocation} from "react-router-dom";
@@ -22,8 +22,16 @@ const EventsTable = (props) => {
 
     const [events, setEvents] = useState([]);
 
-    const [isOpen, setIsOpen] = useState(false);
-    const toggle = () => setIsOpen(!isOpen);
+    //const [isOpen, setIsOpen] = useState(false);
+    const [collapse, setCollapse] = useState(false);
+    const [statusCollapse, setStatusCollapse] = useState('Closed');
+    const onEntering = () => setStatusCollapse('Opening...');
+    const onEntered = () => setStatusCollapse('Opened');
+    const onExiting = () => setStatusCollapse('Closing...');
+    const onExited = () => setStatusCollapse('Closed');
+
+    const toggle = () => setCollapse(!collapse);
+    //const toggle = () => setIsOpen(!isOpen);
 
 
     const [fom, setFom] = useState(initialDate(fomParam));
@@ -273,25 +281,29 @@ const EventsTable = (props) => {
             </thead>
             <tbody>
                 {items.map((EventDetails) => {
-                    return <tr>
+                    return(
+                    <div>
                         <td className="tabell__td--sortert">{EventDetails.hendelsedato.substr(0,23)}</td>
+                        <Button color="primary" onClick={toggle} style={{ marginBottom: '1rem' }}>Toggle</Button>
+                        <h5>Current state: {statusCollapse}</h5>
+                        <Collapse
+                            isOpen={collapse}
+                            onEntering={onEntering}
+                            onEntered={onEntered}
+                            onExiting={onExiting}
+                            onExited={onExited}
+                        >
                             <Card>
-                            <td><Button color="primary" onClick={() => toggle} style={{ marginBottom: '1rem' }}>{EventDetails.hendelsedeskr}</Button>
-                                <Collapse isOpen={isOpen}>
-                                    <CardText>
-                                        {EventDetails.tillegsinfo}
-                                    </CardText>
-                                </Collapse>
-                            </td>
+                                <CardBody>
+                                    Anim pariatur cliche reprehenderit,
+                                    enim eiusmod high life accusamus terry richardson ad squid. Nihil
+                                    anim keffiyeh helvetica, craft beer labore wes anderson cred
+                                    nesciunt sapiente ea proident.
+                                </CardBody>
                             </Card>
-
-                       <td><Lenke href={`/logg/${EventDetails.mottakid}`}>{EventDetails.mottakid} </Lenke></td>
-                        <td>{EventDetails.role}</td>
-                        <td>{EventDetails.service}</td>
-                        <td>{EventDetails.action}</td>
-                        <td>{EventDetails.referanse}</td>
-                        <td>{EventDetails.avsender}</td>
-                    </tr>
+                        </Collapse>
+                    </div>
+                    );
                 })}
                 </tbody>
                 <caption>
