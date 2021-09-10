@@ -2,7 +2,6 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.MeldingInfo
 import no.nav.emottak.model.WildCardInfo
 import java.sql.ResultSet
 
