@@ -83,5 +83,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("Partner id for ${cpaid}: ${cpaInfo.size}")
             call.respond(cpaInfo)
         }
+        get("/hentdata") {
+            val mottakid = call.request.queryParameters.get("mottakId")
+            if (mottakid.isNullOrEmpty()) {
+                log.info("Mangler parameter: mottakid")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+
+            log.info("Henter info for ${mottakid}")
+            val meldingInfo = meldingService.wildcard(mottakid)
+
+            log.info("Melding info for ${mottakid}: ${meldingInfo.size}")
+            call.respond(meldingInfo)
+        }
     }
 }
