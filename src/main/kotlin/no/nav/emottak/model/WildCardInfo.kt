@@ -9,6 +9,5 @@ data class WildCardInfo(
     val referanse: String? = null,
     val avsender: String? = null,
     val cpaid: String? = null,
-    val antall: Int,
     val status: String? = null
 )

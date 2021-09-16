@@ -112,7 +112,7 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentdata?mottakId=123456789012345678901"
+                        "/v1/hentmeldinginfo?mottakId=123456789012345678901"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }

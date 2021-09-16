@@ -36,6 +36,5 @@ fun ResultSet.toWildCardInfo(): WildCardInfo =
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
-        getInt("ANTALL"),
         getString("STATUS")
     )
