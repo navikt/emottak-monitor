@@ -1,6 +1,6 @@
 package no.nav.emottak.model
 
-data class WildCardInfo(
+data class MottakIdInfo(
     val datomottat: String,
     val mottakid: String,
     val role: String? = null,

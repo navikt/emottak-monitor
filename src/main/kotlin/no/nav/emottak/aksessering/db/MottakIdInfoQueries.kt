@@ -2,14 +2,14 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.WildCardInfo
+import no.nav.emottak.model.MottakIdInfo
 import java.sql.ResultSet
 
 
 fun DatabaseInterface.hentMottakIdInfo(
     databasePrefix: String,
     mottakid: String?
-): List<WildCardInfo> =
+): List<MottakIdInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
@@ -22,12 +22,12 @@ fun DatabaseInterface.hentMottakIdInfo(
         )
         statement.setObject(1, mottakid)
         statement.use {
-            it.executeQuery().toList { toWildCardInfo() }
+            it.executeQuery().toList { toMottakIdInfo() }
         }
     }
 
-fun ResultSet.toWildCardInfo(): WildCardInfo =
-    WildCardInfo(
+fun ResultSet.toMottakIdInfo(): MottakIdInfo =
+    MottakIdInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),
         getString("ROLE"),

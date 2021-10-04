@@ -91,10 +91,30 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
 
             log.info("Henter info for ${mottakid}")
-            val meldingInfo = meldingService.wildcard(mottakid)
+            val meldingInfo = meldingService.mottakid(mottakid)
 
             log.info("Melding info for ${mottakid}: ${meldingInfo.size}")
             call.respond(meldingInfo)
+        }
+        get("/hentfeilstatistikk") {
+            val fromDate = call.request.queryParameters.get("fromDate")
+            val toDate = call.request.queryParameters.get("toDate")
+            if (fromDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: from date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
+            if (toDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: to date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
+
+            log.info("Kjører dabasespørring for å hente feil statistikk...")
+            val feilStatistikk = meldingService.feilstatistikk(fom, tom)
+
+            log.info("feil statistikk antall : ${feilStatistikk.size}")
+            call.respond(feilStatistikk)
         }
     }
 }
