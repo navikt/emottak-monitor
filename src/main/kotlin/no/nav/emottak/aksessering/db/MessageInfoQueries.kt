@@ -25,11 +25,11 @@ fun DatabaseInterface.hentMeldinger(
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         statement.use {
-            it.executeQuery().toList { toMeldingInfo() }
+            it.executeQuery().toList { toMessageInfo() }
         }
     }
 
-fun ResultSet.toMeldingInfo(): MessageInfo =
+fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),

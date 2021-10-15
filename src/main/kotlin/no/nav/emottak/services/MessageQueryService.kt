@@ -9,8 +9,8 @@ import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
-import no.nav.emottak.model.MeldingInfo
 import no.nav.emottak.model.MessageCPAInfo
+import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
 import java.time.LocalDateTime
@@ -19,7 +19,7 @@ class MessageQueryService(
     private val databaseInterface: DatabaseInterface,
     private val databasePrefix: String
 ) {
-    fun meldinger(fom: LocalDateTime, tom: LocalDateTime): List<MeldingInfo> =
+    fun meldinger(fom: LocalDateTime, tom: LocalDateTime): List<MessageInfo> =
         databaseInterface.hentMeldinger(databasePrefix, fom, tom)
     fun hendelser(fom: LocalDateTime, tom: LocalDateTime): List<HendelseInfo> =
         databaseInterface.hentHendelser(databasePrefix, fom, tom)
