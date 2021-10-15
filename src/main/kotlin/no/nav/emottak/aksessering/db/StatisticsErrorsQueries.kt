@@ -20,6 +20,7 @@ fun DatabaseInterface.hentFeilStatistikk(
                 AND LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
                 GROUP BY HENDELSE.HENDELSEDESKR
+                ORDER BY ANTALL_FEIL DESC
             """
         )
         statement.setObject(1, fom)
