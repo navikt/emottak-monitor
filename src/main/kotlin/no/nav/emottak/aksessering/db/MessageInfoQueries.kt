@@ -2,7 +2,7 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.MeldingInfo
+import no.nav.emottak.model.MessageInfo
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
@@ -10,7 +10,7 @@ fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
     fom: LocalDateTime,
     tom: LocalDateTime
-): List<MeldingInfo> =
+): List<MessageInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
@@ -29,8 +29,8 @@ fun DatabaseInterface.hentMeldinger(
         }
     }
 
-fun ResultSet.toMeldingInfo(): MeldingInfo =
-    MeldingInfo(
+fun ResultSet.toMeldingInfo(): MessageInfo =
+    MessageInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),
         getString("ROLE"),

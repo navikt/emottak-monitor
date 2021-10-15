@@ -1,6 +1,6 @@
 package no.nav.emottak.model
 
-data class MeldingInfo(
+data class MessageInfo(
     val datomottat: String,
     val mottakid: String,
     val role: String? = null,
