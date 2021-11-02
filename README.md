@@ -26,7 +26,7 @@ Creating a docker image should be as simple as `docker build -t emottak-monitor 
 ## Contact us
 ### Code/project related questions can be sent to
 * Nabil Fario, `nabil.fario@nav.no`
-* Joakim Kartveit, `joakim.kartveit@nav.no`
+
 
 
 ### For NAV employees
