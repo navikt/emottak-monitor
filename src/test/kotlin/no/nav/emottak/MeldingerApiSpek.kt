@@ -75,7 +75,7 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
+                        "/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }

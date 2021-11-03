@@ -35,7 +35,6 @@ fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID_LISTE"),
-        getString("MOTTAK_ID"),
         getString("ROLE"),
         getString("SERVICE"),
         getString("ACTION"),
