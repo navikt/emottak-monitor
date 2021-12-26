@@ -2,6 +2,12 @@
   "name": "emottak-monitor-frontend",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "PORT=8080 craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject"
+  },
   "dependencies": {
     "@craco/craco": "^6.3.0",
     "@navikt/fnrvalidator": "^1.1.4",
@@ -48,11 +54,9 @@
     "url-parse": "1.5.2",
     "web-vitals": "^1.0.1"
   },
-  "scripts": {
-    "start": "PORT=8080 craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "craco eject"
+  "devDependencies": {
+    "nav-frontend-toggle": "^2.1.1",
+    "http-proxy-middleware": "^2.0.1"
   },
   "eslintConfig": {
     "extends": [
@@ -71,8 +75,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "nav-frontend-toggle": "^2.1.1"
   }
 }
