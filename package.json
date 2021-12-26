@@ -55,8 +55,11 @@
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
+    "http-proxy-middleware": "^2.0.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.4",
     "nav-frontend-toggle": "^2.1.1",
-    "http-proxy-middleware": "^2.0.1"
+    "prettier": "^2.5.1"
   },
   "eslintConfig": {
     "extends": [
@@ -75,5 +78,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
   }
 }

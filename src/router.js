@@ -1,15 +1,15 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 // const auth = require('../controllers/authenticate')
 // const user = require('../controllers/user')
-const health = require("health")
+const health = require("health");
 
 //const api = '/api/v1'
 
 // APPLICATION HEALTH
-router.get('/isalive', health.isAlive())
+router.get("/isalive", health.isAlive());
 
-router.get('/metrics', health.metrics())
+router.get("/metrics", health.metrics());
 
 // // AUTHENTICATION
 // router.get('/login/:param1?/:param2?/:param3?', auth.authenticateAzure())
@@ -25,4 +25,4 @@ router.get('/metrics', health.metrics())
 //
 // router.get('/', auth.ensureAuthenticated())
 
-module.exports = router
+module.exports = router;
