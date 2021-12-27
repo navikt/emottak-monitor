@@ -140,7 +140,19 @@ const MessagesTable = (props) => {
         .catch((error) => {
           console.log(error); //Logs a string: Error: Request failed with status code 404
           setLoading(false);
-          setErrormessage(error.toString());
+          if (error.response) {
+            if (error.response.data.includes("ORA-01489")) {
+              setErrormessage(
+                "Error: The query result was too big to handle. Try reducing the time between to and from."
+              );
+            } else {
+              setErrormessage(error.response.data);
+            }
+          } else if (error.request) {
+            setErrormessage(error.request);
+          } else {
+            setErrormessage(error.message);
+          }
         });
     }
   }, [fom, tom, fromTime, toTime, pushHistory, applyFilter]);
