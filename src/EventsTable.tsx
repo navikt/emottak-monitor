@@ -1,11 +1,12 @@
-import axios, { AxiosResponse } from "axios";
 import { Datepicker, isISODateString } from "nav-datovelger";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import Lenke from "nav-frontend-lenker";
 import { Select } from "nav-frontend-skjema";
+import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker, { TimePickerValue } from "react-time-picker";
+import { useFetch } from "./hooks/useFetch";
 import TableSorting from "./TableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
 
@@ -32,16 +33,17 @@ const EventsTable = () => {
   const serviceParam = new URLSearchParams(search).get("service");
   const actionParam = new URLSearchParams(search).get("action");
 
-  const [events, setEvents] = useState<EventInfo[]>([]);
-
-  //const [isOpen, setIsOpen] = useState(false);
-  //const toggle = () => setIsOpen(!isOpen);
-
   const [fom, setFom] = useState(initialDate(fomParam));
   const [tom, setTom] = useState(initialDate(tomParam));
   let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
   let [toTime, setToTime] = useState(initialTime(toTimeParam));
-  let [visibleEvents, setVisibleEvents] = useState(events);
+  let [filteredEvents, setFilteredEvents] = useState<EventInfo[]>([]);
+
+  const { fetchState, callRequest } = useFetch<EventInfo[]>(
+    `/v1/henthendelser?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
+  );
+
+  const { loading, error, data: events } = fetchState;
 
   let [filters, setFilters] = useState<Record<FilterKey, string>>({
     role: initialFilter(roleParam) ?? "",
@@ -57,14 +59,14 @@ const EventsTable = () => {
   };
 
   useEffect(() => {
-    const filteredEvents = events.filter((event) => {
+    const tempFilteredEvents = events?.filter((event) => {
       return (
         (filters.role === "" || filters.role === event.role) &&
         (filters.service === "" || filters.service === event.service) &&
         (filters.action === "" || filters.action === event.action)
       );
     });
-    setVisibleEvents(filteredEvents);
+    setFilteredEvents(tempFilteredEvents ?? []);
   }, [filters, events]);
 
   const pushHistory = useCallback(() => {
@@ -80,25 +82,22 @@ const EventsTable = () => {
   };
 
   useEffect(() => {
-    async function getEvents() {
-      if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
-        pushHistory();
-        const response: AxiosResponse<EventInfo[]> = await axios.get(
-          `/v1/henthendelser?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
-        );
-        setEvents(response.data);
-      }
+    if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
+      pushHistory();
     }
-    getEvents();
   }, [fom, tom, fromTime, toTime, pushHistory]);
 
-  let uniqueRoles = Array.from(new Set(events.map(({ role }) => role)));
-  let uniqueServices = Array.from(
-    new Set(events.map(({ service }) => service))
-  );
-  let uniqueActions = Array.from(new Set(events.map(({ action }) => action)));
+  useEffect(() => {
+    callRequest();
+  }, [callRequest]);
 
-  const { items, requestSort, sortConfig } = TableSorting(visibleEvents);
+  let uniqueRoles = Array.from(new Set(events?.map(({ role }) => role)));
+  let uniqueServices = Array.from(
+    new Set(events?.map(({ service }) => service))
+  );
+  let uniqueActions = Array.from(new Set(events?.map(({ action }) => action)));
+
+  const { items, requestSort, sortConfig } = TableSorting(filteredEvents);
 
   let eventsLength = 0;
   if (items.length) {
@@ -329,32 +328,35 @@ const EventsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {items.map((event, index) => {
-            return (
-              <tr key={index}>
-                <td className="tabell__td--sortert">{event.hendelsedato}</td>
+          {!loading &&
+            items.map((event, index) => {
+              return (
+                <tr key={event.mottakid + index}>
+                  <td className="tabell__td--sortert">{event.hendelsedato}</td>
 
-                <td>
-                  <Ekspanderbartpanel tittel={event.hendelsedeskr}>
-                    {event.tillegsinfo}
-                  </Ekspanderbartpanel>
-                </td>
-                <td>
-                  <Lenke href={`/logg/${event.mottakid}`}>
-                    {event.mottakid}{" "}
-                  </Lenke>
-                </td>
-                <td>{event.role}</td>
-                <td>{event.service}</td>
-                <td>{event.action}</td>
-                <td>{event.referanse}</td>
-                <td>{event.avsender}</td>
-              </tr>
-            );
-          })}
+                  <td>
+                    <Ekspanderbartpanel tittel={event.hendelsedeskr}>
+                      {event.tillegsinfo}
+                    </Ekspanderbartpanel>
+                  </td>
+                  <td>
+                    <Lenke href={`/logg/${event.mottakid}`}>
+                      {event.mottakid}{" "}
+                    </Lenke>
+                  </td>
+                  <td>{event.role}</td>
+                  <td>{event.service}</td>
+                  <td>{event.action}</td>
+                  <td>{event.referanse}</td>
+                  <td>{event.avsender}</td>
+                </tr>
+              );
+            })}
         </tbody>
         <caption>{eventsLength} hendelser</caption>
       </table>
+      {loading && <NavFrontendSpinner />}
+      {error?.message && <p>{error.message}</p>}
     </div>
   );
 };

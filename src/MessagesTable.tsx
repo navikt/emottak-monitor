@@ -98,18 +98,14 @@ const MessagesTable = () => {
     callRequest();
   }, [callRequest]);
 
-  let uniqueRoles = messages
-    ? Array.from(new Set(messages.map(({ role }) => role)))
-    : [];
-  let uniqueServices = messages
-    ? Array.from(new Set(messages.map(({ service }) => service)))
-    : [];
-  let uniqueActions = messages
-    ? Array.from(new Set(messages.map(({ action }) => action)))
-    : [];
-  let uniqueStatus = messages
-    ? Array.from(new Set(messages.map(({ status }) => status)))
-    : [];
+  let uniqueRoles = Array.from(new Set(messages?.map(({ role }) => role)));
+  let uniqueServices = Array.from(
+    new Set(messages?.map(({ service }) => service))
+  );
+  let uniqueActions = Array.from(
+    new Set(messages?.map(({ action }) => action))
+  );
+  let uniqueStatus = Array.from(new Set(messages?.map(({ status }) => status)));
 
   const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
   let messagesLength = 0;
@@ -204,7 +200,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg rolle</option>
                     {uniqueRoles.map((role) => {
-                      return <option value={role}>{role}</option>;
+                      return (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -218,7 +218,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg service</option>
                     {uniqueServices.map((service) => {
-                      return <option value={service}>{service}</option>;
+                      return (
+                        <option key={service} value={service}>
+                          {service}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -232,7 +236,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg action</option>
                     {uniqueActions.map((action) => {
-                      return <option value={action}>{action}</option>;
+                      return (
+                        <option key={action} value={action}>
+                          {action}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -246,7 +254,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg status</option>
                     {uniqueStatus.map((status) => {
-                      return <option value={status}>{status}</option>;
+                      return (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -342,16 +354,18 @@ const MessagesTable = () => {
           </tr>
         </thead>
         <tbody>
-          {loading === false &&
-            items.map((message) => {
+          {!loading &&
+            items.map((message, index) => {
               return (
-                <tr>
+                <tr key={message.cpaid + index}>
                   <td className="tabell__td--sortert">
                     {message.datomottat.substring(0, 23)}
                   </td>
                   <td>
                     {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke href={`/logg/${mottakid}`}>{mottakid} </Lenke>
+                      <Lenke key={mottakid} href={`/logg/${mottakid}`}>
+                        {mottakid}{" "}
+                      </Lenke>
                     ))}
                   </td>
                   <td>{message.role}</td>
