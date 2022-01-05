@@ -1,6 +1,7 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import NavFrontendSpinner from "nav-frontend-spinner";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useFetch } from "./hooks/useFetch";
 import TableSorting from "./TableSorting";
 
 type LogDetails = {
@@ -11,19 +12,18 @@ type LogDetails = {
 
 const LoggTable = () => {
   const { mottakid } = useParams();
-  const [loggMessages, setLoggMessages] = useState<LogDetails[]>([]);
+
+  const { fetchState, callRequest } = useFetch<LogDetails[]>(
+    `/v1/hentlogg?mottakId=${mottakid}`
+  );
+
+  const { loading, error, data: logMessages } = fetchState;
 
   useEffect(() => {
-    if (mottakid) {
-      axios
-        .get<LogDetails[]>(`/v1/hentlogg?mottakId=${mottakid}`)
-        .then((response) => {
-          setLoggMessages(response.data);
-        });
-    }
-  }, [mottakid]);
+    callRequest();
+  }, [callRequest]);
 
-  const { items } = TableSorting(loggMessages);
+  const { items } = TableSorting(logMessages ?? []);
 
   return (
     <div>
@@ -37,19 +37,22 @@ const LoggTable = () => {
           </tr>
         </thead>
         <tbody>
-          {items.map((logDetails) => {
-            return (
-              <tr key={logDetails.hendelsesid}>
-                <td className="tabell__td--sortert">
-                  {logDetails.hendelsesdato.substring(0, 23)}
-                </td>
-                <td>{logDetails.hendelsesbeskrivelse}</td>
-                <td>{logDetails.hendelsesid}</td>
-              </tr>
-            );
-          })}
+          {!loading &&
+            items.map((logDetails) => {
+              return (
+                <tr key={logDetails.hendelsesid}>
+                  <td className="tabell__td--sortert">
+                    {logDetails.hendelsesdato.substring(0, 23)}
+                  </td>
+                  <td>{logDetails.hendelsesbeskrivelse}</td>
+                  <td>{logDetails.hendelsesid}</td>
+                </tr>
+              );
+            })}
         </tbody>
         <caption>Hendeleseslogg</caption>
+        {loading && <NavFrontendSpinner />}
+        {error?.message && <p>{error.message}</p>}
       </table>
     </div>
   );

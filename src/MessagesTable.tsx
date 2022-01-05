@@ -1,13 +1,13 @@
-import TableSorting from "./TableSorting";
-import { initialDate, initialTime, initialFilter } from "./util";
-import React, { useEffect, useState, useCallback } from "react";
-import Lenke from "nav-frontend-lenker";
 import { Datepicker, isISODateString } from "nav-datovelger";
-import TimePicker from "react-time-picker";
+import Lenke from "nav-frontend-lenker";
 import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios, { AxiosResponse } from "axios";
+import React, { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import TimePicker from "react-time-picker";
+import { useFetch } from "./hooks/useFetch";
+import TableSorting from "./TableSorting";
+import { initialDate, initialFilter, initialTime } from "./util";
 
 type MessageInfo = {
   action: string;
@@ -38,14 +38,17 @@ const MessagesTable = () => {
   const actionParam = new URLSearchParams(search).get("action");
   const statusParam = new URLSearchParams(search).get("status");
 
-  const [messages, setMessages] = useState<MessageInfo[]>([]);
   const [fom, setFom] = useState(initialDate(fomParam));
   const [tom, setTom] = useState(initialDate(tomParam));
   let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
   let [toTime, setToTime] = useState(initialTime(toTimeParam));
-  let [visibleMessages, setVisibleMessages] = useState(messages);
-  let [loading, setLoading] = useState(true);
-  let [errormessage, setErrormessage] = useState("");
+  let [visibleMessages, setVisibleMessages] = useState<MessageInfo[]>([]);
+
+  const { fetchState, callRequest } = useFetch<MessageInfo[]>(
+    `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
+  );
+
+  const { loading, error, data: messages } = fetchState;
 
   let [filters, setFilters] = useState<Record<FilterKey, string>>({
     role: initialFilter(roleParam) ?? "",
@@ -62,7 +65,7 @@ const MessagesTable = () => {
   };
 
   useEffect(() => {
-    const filteredMessages = messages.filter((message) => {
+    const filteredMessages = messages?.filter((message) => {
       return (
         (filters.role === "" || filters.role === message.role) &&
         (filters.service === "" || filters.service === message.service) &&
@@ -70,7 +73,7 @@ const MessagesTable = () => {
         (filters.status === "" || filters.status === message.status)
       );
     });
-    setVisibleMessages(filteredMessages);
+    setVisibleMessages(filteredMessages ?? []);
   }, [filters, messages]);
 
   const pushHistory = useCallback(() => {
@@ -86,48 +89,23 @@ const MessagesTable = () => {
   };
 
   useEffect(() => {
-    async function getMessages() {
-      setLoading(true);
-      if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
-        pushHistory();
-        try {
-          const response: AxiosResponse<MessageInfo[]> = await axios.get(
-            `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
-          );
-          setMessages(response.data);
-          setErrormessage("");
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            if (error.response) {
-              if (error.response.data.includes("ORA-01489")) {
-                setErrormessage(
-                  "Error: The query result was too big to handle. Try reducing the time between to and from."
-                );
-              } else {
-                setErrormessage(error.response.data);
-              }
-            } else if (error.request) {
-              setErrormessage(error.request);
-            } else {
-              setErrormessage(error.message);
-            }
-          } else {
-            setErrormessage(error + "");
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
+    if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
+      pushHistory();
     }
-    getMessages();
   }, [fom, tom, fromTime, toTime, pushHistory]);
 
-  let uniqueRoles = Array.from(new Set(messages.map(({ role }) => role)));
+  useEffect(() => {
+    callRequest();
+  }, [callRequest]);
+
+  let uniqueRoles = Array.from(new Set(messages?.map(({ role }) => role)));
   let uniqueServices = Array.from(
-    new Set(messages.map(({ service }) => service))
+    new Set(messages?.map(({ service }) => service))
   );
-  let uniqueActions = Array.from(new Set(messages.map(({ action }) => action)));
-  let uniqueStatus = Array.from(new Set(messages.map(({ status }) => status)));
+  let uniqueActions = Array.from(
+    new Set(messages?.map(({ action }) => action))
+  );
+  let uniqueStatus = Array.from(new Set(messages?.map(({ status }) => status)));
 
   const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
   let messagesLength = 0;
@@ -222,7 +200,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg rolle</option>
                     {uniqueRoles.map((role) => {
-                      return <option value={role}>{role}</option>;
+                      return (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -236,7 +218,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg service</option>
                     {uniqueServices.map((service) => {
-                      return <option value={service}>{service}</option>;
+                      return (
+                        <option key={service} value={service}>
+                          {service}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -250,7 +236,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg action</option>
                     {uniqueActions.map((action) => {
-                      return <option value={action}>{action}</option>;
+                      return (
+                        <option key={action} value={action}>
+                          {action}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -264,7 +254,11 @@ const MessagesTable = () => {
                   >
                     <option value="">Velg status</option>
                     {uniqueStatus.map((status) => {
-                      return <option value={status}>{status}</option>;
+                      return (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      );
                     })}
                   </Select>
                 </th>
@@ -360,16 +354,18 @@ const MessagesTable = () => {
           </tr>
         </thead>
         <tbody>
-          {loading === false &&
-            items.map((message) => {
+          {!loading &&
+            items.map((message, index) => {
               return (
-                <tr>
+                <tr key={message.cpaid + index}>
                   <td className="tabell__td--sortert">
                     {message.datomottat.substring(0, 23)}
                   </td>
                   <td>
                     {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke href={`/logg/${mottakid}`}>{mottakid} </Lenke>
+                      <Lenke key={mottakid} href={`/logg/${mottakid}`}>
+                        {mottakid}{" "}
+                      </Lenke>
                     ))}
                   </td>
                   <td>{message.role}</td>
@@ -390,7 +386,7 @@ const MessagesTable = () => {
         <caption>{messagesLength} meldinger</caption>
       </table>
       {loading && <NavFrontendSpinner />}
-      {errormessage && <p>{errormessage}</p>}
+      {error?.message && <p>{error.message}</p>}
     </div>
   );
 };
