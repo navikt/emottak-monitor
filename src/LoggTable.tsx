@@ -1,17 +1,25 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TableSorting from "./TableSorting";
-import axios from "axios";
 
-const LoggTable = (props) => {
+type LogDetails = {
+  hendelsesdato: string;
+  hendelsesbeskrivelse: string;
+  hendelsesid: string;
+};
+
+const LoggTable = () => {
   const { mottakid } = useParams();
-  const [loggMessages, setLoggMessages] = useState([]);
+  const [loggMessages, setLoggMessages] = useState<LogDetails[]>([]);
 
   useEffect(() => {
     if (mottakid) {
-      axios.get(`/v1/hentlogg?mottakId=${mottakid}`).then((response) => {
-        setLoggMessages(response.data);
-      });
+      axios
+        .get<LogDetails[]>(`/v1/hentlogg?mottakId=${mottakid}`)
+        .then((response) => {
+          setLoggMessages(response.data);
+        });
     }
   }, [mottakid]);
 
@@ -29,14 +37,14 @@ const LoggTable = (props) => {
           </tr>
         </thead>
         <tbody>
-          {items.map((LogDetails) => {
+          {items.map((logDetails) => {
             return (
-              <tr>
+              <tr key={logDetails.hendelsesid}>
                 <td className="tabell__td--sortert">
-                  {LogDetails.hendelsesdato.substr(0, 23)}
+                  {logDetails.hendelsesdato.substring(0, 23)}
                 </td>
-                <td>{LogDetails.hendelsesbeskrivelse}</td>
-                <td>{LogDetails.hendelsesid}</td>
+                <td>{logDetails.hendelsesbeskrivelse}</td>
+                <td>{logDetails.hendelsesid}</td>
               </tr>
             );
           })}
