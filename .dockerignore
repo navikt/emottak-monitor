@@ -1,0 +1,9 @@
+node_modules/
+build/
+.nais/
+.husky/
+.idea/
+.github/
+.vscode/
+.dockerignore
+Dockerfile
