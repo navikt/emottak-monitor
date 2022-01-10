@@ -6,10 +6,27 @@ import { Datepicker, isISODateString } from "nav-datovelger";
 import TimePicker from "react-time-picker";
 import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import { useHistory, useLocation } from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios, { AxiosResponse } from "axios";
 
-const MessagesTable = (props) => {
+type MessageInfo = {
+  action: string;
+  antall: number;
+  avsender: string;
+  cpaid: string;
+  datomottat: string;
+  mottakidliste: string;
+  referanse: string;
+  role: string;
+  service: string;
+  status: string;
+};
+type FilterKey = keyof Pick<
+  MessageInfo,
+  "role" | "service" | "action" | "status"
+>;
+
+const MessagesTable = () => {
   const search = useLocation().search;
 
   const fomParam = new URLSearchParams(search).get("fromDate");
@@ -21,146 +38,96 @@ const MessagesTable = (props) => {
   const actionParam = new URLSearchParams(search).get("action");
   const statusParam = new URLSearchParams(search).get("status");
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<MessageInfo[]>([]);
   const [fom, setFom] = useState(initialDate(fomParam));
   const [tom, setTom] = useState(initialDate(tomParam));
   let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
   let [toTime, setToTime] = useState(initialTime(toTimeParam));
-  let [role, setRole] = useState(initialFilter(roleParam));
-  let [service, setService] = useState(initialFilter(serviceParam));
-  let [action, setAction] = useState(initialFilter(actionParam));
-  let [status, setStatus] = useState(initialFilter(statusParam));
   let [visibleMessages, setVisibleMessages] = useState(messages);
   let [loading, setLoading] = useState(true);
   let [errormessage, setErrormessage] = useState("");
 
-  const history = useHistory();
+  let [filters, setFilters] = useState<Record<FilterKey, string>>({
+    role: initialFilter(roleParam) ?? "",
+    service: initialFilter(serviceParam) ?? "",
+    action: initialFilter(actionParam) ?? "",
+    status: initialFilter(statusParam) ?? "",
+  });
 
-  function filterRole(selectedRole) {
-    setRole(selectedRole);
-    pushQueryParam(search, history, "role", selectedRole);
-    setVisibleMessages([
-      ...messages.filter(function (MessageDetails) {
-        return (
-          (selectedRole === "" || MessageDetails.role === selectedRole) &&
-          (service === "" || MessageDetails.service === service) &&
-          (action === "" || MessageDetails.action === action) &&
-          (status === "" || MessageDetails.status === status)
-        );
-      }),
-    ]);
-  }
-  function filterService(selectedService) {
-    setService(selectedService);
-    pushQueryParam(search, history, "service", selectedService);
-    setVisibleMessages([
-      ...messages.filter(function (MessageDetails) {
-        return (
-          (role === "" || MessageDetails.role === role) &&
-          (selectedService === "" ||
-            MessageDetails.service === selectedService) &&
-          (action === "" || MessageDetails.action === action) &&
-          (status === "" || MessageDetails.status === status)
-        );
-      }),
-    ]);
-  }
-  function filterAction(selectedAction) {
-    setAction(selectedAction);
-    pushQueryParam(search, history, "action", selectedAction);
-    setVisibleMessages([
-      ...messages.filter(function (MessageDetails) {
-        return (
-          (role === "" || MessageDetails.role === role) &&
-          (service === "" || MessageDetails.service === service) &&
-          (selectedAction === "" || MessageDetails.action === selectedAction) &&
-          (status === "" || MessageDetails.status === status)
-        );
-      }),
-    ]);
-  }
+  const navigate = useNavigate();
 
-  function filterStatus(selectedStatus) {
-    setStatus(selectedStatus);
-    pushQueryParam(search, history, "status", selectedStatus);
-    setVisibleMessages([
-      ...messages.filter(function (MessageDetails) {
-        return (
-          (role === "" || MessageDetails.role === role) &&
-          (service === "" || MessageDetails.service === service) &&
-          (action === "" || MessageDetails.action === action) &&
-          (selectedStatus === "" || MessageDetails.status === selectedStatus)
-        );
-      }),
-    ]);
-  }
-
-  const applyFilter = useCallback(
-    (newMessages) => {
-      setVisibleMessages([
-        ...newMessages.filter(function (MessageDetails) {
-          return (
-            (role === "" || MessageDetails.role === role) &&
-            (service === "" || MessageDetails.service === service) &&
-            (action === "" || MessageDetails.action === action) &&
-            (status === "" || MessageDetails.status === status)
-          );
-        }),
-      ]);
-    },
-    [role, service, action, status]
-  );
-
-  const pushHistory = useCallback(() => {
-    history.push(
-      `/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${role}&service=${service}&action=${action}&status=${status}`
-    );
-  }, [fom, tom, fromTime, toTime, role, service, action, status, history]);
-
-  const pushQueryParam = (search, history, key, value) => {
-    let searchParams = new URLSearchParams(search);
-    searchParams.set(key, value);
-    history.push(`?${searchParams.toString()}`);
+  const filterMessages = (key: FilterKey, selectedValue: string) => {
+    setFilters((oldFilters) => ({ ...oldFilters, [key]: selectedValue }));
+    pushQueryParam(search, key, selectedValue);
   };
 
   useEffect(() => {
-    setLoading(true);
-    if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
-      pushHistory();
-      axios
-        .get(
-          `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
-        )
-        .then((response) => {
-          setMessages(response.data);
-          applyFilter(response.data);
-          setLoading(false);
-          setErrormessage("");
-        })
-        .catch((error) => {
-          console.log(error); //Logs a string: Error: Request failed with status code 404
-          setLoading(false);
-          if (error.response) {
-            if (error.response.data.includes("ORA-01489")) {
-              setErrormessage(
-                "Error: The query result was too big to handle. Try reducing the time between to and from."
-              );
-            } else {
-              setErrormessage(error.response.data);
-            }
-          } else if (error.request) {
-            setErrormessage(error.request);
-          } else {
-            setErrormessage(error.message);
-          }
-        });
-    }
-  }, [fom, tom, fromTime, toTime, pushHistory, applyFilter]);
+    const filteredMessages = messages.filter((message) => {
+      return (
+        (filters.role === "" || filters.role === message.role) &&
+        (filters.service === "" || filters.service === message.service) &&
+        (filters.action === "" || filters.action === message.action) &&
+        (filters.status === "" || filters.status === message.status)
+      );
+    });
+    setVisibleMessages(filteredMessages);
+  }, [filters, messages]);
 
-  let uniqueRoles = [...new Set(messages.map(({ role }) => role))];
-  let uniqueServices = [...new Set(messages.map(({ service }) => service))];
-  let uniqueActions = [...new Set(messages.map(({ action }) => action))];
-  let uniqueStatus = [...new Set(messages.map(({ status }) => status))];
+  const pushHistory = useCallback(() => {
+    navigate(
+      `/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}&status=${filters.status}`
+    );
+  }, [fom, tom, filters, fromTime, toTime, navigate]);
+
+  const pushQueryParam = (search: string, key: string, value: string) => {
+    let searchParams = new URLSearchParams(search);
+    searchParams.set(key, value);
+    navigate(`?${searchParams.toString()}`);
+  };
+
+  useEffect(() => {
+    async function getMessages() {
+      setLoading(true);
+      if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
+        pushHistory();
+        try {
+          const response: AxiosResponse<MessageInfo[]> = await axios.get(
+            `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
+          );
+          setMessages(response.data);
+          setErrormessage("");
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            if (error.response) {
+              if (error.response.data.includes("ORA-01489")) {
+                setErrormessage(
+                  "Error: The query result was too big to handle. Try reducing the time between to and from."
+                );
+              } else {
+                setErrormessage(error.response.data);
+              }
+            } else if (error.request) {
+              setErrormessage(error.request);
+            } else {
+              setErrormessage(error.message);
+            }
+          } else {
+            setErrormessage(error + "");
+          }
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+    getMessages();
+  }, [fom, tom, fromTime, toTime, pushHistory]);
+
+  let uniqueRoles = Array.from(new Set(messages.map(({ role }) => role)));
+  let uniqueServices = Array.from(
+    new Set(messages.map(({ service }) => service))
+  );
+  let uniqueActions = Array.from(new Set(messages.map(({ action }) => action)));
+  let uniqueStatus = Array.from(new Set(messages.map(({ status }) => status)));
 
   const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
   let messagesLength = 0;
@@ -168,7 +135,7 @@ const MessagesTable = (props) => {
   if (items.length) {
     messagesLength = items.length;
   }
-  const getClassNamesFor = (name) => {
+  const getClassNamesFor = (name: keyof MessageInfo) => {
     if (!sortConfig) {
       return;
     }
@@ -200,7 +167,14 @@ const MessagesTable = (props) => {
                   />
                 </th>
                 <th>
-                  <TimePicker onChange={setFromTime} value={fromTime} />
+                  <TimePicker
+                    onChange={(value) =>
+                      typeof value === "string"
+                        ? setFromTime(value)
+                        : setFromTime(value.toLocaleTimeString())
+                    }
+                    value={fromTime}
+                  />
                 </th>
               </tr>
               <tr>
@@ -221,7 +195,14 @@ const MessagesTable = (props) => {
                   />
                 </th>
                 <th>
-                  <TimePicker onChange={setToTime} value={toTime} />
+                  <TimePicker
+                    onChange={(value) =>
+                      typeof value === "string"
+                        ? setToTime(value)
+                        : setToTime(value.toLocaleTimeString())
+                    }
+                    value={toTime}
+                  />
                 </th>
               </tr>
             </tbody>
@@ -234,8 +215,10 @@ const MessagesTable = (props) => {
                 <th>
                   <Select
                     id={"select"}
-                    onChange={(event) => filterRole(event.target.value)}
-                    selected={role}
+                    onChange={(event) =>
+                      filterMessages("role", event.target.value)
+                    }
+                    selected={filters.role}
                   >
                     <option value="">Velg rolle</option>
                     {uniqueRoles.map((role) => {
@@ -246,8 +229,10 @@ const MessagesTable = (props) => {
                 <th>
                   <Select
                     id={"select"}
-                    onChange={(event) => filterService(event.target.value)}
-                    selected={service}
+                    onChange={(event) =>
+                      filterMessages("service", event.target.value)
+                    }
+                    selected={filters.service}
                   >
                     <option value="">Velg service</option>
                     {uniqueServices.map((service) => {
@@ -258,8 +243,10 @@ const MessagesTable = (props) => {
                 <th>
                   <Select
                     id={"select"}
-                    onChange={(event) => filterAction(event.target.value)}
-                    selected={action}
+                    onChange={(event) =>
+                      filterMessages("action", event.target.value)
+                    }
+                    selected={filters.action}
                   >
                     <option value="">Velg action</option>
                     {uniqueActions.map((action) => {
@@ -270,8 +257,10 @@ const MessagesTable = (props) => {
                 <th>
                   <Select
                     id={"select"}
-                    onChange={(event) => filterStatus(event.target.value)}
-                    selected={status}
+                    onChange={(event) =>
+                      filterMessages("status", event.target.value)
+                    }
+                    selected={filters.status}
                   >
                     <option value="">Velg status</option>
                     {uniqueStatus.map((status) => {
@@ -299,8 +288,8 @@ const MessagesTable = (props) => {
             <th>
               <button
                 type="button"
-                onClick={() => requestSort("mottakid")}
-                className={getClassNamesFor("mottakid")}
+                onClick={() => requestSort("mottakidliste")}
+                className={getClassNamesFor("mottakidliste")}
               >
                 Mottak-id
               </button>
@@ -359,31 +348,41 @@ const MessagesTable = (props) => {
                 CPA-id
               </button>
             </th>
+            <th>
+              <button
+                type="button"
+                onClick={() => requestSort("status")}
+                className={getClassNamesFor("status")}
+              >
+                Status
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
           {loading === false &&
-            items.map((MessageDetails) => {
+            items.map((message) => {
               return (
                 <tr>
                   <td className="tabell__td--sortert">
-                    {MessageDetails.datomottat.substr(0, 23)}
+                    {message.datomottat.substring(0, 23)}
                   </td>
                   <td>
-                    <Lenke href={`/logg/${MessageDetails.mottakid}`}>
-                      {MessageDetails.mottakid}{" "}
-                    </Lenke>
+                    {message.mottakidliste.split(",").map((mottakid) => (
+                      <Lenke href={`/logg/${mottakid}`}>{mottakid} </Lenke>
+                    ))}
                   </td>
-                  <td>{MessageDetails.role}</td>
-                  <td>{MessageDetails.service}</td>
-                  <td>{MessageDetails.action}</td>
-                  <td>{MessageDetails.referanse}</td>
-                  <td>{MessageDetails.avsender}</td>
+                  <td>{message.role}</td>
+                  <td>{message.service}</td>
+                  <td>{message.action}</td>
+                  <td>{message.referanse}</td>
+                  <td>{message.avsender}</td>
                   <td>
-                    <Lenke href={`/cpa/${MessageDetails.cpaid}`}>
-                      {MessageDetails.cpaid}{" "}
+                    <Lenke href={`/cpa/${message.cpaid}`}>
+                      {message.cpaid}{" "}
                     </Lenke>
                   </td>
+                  <td>{message.status}</td>
                 </tr>
               );
             })}

@@ -3,9 +3,16 @@ import { useParams } from "react-router-dom";
 import TableSorting from "./TableSorting";
 import axios from "axios";
 
-const CpaTable = (props) => {
+type CpaDetails = {
+  partnerid: string;
+  navn: string;
+  partnerherid: string;
+  partnerorgnummer: string;
+};
+
+const CpaTable = () => {
   const { cpaid } = useParams();
-  const [cpaInfo, setCpaInfo] = useState([]);
+  const [cpaInfo, setCpaInfo] = useState<CpaDetails[]>([]);
 
   useEffect(() => {
     if (cpaid) {

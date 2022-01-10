@@ -2,17 +2,15 @@ function ISODate() {
   let date = new Date();
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
-  if (month < 10) {
-    month = "0" + month;
-  }
   let day = date.getDate();
-  if (day < 10) {
-    day = "0" + day;
-  }
-  return year + "-" + month + "-" + day;
+
+  let dayString = day < 10 ? "0" + day : day.toString();
+  let monthString = month < 10 ? "0" + month : month.toString();
+
+  return year + "-" + monthString + "-" + dayString;
 }
 
-function initialDate(dateParam) {
+function initialDate(dateParam: string | null) {
   if (dateParam) {
     return dateParam;
   } else {
@@ -20,15 +18,15 @@ function initialDate(dateParam) {
   }
 }
 
-function initialTime(timeParam) {
+function initialTime(timeParam: string | null) {
   if (timeParam) {
     return timeParam;
   } else {
-    return new Date().toLocaleTimeString() + "";
+    return new Date().toLocaleTimeString();
   }
 }
 
-function initialFilter(filterString) {
+function initialFilter(filterString: string | null) {
   if (filterString) {
     return filterString;
   } else {
