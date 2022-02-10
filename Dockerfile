@@ -17,6 +17,7 @@ RUN apk --no-cache add curl
 COPY ./ /var/server/
 
 RUN yarn
+RUN yarn build
 
 EXPOSE 3000
 
