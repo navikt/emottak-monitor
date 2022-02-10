@@ -9,7 +9,7 @@
 #RUN yarn build
 
 
-FROM node:16.13
+FROM navikt/node-express:16
 
 USER root
 RUN apk --no-cache add curl
