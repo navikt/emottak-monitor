@@ -14,8 +14,9 @@ FROM navikt/node-express:16
 USER root
 RUN apk --no-cache add curl
 
-WORKDIR /usr/src/app
 COPY . ./var/server
+
+RUN yarn
 
 EXPOSE 3000
 
