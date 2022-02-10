@@ -14,7 +14,7 @@ FROM navikt/node-express:16
 USER root
 RUN apk --no-cache add curl
 
-COPY . /var/server
+COPY ./ /var/server/
 
 RUN yarn
 
