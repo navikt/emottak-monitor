@@ -9,10 +9,13 @@
 #RUN yarn build
 
 
-FROM node:16
+FROM node:16.13
+
+USER root
+RUN apk --no-cache add curl
 
 WORKDIR /usr/src/app
-COPY . .
+COPY . ./var/server
 
 EXPOSE 3000
 
