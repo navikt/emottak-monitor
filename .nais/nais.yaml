@@ -23,10 +23,8 @@ spec:
     enabled: true
   accessPolicy:
     outbound:
-      rules:
-        - application: emottak-monitor
-          namespace: team-emottak
-          cluster: dev-fss
+      external:
+        - host: https://emottak-monitor.dev.intern.nav.no
     inbound:
       rules:
         - application: emottak-monitor
