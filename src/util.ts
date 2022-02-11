@@ -34,4 +34,6 @@ function initialFilter(filterString: string | null) {
   }
 }
 
-export { initialDate, initialTime, initialFilter };
+const isDevelopmentEnv = () => process.env.NODE_ENV === "development";
+
+export { initialDate, initialTime, initialFilter, isDevelopmentEnv };

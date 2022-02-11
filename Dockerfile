@@ -16,6 +16,8 @@ RUN apk --no-cache add curl
 
 COPY ./ /var/server/
 
+ENV NODE_ENV "production"
+
 RUN yarn
 RUN yarn build
 
