@@ -32,6 +32,3 @@ spec:
         - application: emottak-monitor
           namespace: team-emottak
           cluster: dev-fss
-        - application: flex-fss-proxy
-          namespace: flex
-          cluster: dev-fss
