@@ -1,39 +1,21 @@
+import "@navikt/ds-css";
+import "@navikt/ds-css-internal";
 import Panel from "nav-frontend-paneler";
 import "nav-frontend-tabell-style";
-import Tabs from "nav-frontend-tabs";
 import React from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-
+import Navbar from "./components/Navbar";
 import CpaTable from "./CpaTable";
 import EventsTable from "./EventsTable";
 import LoggTable from "./LoggTable";
 import MessagesTable from "./MessagesTable";
 
 export default function App() {
-  let navigate = useNavigate();
-
-  const handleTabChange = (index: number) => {
-    if (index === 0) {
-      navigate("/");
-    }
-    if (index === 1) {
-      navigate("/events");
-    }
-  };
-
   return (
-    <div className="App">
-      <Tabs
-        tabs={[
-          { label: "Meldinger", tabIndex: 0 },
-          { label: "Hendelser", tabIndex: 1 },
-        ]}
-        defaultAktiv={0}
-        onChange={(_event, index) => {
-          handleTabChange(index);
-        }}
-      />
+    <div className="App" style={{ display: "flex" }}>
+      <Navbar />
+
       <Panel
         border
         style={{
@@ -44,7 +26,7 @@ export default function App() {
       >
         <Routes>
           <Route path="/" element={<MessagesTable />} />
-          <Route path="/events" element={<EventsTable />} />
+          <Route path="/hendelser" element={<EventsTable />} />
           <Route path="/logg/:mottakid" element={<LoggTable />} />
           <Route path="/cpa/:cpaid" element={<CpaTable />} />
 

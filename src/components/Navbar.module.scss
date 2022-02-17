@@ -1,0 +1,45 @@
+@import "~@navikt/ds-css/dist/index.css";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  align-items: center;
+  gap: 20px;
+  border-right: 1px solid var(--navds-global-color-orange-400);
+  min-height: 100vh;
+
+  .header {
+    padding: 20px;
+    background-color: var(--navds-global-color-orange-200);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.navLink {
+  list-style: none;
+  text-decoration: none;
+  background-color: "blue";
+  width: 100%;
+  height: 2.5em;
+  display: "flex";
+  position: relative;
+  color: black;
+
+  :hover {
+    background-color: var(--navds-global-color-gray-200);
+  }
+
+  .linkText {
+    width: 100%;
+    height: 100%;
+    line-height: 2.5;
+    vertical-align: middle;
+    margin: 0;
+  }
+}
+.active {
+  background-color: var(--navds-global-color-gray-100);
+}

@@ -71,14 +71,14 @@ const EventsTable = () => {
 
   const pushHistory = useCallback(() => {
     navigate(
-      `/events?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}`
+      `/hendelser?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}`
     );
   }, [fom, tom, filters, fromTime, toTime, navigate]);
 
   const pushQueryParam = (search: string, key: string, value: string) => {
     let searchParams = new URLSearchParams(search);
     searchParams.set(key, value);
-    navigate(`/events?${searchParams.toString()}`);
+    navigate(`/hendelser?${searchParams.toString()}`);
   };
 
   useEffect(() => {
