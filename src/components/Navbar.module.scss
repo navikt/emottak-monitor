@@ -1,21 +1,38 @@
 @import "~@navikt/ds-css/dist/index.css";
+@import "../styles/variables.scss";
 
 .container {
   display: flex;
   flex-direction: column;
-  min-width: 200px;
   align-items: center;
   gap: 20px;
   border-right: 1px solid var(--navds-global-color-orange-400);
-  min-height: 100vh;
+  height: 100%;
+  width: $nav-width;
+  transition: left 1s;
+  position: fixed;
+  overflow: hidden;
+}
 
-  .header {
-    padding: 20px;
-    background-color: var(--navds-global-color-orange-200);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.header {
+  padding: 20px;
+  width: 100%;
+  background-color: var(--navds-global-color-orange-200);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  :hover {
+    cursor: pointer;
   }
+}
+
+.open {
+  left: 0;
+}
+
+.closed {
+  left: -$nav-width;
 }
 
 .navLink {
@@ -42,4 +59,19 @@
 }
 .active {
   background-color: var(--navds-global-color-gray-100);
+}
+
+.toggleButton {
+  position: absolute;
+  bottom: 0;
+  margin: 20px;
+  transition: right 1s;
+}
+
+.toggleButtonOpen {
+  right: 0;
+}
+
+.toggleButtonClosed {
+  right: -60px;
 }

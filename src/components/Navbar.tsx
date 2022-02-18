@@ -1,44 +1,70 @@
+import { Back } from "@navikt/ds-icons";
 import { Heading } from "@navikt/ds-react";
 import clsx from "clsx";
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavbarContext } from "../App";
 import styles from "./Navbar.module.scss";
 
 type NavbarProps = {};
 
+type Page = {
+  name: string;
+  url: string;
+};
+
+const pages: Page[] = [
+  { name: "Meldinger", url: "/" }, // TODO: Rename to "/meldinger"
+  { name: "Hendelser", url: "/hendelser" },
+];
+
 const Navbar: React.FC<NavbarProps> = () => {
+  const { state: isOpen, setState: setIsOpen } = useContext(NavbarContext);
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
-    <nav className={styles.container}>
-      <div className={styles.header}>
+    <div
+      className={clsx(styles.container, {
+        [styles.open]: isOpen,
+        [styles.closed]: !isOpen,
+      })}
+    >
+      <Heading
+        className={styles.header}
+        size="medium"
+        onClick={() => {
+          navigate("/");
+        }}
+      >
         <img
           src={process.env.PUBLIC_URL + "/nav.svg"}
           alt="nav logo in svg format"
-          style={{ maxWidth: "80px" }}
+          style={{ maxWidth: "70px" }}
         />
-        <Heading size="medium">eMottak Monitor</Heading>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <Link
-          className={clsx(styles.navLink, {
-            [styles.active]: location.pathname === "/",
-          })}
-          to="/"
-        >
-          <p className={styles.linkText}>Meldinger</p>
-        </Link>
-        {/* TODO: Make path /meldinger */}
-        <Link
-          className={clsx(styles.navLink, {
-            [styles.active]: location.pathname === "/hendelser",
-          })}
-          to="/hendelser"
-        >
-          <p className={styles.linkText}>Hendelser</p>
-        </Link>
-      </div>
-    </nav>
+        <span>eMottak Monitor</span>
+      </Heading>
+      <nav style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+        {pages.map((page) => (
+          <Link
+            key={page.url}
+            className={clsx(styles.navLink, {
+              [styles.active]: location.pathname === page.url,
+            })}
+            to={page.url}
+          >
+            <p className={styles.linkText}>{page.name}</p>
+          </Link>
+        ))}
+      </nav>
+      <Back
+        className={clsx(styles.toggleButton, {
+          [styles.toggleButtonOpen]: isOpen,
+          [styles.toggleButtonClosed]: !isOpen,
+        })}
+        onClick={() => setIsOpen((oldVal) => !oldVal)}
+      />
+    </div>
   );
 };
 

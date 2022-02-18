@@ -1,8 +1,7 @@
 import "@navikt/ds-css";
 import "@navikt/ds-css-internal";
-import Panel from "nav-frontend-paneler";
 import "nav-frontend-tabell-style";
-import React from "react";
+import React, { createContext, PropsWithChildren, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
@@ -11,19 +10,30 @@ import EventsTable from "./EventsTable";
 import LoggTable from "./LoggTable";
 import MessagesTable from "./MessagesTable";
 
+type NavbarStore = {
+  state: boolean;
+  setState: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const NavbarContext = createContext({} as NavbarStore);
+
+const NavbarContextProvider: React.FunctionComponent = ({
+  children,
+}: PropsWithChildren<{}>) => {
+  const [state, setState] = useState(true);
+  return (
+    <NavbarContext.Provider value={{ state, setState }}>
+      {children}
+    </NavbarContext.Provider>
+  );
+};
+
 export default function App() {
   return (
     <div className="App" style={{ display: "flex" }}>
-      <Navbar />
+      <NavbarContextProvider>
+        <Navbar />
 
-      <Panel
-        border
-        style={{
-          borderTop: 0,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-        }}
-      >
         <Routes>
           <Route path="/" element={<MessagesTable />} />
           <Route path="/hendelser" element={<EventsTable />} />
@@ -34,7 +44,7 @@ export default function App() {
           <Route path="/isready" element={<div>The app is ready</div>}></Route>
           <Route path="/metrics" element={<div>Metrics</div>}></Route>
         </Routes>
-      </Panel>
+      </NavbarContextProvider>
     </div>
   );
 }
