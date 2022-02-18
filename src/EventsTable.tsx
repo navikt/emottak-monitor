@@ -6,6 +6,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker, { TimePickerValue } from "react-time-picker";
+import PageWrapper from "./components/PageWrapper";
 import { useFetch } from "./hooks/useFetch";
 import TableSorting from "./TableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
@@ -124,8 +125,7 @@ const EventsTable = () => {
   };
 
   return (
-    <div>
-      <h1>Hendelser</h1>
+    <PageWrapper title="Hendelser">
       <div className="row">
         <div className="column">
           <table id={"timetable"}>
@@ -357,7 +357,7 @@ const EventsTable = () => {
       </table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
-    </div>
+    </PageWrapper>
   );
 };
 export default EventsTable;

@@ -5,6 +5,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker from "react-time-picker";
+import PageWrapper from "./components/PageWrapper";
 import { useFetch } from "./hooks/useFetch";
 import TableSorting from "./TableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
@@ -121,8 +122,7 @@ const MessagesTable = () => {
   };
 
   return (
-    <div>
-      <h1>Meldinger</h1>
+    <PageWrapper title="Meldinger">
       <div className="row">
         <div className="column">
           <table id={"timetable"}>
@@ -387,7 +387,7 @@ const MessagesTable = () => {
       </table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
-    </div>
+    </PageWrapper>
   );
 };
 export default MessagesTable;
