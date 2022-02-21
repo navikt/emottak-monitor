@@ -34,7 +34,7 @@ const reducer = <T>(
   }
 };
 
-export const useFetch = <T>(url: string) => {
+const useFetch = <T>(url: string) => {
   const [fetchState, dispatch] = useReducer<
     Reducer<FetchState<T>, FetchAction<T>>
   >(reducer, createInitialState());
@@ -53,3 +53,5 @@ export const useFetch = <T>(url: string) => {
 
   return { fetchState, callRequest };
 };
+
+export default useFetch;

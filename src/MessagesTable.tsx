@@ -2,12 +2,13 @@ import { Datepicker, isISODateString } from "nav-datovelger";
 import Lenke from "nav-frontend-lenker";
 import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker from "react-time-picker";
 import PageWrapper from "./components/PageWrapper";
-import { useFetch } from "./hooks/useFetch";
-import TableSorting from "./TableSorting";
+import useFetch from "./hooks/useFetch";
+import useTableSorting from "./hooks/useTableSorting";
+import Pagination from "./Pagination";
 import { initialDate, initialFilter, initialTime } from "./util";
 
 type MessageInfo = {
@@ -28,8 +29,9 @@ type FilterKey = keyof Pick<
 >;
 
 const MessagesTable = () => {
-  const search = useLocation().search;
+  const { search } = useLocation();
 
+  let PageSize = 10;
   const fomParam = new URLSearchParams(search).get("fromDate");
   const tomParam = new URLSearchParams(search).get("toDate");
   const fromTimeParam = new URLSearchParams(search).get("fromTime");
@@ -39,17 +41,23 @@ const MessagesTable = () => {
   const actionParam = new URLSearchParams(search).get("action");
   const statusParam = new URLSearchParams(search).get("status");
 
+  const [visibleMessages, setVisibleMessages] = useState<MessageInfo[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  //const [pageSize, setPageSize] = useState(10);
+
   const [fom, setFom] = useState(initialDate(fomParam));
   const [tom, setTom] = useState(initialDate(tomParam));
-  let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
-  let [toTime, setToTime] = useState(initialTime(toTimeParam));
-  let [visibleMessages, setVisibleMessages] = useState<MessageInfo[]>([]);
+  const [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
+  const [toTime, setToTime] = useState(initialTime(toTimeParam));
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(
     `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
   );
 
   const { loading, error, data: messages } = fetchState;
+
+  //const numberOfItems = visibleMessages.length;
+  //const numberOfPages = pageSize > 0 ? Math.ceil(numberOfItems / pageSize) : 1
 
   let [filters, setFilters] = useState<Record<FilterKey, string>>({
     role: initialFilter(roleParam) ?? "",
@@ -74,8 +82,13 @@ const MessagesTable = () => {
         (filters.status === "" || filters.status === message.status)
       );
     });
+    // TODO: Sette currentPage til 0?
     setVisibleMessages(filteredMessages ?? []);
   }, [filters, messages]);
+
+  useEffect(() => {
+    // TODO: filtrer visiblepages på currentPage
+  }, [currentPage]);
 
   const pushHistory = useCallback(() => {
     navigate(
@@ -108,7 +121,7 @@ const MessagesTable = () => {
   );
   let uniqueStatus = Array.from(new Set(messages?.map(({ status }) => status)));
 
-  const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
+  const { items, requestSort, sortConfig } = useTableSorting(visibleMessages);
   let messagesLength = 0;
 
   if (items.length) {
@@ -120,6 +133,12 @@ const MessagesTable = () => {
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return items.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, PageSize, items]);
 
   return (
     <PageWrapper title="Meldinger">
@@ -355,7 +374,7 @@ const MessagesTable = () => {
         </thead>
         <tbody>
           {!loading &&
-            items.map((message, index) => {
+            currentTableData.map((message, index) => {
               return (
                 <tr key={message.cpaid + index}>
                   <td className="tabell__td--sortert">
@@ -387,6 +406,13 @@ const MessagesTable = () => {
       </table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
+      <Pagination
+        totalCount={visibleMessages.length}
+        pageSize={PageSize}
+        siblingCount={1}
+        currentPage={currentPage}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </PageWrapper>
   );
 };

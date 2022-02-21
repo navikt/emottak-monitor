@@ -1,6 +1,6 @@
-const logger = require("morgan");
+//const logger = require("morgan");
 const prometheus = require("prom-client");
-const request = require("request-promise");
+//const request = require("request-promise");
 
 exports.isAlive = () => {
   return (req, res) => {
