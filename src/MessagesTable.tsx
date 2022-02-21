@@ -1,15 +1,15 @@
 import { Datepicker, isISODateString } from "nav-datovelger";
 import Lenke from "nav-frontend-lenker";
-import {Select} from "nav-frontend-skjema";
+import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useCallback, useEffect, useState, useMemo} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker from "react-time-picker";
+import PageWrapper from "./components/PageWrapper";
 import useFetch from "./hooks/useFetch";
-import TableSorting from "./hooks/useTableSorting";
-import { initialDate, initialFilter, initialTime } from "./util";
+import useTableSorting from "./hooks/useTableSorting";
 import Pagination from "./Pagination";
-
+import { initialDate, initialFilter, initialTime } from "./util";
 
 type MessageInfo = {
   action: string;
@@ -88,7 +88,7 @@ const MessagesTable = () => {
 
   useEffect(() => {
     // TODO: filtrer visiblepages på currentPage
-  }, [currentPage])
+  }, [currentPage]);
 
   const pushHistory = useCallback(() => {
     navigate(
@@ -121,7 +121,7 @@ const MessagesTable = () => {
   );
   let uniqueStatus = Array.from(new Set(messages?.map(({ status }) => status)));
 
-  const { items, requestSort, sortConfig } = TableSorting(visibleMessages);
+  const { items, requestSort, sortConfig } = useTableSorting(visibleMessages);
   let messagesLength = 0;
 
   if (items.length) {
@@ -140,11 +140,8 @@ const MessagesTable = () => {
     return items.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, PageSize, items]);
 
-
-
   return (
-    <div>
-      <h1>Meldinger</h1>
+    <PageWrapper title="Meldinger">
       <div className="row">
         <div className="column">
           <table id={"timetable"}>
@@ -410,13 +407,13 @@ const MessagesTable = () => {
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
       <Pagination
-          totalCount={visibleMessages.length}
-          pageSize={PageSize}
-          siblingCount={1}
-          currentPage={currentPage}
-          onPageChange={page => setCurrentPage(page)}
+        totalCount={visibleMessages.length}
+        pageSize={PageSize}
+        siblingCount={1}
+        currentPage={currentPage}
+        onPageChange={(page) => setCurrentPage(page)}
       />
-    </div>
+    </PageWrapper>
   );
 };
 export default MessagesTable;

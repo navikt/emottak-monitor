@@ -7,6 +7,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker, { TimePickerValue } from "react-time-picker";
+import PageWrapper from "./components/PageWrapper";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
@@ -72,14 +73,14 @@ const EventsTable = () => {
 
   const pushHistory = useCallback(() => {
     navigate(
-      `/events?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}`
+      `/hendelser?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}`
     );
   }, [fom, tom, filters, fromTime, toTime, navigate]);
 
   const pushQueryParam = (search: string, key: string, value: string) => {
     let searchParams = new URLSearchParams(search);
     searchParams.set(key, value);
-    navigate(`/events?${searchParams.toString()}`);
+    navigate(`/hendelser?${searchParams.toString()}`);
   };
 
   useEffect(() => {
@@ -125,8 +126,7 @@ const EventsTable = () => {
   };
 
   return (
-    <div>
-      <h1>Hendelser</h1>
+    <PageWrapper title="Hendelser">
       <div className="row">
         <div className="column">
           <table id={"timetable"}>
@@ -358,7 +358,7 @@ const EventsTable = () => {
       </table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
-    </div>
+    </PageWrapper>
   );
 };
 export default EventsTable;
