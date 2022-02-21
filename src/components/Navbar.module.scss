@@ -6,12 +6,14 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  border-right: 1px solid var(--navds-global-color-orange-400);
   height: 100%;
   width: $nav-width;
   transition: left 1s;
   position: fixed;
   overflow: hidden;
+  z-index: 100;
+  background-color: white;
+  box-shadow: 0px 1px 4px 0px var(--navds-global-color-gray-400);
 }
 
 .header {
@@ -21,10 +23,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-
-  :hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
 
 .open {
@@ -64,14 +63,17 @@
 .toggleButton {
   position: absolute;
   bottom: 0;
-  margin: 20px;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   transition: right 1s;
-}
-
-.toggleButtonOpen {
   right: 0;
+  border-radius: 50%;
 }
 
-.toggleButtonClosed {
-  right: -60px;
+.toggleButton:hover {
+  background-color: var(--navds-global-color-gray-100);
 }

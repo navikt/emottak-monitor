@@ -1,8 +1,10 @@
 import { Next } from "@navikt/ds-icons";
 import { ContentContainer, Heading } from "@navikt/ds-react";
+import clsx from "clsx";
 import React, { PropsWithChildren } from "react";
 import { useContext } from "react";
 import { NavbarContext } from "../App";
+import styles from "./PageWrapper.module.scss";
 
 type PageWrapperProps = PropsWithChildren<{ title: string }>;
 
@@ -29,17 +31,15 @@ const PageWrapper: React.FC<PageWrapperProps> = (props: PageWrapperProps) => {
         {title}
       </Heading>
       {children}
-      <Next
-        style={{
-          position: "absolute",
-          left: 0,
-          bottom: 0,
-          margin: "20px",
-          transitionDelay: "1s",
-          visibility: isOpen ? "hidden" : "visible",
-        }}
-        onClick={() => setIsOpen((oldVal) => !oldVal)}
-      />
+      <button
+        className={clsx(styles.navbarButton, {
+          [styles.navbarButtonOpen]: isOpen,
+          [styles.navbarButtonClosed]: !isOpen,
+        })}
+        onClick={() => setIsOpen(true)}
+      >
+        <Next />
+      </button>
     </ContentContainer>
   );
 };

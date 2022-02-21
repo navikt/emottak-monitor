@@ -57,13 +57,9 @@ const Navbar: React.FC<NavbarProps> = () => {
           </Link>
         ))}
       </nav>
-      <Back
-        className={clsx(styles.toggleButton, {
-          [styles.toggleButtonOpen]: isOpen,
-          [styles.toggleButtonClosed]: !isOpen,
-        })}
-        onClick={() => setIsOpen((oldVal) => !oldVal)}
-      />
+      <button className={styles.toggleButton} onClick={() => setIsOpen(false)}>
+        <Back />
+      </button>
     </div>
   );
 };
