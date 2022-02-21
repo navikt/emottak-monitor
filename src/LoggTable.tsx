@@ -1,8 +1,8 @@
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useFetch } from "./hooks/useFetch";
-import TableSorting from "./TableSorting";
+import useFetch from "./hooks/useFetch";
+import useTableSorting from "./hooks/useTableSorting";
 
 type LogDetails = {
   hendelsesdato: string;
@@ -23,7 +23,7 @@ const LoggTable = () => {
     callRequest();
   }, [callRequest]);
 
-  const { items } = TableSorting(logMessages ?? []);
+  const { items } = useTableSorting(logMessages ?? []);
 
   return (
     <div>
