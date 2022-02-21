@@ -3,11 +3,12 @@ import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import Lenke from "nav-frontend-lenker";
 import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
+//import Pagination from "paginering";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker, { TimePickerValue } from "react-time-picker";
-import { useFetch } from "./hooks/useFetch";
-import TableSorting from "./TableSorting";
+import useFetch from "./hooks/useFetch";
+import useTableSorting from "./hooks/useTableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
 
 type EventInfo = {
@@ -97,7 +98,7 @@ const EventsTable = () => {
   );
   let uniqueActions = Array.from(new Set(events?.map(({ action }) => action)));
 
-  const { items, requestSort, sortConfig } = TableSorting(filteredEvents);
+  const { items, requestSort, sortConfig } = useTableSorting(filteredEvents);
 
   let eventsLength = 0;
   if (items.length) {

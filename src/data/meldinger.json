@@ -1,86 +1,170 @@
 [
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95637.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95637, 2101011015hels95637.1, 2101011015hels95637.2",
     "datomottat": "2021-01-01 10:15:20.447553"
   },
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95638.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95638.1",
     "datomottat": "2021-01-01 10:15:20.66167"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95639",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95639",
     "datomottat": "2021-01-01 10:15:21.221521"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95640",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95640",
     "datomottat": "2021-01-01 10:15:21.322115"
   },
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95641.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95641.1",
     "datomottat": "2021-01-01 10:15:35.796372"
   },
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95642.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95642.1",
     "datomottat": "2021-01-01 10:15:35.866568"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95643",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95643",
     "datomottat": "2021-01-01 10:15:36.529687"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95644",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95644",
     "datomottat": "2021-01-01 10:15:36.881222"
   },
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95645.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95645.1",
     "datomottat": "2021-01-01 10:15:46.46387"
   },
   {
-    "role": "Behandler",
+    "hendelsesbeskrivelse": "Behandler",
     "service": "BehandlerKrav",
-    "action": "OppgjorsMelding",
-    "mottakid": "2101011015hels95646.1",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95646.1",
     "datomottat": "2021-01-01 10:15:46.530192"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95647",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95647",
     "datomottat": "2021-01-01 10:15:46.979458"
   },
   {
-    "role": "KontrollUtbetaler",
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
     "service": "BehandlerKrav",
-    "action": "Svarmelding",
-    "mottakid": "2101011015navm95648",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95648",
+    "datomottat": "2021-01-01 10:15:47.090862"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95637.1",
+    "datomottat": "2021-01-01 10:15:20.447553"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95638.1",
+    "datomottat": "2021-01-01 10:15:20.66167"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95639",
+    "datomottat": "2021-01-01 10:15:21.221521"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95640",
+    "datomottat": "2021-01-01 10:15:21.322115"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95641.1",
+    "datomottat": "2021-01-01 10:15:35.796372"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95642.1",
+    "datomottat": "2021-01-01 10:15:35.866568"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95643",
+    "datomottat": "2021-01-01 10:15:36.529687"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95644",
+    "datomottat": "2021-01-01 10:15:36.881222"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95645.1",
+    "datomottat": "2021-01-01 10:15:46.46387"
+  },
+  {
+    "hendelsesbeskrivelse": "Behandler",
+    "service": "BehandlerKrav",
+    "antall_feil": "OppgjorsMelding",
+    "mottakidliste": "2101011015hels95646.1",
+    "datomottat": "2021-01-01 10:15:46.530192"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95647",
+    "datomottat": "2021-01-01 10:15:46.979458"
+  },
+  {
+    "hendelsesbeskrivelse": "KontrollUtbetaler",
+    "service": "BehandlerKrav",
+    "antall_feil": "Svarmelding",
+    "mottakidliste": "2101011015navm95648",
     "datomottat": "2021-01-01 10:15:47.090862"
   }
 ]

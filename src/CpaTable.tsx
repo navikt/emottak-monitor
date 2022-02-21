@@ -1,8 +1,8 @@
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useFetch } from "./hooks/useFetch";
-import TableSorting from "./TableSorting";
+import useFetch from "./hooks/useFetch";
+import useTableSorting from "./hooks/useTableSorting";
 
 type CpaDetails = {
   partnerid: string;
@@ -24,7 +24,7 @@ const CpaTable = () => {
     callRequest();
   }, [callRequest]);
 
-  const { items } = TableSorting(cpaInfo ?? []);
+  const { items } = useTableSorting(cpaInfo ?? []);
 
   return (
     <div>
