@@ -1,16 +1,14 @@
 import "@navikt/ds-css";
 import "@navikt/ds-css-internal";
 import "nav-frontend-tabell-style";
-import React, { createContext, PropsWithChildren, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, {createContext, PropsWithChildren, useState} from "react";
+import {Route, Routes} from "react-router-dom";
 import "./App.css";
-import Navbar from "./components/Navbar";
+import Navbar, {pages} from "./components/Navbar";
 import CpaTable from "./CpaTable";
-import EventsTable from "./EventsTable";
-import FeilStatistikk from "./FeilStatistikk";
 import LoggTable from "./LoggTable";
-import MessagesTable from "./MessagesTable";
-import MottakIdSok from "./MottakIdSok";
+import IsAlive from "./IsAlive";
+import IsReady from "./IsReady";
 
 type NavbarStore = {
   state: boolean;
@@ -37,15 +35,12 @@ export default function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<MessagesTable />} />
-          <Route path="/hendelser" element={<EventsTable />} />
-          <Route path="/mottakidsok" element={<MottakIdSok />} />
-          <Route path="/feilStatistikk" element={<FeilStatistikk />} />
+          {pages.map((page) => <Route path={page.path} element={page.element}/>)}
           <Route path="/logg/:mottakid" element={<LoggTable />} />
           <Route path="/cpa/:cpaid" element={<CpaTable />} />
-          <Route path="/isalive" element={<div>The app is alive</div>}></Route>
-          <Route path="/isready" element={<div>The app is ready</div>}></Route>
-          <Route path="/metrics" element={<div>Metrics</div>}></Route>
+          <Route path="/isalive" element={<IsAlive />} />
+          <Route path="/isready" element={<IsReady/>} />
+          <Route path="/metrics" element={<div>Metrics</div>} />
         </Routes>
       </NavbarContextProvider>
     </div>

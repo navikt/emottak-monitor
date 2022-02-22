@@ -17,6 +17,7 @@
     "@navikt/ds-react": "^0.16.7",
     "@navikt/ds-react-internal": "^0.11.7",
     "@navikt/fnrvalidator": "^1.1.4",
+    "@reduxjs/toolkit": "^1.7.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -53,6 +54,7 @@
     "nav-frontend-tabs-style": "^2.0.1",
     "nav-frontend-typografi": "^4.0.1",
     "nav-frontend-typografi-style": "^2.0.1",
+    "node-sass": "^7.0.1",
     "prom-client": "^14.0.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
@@ -79,8 +81,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {

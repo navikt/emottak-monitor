@@ -1,21 +1,28 @@
-import { Back } from "@navikt/ds-icons";
-import { Heading } from "@navikt/ds-react";
+import {Back} from "@navikt/ds-icons";
+import {Heading} from "@navikt/ds-react";
 import clsx from "clsx";
-import React, { useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { NavbarContext } from "../App";
+import React, {useContext} from "react";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import {NavbarContext} from "../App";
 import styles from "./Navbar.module.scss";
+import MessagesTable from "../MessagesTable";
+import EventsTable from "../EventsTable";
+import MottakIdSok from "../MottakIdSok";
+import FeilStatistikk from "../FeilStatistikk";
 
 type NavbarProps = {};
 
 type Page = {
-  name: string;
-  url: string;
+  title: string;
+  path: string;
+  element: React.ReactNode;
 };
 
-const pages: Page[] = [
-  { name: "Meldinger", url: "/" }, // TODO: Rename to "/meldinger"
-  { name: "Hendelser", url: "/hendelser" },
+export const pages: Page[] = [
+  { title: "Meldinger", path: "/", element: <MessagesTable /> }, // TODO: Rename to "/meldinger"
+  { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
+  { title: "Mottakid Søk", path: "/mottakidsok", element: <MottakIdSok /> },
+  { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> }
 ];
 
 const Navbar: React.FC<NavbarProps> = () => {
@@ -47,13 +54,13 @@ const Navbar: React.FC<NavbarProps> = () => {
       <nav style={{ display: "flex", flexDirection: "column", width: "100%" }}>
         {pages.map((page) => (
           <Link
-            key={page.url}
+            key={page.path}
             className={clsx(styles.navLink, {
-              [styles.active]: location.pathname === page.url,
+              [styles.active]: location.pathname === page.path,
             })}
-            to={page.url}
+            to={page.path}
           >
-            <p className={styles.linkText}>{page.name}</p>
+            <p className={styles.linkText}>{page.title}</p>
           </Link>
         ))}
       </nav>
