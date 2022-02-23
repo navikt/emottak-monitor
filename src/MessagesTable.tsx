@@ -1,13 +1,14 @@
+import { Select, Table } from "@navikt/ds-react";
+import clsx from "clsx";
 import { Datepicker, isISODateString } from "nav-datovelger";
 import Lenke from "nav-frontend-lenker";
-import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import TimePicker from "react-time-picker";
-import PageWrapper from "./components/PageWrapper";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
+import styles from "./MessagesTable.module.scss";
 import Pagination from "./Pagination";
 import { initialDate, initialFilter, initialTime } from "./util";
 
@@ -66,11 +67,8 @@ const MessagesTable = () => {
     status: initialFilter(statusParam) ?? "",
   });
 
-  const navigate = useNavigate();
-
   const filterMessages = (key: FilterKey, selectedValue: string) => {
     setFilters((oldFilters) => ({ ...oldFilters, [key]: selectedValue }));
-    pushQueryParam(search, key, selectedValue);
   };
 
   useEffect(() => {
@@ -85,28 +83,6 @@ const MessagesTable = () => {
     // TODO: Sette currentPage til 0?
     setVisibleMessages(filteredMessages ?? []);
   }, [filters, messages]);
-
-  useEffect(() => {
-    // TODO: filtrer visiblepages på currentPage
-  }, [currentPage]);
-
-  const pushHistory = useCallback(() => {
-    navigate(
-      `/?fromDate=${fom}&fromTime=${fromTime}&toDate=${tom}&toTime=${toTime}&role=${filters.role}&service=${filters.service}&action=${filters.action}&status=${filters.status}`
-    );
-  }, [fom, tom, filters, fromTime, toTime, navigate]);
-
-  const pushQueryParam = (search: string, key: string, value: string) => {
-    let searchParams = new URLSearchParams(search);
-    searchParams.set(key, value);
-    navigate(`?${searchParams.toString()}`);
-  };
-
-  useEffect(() => {
-    if (fom !== "" && tom !== "" && fromTime !== "" && toTime !== "") {
-      pushHistory();
-    }
-  }, [fom, tom, fromTime, toTime, pushHistory]);
 
   useEffect(() => {
     callRequest();
@@ -140,272 +116,230 @@ const MessagesTable = () => {
     return items.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, PageSize, items]);
 
+  const headers: { key: keyof MessageInfo; name: string }[] = [
+    { key: "datomottat", name: "Mottatt" },
+    { key: "mottakidliste", name: "Mottak-id" },
+    { key: "role", name: "Role" },
+    { key: "service", name: "Service" },
+    { key: "action", name: "Action" },
+    { key: "referanse", name: "Referanse" },
+    { key: "avsender", name: "Avsender" },
+    { key: "cpaid", name: "CPA-id" },
+    { key: "status", name: "Status" },
+  ];
+
+  const rowWithMessage = (message: string) => (
+    <Table.Row>
+      <Table.DataCell style={{ textAlign: "center" }} colSpan={9}>
+        {message}
+      </Table.DataCell>
+    </Table.Row>
+  );
+
   return (
-    <PageWrapper title="Meldinger">
-      <div className="row">
-        <div className="column">
-          <table id={"timetable"}>
-            <tbody>
-              <tr>
-                <th>Fra og med dato: </th>
-                <th>
-                  <Datepicker
-                    locale={"nb"}
-                    inputId="datepicker-input-fom"
-                    value={fom}
-                    onChange={setFom}
-                    inputProps={{
-                      name: "dateInput",
-                      "aria-invalid":
-                        fom !== "" && isISODateString(fom) === false,
-                    }}
-                    calendarSettings={{ showWeekNumbers: false }}
-                    showYearSelector={true}
-                  />
-                </th>
-                <th>
-                  <TimePicker
-                    onChange={(value) =>
-                      typeof value === "string"
-                        ? setFromTime(value)
-                        : setFromTime(value.toLocaleTimeString())
-                    }
-                    value={fromTime}
-                  />
-                </th>
-              </tr>
-              <tr>
-                <th>Til og med:</th>
-                <th>
-                  <Datepicker
-                    locale={"nb"}
-                    inputId="datepicker-input-tom"
-                    value={tom}
-                    onChange={setTom}
-                    inputProps={{
-                      name: "dateInput",
-                      "aria-invalid":
-                        tom !== "" && isISODateString(tom) === false,
-                    }}
-                    calendarSettings={{ showWeekNumbers: false }}
-                    showYearSelector={true}
-                  />
-                </th>
-                <th>
-                  <TimePicker
-                    onChange={(value) =>
-                      typeof value === "string"
-                        ? setToTime(value)
-                        : setToTime(value.toLocaleTimeString())
-                    }
-                    value={toTime}
-                  />
-                </th>
-              </tr>
-            </tbody>
-          </table>
+    <>
+      <div className={styles.gridContainer}>
+        <div
+          style={{
+            gridArea: "fromTime",
+          }}
+        >
+          <label
+            className="navds-select__label navds-label navds-label--small"
+            htmlFor="datepicker-input-fom"
+          >
+            Fra og med dato
+          </label>
+          <div style={{ display: "flex", marginTop: "0.5rem" }}>
+            <Datepicker
+              locale={"nb"}
+              inputId="datepicker-input-fom"
+              value={fom}
+              onChange={setFom}
+              inputProps={{
+                name: "dateInput",
+                "aria-invalid": fom !== "" && isISODateString(fom) === false,
+              }}
+              calendarSettings={{ showWeekNumbers: false }}
+              showYearSelector={true}
+            />
+            <TimePicker
+              onChange={(value) =>
+                typeof value === "string"
+                  ? setFromTime(value)
+                  : setFromTime(value.toLocaleTimeString())
+              }
+              value={toTime}
+            />
+          </div>
         </div>
-        <div className="column">
-          <table>
-            <tbody>
-              <tr>
-                <th>
-                  <Select
-                    id={"select"}
-                    onChange={(event) =>
-                      filterMessages("role", event.target.value)
-                    }
-                    selected={filters.role}
-                  >
-                    <option value="">Velg rolle</option>
-                    {uniqueRoles.map((role) => {
-                      return (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                </th>
-                <th>
-                  <Select
-                    id={"select"}
-                    onChange={(event) =>
-                      filterMessages("service", event.target.value)
-                    }
-                    selected={filters.service}
-                  >
-                    <option value="">Velg service</option>
-                    {uniqueServices.map((service) => {
-                      return (
-                        <option key={service} value={service}>
-                          {service}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                </th>
-                <th>
-                  <Select
-                    id={"select"}
-                    onChange={(event) =>
-                      filterMessages("action", event.target.value)
-                    }
-                    selected={filters.action}
-                  >
-                    <option value="">Velg action</option>
-                    {uniqueActions.map((action) => {
-                      return (
-                        <option key={action} value={action}>
-                          {action}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                </th>
-                <th>
-                  <Select
-                    id={"select"}
-                    onChange={(event) =>
-                      filterMessages("status", event.target.value)
-                    }
-                    selected={filters.status}
-                  >
-                    <option value="">Velg status</option>
-                    {uniqueStatus.map((status) => {
-                      return (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                </th>
-              </tr>
-            </tbody>
-          </table>
+        <Select
+          style={{
+            textAlign: "left",
+            gridArea: "role",
+          }}
+          label="Rolle"
+          size="small"
+          onChange={(event) =>
+            filterMessages("role", event.currentTarget.value)
+          }
+        >
+          <option value="">Velg rolle</option>
+          {uniqueRoles.map((role) => {
+            return (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            );
+          })}
+        </Select>
+        <Select
+          style={{
+            gridArea: "service",
+          }}
+          label="Service"
+          size="small"
+          onChange={(event) =>
+            filterMessages("service", event.currentTarget.value)
+          }
+        >
+          <option value="">Velg service</option>
+          {uniqueServices.map((service) => {
+            return (
+              <option key={service} value={service}>
+                {service}
+              </option>
+            );
+          })}
+        </Select>
+        <div
+          style={{
+            gridArea: "toTime",
+          }}
+        >
+          <label
+            className="navds-select__label navds-label navds-label--small"
+            htmlFor="datepicker-input-tom"
+          >
+            Til og med
+          </label>
+          <div style={{ display: "flex", marginTop: "0.5rem" }}>
+            <Datepicker
+              locale={"nb"}
+              inputId="datepicker-input-tom"
+              value={tom}
+              onChange={setTom}
+              inputProps={{
+                name: "dateInput",
+                "aria-invalid": tom !== "" && isISODateString(tom) === false,
+              }}
+              calendarSettings={{ showWeekNumbers: false }}
+              showYearSelector={true}
+            />
+            <TimePicker
+              onChange={(value) =>
+                typeof value === "string"
+                  ? setToTime(value)
+                  : setToTime(value.toLocaleTimeString())
+              }
+              value={toTime}
+            />
+          </div>
         </div>
+        <Select
+          label="Action"
+          size="small"
+          onChange={(event) =>
+            filterMessages("action", event.currentTarget.value)
+          }
+          style={{ gridArea: "action" }}
+        >
+          <option value="">Velg action</option>
+          {uniqueActions.map((action) => {
+            return (
+              <option key={action} value={action}>
+                {action}
+              </option>
+            );
+          })}
+        </Select>
+        <Select
+          label="Status"
+          size="small"
+          onChange={(event) =>
+            filterMessages("status", event.currentTarget.value)
+          }
+          style={{ gridArea: "status" }}
+        >
+          <option value="">Velg status</option>
+          {uniqueStatus.map((status) => {
+            return (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            );
+          })}
+        </Select>
       </div>
-      <table className="tabell tabell--stripet">
-        <thead>
-          <tr>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("datomottat")}
-                className={getClassNamesFor("datomottat")}
+      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
+        {messagesLength} meldinger
+      </span>
+      <Table className={styles.table} style={{ width: "100%" }}>
+        <Table.Header className={styles.tableHeader}>
+          <Table.Row>
+            {headers.map(({ key, name }) => (
+              <Table.HeaderCell
+                key={key}
+                onClick={() => requestSort(key)}
+                className={getClassNamesFor(key)}
               >
-                Mottat
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("mottakidliste")}
-                className={getClassNamesFor("mottakidliste")}
-              >
-                Mottak-id
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("role")}
-                className={getClassNamesFor("role")}
-              >
-                Role
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("service")}
-                className={getClassNamesFor("service")}
-              >
-                Service
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("action")}
-                className={getClassNamesFor("action")}
-              >
-                Action
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("referanse")}
-                className={getClassNamesFor("referanse")}
-              >
-                Referanse
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("avsender")}
-                className={getClassNamesFor("avsender")}
-              >
-                Avsender
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("cpaid")}
-                className={getClassNamesFor("cpaid")}
-              >
-                CPA-id
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("status")}
-                className={getClassNamesFor("status")}
-              >
-                Status
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {!loading &&
+                {name}
+              </Table.HeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {loading ? (
+            <NavFrontendSpinner />
+          ) : (
             currentTableData.map((message, index) => {
               return (
-                <tr key={message.cpaid + index}>
-                  <td className="tabell__td--sortert">
+                <Table.Row
+                  key={message.cpaid + index}
+                  className={clsx({ [styles.coloredRow]: index % 2 })}
+                >
+                  <Table.DataCell className="tabell__td--sortert">
                     {message.datomottat.substring(0, 23)}
-                  </td>
-                  <td>
+                  </Table.DataCell>
+                  <Table.DataCell>
                     {message.mottakidliste.split(",").map((mottakid) => (
                       <Lenke key={mottakid} href={`/logg/${mottakid}`}>
                         {mottakid}{" "}
                       </Lenke>
                     ))}
-                  </td>
-                  <td>{message.role}</td>
-                  <td>{message.service}</td>
-                  <td>{message.action}</td>
-                  <td>{message.referanse}</td>
-                  <td>{message.avsender}</td>
-                  <td>
+                  </Table.DataCell>
+                  <Table.DataCell>{message.role}</Table.DataCell>
+                  <Table.DataCell>{message.service}</Table.DataCell>
+                  <Table.DataCell>{message.action}</Table.DataCell>
+                  <Table.DataCell>{message.referanse}</Table.DataCell>
+                  <Table.DataCell>{message.avsender}</Table.DataCell>
+                  <Table.DataCell>
                     <Lenke href={`/cpa/${message.cpaid}`}>
                       {message.cpaid}{" "}
                     </Lenke>
-                  </td>
-                  <td>{message.status}</td>
-                </tr>
+                  </Table.DataCell>
+                  <Table.DataCell>{message.status}</Table.DataCell>
+                </Table.Row>
               );
-            })}
-        </tbody>
-        <caption>{messagesLength} meldinger</caption>
-      </table>
-      {loading && <NavFrontendSpinner />}
-      {error?.message && <p>{error.message}</p>}
+            })
+          )}
+          {!loading &&
+            !error &&
+            messages?.length === 0 &&
+            rowWithMessage("No messages")}
+          {error?.message && rowWithMessage(error.message)}
+        </Table.Body>
+      </Table>
       <Pagination
         totalCount={visibleMessages.length}
         pageSize={PageSize}
@@ -413,7 +347,7 @@ const MessagesTable = () => {
         currentPage={currentPage}
         onPageChange={(page) => setCurrentPage(page)}
       />
-    </PageWrapper>
+    </>
   );
 };
 export default MessagesTable;
