@@ -3,11 +3,10 @@ import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import Lenke from "nav-frontend-lenker";
 import { Select } from "nav-frontend-skjema";
 import NavFrontendSpinner from "nav-frontend-spinner";
-//import Pagination from "paginering";
+//import Pagination from "./paginering";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TimePicker, { TimePickerValue } from "react-time-picker";
-import PageWrapper from "./components/PageWrapper";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
 import { initialDate, initialFilter, initialTime } from "./util";
@@ -126,7 +125,7 @@ const EventsTable = () => {
   };
 
   return (
-    <PageWrapper title="Hendelser">
+    <>
       <div className="row">
         <div className="column">
           <table id={"timetable"}>
@@ -358,7 +357,7 @@ const EventsTable = () => {
       </table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
-    </PageWrapper>
+    </>
   );
 };
 export default EventsTable;
