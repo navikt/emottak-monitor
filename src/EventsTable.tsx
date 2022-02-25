@@ -1,7 +1,6 @@
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
-//import Pagination from "paginering";
 import React, { useEffect, useMemo, useState } from "react";
 import Filter from "./components/Filter";
 import useDebounce from "./hooks/useDebounce";

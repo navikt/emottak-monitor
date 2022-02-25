@@ -3,8 +3,24 @@ import { Heading } from "@navikt/ds-react";
 import clsx from "clsx";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { routes } from "../../App";
 import styles from "./Navbar.module.scss";
+import MessagesTable from "../../MessagesTable";
+import EventsTable from "../../EventsTable";
+import MottakIdSok from "../../MottakIdSok";
+import FeilStatistikk from "../../FeilStatistikk";
+
+type Page = {
+  title: string;
+  path: string;
+  element: React.ReactNode;
+};
+
+export const pages: Page[] = [
+  { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
+  { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
+  { title: "Mottakid Søk", path: "/mottakidsok", element: <MottakIdSok /> },
+  { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> }
+];
 
 type NavbarProps = {
   isNavbarOpen: boolean;
@@ -60,15 +76,15 @@ const Navbar: React.FC<NavbarProps> = ({ isNavbarOpen, setIsNavbarOpen }) => {
         <nav
           style={{ display: "flex", flexDirection: "column", width: "100%" }}
         >
-          {routes.map((route) => (
+          {pages.map((page) => (
             <Link
-              key={route.path}
+              key={page.path}
               className={clsx(styles.navLink, {
-                [styles.active]: location.pathname === route.path,
+                [styles.active]: location.pathname === page.path,
               })}
-              to={route.path}
+              to={page.path}
             >
-              <p className={styles.linkText}>{route.title}</p>
+              <p className={styles.linkText}>{page.title}</p>
             </Link>
           ))}
         </nav>

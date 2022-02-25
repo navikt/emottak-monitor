@@ -63,7 +63,7 @@
 
 .button {
   position: absolute;
-  top: calc($header-height/2 - $nav-button-diameter/2);
+  top: calc(#{$header-height}/2 - #{$nav-button-diameter}/2);
   height: $nav-button-diameter;
   width: $nav-button-diameter;
   display: flex;
@@ -82,13 +82,13 @@
 
 .closeButton {
   z-index: 200;
-  left: calc($nav-width - $nav-button-diameter/2);
+  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
   display: flex;
   transition: left 1s;
 }
 
 .closeButtonCollapsed {
-  left: calc(-1 * $nav-button-diameter);
+  left: calc(-1 * #{$nav-button-diameter});
 }
 
 .closeButtonHidden {
@@ -98,7 +98,7 @@
 }
 
 .closeButtonVisible {
-  left: calc($nav-width - $nav-button-diameter/2);
+  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
 }
 
 .openButton {

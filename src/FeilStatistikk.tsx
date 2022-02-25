@@ -6,6 +6,7 @@ import TimePicker from "react-time-picker";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
 import { initialDate, initialTime } from "./util";
+import PageWrapper from "./components/PageWrapper";
 
 
 type StatistikkInfo = {
@@ -48,96 +49,98 @@ const FeilStatistikk = () => {
     }) : null);
 
     return (
-        <div className="App">
-            <h1>Statistikk</h1>
-            <div className="row">
-                <div className="column">
-                    <table id={"timetable"}>
-                        <tr>
-                            <th>Fra og med dato: </th>
-                            <th>
-                                <Datepicker
-                                    locale={'nb'}
-                                    inputId="datepicker-input-fom"
-                                    value={fom}
-                                    onChange={setFom}
-                                    inputProps={{
-                                        name: 'dateInput',
-                                        'aria-invalid': fom !== '' && isISODateString(fom) === false,
-                                    }}
-                                    calendarSettings={{ showWeekNumbers: false }}
-                                    showYearSelector={true} />
-                            </th>
-                            <th>
-                                <TimePicker
-                                    onChange={(value) =>
-                                        typeof value === "string"
-                                            ? setFromTime(value)
-                                            : setFromTime(value.toLocaleTimeString())
-                                    }
-                                    value={fromTime}/>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Til og med:</th>
-                            <th>
-                                <Datepicker
-                                    locale={'nb'}
-                                    inputId="datepicker-input-tom"
-                                    value={tom}
-                                    onChange={setTom}
-                                    inputProps={{
-                                        name: 'dateInput',
-                                        'aria-invalid': tom !== '' && isISODateString(tom) === false,
-                                    }}
-                                    calendarSettings={{ showWeekNumbers: false }}
-                                    showYearSelector={true}/>
-                            </th>
-                            <th>
-                                <TimePicker
-                                    onChange={(value) =>
-                                        typeof value === "string"
-                                            ? setToTime(value)
-                                            : setToTime(value.toLocaleTimeString())
-                                    }
-                                    value={toTime}/>
-                            </th>
-                        </tr>
-                    </table>
+        <PageWrapper title="Feilstatistikk">
+            <div className="App">
+                <h1>Statistikk</h1>
+                <div className="row">
+                    <div className="column">
+                        <table id={"timetable"}>
+                            <tr>
+                                <th>Fra og med dato:</th>
+                                <th>
+                                    <Datepicker
+                                        locale={'nb'}
+                                        inputId="datepicker-input-fom"
+                                        value={fom}
+                                        onChange={setFom}
+                                        inputProps={{
+                                            name: 'dateInput',
+                                            'aria-invalid': fom !== '' && isISODateString(fom) === false,
+                                        }}
+                                        calendarSettings={{showWeekNumbers: false}}
+                                        showYearSelector={true}/>
+                                </th>
+                                <th>
+                                    <TimePicker
+                                        onChange={(value) =>
+                                            typeof value === "string"
+                                                ? setFromTime(value)
+                                                : setFromTime(value.toLocaleTimeString())
+                                        }
+                                        value={fromTime}/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Til og med:</th>
+                                <th>
+                                    <Datepicker
+                                        locale={'nb'}
+                                        inputId="datepicker-input-tom"
+                                        value={tom}
+                                        onChange={setTom}
+                                        inputProps={{
+                                            name: 'dateInput',
+                                            'aria-invalid': tom !== '' && isISODateString(tom) === false,
+                                        }}
+                                        calendarSettings={{showWeekNumbers: false}}
+                                        showYearSelector={true}/>
+                                </th>
+                                <th>
+                                    <TimePicker
+                                        onChange={(value) =>
+                                            typeof value === "string"
+                                                ? setToTime(value)
+                                                : setToTime(value.toLocaleTimeString())
+                                        }
+                                        value={toTime}/>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
+                <table className="tabell tabell--stripet">
+                    <thead>
+                    <tr>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('hendelsesbeskrivelse')}
+                                className={getClassNamesFor('hendelsesbeskrivelse')}>Hendelse
+                            </button>
+                        </th>
+                        <th>
+                            <button
+                                type="button"
+                                onClick={() => requestSort('antall_feil')}
+                                className={getClassNamesFor('antall_feil')}>Antall
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {!loading &&
+                        items.map((message, index) => {
+                            return <tr>
+                                <td>{message.hendelsesbeskrivelse}</td>
+                                <td>{message.antall_feil}</td>
+                            </tr>
+                        })}
+                    </tbody>
+                </table>
+                {loading && <NavFrontendSpinner/>}
+                {error?.message && <p>{error.message}</p>}
             </div>
-            <table className="tabell tabell--stripet">
-                <thead>
-                <tr>
-                    <th>
-                        <button
-                            type="button"
-                            onClick={() => requestSort('hendelsesbeskrivelse')}
-                            className={getClassNamesFor('hendelsesbeskrivelse')}>Hendelse
-                        </button>
-                    </th>
-                    <th>
-                        <button
-                            type="button"
-                            onClick={() => requestSort('antall_feil')}
-                            className={getClassNamesFor('antall_feil')}>Antall
-                        </button>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {!loading &&
-                    items.map((message, index) => {
-                    return <tr>
-                        <td>{message.hendelsesbeskrivelse}</td>
-                        <td>{message.antall_feil}</td>
-                        </tr>
-                })}
-                </tbody>
-            </table>
-            {loading && <NavFrontendSpinner /> }
-            {error?.message && <p>{error.message}</p>}
-        </div>
+        </PageWrapper>
     );
 };
 
