@@ -35,7 +35,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           {routes.map((route) => (
-            <Route path={route.path} element={route.element} />
+            <Route key={route.path} path={route.path} element={route.element} />
           ))}
           <Route path="/" element={<Navigate to="/meldinger" />} />
         </Route>
