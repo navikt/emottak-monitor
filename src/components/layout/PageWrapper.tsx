@@ -1,7 +1,7 @@
 import { Heading } from "@navikt/ds-react";
 import React, { PropsWithChildren } from "react";
 import { useLocation } from "react-router-dom";
-import { routes } from "../../App";
+import { pages } from "./Navbar";
 import styles from "./PageWrapper.module.scss";
 
 type PageWrapperProps = PropsWithChildren<{}>;
@@ -10,7 +10,7 @@ const PageWrapper: React.FC<PageWrapperProps> = (props: PageWrapperProps) => {
   const { children } = props;
   const location = useLocation();
 
-  const title = routes.find((route) => location.pathname === route.path)?.title;
+  const title = pages.find((page) => location.pathname === page.path)?.title;
 
   return (
     <div className={styles.pageWrapper}>
