@@ -1,16 +1,17 @@
-import { Select, Table } from "@navikt/ds-react";
+import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
-import { Datepicker, isISODateString } from "nav-datovelger";
 import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
-import TimePicker from "react-time-picker";
+import Filter from "./components/Filter";
+import RowWithContent from "./components/RowWithContent";
+import useDebounce from "./hooks/useDebounce";
 import useFetch from "./hooks/useFetch";
+import useFilter from "./hooks/useFilter";
 import useTableSorting from "./hooks/useTableSorting";
 import styles from "./MessagesTable.module.scss";
 import Pagination from "./Pagination";
-import { initialDate, initialFilter, initialTime } from "./util";
+import { initialDate, initialTime } from "./util";
 
 type MessageInfo = {
   action: string;
@@ -24,85 +25,48 @@ type MessageInfo = {
   service: string;
   status: string;
 };
-type FilterKey = keyof Pick<
-  MessageInfo,
-  "role" | "service" | "action" | "status"
->;
 
 const MessagesTable = () => {
-  const { search } = useLocation();
+  const [fromDate, setFromDate] = useState(initialDate(""));
+  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromTime, setFromTime] = useState(initialTime(""));
+  const [toTime, setToTime] = useState(initialTime(""));
 
-  let PageSize = 10;
-  const fomParam = new URLSearchParams(search).get("fromDate");
-  const tomParam = new URLSearchParams(search).get("toDate");
-  const fromTimeParam = new URLSearchParams(search).get("fromTime");
-  const toTimeParam = new URLSearchParams(search).get("toTime");
-  const roleParam = new URLSearchParams(search).get("role");
-  const serviceParam = new URLSearchParams(search).get("service");
-  const actionParam = new URLSearchParams(search).get("action");
-  const statusParam = new URLSearchParams(search).get("status");
+  // using debounce to not use value until there has been no new changes
+  const debouncedFromDate = useDebounce(fromDate, 200);
+  const debouncedToDate = useDebounce(toDate, 200);
+  const debouncedFromTime = useDebounce(fromTime, 200);
+  const debouncedToTime = useDebounce(toTime, 200);
 
-  const [visibleMessages, setVisibleMessages] = useState<MessageInfo[]>([]);
+  let pageSize = 10;
+
   const [currentPage, setCurrentPage] = useState(1);
   //const [pageSize, setPageSize] = useState(10);
 
-  const [fom, setFom] = useState(initialDate(fomParam));
-  const [tom, setTom] = useState(initialDate(tomParam));
-  const [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
-  const [toTime, setToTime] = useState(initialTime(toTimeParam));
+  const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`;
 
-  const { fetchState, callRequest } = useFetch<MessageInfo[]>(
-    `/v1/hentmeldinger?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
-  );
+  const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
   const { loading, error, data: messages } = fetchState;
 
+  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
+    messages ?? [],
+    ["role", "service", "action", "status"]
+  );
+
   //const numberOfItems = visibleMessages.length;
   //const numberOfPages = pageSize > 0 ? Math.ceil(numberOfItems / pageSize) : 1
-
-  let [filters, setFilters] = useState<Record<FilterKey, string>>({
-    role: initialFilter(roleParam) ?? "",
-    service: initialFilter(serviceParam) ?? "",
-    action: initialFilter(actionParam) ?? "",
-    status: initialFilter(statusParam) ?? "",
-  });
-
-  const filterMessages = (key: FilterKey, selectedValue: string) => {
-    setFilters((oldFilters) => ({ ...oldFilters, [key]: selectedValue }));
-  };
-
-  useEffect(() => {
-    const filteredMessages = messages?.filter((message) => {
-      return (
-        (filters.role === "" || filters.role === message.role) &&
-        (filters.service === "" || filters.service === message.service) &&
-        (filters.action === "" || filters.action === message.action) &&
-        (filters.status === "" || filters.status === message.status)
-      );
-    });
-    // TODO: Sette currentPage til 0?
-    setVisibleMessages(filteredMessages ?? []);
-  }, [filters, messages]);
 
   useEffect(() => {
     callRequest();
   }, [callRequest]);
 
-  let uniqueRoles = Array.from(new Set(messages?.map(({ role }) => role)));
-  let uniqueServices = Array.from(
-    new Set(messages?.map(({ service }) => service))
-  );
-  let uniqueActions = Array.from(
-    new Set(messages?.map(({ action }) => action))
-  );
-  let uniqueStatus = Array.from(new Set(messages?.map(({ status }) => status)));
+  const {
+    items: filteredAndSortedMessages,
+    requestSort,
+    sortConfig,
+  } = useTableSorting(filteredMessages);
 
-  const { items, requestSort, sortConfig } = useTableSorting(visibleMessages);
-  let messagesLength = 0;
-
-  if (items.length) {
-    messagesLength = items.length;
-  }
   const getClassNamesFor = (name: keyof MessageInfo) => {
     if (!sortConfig) {
       return;
@@ -111,10 +75,10 @@ const MessagesTable = () => {
   };
 
   const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PageSize;
-    const lastPageIndex = firstPageIndex + PageSize;
-    return items.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, PageSize, items]);
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return filteredAndSortedMessages.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedMessages]);
 
   const headers: { key: keyof MessageInfo; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
@@ -128,161 +92,22 @@ const MessagesTable = () => {
     { key: "status", name: "Status" },
   ];
 
-  const rowWithMessage = (message: string) => (
-    <Table.Row>
-      <Table.DataCell style={{ textAlign: "center" }} colSpan={9}>
-        {message}
-      </Table.DataCell>
-    </Table.Row>
-  );
-
   return (
     <>
-      <div className={styles.gridContainer}>
-        <div
-          style={{
-            gridArea: "fromTime",
-          }}
-        >
-          <label
-            className="navds-select__label navds-label navds-label--small"
-            htmlFor="datepicker-input-fom"
-          >
-            Fra og med dato
-          </label>
-          <div style={{ display: "flex", marginTop: "0.5rem" }}>
-            <Datepicker
-              locale={"nb"}
-              inputId="datepicker-input-fom"
-              value={fom}
-              onChange={setFom}
-              inputProps={{
-                name: "dateInput",
-                "aria-invalid": fom !== "" && isISODateString(fom) === false,
-              }}
-              calendarSettings={{ showWeekNumbers: false }}
-              showYearSelector={true}
-            />
-            <TimePicker
-              onChange={(value) =>
-                typeof value === "string"
-                  ? setFromTime(value)
-                  : setFromTime(value.toLocaleTimeString())
-              }
-              value={toTime}
-            />
-          </div>
-        </div>
-        <Select
-          style={{
-            textAlign: "left",
-            gridArea: "role",
-          }}
-          label="Rolle"
-          size="small"
-          onChange={(event) =>
-            filterMessages("role", event.currentTarget.value)
-          }
-        >
-          <option value="">Velg rolle</option>
-          {uniqueRoles.map((role) => {
-            return (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            );
-          })}
-        </Select>
-        <Select
-          style={{
-            gridArea: "service",
-          }}
-          label="Service"
-          size="small"
-          onChange={(event) =>
-            filterMessages("service", event.currentTarget.value)
-          }
-        >
-          <option value="">Velg service</option>
-          {uniqueServices.map((service) => {
-            return (
-              <option key={service} value={service}>
-                {service}
-              </option>
-            );
-          })}
-        </Select>
-        <div
-          style={{
-            gridArea: "toTime",
-          }}
-        >
-          <label
-            className="navds-select__label navds-label navds-label--small"
-            htmlFor="datepicker-input-tom"
-          >
-            Til og med
-          </label>
-          <div style={{ display: "flex", marginTop: "0.5rem" }}>
-            <Datepicker
-              locale={"nb"}
-              inputId="datepicker-input-tom"
-              value={tom}
-              onChange={setTom}
-              inputProps={{
-                name: "dateInput",
-                "aria-invalid": tom !== "" && isISODateString(tom) === false,
-              }}
-              calendarSettings={{ showWeekNumbers: false }}
-              showYearSelector={true}
-            />
-            <TimePicker
-              onChange={(value) =>
-                typeof value === "string"
-                  ? setToTime(value)
-                  : setToTime(value.toLocaleTimeString())
-              }
-              value={toTime}
-            />
-          </div>
-        </div>
-        <Select
-          label="Action"
-          size="small"
-          onChange={(event) =>
-            filterMessages("action", event.currentTarget.value)
-          }
-          style={{ gridArea: "action" }}
-        >
-          <option value="">Velg action</option>
-          {uniqueActions.map((action) => {
-            return (
-              <option key={action} value={action}>
-                {action}
-              </option>
-            );
-          })}
-        </Select>
-        <Select
-          label="Status"
-          size="small"
-          onChange={(event) =>
-            filterMessages("status", event.currentTarget.value)
-          }
-          style={{ gridArea: "status" }}
-        >
-          <option value="">Velg status</option>
-          {uniqueStatus.map((status) => {
-            return (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            );
-          })}
-        </Select>
-      </div>
+      <Filter
+        fromDate={debouncedFromDate}
+        fromTime={debouncedFromTime}
+        toDate={debouncedToDate}
+        toTime={debouncedToTime}
+        onFromDateChange={setFromDate}
+        onFromTimeChange={setFromTime}
+        onToDateChange={setToDate}
+        onToTimeChange={setToTime}
+        messages={messages ?? []}
+        onFilterChange={handleFilterChange}
+      />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-        {messagesLength} meldinger
+        {filteredMessages.length} meldinger
       </span>
       <Table className={styles.table} style={{ width: "100%" }}>
         <Table.Header className={styles.tableHeader}>
@@ -333,19 +158,18 @@ const MessagesTable = () => {
               );
             })
           )}
-          {!loading &&
-            !error &&
-            messages?.length === 0 &&
-            rowWithMessage("No messages")}
-          {error?.message && rowWithMessage(error.message)}
+          {!loading && !error && messages?.length === 0 && (
+            <RowWithContent>No messages</RowWithContent>
+          )}
+          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
         </Table.Body>
       </Table>
       <Pagination
-        totalCount={visibleMessages.length}
-        pageSize={PageSize}
+        totalCount={filteredMessages.length}
+        pageSize={pageSize}
         siblingCount={1}
         currentPage={currentPage}
-        onPageChange={(page) => setCurrentPage(page)}
+        onPageChange={setCurrentPage}
       />
     </>
   );
