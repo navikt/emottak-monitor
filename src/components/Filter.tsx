@@ -69,11 +69,13 @@ const Filter = <T, K extends keyof T>({
             showYearSelector={true}
           />
           <TimePicker
-            onChange={(value) =>
-              typeof value === "string"
-                ? onFromTimeChange(value)
-                : onFromTimeChange(value.toLocaleTimeString())
-            }
+            onChange={(value) => {
+              if (value !== null) {
+                typeof value === "string"
+                  ? onFromTimeChange(value)
+                  : onFromTimeChange(value.toLocaleTimeString());
+              }
+            }}
             value={fromTime}
           />
         </div>
@@ -153,11 +155,13 @@ const Filter = <T, K extends keyof T>({
             showYearSelector={true}
           />
           <TimePicker
-            onChange={(value) =>
-              typeof value === "string"
-                ? onToTimeChange(value)
-                : onToTimeChange(value.toLocaleTimeString())
-            }
+            onChange={(value) => {
+              if (value !== null) {
+                typeof value === "string"
+                  ? onToTimeChange(value)
+                  : onToTimeChange(value.toLocaleTimeString());
+              }
+            }}
             value={toTime}
           />
         </div>
