@@ -47,7 +47,13 @@ const useFetch = <T>(url: string) => {
       const data = await res.data;
       dispatch({ type: "reqSuccess", data });
     } catch (e) {
-      dispatch({ type: "reqError", error: new Error("an error occurred") });
+      if (axios.isAxiosError(e)) {
+        typeof e.response?.data === "string"
+          ? dispatch({ type: "reqError", error: new Error(e.response.data) })
+          : dispatch({ type: "reqError", error: new Error(e.message) });
+      } else {
+        dispatch({ type: "reqError", error: new Error("an error occurred") });
+      }
     }
   }, [url]);
 
