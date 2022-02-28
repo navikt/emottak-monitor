@@ -3,15 +3,15 @@ import clsx from "clsx";
 import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
-import Filter from "./components/Filter";
-import RowWithContent from "./components/RowWithContent";
-import useDebounce from "./hooks/useDebounce";
-import useFetch from "./hooks/useFetch";
-import useFilter from "./hooks/useFilter";
-import useTableSorting from "./hooks/useTableSorting";
-import tableStyles from "./styles/Table.module.scss";
-import Pagination from "./Pagination";
-import { initialDate, initialTime } from "./util";
+import Filter from "../components/Filter";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
+import useFilter from "../hooks/useFilter";
+import useTableSorting from "../hooks/useTableSorting";
+import tableStyles from "../styles/Table.module.scss";
+import Pagination from "../components/Pagination";
+import { initialDate, initialTime } from "../util";
 
 type MessageInfo = {
   action: string;

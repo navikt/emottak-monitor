@@ -1,5 +1,5 @@
 import React from "react";
-import usePagination, { DOTS, Param } from "./hooks/usePagination";
+import usePagination, { DOTS, Param } from "../hooks/usePagination";
 import styles from "./Pagination.module.css";
 import clsx from "clsx";
 import { Back, Next } from "@navikt/ds-icons";

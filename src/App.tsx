@@ -7,9 +7,9 @@ import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
 import CpaTable from "./CpaTable";
-import IsAlive from "./IsAlive";
-import IsReady from "./IsReady";
-import LoggTable from "./LoggTable";
+import IsAlive from "./pages/IsAlive";
+import IsReady from "./pages/IsReady";
+import LoggTable from "./pages/LoggTable";
 
 export default function App() {
   const location = useLocation();

@@ -2,7 +2,7 @@ import { Button, Modal } from "@navikt/ds-react";
 import React from "react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LoggTable from "../LoggTable";
+import LoggTable from "../pages/LoggTable";
 
 const LoggTableModal = () => {
   const navigate = useNavigate();

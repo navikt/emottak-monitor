@@ -3,15 +3,15 @@ import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Filter from "./components/Filter";
-import Pagination from "./Pagination";
-import RowWithContent from "./components/RowWithContent";
-import useDebounce from "./hooks/useDebounce";
-import useFetch from "./hooks/useFetch";
-import useFilter from "./hooks/useFilter";
-import useTableSorting from "./hooks/useTableSorting";
-import { initialDate, initialTime } from "./util";
-import tableStyles from "./styles/Table.module.scss";
+import Filter from "../components/Filter";
+import Pagination from "../components/Pagination";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
+import useFilter from "../hooks/useFilter";
+import useTableSorting from "../hooks/useTableSorting";
+import { initialDate, initialTime } from "../util";
+import tableStyles from "../styles/Table.module.scss";
 
 type EventInfo = {
   action: string;

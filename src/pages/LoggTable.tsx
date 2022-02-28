@@ -2,9 +2,9 @@ import { Table } from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useFetch from "./hooks/useFetch";
-import useTableSorting from "./hooks/useTableSorting";
-import tableStyles from "./styles/Table.module.scss";
+import useFetch from "../hooks/useFetch";
+import useTableSorting from "../hooks/useTableSorting";
+import tableStyles from "../styles/Table.module.scss";
 
 type LogDetails = {
   hendelsesdato: string;
