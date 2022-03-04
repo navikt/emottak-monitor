@@ -15,7 +15,7 @@ const TestDataDisplay = (props) => {
   const DisplayData = items.map((info) => {
     return (
       <tr>
-        <td className="tabell__td--sortert">{info.datomottat.substr(0, 23)}</td>
+        <td className="tabell__td--sortert">{info.datomottat.substring(0, 23)}</td>
         <td>{info.mottakid}</td>
         <td>{info.role}</td>
         <td>{info.service}</td>

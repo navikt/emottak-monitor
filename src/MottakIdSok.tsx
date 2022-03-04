@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Input } from "nav-frontend-skjema";
-import { Hovedknapp } from "nav-frontend-knapper";
 import Lenke from "nav-frontend-lenker";
-import { Cog } from "./util";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
+import styles from "./MessagesTable.module.scss";
+import {Table} from "@navikt/ds-react";
+import useFilter from "./hooks/useFilter";
+import clsx from "clsx";
+import RowWithContent from "./components/RowWithContent";
 
 type MottakIdInfo = {
   action: string;
@@ -32,91 +35,103 @@ const MottakIdSok = () => {
     `/v1/hentmessageinfo?mottakId=${messageId}`
   );
 
-  const { loading, error, data: mottakIdInfo } = fetchState;
-  const { items, requestSort } = useTableSorting(mottakIdInfo);
+  useEffect(() => {
+  callRequest();
+  }, [callRequest]);
+
+  const { loading, error, data: messageInfo } = fetchState;
+
+  const { filteredItems: filteredMessageInfo } = useFilter(
+      messageInfo ?? [],
+      []
+  );
+
+  const {
+    requestSort,
+    sortConfig,
+  } = useTableSorting(filteredMessageInfo);
+
+
+  const getClassNamesFor = (name: keyof MottakIdInfo) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const headers: { key: keyof MottakIdInfo; name: string }[] = [
+    { key: "datomottat", name: "Mottatt" },
+    { key: "mottakid", name: "Mottak-id" },
+    { key: "antall", name: "Antall" },
+    { key: "role", name: "Role" },
+    { key: "service", name: "Service" },
+    { key: "action", name: "Action" },
+    { key: "referanse", name: "Referanse" },
+    { key: "avsender", name: "Avsender" },
+    { key: "cpaid", name: "CPA-id" },
+  ];
 
   return (
-    <div>
-      <table>
-        <tr>
-          <th>Søk opp mottak-id:</th>
-          <th>
-            <Input
-              bredde="XXL"
-              onChange={(event) => setMessageId(event.target.value)}
-              value={messageId}
-            />
-          </th>
-          <th>
-            <Hovedknapp onClick={() => callRequest()}>
-              <Cog />
-              <span>Søk</span>
-            </Hovedknapp>
-          </th>
-        </tr>
-      </table>
-      <table className="tabell tabell--stripet">
-        <thead>
-          <tr>
-            <th>
-              <button type="button" onClick={() => requestSort("datomottat")}>
-                Mottatt
-              </button>
-            </th>
-            <th>
-              <button type="button">Mottak-id</button>
-            </th>
-            <th>
-              <button type="button">Role</button>
-            </th>
-            <th>
-              <button type="button">Service</button>
-            </th>
-            <th>
-              <button type="button">Action</button>
-            </th>
-            <th>
-              <button type="button">Referanse</button>
-            </th>
-            <th>
-              <button type="button">Avsender</button>
-            </th>
-            <th>
-              <button type="button">CPA-id</button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading === false &&
-            items.map((detail) => {
+    <>
+      <Input
+          bredde={"L"}
+          onChange={(event) => setMessageId(event.target.value)}
+          value={messageId}
+      />
+      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
+        {filteredMessageInfo.length} messageInfo
+      </span>
+      <Table className={styles.table} style={{ width: "100%" }}>
+        <Table.Header className={styles.tableHeader}>
+          <Table.Row>
+            {headers.map(({ key, name }) => (
+                <Table.HeaderCell
+                    key={key}
+                    onClick={() => requestSort(key)}
+                    className={getClassNamesFor(key)}
+                >
+                  {name}
+                </Table.HeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {loading ? (
+              <NavFrontendSpinner />
+          ) : (
+              filteredMessageInfo.map((detail, index) => {
               return (
-                <tr key={detail.mottakid}>
-                  <td>{detail.datomottat.slice(0, 23)}</td>
-                  <td>
-                    <Lenke href={`/logg/${detail.mottakid}`}>
-                      {detail.mottakid}{" "}
-                    </Lenke>
-                  </td>
-                  <td>{detail.role}</td>
-                  <td>{detail.service}</td>
-                  <td>{detail.action}</td>
-                  <td>{detail.referanse}</td>
-                  <td>{detail.avsender}</td>
-                  <td>
+                  <Table.Row
+                    key={detail.mottakid + index}
+                    className={clsx({ [styles.coloredRow]: index % 2 })}
+                  >
+                    <Table.DataCell className="tabell__td--sortert">
+                      {detail.datomottat.substring(0, 23)}
+                    </Table.DataCell>
+                    <Table.DataCell>
+                      <Lenke href={`/logg/${detail.mottakid}`}>
+                        {detail.mottakid}{" "}
+                      </Lenke>
+                    </Table.DataCell>
+                  <Table.DataCell>{detail.role}</Table.DataCell>
+                  <Table.DataCell>{detail.service}</Table.DataCell>
+                  <Table.DataCell>{detail.action}</Table.DataCell>
+                  <Table.DataCell>{detail.referanse}</Table.DataCell>
+                  <Table.DataCell>{detail.avsender}</Table.DataCell>
+                  <Table.DataCell>
                     <Lenke href={`/cpa/${detail.cpaid}`}>{detail.cpaid} </Lenke>
-                  </td>
-                </tr>
+                  </Table.DataCell>
+                </Table.Row>
               );
-            })}
-        </tbody>
-        <caption>
-          {items.length === 1 ? <p>1 rad</p> : <p>{items.length} rader</p>}
-        </caption>
-      </table>
-      {!loading && !error && items.length === 0 && <p>No results</p>}
-      {loading && <NavFrontendSpinner />}
-      {error?.message && <p>{error.message}</p>}
-    </div>
+            })
+          )}
+          {!loading && !error && messageInfo?.length === 0 && (
+              <RowWithContent>No information</RowWithContent>
+          )}
+          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+        </Table.Body>
+      </Table>
+      </>
   );
 };
 export default MottakIdSok;

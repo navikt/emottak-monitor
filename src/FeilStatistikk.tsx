@@ -1,31 +1,37 @@
-import { Datepicker, isISODateString } from "nav-datovelger";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { useLocation } from "react-router-dom";
-import TimePicker from "react-time-picker";
 import useFetch from "./hooks/useFetch";
 import useTableSorting from "./hooks/useTableSorting";
 import { initialDate, initialTime } from "./util";
+import {Table} from "@navikt/ds-react"
+import styles from "./MessagesTable.module.scss";
+import clsx from "clsx";
+import RowWithContent from "./components/RowWithContent";
+import useDebounce from "./hooks/useDebounce";
+import Filter from "./components/Filter";
+import useFilter from "./hooks/useFilter";
+import Pagination from "./Pagination";
 
 type StatistikkInfo = {
   hendelsesbeskrivelse: string;
-  antall_feil: string | number;
+  antall_feil: string;
 };
 
 const FeilStatistikk = () => {
-  const search = useLocation().search;
-  const fomParam = new URLSearchParams(search).get("fromDate");
-  const tomParam = new URLSearchParams(search).get("toDate");
-  const fromTimeParam = new URLSearchParams(search).get("fromTime");
-  const toTimeParam = new URLSearchParams(search).get("toTime");
+  const [fromDate, setFromDate] = useState(initialDate(""));
+  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromTime, setFromTime] = useState(initialTime(""));
+  const [toTime, setToTime] = useState(initialTime(""));
 
-  const [fom, setFom] = useState(initialDate(fomParam));
-  const [tom, setTom] = useState(initialDate(tomParam));
-  let [fromTime, setFromTime] = useState(initialTime(fromTimeParam));
-  let [toTime, setToTime] = useState(initialTime(toTimeParam));
+  // using debounce to not use value until there has been no new changes
+  const debouncedFromDate = useDebounce(fromDate, 200);
+  const debouncedToDate = useDebounce(toDate, 200);
+  const debouncedFromTime = useDebounce(fromTime, 200);
+  const debouncedToTime = useDebounce(toTime, 200);
 
   const { fetchState, callRequest } = useFetch<StatistikkInfo[]>(
-    `/v1/hentfeilstatistikk?fromDate=${fom}%20${fromTime}&toDate=${tom}%20${toTime}`
+    `/v1/hentfeilstatistikk?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`
   );
 
   useEffect(() => {
@@ -33,126 +39,101 @@ const FeilStatistikk = () => {
   }, [callRequest]);
 
   const { loading, error, data: statistikkInfoList } = fetchState;
+  let pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const getClassNamesFor = (name: keyof StatistikkInfo) => {
+  const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
+      statistikkInfoList ?? [],
+      []
+    );
+
+    const {
+        items: filteredAndSortedEvents,
+        requestSort,
+        sortConfig,
+    } = useTableSorting(statistikkInfoList);
+
+
+    const getClassNamesFor = (name: keyof StatistikkInfo) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const { items, requestSort, sortConfig } = useTableSorting<StatistikkInfo>(
-    statistikkInfoList
-      ? statistikkInfoList.map((item) => {
-          if (typeof item.antall_feil === "string")
-            item.antall_feil = parseInt(item.antall_feil);
-          return item;
-        })
-      : null
-  );
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return filteredAndSortedEvents.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedEvents]);
+
+
+  const headers: { key: keyof StatistikkInfo; name: string }[] = [
+    { key: "hendelsesbeskrivelse", name: "Hendelse" },
+    { key: "antall_feil", name: "Antall" },
+  ]
 
   return (
-    <div className="App">
-      <div className="row">
-        <div className="column">
-          <table id={"timetable"}>
-            <tr>
-              <th>Fra og med dato:</th>
-              <th>
-                <Datepicker
-                  locale={"nb"}
-                  inputId="datepicker-input-fom"
-                  value={fom}
-                  onChange={setFom}
-                  inputProps={{
-                    name: "dateInput",
-                    "aria-invalid":
-                      fom !== "" && isISODateString(fom) === false,
-                  }}
-                  calendarSettings={{ showWeekNumbers: false }}
-                  showYearSelector={true}
-                />
-              </th>
-              <th>
-                <TimePicker
-                  onChange={(value) =>
-                    typeof value === "string"
-                      ? setFromTime(value)
-                      : setFromTime(value.toLocaleTimeString())
-                  }
-                  value={fromTime}
-                />
-              </th>
-            </tr>
-            <tr>
-              <th>Til og med:</th>
-              <th>
-                <Datepicker
-                  locale={"nb"}
-                  inputId="datepicker-input-tom"
-                  value={tom}
-                  onChange={setTom}
-                  inputProps={{
-                    name: "dateInput",
-                    "aria-invalid":
-                      tom !== "" && isISODateString(tom) === false,
-                  }}
-                  calendarSettings={{ showWeekNumbers: false }}
-                  showYearSelector={true}
-                />
-              </th>
-              <th>
-                <TimePicker
-                  onChange={(value) =>
-                    typeof value === "string"
-                      ? setToTime(value)
-                      : setToTime(value.toLocaleTimeString())
-                  }
-                  value={toTime}
-                />
-              </th>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <table className="tabell tabell--stripet">
-        <thead>
-          <tr>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("hendelsesbeskrivelse")}
-                className={getClassNamesFor("hendelsesbeskrivelse")}
-              >
-                Hendelse
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("antall_feil")}
-                className={getClassNamesFor("antall_feil")}
-              >
-                Antall
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {!loading &&
-            items.map((message, index) => {
+      <>
+      <Filter
+          fromDate={debouncedFromDate}
+          fromTime={debouncedFromTime}
+          toDate={debouncedToDate}
+          toTime={debouncedToTime}
+          onFromDateChange={setFromDate}
+          onFromTimeChange={setFromTime}
+          onToDateChange={setToDate}
+          onToTimeChange={setToTime}
+          messages={statistikkInfoList ?? []}
+          onFilterChange={handleFilterChange}
+          filterKeys={[]}
+      />
+      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
+      </span>
+      <Table className={styles.table} style={{ width: "100%" }}>
+        <Table.Header className={styles.tableHeader}>
+          <Table.Row>
+            {headers.map(({ key, name }) => (
+                <Table.HeaderCell
+                    key={key}
+                    onClick={() => requestSort(key)}
+                    className={getClassNamesFor(key)}
+                >
+                  {name}
+                </Table.HeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+        {loading ? (
+            <NavFrontendSpinner />
+        ) : (
+            currentTableData.map((event, index) => {
               return (
-                <tr>
-                  <td>{message.hendelsesbeskrivelse}</td>
-                  <td>{message.antall_feil}</td>
-                </tr>
+                  <Table.Row
+                      key={event.antall_feil + index}
+                      className={clsx({[styles.coloredRow]: index % 2 })}
+                  >
+                    <Table.DataCell>{event.hendelsesbeskrivelse}</Table.DataCell>
+                    <Table.DataCell>{event.antall_feil}</Table.DataCell>
+                  </Table.Row>
               );
-            })}
-        </tbody>
-      </table>
-      {loading && <NavFrontendSpinner />}
-      {error?.message && <p>{error.message}</p>}
-    </div>
+            })
+        )}
+        {!loading && !error && statistikkInfoList?.length === 0 && (
+            <RowWithContent>No events</RowWithContent>
+        )}
+        {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+      </Table.Body>
+      </Table>
+          <Pagination
+              totalCount={filteredEvents.length}
+              pageSize={pageSize}
+              siblingCount={1}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+          />
+      </>
   );
 };
 

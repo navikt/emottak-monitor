@@ -9,6 +9,10 @@ import useFilter from "./hooks/useFilter";
 import useTableSorting from "./hooks/useTableSorting";
 import Pagination from "./Pagination";
 import { initialDate, initialTime } from "./util";
+import {Table} from "@navikt/ds-react"
+import styles from "./MessagesTable.module.scss";
+import clsx from "clsx";
+import RowWithContent from "./components/RowWithContent";
 
 type EventInfo = {
   action: string;
@@ -19,6 +23,7 @@ type EventInfo = {
   referanse: string | null;
   role: string;
   service: string;
+  status: string;
   tillegsinfo: string | null;
 };
 
@@ -49,7 +54,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action"]
+    ["role", "service", "action", "status"]
   );
 
   const {
@@ -71,6 +76,16 @@ const EventsTable = () => {
     return filteredAndSortedEvents.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, pageSize, filteredAndSortedEvents]);
 
+  const headers: { key: keyof EventInfo; name: string }[] = [
+    { key: "mottakid", name: "Mottak-id" },
+    { key: "hendelsedeskr", name: "Beskrivelse" },
+    { key: "role", name: "Role" },
+    { key: "service", name: "Service" },
+    { key: "action", name: "Action" },
+    { key: "referanse", name: "Referanse" },
+    { key: "avsender", name: "Avsender" },
+  ];
+
   return (
     <>
       <Filter
@@ -89,120 +104,65 @@ const EventsTable = () => {
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} eventer
       </span>
-      <table className="tabell tabell--stripet">
-        <thead>
-          <tr>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("hendelsedato")}
-                className={getClassNamesFor("hendelsedato")}
-              >
-                Mottat
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("hendelsedeskr")}
-                className={getClassNamesFor("hendelsedeskr")}
-              >
-                Hendelse1
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("mottakid")}
-                className={getClassNamesFor("mottakid")}
-              >
-                Mottak-id
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("role")}
-                className={getClassNamesFor("role")}
-              >
-                Role
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("service")}
-                className={getClassNamesFor("service")}
-              >
-                Service
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("action")}
-                className={getClassNamesFor("action")}
-              >
-                Action
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("referanse")}
-                className={getClassNamesFor("referanse")}
-              >
-                Referanse
-              </button>
-            </th>
-            <th>
-              <button
-                type="button"
-                onClick={() => requestSort("avsender")}
-                className={getClassNamesFor("avsender")}
-              >
-                Avsender
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {!loading &&
-            currentTableData.map((event, index) => {
-              return (
-                <tr key={event.mottakid + index}>
-                  <td className="tabell__td--sortert">{event.hendelsedato}</td>
-
-                  <td>
-                    <Ekspanderbartpanel tittel={event.hendelsedeskr}>
-                      {event.tillegsinfo}
-                    </Ekspanderbartpanel>
-                  </td>
-                  <td>
-                    <Lenke href={`/logg/${event.mottakid}`}>
-                      {event.mottakid}{" "}
-                    </Lenke>
-                  </td>
-                  <td>{event.role}</td>
-                  <td>{event.service}</td>
-                  <td>{event.action}</td>
-                  <td>{event.referanse}</td>
-                  <td>{event.avsender}</td>
-                </tr>
+      <Table className={styles.table} style={{ width: "100%" }}>
+        <Table.Header className={styles.tableHeader}>
+          <Table.Row>
+            {headers.map(({ key, name }) => (
+                <Table.HeaderCell
+                    key={key}
+                    onClick={() => requestSort(key)}
+                    className={getClassNamesFor(key)}
+                >
+                  {name}
+                </Table.HeaderCell>
+            ))}
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {loading ? (
+              <NavFrontendSpinner />
+          ) : (
+              currentTableData.map((event, index) => {
+                return (
+                    <Table.Row
+                      key={event.mottakid + index}
+                      className={clsx({[styles.coloredRow]: index % 2 })}
+                    >
+                      <Table.DataCell>
+                        {event.mottakid.split(",").map((mottakid) => (
+                            <Lenke key={mottakid} href={`/logg/${mottakid}`}>
+                              {mottakid}{" "}
+                            </Lenke>
+                        ))}
+                      </Table.DataCell>
+                      <Table.DataCell>
+                        <Ekspanderbartpanel tittel={event.hendelsedeskr}>
+                          {event.tillegsinfo}
+                        </Ekspanderbartpanel>
+                      </Table.DataCell>
+                      <Table.DataCell>{event.role}</Table.DataCell>
+                      <Table.DataCell>{event.service}</Table.DataCell>
+                      <Table.DataCell>{event.action}</Table.DataCell>
+                      <Table.DataCell>{event.referanse}</Table.DataCell>
+                      <Table.DataCell>{event.avsender}</Table.DataCell>
+                </Table.Row>
               );
-            })}
-        </tbody>
-      </table>
-      {loading && <NavFrontendSpinner />}
-      {error?.message && <p>{error.message}</p>}
-      <Pagination
-        totalCount={filteredEvents.length}
-        pageSize={pageSize}
-        siblingCount={1}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
-    </>
-  );
+            })
+          )}
+          {!loading && !error && events?.length === 0 && (
+              <RowWithContent>No events</RowWithContent>
+          )}
+          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+        </Table.Body>
+      </Table>
+          <Pagination
+          totalCount={filteredEvents.length}
+          pageSize={pageSize}
+          siblingCount={1}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      </>
+    );
 };
 export default EventsTable;
