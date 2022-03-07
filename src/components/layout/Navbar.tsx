@@ -4,8 +4,8 @@ import clsx from "clsx";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.scss";
-import MessagesTable from "../../MessagesTable";
-import EventsTable from "../../EventsTable";
+import MessagesTable from "../../pages/MessagesTable";
+import EventsTable from "../../pages/EventsTable";
 import MottakIdSok from "../../MottakIdSok";
 import FeilStatistikk from "../../FeilStatistikk";
 
@@ -19,7 +19,11 @@ export const pages: Page[] = [
   { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
   { title: "Mottakid Søk", path: "/mottakidsok", element: <MottakIdSok /> },
-  { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> }
+  {
+    title: "Feilstatistikk",
+    path: "/feilstatistikk",
+    element: <FeilStatistikk />,
+  },
 ];
 
 type NavbarProps = {

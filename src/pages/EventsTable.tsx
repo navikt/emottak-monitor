@@ -1,18 +1,17 @@
-import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
-import Lenke from "nav-frontend-lenker";
+import { Table } from "@navikt/ds-react";
+import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
-import Filter from "./components/Filter";
-import useDebounce from "./hooks/useDebounce";
-import useFetch from "./hooks/useFetch";
-import useFilter from "./hooks/useFilter";
-import useTableSorting from "./hooks/useTableSorting";
-import Pagination from "./Pagination";
-import { initialDate, initialTime } from "./util";
-import {Table} from "@navikt/ds-react"
-import styles from "./MessagesTable.module.scss";
-import clsx from "clsx";
-import RowWithContent from "./components/RowWithContent";
+import { Link, useLocation } from "react-router-dom";
+import Filter from "../components/Filter";
+import Pagination from "../components/Pagination";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
+import useFilter from "../hooks/useFilter";
+import useTableSorting from "../hooks/useTableSorting";
+import { initialDate, initialTime } from "../util";
+import tableStyles from "../styles/Table.module.scss";
 
 type EventInfo = {
   action: string;
@@ -23,11 +22,12 @@ type EventInfo = {
   referanse: string | null;
   role: string;
   service: string;
-  status: string;
   tillegsinfo: string | null;
 };
 
 const EventsTable = () => {
+  const location = useLocation();
+
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
@@ -54,7 +54,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action", "status"]
+    ["role", "service", "action"]
   );
 
   const {
@@ -77,14 +77,20 @@ const EventsTable = () => {
   }, [currentPage, pageSize, filteredAndSortedEvents]);
 
   const headers: { key: keyof EventInfo; name: string }[] = [
+    { key: "hendelsedato", name: "Mottatt" },
+    { key: "hendelsedeskr", name: "Hendelse" },
     { key: "mottakid", name: "Mottak-id" },
-    { key: "hendelsedeskr", name: "Beskrivelse" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
     { key: "referanse", name: "Referanse" },
     { key: "avsender", name: "Avsender" },
   ];
+
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage = !loading && !error?.message && events?.length === 0;
+  const showData = !loading && !error?.message && !!events?.length;
 
   return (
     <>
@@ -104,65 +110,68 @@ const EventsTable = () => {
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} eventer
       </span>
-      <Table className={styles.table} style={{ width: "100%" }}>
-        <Table.Header className={styles.tableHeader}>
+      <Table className={tableStyles.table}>
+        <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
             {headers.map(({ key, name }) => (
-                <Table.HeaderCell
-                    key={key}
-                    onClick={() => requestSort(key)}
-                    className={getClassNamesFor(key)}
-                >
-                  {name}
-                </Table.HeaderCell>
+              <Table.HeaderCell
+                key={key}
+                onClick={() => requestSort(key)}
+                className={getClassNamesFor(key)}
+              >
+                {name}
+              </Table.HeaderCell>
             ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {loading ? (
+          {showSpinner && (
+            <RowWithContent>
               <NavFrontendSpinner />
-          ) : (
-              currentTableData.map((event, index) => {
-                return (
-                    <Table.Row
-                      key={event.mottakid + index}
-                      className={clsx({[styles.coloredRow]: index % 2 })}
-                    >
-                      <Table.DataCell>
-                        {event.mottakid.split(",").map((mottakid) => (
-                            <Lenke key={mottakid} href={`/logg/${mottakid}`}>
-                              {mottakid}{" "}
-                            </Lenke>
-                        ))}
-                      </Table.DataCell>
-                      <Table.DataCell>
-                        <Ekspanderbartpanel tittel={event.hendelsedeskr}>
-                          {event.tillegsinfo}
-                        </Ekspanderbartpanel>
-                      </Table.DataCell>
-                      <Table.DataCell>{event.role}</Table.DataCell>
-                      <Table.DataCell>{event.service}</Table.DataCell>
-                      <Table.DataCell>{event.action}</Table.DataCell>
-                      <Table.DataCell>{event.referanse}</Table.DataCell>
-                      <Table.DataCell>{event.avsender}</Table.DataCell>
+            </RowWithContent>
+          )}
+
+          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>No events</RowWithContent>}
+          {showData &&
+            currentTableData.map((event, index) => {
+              return (
+                <Table.Row
+                  key={event.hendelsedeskr + index}
+                  className={clsx({ [tableStyles.coloredRow]: index % 2 })}
+                >
+                  <Table.DataCell>{event.hendelsedato}</Table.DataCell>
+                  <Table.DataCell>{event.hendelsedeskr}</Table.DataCell>
+                  <Table.DataCell>
+                    {event.mottakid.split(",").map((mottakid) => (
+                      <Link
+                        key={mottakid}
+                        to={`/logg/${mottakid}`}
+                        state={{ backgroundLocation: location }}
+                      >
+                        {mottakid}
+                      </Link>
+                    ))}
+                  </Table.DataCell>
+                  <Table.DataCell>{event.role}</Table.DataCell>
+                  <Table.DataCell>{event.service}</Table.DataCell>
+                  <Table.DataCell>{event.action}</Table.DataCell>
+                  <Table.DataCell>{event.referanse}</Table.DataCell>
+                  <Table.DataCell>{event.avsender}</Table.DataCell>
                 </Table.Row>
               );
-            })
-          )}
-          {!loading && !error && events?.length === 0 && (
-              <RowWithContent>No events</RowWithContent>
-          )}
-          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+            })}
         </Table.Body>
       </Table>
-          <Pagination
-          totalCount={filteredEvents.length}
-          pageSize={pageSize}
-          siblingCount={1}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
-      </>
-    );
+
+      <Pagination
+        totalCount={filteredEvents.length}
+        pageSize={pageSize}
+        siblingCount={1}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
+    </>
+  );
 };
 export default EventsTable;

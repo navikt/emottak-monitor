@@ -3,15 +3,15 @@ import clsx from "clsx";
 import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
-import Filter from "./components/Filter";
-import RowWithContent from "./components/RowWithContent";
-import useDebounce from "./hooks/useDebounce";
-import useFetch from "./hooks/useFetch";
-import useFilter from "./hooks/useFilter";
-import useTableSorting from "./hooks/useTableSorting";
-import styles from "./MessagesTable.module.scss";
-import Pagination from "./Pagination";
-import { initialDate, initialTime } from "./util";
+import Filter from "../components/Filter";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
+import useFilter from "../hooks/useFilter";
+import useTableSorting from "../hooks/useTableSorting";
+import tableStyles from "../styles/Table.module.scss";
+import Pagination from "../components/Pagination";
+import { initialDate, initialTime } from "../util";
 
 type MessageInfo = {
   action: string;
@@ -92,6 +92,12 @@ const MessagesTable = () => {
     { key: "status", name: "Status" },
   ];
 
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage =
+    !loading && !error?.message && messages?.length === 0;
+  const showData = !loading && !error?.message && !!messages?.length;
+
   return (
     <>
       <Filter
@@ -109,8 +115,8 @@ const MessagesTable = () => {
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredMessages.length} meldinger
       </span>
-      <Table className={styles.table} style={{ width: "100%" }}>
-        <Table.Header className={styles.tableHeader}>
+      <Table className={tableStyles.table}>
+        <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
             {headers.map(({ key, name }) => (
               <Table.HeaderCell
@@ -124,14 +130,19 @@ const MessagesTable = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {loading ? (
-            <NavFrontendSpinner />
-          ) : (
+          {showSpinner && (
+            <RowWithContent>
+              <NavFrontendSpinner />
+            </RowWithContent>
+          )}
+          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>No messages</RowWithContent>}
+          {showData &&
             currentTableData.map((message, index) => {
               return (
                 <Table.Row
                   key={message.cpaid + index}
-                  className={clsx({ [styles.coloredRow]: index % 2 })}
+                  className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
                   <Table.DataCell className="tabell__td--sortert">
                     {message.datomottat.substring(0, 23)}
@@ -150,18 +161,13 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.avsender}</Table.DataCell>
                   <Table.DataCell>
                     <Lenke href={`/cpa/${message.cpaid}`}>
-                      {message.cpaid}{" "}
+                      {message.cpaid}
                     </Lenke>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
                 </Table.Row>
               );
-            })
-          )}
-          {!loading && !error && messages?.length === 0 && (
-            <RowWithContent>No messages</RowWithContent>
-          )}
-          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+            })}
         </Table.Body>
       </Table>
       <Pagination
