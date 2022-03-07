@@ -11,7 +11,7 @@ import RowWithContent from "./components/RowWithContent";
 import useDebounce from "./hooks/useDebounce";
 import Filter from "./components/Filter";
 import useFilter from "./hooks/useFilter";
-import Pagination from "./Pagination";
+import Pagination from "./components/Pagination";
 
 type StatistikkInfo = {
   hendelsesbeskrivelse: string;
