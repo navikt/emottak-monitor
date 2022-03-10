@@ -6,7 +6,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
-import CpaTable from "./CpaTable";
+import CpaTable from "./pages/CpaTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";

@@ -6,8 +6,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
-import MottakIdSok from "../../MottakIdSok";
-import FeilStatistikk from "../../FeilStatistikk";
+import MottakIdSok from "../../pages/MottakIdSok";
+import FeilStatistikk from "../../pages/FeilStatistikk";
 
 type Page = {
   title: string;

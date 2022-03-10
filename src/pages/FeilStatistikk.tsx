@@ -1,21 +1,20 @@
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, {useEffect, useMemo, useState} from "react";
-import { useLocation } from "react-router-dom";
-import useFetch from "./hooks/useFetch";
-import useTableSorting from "./hooks/useTableSorting";
-import { initialDate, initialTime } from "./util";
+import useFetch from "../hooks/useFetch";
+import useTableSorting from "../hooks/useTableSorting";
+import { initialDate, initialTime } from "../util";
 import {Table} from "@navikt/ds-react"
-import styles from "./MessagesTable.module.scss";
+import styles from "../styles/Table.module.scss";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import Filter from "../components/Filter";
+import useFilter from "../hooks/useFilter";
+import Pagination from "../components/Pagination";
 import clsx from "clsx";
-import RowWithContent from "./components/RowWithContent";
-import useDebounce from "./hooks/useDebounce";
-import Filter from "./components/Filter";
-import useFilter from "./hooks/useFilter";
-import Pagination from "./components/Pagination";
 
 type StatistikkInfo = {
   hendelsesbeskrivelse: string;
-  antall_feil: string;
+  antall_feil: string ;
 };
 
 const FeilStatistikk = () => {
@@ -73,6 +72,11 @@ const FeilStatistikk = () => {
     { key: "antall_feil", name: "Antall" },
   ]
 
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage = !loading && !error?.message && statistikkInfoList?.length === 0;
+  const showData = !loading && !error?.message && !!statistikkInfoList?.length;
+
   return (
       <>
       <Filter
@@ -105,10 +109,16 @@ const FeilStatistikk = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-        {loading ? (
-            <NavFrontendSpinner />
-        ) : (
-            currentTableData.map((event, index) => {
+            {showSpinner && (
+                <RowWithContent>
+                    <NavFrontendSpinner />
+                </RowWithContent>
+            )}
+
+            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>No statistics</RowWithContent>}
+            {showData &&
+                currentTableData.map((event, index) => {
               return (
                   <Table.Row
                       key={event.antall_feil + index}
@@ -119,11 +129,7 @@ const FeilStatistikk = () => {
                   </Table.Row>
               );
             })
-        )}
-        {!loading && !error && statistikkInfoList?.length === 0 && (
-            <RowWithContent>No events</RowWithContent>
-        )}
-        {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+            }
       </Table.Body>
       </Table>
           <Pagination

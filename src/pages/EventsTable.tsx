@@ -12,6 +12,7 @@ import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import { initialDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
+import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 
 type EventInfo = {
   action: string;
@@ -141,7 +142,11 @@ const EventsTable = () => {
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
                   <Table.DataCell>{event.hendelsedato}</Table.DataCell>
-                  <Table.DataCell>{event.hendelsedeskr}</Table.DataCell>
+                  <Table.DataCell>
+                      <Ekspanderbartpanel tittel={event.hendelsedeskr}>
+                        {event.tillegsinfo}
+                      </Ekspanderbartpanel>
+                  </Table.DataCell>
                   <Table.DataCell>
                     {event.mottakid.split(",").map((mottakid) => (
                       <Link

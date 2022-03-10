@@ -2,13 +2,13 @@ import React, {useEffect, useState} from "react";
 import { Input } from "nav-frontend-skjema";
 import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import useFetch from "./hooks/useFetch";
-import useTableSorting from "./hooks/useTableSorting";
-import styles from "./MessagesTable.module.scss";
+import useFetch from "../hooks/useFetch";
+import useTableSorting from "../hooks/useTableSorting";
+import styles from "../styles/Table.module.scss";
 import {Table} from "@navikt/ds-react";
-import useFilter from "./hooks/useFilter";
+import useFilter from "../hooks/useFilter";
 import clsx from "clsx";
-import RowWithContent from "./components/RowWithContent";
+import RowWithContent from "../components/RowWithContent";
 
 type MottakIdInfo = {
   action: string;
@@ -25,13 +25,7 @@ type MottakIdInfo = {
 const MottakIdSok = () => {
   const [messageId, setMessageId] = useState("");
 
-  /* Overflødig siden bare kan kalle setMessageId direkte
-      const handleChange = (value: string) => {
-          setMessageId(value);
-      }
-      */
-
-  const { fetchState, callRequest } = useFetch<MottakIdInfo[]>(
+ const { fetchState, callRequest } = useFetch<MottakIdInfo[]>(
     `/v1/hentmessageinfo?mottakId=${messageId}`
   );
 
