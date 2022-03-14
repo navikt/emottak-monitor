@@ -14,7 +14,12 @@ import clsx from "clsx";
 
 type StatistikkInfo = {
   hendelsesbeskrivelse: string;
-  antall_feil: string ;
+  antall_feil: string;
+};
+
+type MappedStatistikkInfo = {
+    hendelsesbeskrivelse: string;
+    antall_feil: number;
 };
 
 const FeilStatistikk = () => {
@@ -34,10 +39,21 @@ const FeilStatistikk = () => {
   );
 
   useEffect(() => {
-    callRequest();
+        callRequest();
   }, [callRequest]);
 
-  const { loading, error, data: statistikkInfoList } = fetchState;
+  const mappedStatistikkInfo = (statistikkInfo: StatistikkInfo[]) =>
+        statistikkInfo.map(
+            (el) =>
+                ({
+                    hendelsesbeskrivelse: el.hendelsesbeskrivelse,
+                    antall_feil: parseInt(el.antall_feil),
+                } as MappedStatistikkInfo)
+        );
+
+  const { loading, error, data } = fetchState;
+  const statistikkInfoList = data ? mappedStatistikkInfo(data) : [];
+
   let pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -65,7 +81,6 @@ const FeilStatistikk = () => {
     const lastPageIndex = firstPageIndex + pageSize;
     return filteredAndSortedEvents.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, pageSize, filteredAndSortedEvents]);
-
 
   const headers: { key: keyof StatistikkInfo; name: string }[] = [
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
