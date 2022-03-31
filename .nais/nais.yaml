@@ -7,7 +7,6 @@ metadata:
     "team": "team-emottak"
 spec:
   image: {{image}}
-  port: 3000
   replicas:
     min: 2
     max: 2
