@@ -1,24 +1,14 @@
-#FROM node:16 as build-step
+FROM node:16.6.2-alpine
 
-#WORKDIR /usr/src/app
-#COPY package.json yarn.lock ./
+WORKDIR /usr/src/app
+COPY server server/
+COPY build build/
 
-#RUN yarn install
+WORKDIR /usr/src/app/server
+RUN npm install
+RUN npm install -g ts-node typescript '@types/node'
 
-#COPY . .
-#RUN yarn build
+ENV PORT 8080
+EXPOSE $PORT
 
-
-FROM navikt/node-express:16
-
-USER root
-RUN apk --no-cache add curl
-
-COPY ./ /var/server/
-
-RUN yarn
-RUN yarn build
-
-EXPOSE 3000
-
-CMD ["yarn", "start"]
+CMD ["ts-node", "server.ts"]
