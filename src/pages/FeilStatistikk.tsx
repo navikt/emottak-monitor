@@ -1,9 +1,9 @@
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect, useMemo, useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
 import { initialDate, initialTime } from "../util";
-import {Table} from "@navikt/ds-react"
+import { Table } from "@navikt/ds-react";
 import styles from "../styles/Table.module.scss";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
@@ -18,8 +18,8 @@ type StatistikkInfo = {
 };
 
 type MappedStatistikkInfo = {
-    hendelsesbeskrivelse: string;
-    antall_feil: number;
+  hendelsesbeskrivelse: string;
+  antall_feil: number;
 };
 
 const FeilStatistikk = () => {
@@ -39,17 +39,17 @@ const FeilStatistikk = () => {
   );
 
   useEffect(() => {
-        callRequest();
+    callRequest();
   }, [callRequest]);
 
   const mappedStatistikkInfo = (statistikkInfo: StatistikkInfo[]) =>
-        statistikkInfo.map(
-            (el) =>
-                ({
-                    hendelsesbeskrivelse: el.hendelsesbeskrivelse,
-                    antall_feil: parseInt(el.antall_feil),
-                } as MappedStatistikkInfo)
-        );
+    statistikkInfo.map(
+      (el) =>
+        ({
+          hendelsesbeskrivelse: el.hendelsesbeskrivelse,
+          antall_feil: parseInt(el.antall_feil),
+        } as MappedStatistikkInfo)
+    );
 
   const { loading, error, data } = fetchState;
   const statistikkInfoList = data ? mappedStatistikkInfo(data) : [];
@@ -58,18 +58,17 @@ const FeilStatistikk = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
-      statistikkInfoList ?? [],
-      []
-    );
+    statistikkInfoList ?? [],
+    []
+  );
 
-    const {
-        items: filteredAndSortedEvents,
-        requestSort,
-        sortConfig,
-    } = useTableSorting(statistikkInfoList);
+  const {
+    items: filteredAndSortedEvents,
+    requestSort,
+    sortConfig,
+  } = useTableSorting(statistikkInfoList);
 
-
-    const getClassNamesFor = (name: keyof StatistikkInfo) => {
+  const getClassNamesFor = (name: keyof StatistikkInfo) => {
     if (!sortConfig) {
       return;
     }
@@ -85,76 +84,77 @@ const FeilStatistikk = () => {
   const headers: { key: keyof StatistikkInfo; name: string }[] = [
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "antall_feil", name: "Antall" },
-  ]
+  ];
 
   const showSpinner = loading;
   const showErrorMessage = !loading && error?.message;
-  const showNoDataMessage = !loading && !error?.message && statistikkInfoList?.length === 0;
+  const showNoDataMessage =
+    !loading && !error?.message && statistikkInfoList?.length === 0;
   const showData = !loading && !error?.message && !!statistikkInfoList?.length;
 
   return (
-      <>
+    <>
       <Filter
-          fromDate={debouncedFromDate}
-          fromTime={debouncedFromTime}
-          toDate={debouncedToDate}
-          toTime={debouncedToTime}
-          onFromDateChange={setFromDate}
-          onFromTimeChange={setFromTime}
-          onToDateChange={setToDate}
-          onToTimeChange={setToTime}
-          messages={statistikkInfoList ?? []}
-          onFilterChange={handleFilterChange}
-          filterKeys={[]}
+        fromDate={debouncedFromDate}
+        fromTime={debouncedFromTime}
+        toDate={debouncedToDate}
+        toTime={debouncedToTime}
+        onFromDateChange={setFromDate}
+        onFromTimeChange={setFromTime}
+        onToDateChange={setToDate}
+        onToTimeChange={setToTime}
+        messages={statistikkInfoList ?? []}
+        onFilterChange={handleFilterChange}
+        filterKeys={[]}
       />
-      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-      </span>
+      <span
+        style={{ position: "relative", float: "left", margin: "20px 0" }}
+      ></span>
       <Table className={styles.table} style={{ width: "100%" }}>
         <Table.Header className={styles.tableHeader}>
           <Table.Row>
             {headers.map(({ key, name }) => (
-                <Table.HeaderCell
-                    key={key}
-                    onClick={() => requestSort(key)}
-                    className={getClassNamesFor(key)}
-                >
-                  {name}
-                </Table.HeaderCell>
+              <Table.HeaderCell
+                key={key}
+                onClick={() => requestSort(key)}
+                className={getClassNamesFor(key)}
+              >
+                {name}
+              </Table.HeaderCell>
             ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-            {showSpinner && (
-                <RowWithContent>
-                    <NavFrontendSpinner />
-                </RowWithContent>
-            )}
+          {showSpinner && (
+            <RowWithContent>
+              <NavFrontendSpinner />
+            </RowWithContent>
+          )}
 
-            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>No statistics</RowWithContent>}
-            {showData &&
-                currentTableData.map((event, index) => {
+          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>No statistics</RowWithContent>}
+          {showData &&
+            currentTableData.map((event, index) => {
               return (
-                  <Table.Row
-                      key={event.antall_feil + index}
-                      className={clsx({[styles.coloredRow]: index % 2 })}
-                  >
-                    <Table.DataCell>{event.hendelsesbeskrivelse}</Table.DataCell>
-                    <Table.DataCell>{event.antall_feil}</Table.DataCell>
-                  </Table.Row>
+                <Table.Row
+                  key={event.antall_feil + index}
+                  className={clsx({ [styles.coloredRow]: index % 2 })}
+                >
+                  <Table.DataCell>{event.hendelsesbeskrivelse}</Table.DataCell>
+                  <Table.DataCell>{event.antall_feil}</Table.DataCell>
+                </Table.Row>
               );
-            })
-            }
-      </Table.Body>
+            })}
+        </Table.Body>
       </Table>
-          <Pagination
-              totalCount={filteredEvents.length}
-              pageSize={pageSize}
-              siblingCount={1}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-          />
-      </>
+      <Pagination
+        totalCount={filteredEvents.length}
+        pageSize={pageSize}
+        siblingCount={1}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
+    </>
   );
 };
 
