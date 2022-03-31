@@ -137,7 +137,7 @@ const FeilStatistikk = () => {
             currentTableData.map((event, index) => {
               return (
                 <Table.Row
-                  key={event.antall_feil + index}
+                  key={event.hendelsesbeskrivelse}
                   className={clsx({ [styles.coloredRow]: index % 2 })}
                 >
                   <Table.DataCell>{event.hendelsesbeskrivelse}</Table.DataCell>
