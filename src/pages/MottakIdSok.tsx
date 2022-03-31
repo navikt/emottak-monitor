@@ -56,7 +56,6 @@ const MottakIdSok = () => {
   const headers: { key: keyof MottakIdInfo; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
     { key: "mottakid", name: "Mottak-id" },
-    { key: "antall", name: "Antall" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
