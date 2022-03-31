@@ -5,8 +5,8 @@ COPY server server/
 COPY build build/
 
 WORKDIR /usr/src/app/server
-RUN npm install
-RUN npm install -g ts-node typescript '@types/node'
+RUN yarn
+RUN yarn add -g ts-node typescript '@types/node'
 
 ENV PORT 8080
 EXPOSE $PORT

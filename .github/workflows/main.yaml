@@ -22,14 +22,13 @@ jobs:
       #      run: "yarn test"
       - name: "Build app"
         run: "yarn build"
-      - name: "Login to GitHub Docker Registry"
-        uses: "docker/login-action@v1"
-        with:
-          "registry": "ghcr.io"
-          "username": "${{ github.actor }}"
-          "password": "${{ secrets.GITHUB_TOKEN }}"
-      - name: "Build and push the Docker image"
-        run: "docker build --pull --tag ${IMAGE} . && docker push ${IMAGE}"
+      - name: "Build and publish Docker image"
+        run:
+          "docker build --pull --tag ${IMAGE} . && echo $GITHUB_TOKEN | docker login\
+          \ --username $GITHUB_REPOSITORY --password-stdin https://docker.pkg.github.com\
+          \ && docker push ${IMAGE}"
+        env:
+          "GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
   deployAppToDev:
     name: "Deploy to dev"
     needs: "build"
