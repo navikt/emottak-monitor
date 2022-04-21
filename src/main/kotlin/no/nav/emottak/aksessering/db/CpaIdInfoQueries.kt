@@ -2,13 +2,13 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.MottakIdInfo
+import no.nav.emottak.model.CpaIdInfo
 import java.sql.ResultSet
 
-fun DatabaseInterface.hentMottakIdInfo(
+fun DatabaseInterface.hentCpaIdInfo(
     databasePrefix: String,
-    mottakid: String?
-): List<MottakIdInfo> =
+    cpaid: String?
+): List<CpaIdInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
@@ -16,17 +16,17 @@ fun DatabaseInterface.hentMottakIdInfo(
                     MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
-                    WHERE MELDING.MOTTAK_ID = ?
+                    WHERE MELDING.AVTALE_ID = ?
                 """
         )
-        statement.setObject(1, mottakid)
+        statement.setObject(1, cpaid)
         statement.use {
-            it.executeQuery().toList { toMottakIdInfo() }
+            it.executeQuery().toList { toCpaIdInfo() }
         }
     }
 
-fun ResultSet.toMottakIdInfo(): MottakIdInfo =
-    MottakIdInfo(
+fun ResultSet.toCpaIdInfo(): CpaIdInfo =
+    CpaIdInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),
         getString("ROLE"),

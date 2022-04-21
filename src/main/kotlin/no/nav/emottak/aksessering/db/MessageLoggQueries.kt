@@ -5,7 +5,6 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageLoggInfo
 import java.sql.ResultSet
 
-
 fun DatabaseInterface.getMessageLogg(
     databasePrefix: String,
     mottakid: String?

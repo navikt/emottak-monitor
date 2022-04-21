@@ -31,7 +31,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
             log.info("Kjører dabasespørring for å hente meldinger...")
             val meldinger = meldingService.meldinger(fom, tom)
-            //val logg = meldingService.messagelogg()
+            // val logg = meldingService.messagelogg()
 
             log.info("Meldinger antall : ${meldinger.size}")
             log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
@@ -64,10 +64,10 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(HttpStatusCode.BadRequest)
             }
 
-            log.info("Henter hendelseslogg for ${mottakid}")
+            log.info("Henter hendelseslogg for $mottakid")
             val logg = meldingService.messagelogg(mottakid)
 
-            log.info("Antall hendelser for ${mottakid}: ${logg.size}")
+            log.info("Antall hendelser for $mottakid: ${logg.size}")
             call.respond(logg)
         }
         get("/hentcpa") {
@@ -77,10 +77,10 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(HttpStatusCode.BadRequest)
             }
 
-            log.info("Henter cpa info for ${cpaid}")
+            log.info("Henter cpa info for $cpaid")
             val cpaInfo = meldingService.messagecpa(cpaid)
 
-            log.info("Partner id for ${cpaid}: ${cpaInfo.size}")
+            log.info("Partner id for $cpaid: ${cpaInfo.size}")
             call.respond(cpaInfo)
         }
         get("/hentmessageinfo") {
@@ -90,12 +90,26 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(HttpStatusCode.BadRequest)
             }
 
-            log.info("Henter info for ${mottakid}")
+            log.info("Henter info for $mottakid")
             val messageInfo = meldingService.mottakid(mottakid)
 
-            log.info("Melding info for ${mottakid}: ${messageInfo.size}")
+            log.info("Melding info for $mottakid: ${messageInfo.size}")
             call.respond(messageInfo)
         }
+        get("/hentcpaidinfo") {
+            val cpaid = call.request.queryParameters.get("cpaId")
+            if (cpaid.isNullOrEmpty()) {
+                log.info("Mangler parameter: cpaid")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+
+            log.info("Henter info for $cpaid")
+            val cpaIdInfo = meldingService.mottakid(cpaid)
+
+            log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
+            call.respond(cpaIdInfo)
+        }
+
         get("/hentfeilstatistikk") {
             val fromDate = call.request.queryParameters.get("fromDate")
             val toDate = call.request.queryParameters.get("toDate")

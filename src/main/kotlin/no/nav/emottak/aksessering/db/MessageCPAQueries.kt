@@ -5,7 +5,6 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageCPAInfo
 import java.sql.ResultSet
 
-
 fun DatabaseInterface.getMessageCPA(
     databasePrefix: String,
     cpaid: String?
@@ -18,7 +17,7 @@ fun DatabaseInterface.getMessageCPA(
                 WHERE PARTNER.PARTNER_ID = PARTNER_CPA.PARTNER_ID
                 AND PARTNER_CPA.CPA_ID = ?
                 """
-)
+        )
         statement.setObject(1, cpaid)
         statement.use {
             it.executeQuery().toList { toMessageCPAInfo() }

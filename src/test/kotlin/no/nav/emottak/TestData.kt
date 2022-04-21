@@ -1,5 +1,6 @@
 package no.nav.emottak
 
+import no.nav.emottak.model.CpaIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
@@ -19,6 +20,10 @@ fun getMessageCpa(): List<MessageCPAInfo> {
 }
 
 fun getMottakIdInfo(): List<MottakIdInfo> {
+    return emptyList()
+}
+
+fun getCpaIdInfo(): List<CpaIdInfo> {
     return emptyList()
 }
 
