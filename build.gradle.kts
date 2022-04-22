@@ -20,7 +20,7 @@ val mockkVersion = "1.11.0"
 val kotlinVersion = "1.5.10"
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.21"
     id("org.jmailen.kotlinter") version "3.3.0"
     id("com.diffplug.gradle.spotless") version "4.5.1"
     id("com.github.johnrengelman.shadow") version "6.1.0"
