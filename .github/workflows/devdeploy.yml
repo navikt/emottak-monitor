@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '12.0.2'
+          distribution: temurin
       - name: Checkout code
         uses: actions/checkout@master
       - uses: actions/cache@v1
