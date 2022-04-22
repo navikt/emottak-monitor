@@ -16,7 +16,7 @@ val nimbusjosejwtVersion = "7.5.1"
 val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "5.0.1"
-val mockkVersion = "1.11.0"
+val mockkVersion = "1.12.3"
 val kotlinVersion = "1.5.10"
 
 plugins {
