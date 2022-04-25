@@ -28,6 +28,11 @@ class MeldingerApiSpek : Spek({
     val messageQueryService: MessageQueryService = mockk()
     io.mockk.coEvery { messageQueryService.meldinger(any(), any()) } returns getMessages()
     io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
+    io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
+    io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
+    io.mockk.coEvery { messageQueryService.cpaid(any()) } returns getCpaIdInfo()
+    io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
+
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
         receiver.start()
         val env = Environment(
@@ -67,12 +72,11 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.Unauthorized
                 }
             }
-
             it("should return 200 OK") {
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentmeldinger?fromDate=24-03-2020 10:10:10&toDate=24-03-2020 11:10:10"
+                        "/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }
@@ -80,7 +84,6 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
-
             it("should return 200 OK") {
                 with(
                     handleRequest(
@@ -93,7 +96,42 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
-
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentcpa?cpaid=nav:qass:30823"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentmessageinfo?mottakId=123456789012345678901"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentcpaidinfo?cpaid=985033633_889640782_eResept"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
             it("Should return 401 Unauthorized when appId not allowed") {
                 with(
                     handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
@@ -104,6 +142,18 @@ class MeldingerApiSpek : Spek({
                     }
                 ) {
                     response.status() shouldBe HttpStatusCode.Unauthorized
+                }
+            }
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentfeilstatistikk?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
                 }
             }
         }

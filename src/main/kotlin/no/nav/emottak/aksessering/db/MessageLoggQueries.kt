@@ -5,7 +5,6 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageLoggInfo
 import java.sql.ResultSet
 
-
 fun DatabaseInterface.getMessageLogg(
     databasePrefix: String,
     mottakid: String?
@@ -14,9 +13,9 @@ fun DatabaseInterface.getMessageLogg(
         val statement = connection.prepareStatement(
             """
                 SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.HENDELSE_ID 
-                FROM $databasePrefix.LOGG 
-                INNER JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID 
-                WHERE LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO DESC
+                FROM $databasePrefix.MELDING, $databasePrefix.LOGG, $databasePrefix.HENDELSE
+                WHERE MELDING.MOTTAK_ID = LOGG.MOTTAK_ID AND LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID 
+                AND LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO ASC
                 """
         )
         statement.setObject(1, mottakid)
