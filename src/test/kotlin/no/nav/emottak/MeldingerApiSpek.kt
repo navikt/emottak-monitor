@@ -124,7 +124,7 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentcpaidinfo?cpaid=985033633_889640782_eResept"
+                        "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }
