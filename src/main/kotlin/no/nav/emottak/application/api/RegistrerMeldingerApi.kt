@@ -104,8 +104,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
 
             log.info("Henter info for $cpaid")
-            val cpaIdInfo = meldingService.mottakid(cpaid)
-
+            val cpaIdInfo = meldingService.cpaid(cpaid)
             log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
             call.respond(cpaIdInfo)
         }
