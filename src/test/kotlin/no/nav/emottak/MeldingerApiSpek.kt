@@ -30,7 +30,7 @@ class MeldingerApiSpek : Spek({
     io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
     io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
     io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
-    io.mockk.coEvery { messageQueryService.cpaid(any()) } returns getCpaIdInfo()
+    io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
     io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
 
     fun withTestApplicationForApi(receiver: TestApplicationEngine, block: TestApplicationEngine.() -> Unit) {
@@ -124,7 +124,7 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept"
+                        "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept?fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10"
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                     }

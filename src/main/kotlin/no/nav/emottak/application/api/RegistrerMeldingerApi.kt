@@ -103,8 +103,22 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(HttpStatusCode.BadRequest)
             }
 
+            val fromDate = call.request.queryParameters.get("fromDate")
+            val toDate = call.request.queryParameters.get("toDate")
+            if (fromDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: from date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
+            if (toDate.isNullOrEmpty()) {
+                log.info("Mangler parameter: to date")
+                call.respond(HttpStatusCode.BadRequest)
+            }
+            val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
+
+
             log.info("Henter info for $cpaid")
-            val cpaIdInfo = meldingService.cpaid(cpaid)
+            val cpaIdInfo = meldingService.cpaid(cpaid, fom, tom)
             log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
             call.respond(cpaIdInfo)
         }

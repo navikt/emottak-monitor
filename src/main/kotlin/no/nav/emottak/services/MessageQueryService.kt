@@ -31,8 +31,8 @@ class MessageQueryService(
         databaseInterface.getMessageCPA(databasePrefix, cpaid)
     fun mottakid(mottakid: String?): List<MottakIdInfo> =
         databaseInterface.hentMottakIdInfo(databasePrefix, mottakid)
-    fun cpaid(cpaid: String?): List<CpaIdInfo> =
-        databaseInterface.hentCpaIdInfo(databasePrefix, cpaid)
+    fun cpaid(cpaid: String?, fom: LocalDateTime, tom: LocalDateTime): List<CpaIdInfo> =
+        databaseInterface.hentCpaIdInfo(databasePrefix, cpaid, fom, tom)
     fun feilstatistikk(fom: LocalDateTime, tom: LocalDateTime): List<FeilStatistikkInfo> =
         databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
 }
