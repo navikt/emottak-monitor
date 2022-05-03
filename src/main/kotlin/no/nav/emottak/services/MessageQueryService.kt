@@ -3,12 +3,14 @@ package no.nav.emottak.services
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
 import no.nav.emottak.aksessering.db.hentCpaIdInfo
+import no.nav.emottak.aksessering.db.hentEBMessageIdInfo
 import no.nav.emottak.aksessering.db.hentFeilStatistikk
 import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.CpaIdInfo
+import no.nav.emottak.model.EBMessageIdIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -31,6 +33,8 @@ class MessageQueryService(
         databaseInterface.getMessageCPA(databasePrefix, cpaid)
     fun mottakid(mottakid: String?): List<MottakIdInfo> =
         databaseInterface.hentMottakIdInfo(databasePrefix, mottakid)
+    fun ebmessageid(ebmessageid: String?): List<EBMessageIdIdInfo> =
+        databaseInterface.hentEBMessageIdInfo(databasePrefix, ebmessageid)
     fun cpaid(cpaid: String?, fom: LocalDateTime, tom: LocalDateTime): List<CpaIdInfo> =
         databaseInterface.hentCpaIdInfo(databasePrefix, cpaid, fom, tom)
     fun feilstatistikk(fom: LocalDateTime, tom: LocalDateTime): List<FeilStatistikkInfo> =

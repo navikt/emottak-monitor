@@ -122,7 +122,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
             call.respond(cpaIdInfo)
         }
+        get("/hentebmessageidinfo") {
+            val ebmessageid = call.request.queryParameters.get("ebmessageId")
+            if (ebmessageid.isNullOrEmpty()) {
+                log.info("Mangler parameter: ebmessageid")
+                call.respond(HttpStatusCode.BadRequest)
+            }
 
+            log.info("Henter info for $ebmessageid")
+            val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
+            log.info("EBMessage id info for $ebmessageid: ${ebMessageIdIdInfo.size}")
+            call.respond(ebMessageIdIdInfo)
+        }
         get("/hentfeilstatistikk") {
             val fromDate = call.request.queryParameters.get("fromDate")
             val toDate = call.request.queryParameters.get("toDate")
