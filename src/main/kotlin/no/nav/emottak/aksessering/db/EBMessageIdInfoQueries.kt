@@ -16,7 +16,7 @@ fun DatabaseInterface.hentEBMessageIdInfo(
                     MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
-                    WHERE MELDING.EBMESAGE_ID = ? AND
+                    WHERE MELDING.EBMESAGE_ID = ?
                 """
         )
         statement.setObject(1, ebmessageid)
