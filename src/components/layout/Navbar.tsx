@@ -7,6 +7,7 @@ import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
 import MottakIdSok from "../../pages/MottakIdSok";
+import CpaIdSok from "../../pages/CpaIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 
 type Page = {
@@ -19,11 +20,8 @@ export const pages: Page[] = [
   { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
   { title: "Mottakid Søk", path: "/mottakidsok", element: <MottakIdSok /> },
-  {
-    title: "Feilstatistikk",
-    path: "/feilstatistikk",
-    element: <FeilStatistikk />,
-  },
+  { title: "CpaId Søk", path: "/cpaidsok", element: <CpaIdSok /> },
+  { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 ];
 
 type NavbarProps = {

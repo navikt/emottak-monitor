@@ -119,7 +119,7 @@ const MottakIdSok = () => {
             })
           )}
           {!loading && !error && messageInfo?.length === 0 && (
-              <RowWithContent>No information</RowWithContent>
+              <RowWithContent>Ingen mottaker ident informasjon</RowWithContent>
           )}
           {error?.message && <RowWithContent>{error.message}</RowWithContent>}
         </Table.Body>
