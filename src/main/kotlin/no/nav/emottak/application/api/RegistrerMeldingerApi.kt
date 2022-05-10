@@ -130,7 +130,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
             log.info("Henter info for $ebmessageid")
             val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
-            log.info("EBMessage id info for $ebmessageid: ${ebMessageIdIdInfo.size}")
+            log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
             call.respond(ebMessageIdIdInfo)
         }
         get("/henpartneridinfo") {
