@@ -116,7 +116,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
             val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
 
-
             log.info("Henter info for $cpaid")
             val cpaIdInfo = meldingService.cpaid(cpaid, fom, tom)
             log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
