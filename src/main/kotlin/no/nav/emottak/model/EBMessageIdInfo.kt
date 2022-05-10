@@ -1,6 +1,6 @@
 package no.nav.emottak.model
 
-data class EBMessageIdIdInfo(
+data class EBMessageIdInfo(
     val datomottat: String,
     val mottakid: String,
     val role: String? = null,

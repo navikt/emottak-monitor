@@ -2,13 +2,13 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.EBMessageIdIdInfo
+import no.nav.emottak.model.EBMessageIdInfo
 import java.sql.ResultSet
 
 fun DatabaseInterface.hentEBMessageIdInfo(
     databasePrefix: String,
     ebmessageid: String?,
-): List<EBMessageIdIdInfo> =
+): List<EBMessageIdInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
             """
@@ -25,8 +25,8 @@ fun DatabaseInterface.hentEBMessageIdInfo(
         }
     }
 
-fun ResultSet.toEBMessageIdInfo(): EBMessageIdIdInfo =
-    EBMessageIdIdInfo(
+fun ResultSet.toEBMessageIdInfo(): EBMessageIdInfo =
+    EBMessageIdInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),
         getString("ROLE"),

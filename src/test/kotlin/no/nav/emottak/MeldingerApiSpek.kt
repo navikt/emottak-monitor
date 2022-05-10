@@ -145,6 +145,18 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
+            it("should return 200 OK") {
+                with(
+                    handleRequest(
+                        HttpMethod.Get,
+                        "/v1/hentpartneridinfo?partnerId=18736"
+                    ) {
+                        addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
+                ) {
+                    response.status() shouldBe HttpStatusCode.OK
+                }
+            }
             it("Should return 401 Unauthorized when appId not allowed") {
                 with(
                     handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
