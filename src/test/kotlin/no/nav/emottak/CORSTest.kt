@@ -1,18 +1,18 @@
 package no.nav.emottak
 
-import io.ktor.application.install
-import io.ktor.features.CORS
+
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.routing.routing
+import io.ktor.server.application.install
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.util.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldEqual
 import org.junit.Test
 
 internal class CORSTest {
@@ -97,7 +97,7 @@ internal class CORSTest {
         with(TestApplicationEngine()) {
             start()
             application.install(CORS) {
-                host("syfosmmanuell.nais.preprod.local", schemes = listOf("http", "https"))
+                allowHost("syfosmmanuell.nais.preprod.local", schemes = listOf("http", "https"))
             }
             val applicationState = ApplicationState()
             applicationState.ready = true
@@ -147,7 +147,7 @@ internal class CORSTest {
         with(TestApplicationEngine()) {
             start()
             application.install(CORS) {
-                host("syfosmmanuell.nais.preprod.local", schemes = listOf("http", "https"))
+                allowHost("syfosmmanuell.nais.preprod.local", schemes = listOf("http", "https"))
                 allowNonSimpleContentTypes = true
             }
             val applicationState = ApplicationState()
