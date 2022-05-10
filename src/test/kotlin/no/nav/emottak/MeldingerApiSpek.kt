@@ -30,6 +30,7 @@ class MeldingerApiSpek : Spek({
     io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
     io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
     io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
+    io.mockk.coEvery { messageQueryService.partnerid(any()) } returns getPartnerIdInfo()
     io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
     io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
     io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
