@@ -7,21 +7,33 @@ Application for getting out messages from emottak database
 * Ktor
 * Gradle
 * Azure
+* Oracle
 
 #### Requirements
 
-* JDK 12
+* JDK 17
 
+## Running application locally
 
-#### Build and run tests
-To build locally and run the integration tests you can simply run `./gradlew shadowJar` or on windows 
-`gradlew.bat shadowJar`
+### Building and run the application
+To build locally and run the integration tests you can simply run `./gradlew clean` build or on windows `gradlew.bat clean build`
+
+#### Build the jar
+To build the jar file run `./gradlew shadowJar` or on windows `gradlew.bat shadowJar`
 
 #### Creating a docker image
 Creating a docker image should be as simple as `docker build -t emottak-monitor .`
 
 #### Running a docker image
 `docker run --rm -it -p 8080:8080 emottak-monitor`
+
+## Oppgradering av gradle wrapper
+Finn nyeste versjon av gradle her: https://gradle.org/releases/
+
+```./gradlew wrapper --gradle-version $gradleVersjon```
+
+Husk å oppdater gradle versjon i build.gradle.kts filen
+```gradleVersion = "$gradleVersjon"```
 
 ## Contact us
 ### Code/project related questions can be sent to
