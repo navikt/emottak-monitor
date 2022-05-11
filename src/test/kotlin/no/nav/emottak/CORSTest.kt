@@ -1,6 +1,5 @@
 package no.nav.emottak
 
-
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
