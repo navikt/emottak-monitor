@@ -133,7 +133,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
             call.respond(ebMessageIdIdInfo)
         }
-        get("/henpartneridinfo") {
+        get("/hentpartneridinfo") {
             val partnerid = call.request.queryParameters.get("partnerId")
             if (partnerid.isNullOrEmpty()) {
                 log.info("Mangler parameter: partnerid")
