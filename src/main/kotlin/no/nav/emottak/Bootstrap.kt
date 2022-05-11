@@ -1,7 +1,7 @@
 package no.nav.emottak
 
 import com.auth0.jwk.JwkProviderBuilder
-import io.ktor.util.*
+import io.ktor.util.InternalAPI
 import no.nav.emottak.application.ApplicationServer
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.createApplicationEngine
