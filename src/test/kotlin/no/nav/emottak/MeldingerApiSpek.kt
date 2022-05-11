@@ -146,8 +146,6 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
-            // TODO comment in test when it works
-            /*
             it("should return 200 OK") {
                 with(
                     handleRequest(
@@ -160,7 +158,6 @@ class MeldingerApiSpek : Spek({
                     response.status() shouldBe HttpStatusCode.OK
                 }
             }
-             */
             it("Should return 401 Unauthorized when appId not allowed") {
                 with(
                     handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
