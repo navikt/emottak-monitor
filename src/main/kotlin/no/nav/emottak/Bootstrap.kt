@@ -1,8 +1,7 @@
 package no.nav.emottak
 
 import com.auth0.jwk.JwkProviderBuilder
-import io.ktor.util.InternalAPI
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.*
 import no.nav.emottak.application.ApplicationServer
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.createApplicationEngine
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit
 val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
 
 @InternalAPI
-@KtorExperimentalAPI
 fun main() {
     val environment = Environment()
 
@@ -28,12 +26,14 @@ fun main() {
     )
 
     val wellKnown = getWellKnown(environment.oidcWellKnownUriUrl)
+    log.info("WellKnown is ok")
     val jwkProvider = JwkProviderBuilder(URL(wellKnown.jwks_uri))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
 
     val database = Database(environment, vaultSecrets)
+    log.info("Database is ok")
     val messageQueryService = MessageQueryService(database, environment.databasePrefix)
 
     val applicationState = ApplicationState()
