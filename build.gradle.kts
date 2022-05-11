@@ -17,7 +17,9 @@ val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "5.0.1"
 val mockkVersion = "1.12.3"
-val kotlinVersion = "1.5.10"
+val kotlinVersion = "1.6.21"
+
+val jvmTargetVersion = "17"
 
 plugins {
     kotlin("jvm") version "1.6.21"
@@ -29,7 +31,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven(url = "https://dl.bintray.com/kotlin/ktor")
     maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://repo1.maven.org/maven2/")
 }
@@ -89,7 +90,15 @@ tasks {
         }
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = jvmTargetVersion
+    }
+
+    named<KotlinCompile>("compileTestKotlin") {
+        kotlinOptions.jvmTarget = jvmTargetVersion
+    }
+
+    withType<Wrapper> {
+        gradleVersion = "7.4.2"
     }
 
     withType<Test> {

@@ -24,7 +24,7 @@ spec:
     periodSeconds: 5
     timeout: 1
   prometheus:
-    enabled: false
+    enabled: true
     path: /prometheus
   resources:
     limits:
