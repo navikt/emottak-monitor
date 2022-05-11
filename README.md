@@ -27,19 +27,16 @@ Creating a docker image should be as simple as `docker build -t emottak-monitor 
 #### Running a docker image
 `docker run --rm -it -p 8080:8080 emottak-monitor`
 
-## Oppgradering av gradle wrapper
-Finn nyeste versjon av gradle her: https://gradle.org/releases/
+## Upgrading the gradle wrapper
+Find the newest version of gradle here: https://gradle.org/releases/ Then run this command: 
 
 ```./gradlew wrapper --gradle-version $gradleVersjon```
 
-Husk å oppdater gradle versjon i build.gradle.kts filen
+Remeber to also update the gradle version in the build.gradle.kts file
 ```gradleVersion = "$gradleVersjon"```
 
-## Contact us
-### Code/project related questions can be sent to
-* Nabil Fario, `nabil.fario@nav.no`
+## Henvendelser
+Questions related to the code or project can be asked as issues here on GitHub.
 
-
-
-### For NAV employees
+## For NAV employees
 We are available at the Slack channel #team-emottak 
