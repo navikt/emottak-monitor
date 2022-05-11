@@ -30,5 +30,6 @@ fun ResultSet.toPartnereIdInfo(): PartnerIdInfo =
         getString("NAVN"),
         getString("HER_ID"),
         getString("ORGNUMMER"),
-        getString("KOMMUNIKASJONSSYSTEM_ID")
+        getString("KOMMUNIKASJONSSYSTEM_ID"),
+        getString("BESKRIVELSE")
     )
