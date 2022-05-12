@@ -109,7 +109,7 @@ const EventsTable = () => {
         filterKeys={["service", "action", "role"]}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-        {filteredEvents.length} eventer
+        {filteredEvents.length} hendelser
       </span>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
@@ -133,7 +133,7 @@ const EventsTable = () => {
           )}
 
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>No events</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((event, index) => {
               return (
@@ -141,7 +141,7 @@ const EventsTable = () => {
                   key={event.hendelsedeskr + index}
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
-                  <Table.DataCell>{event.hendelsedato}</Table.DataCell>
+                  <Table.DataCell>{event.hendelsedato.substring(0, 23)}</Table.DataCell>
                   <Table.DataCell>
                       <Ekspanderbartpanel tittel={event.hendelsedeskr}>
                         {event.tillegsinfo}

@@ -52,7 +52,7 @@ const CpaIdSok = () => {
 
   const { filteredItems: filteredCpaIdInfo, handleFilterChange } = useFilter(
       cpaIdInfo ?? [],
-      ["role", "service", "action"]
+      ["role", "service", "action", "status"]
   );
 
   const getClassNamesFor = (name: keyof CpaIdInfo) => {
@@ -86,6 +86,7 @@ const CpaIdSok = () => {
     { key: "action", name: "Action" },
     { key: "referanse", name: "Referanse" },
     { key: "avsender", name: "Avsender" },
+    { key: "status", name: "Status" },
   ];
 
   return (
@@ -101,7 +102,7 @@ const CpaIdSok = () => {
             onToTimeChange={setToTime}
             messages={cpaIdInfo ?? []}
             onFilterChange={handleFilterChange}
-            filterKeys={["service", "action", "role"]}
+            filterKeys={["service", "action", "role", "status"]}
         />
       <Input
           bredde={"L"}
@@ -148,12 +149,13 @@ const CpaIdSok = () => {
                     <Table.DataCell>{detail.action}</Table.DataCell>
                     <Table.DataCell>{detail.referanse}</Table.DataCell>
                     <Table.DataCell>{detail.avsender}</Table.DataCell>
+                    <Table.DataCell>{detail.status}</Table.DataCell>
                   </Table.Row>
               );
             })
           )}
           {!loading && !error && cpaIdInfo?.length === 0 && (
-              <RowWithContent>Ingen CPA ident informasjon</RowWithContent>
+              <RowWithContent>Ingen CPA ident informasjon funnet !</RowWithContent>
           )}
           {error?.message && <RowWithContent>{error.message}</RowWithContent>}
         </Table.Body>

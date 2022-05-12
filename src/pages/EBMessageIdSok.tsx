@@ -10,7 +10,7 @@ import useFilter from "../hooks/useFilter";
 import clsx from "clsx";
 import RowWithContent from "../components/RowWithContent";
 
-type MottakIdInfo = {
+type EBEMessageIdInfo = {
   action: string;
   antall: number;
   avsender: string;
@@ -22,21 +22,21 @@ type MottakIdInfo = {
   service: string;
   status: string;
 };
-const MottakIdSok = () => {
-  const [messageId, setMessageId] = useState("");
+const EBEMessageIdInfoSok = () => {
+  const [ebmeldingId, setMessageId] = useState("");
 
- const { fetchState, callRequest } = useFetch<MottakIdInfo[]>(
-    `/v1/hentmessageinfo?mottakId=${messageId}`
+ const { fetchState, callRequest } = useFetch<EBEMessageIdInfo[]>(
+    `/v1/hentebmessageidinfo?ebmessageId=${ebmeldingId}`
   );
 
   useEffect(() => {
   callRequest();
   }, [callRequest]);
 
-  const { loading, error, data: messageInfo } = fetchState;
+  const { loading, error, data: ebmessageInfo } = fetchState;
 
   const { filteredItems: filteredMessageInfo } = useFilter(
-      messageInfo ?? [],
+      ebmessageInfo ?? [],
       []
   );
 
@@ -46,14 +46,14 @@ const MottakIdSok = () => {
   } = useTableSorting(filteredMessageInfo);
 
 
-  const getClassNamesFor = (name: keyof MottakIdInfo) => {
+  const getClassNamesFor = (name: keyof EBEMessageIdInfo) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const headers: { key: keyof MottakIdInfo; name: string }[] = [
+  const headers: { key: keyof EBEMessageIdInfo; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
     { key: "mottakid", name: "Mottak-id" },
     { key: "role", name: "Role" },
@@ -62,7 +62,7 @@ const MottakIdSok = () => {
     { key: "referanse", name: "Referanse" },
     { key: "avsender", name: "Avsender" },
     { key: "cpaid", name: "CPA-id" },
-    { key: "status", name: "Status" },
+    { key: "status", name: "Status"},
   ];
 
   return (
@@ -70,7 +70,7 @@ const MottakIdSok = () => {
       <Input
           bredde={"L"}
           onChange={(event) => setMessageId(event.target.value)}
-          value={messageId}
+          value={ebmeldingId}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredMessageInfo.length} messageInfo
@@ -116,12 +116,12 @@ const MottakIdSok = () => {
                     <Lenke href={`/cpa/${detail.cpaid}`}>{detail.cpaid} </Lenke>
                   </Table.DataCell>
                   <Table.DataCell>{detail.status}</Table.DataCell>
-                </Table.Row>
+                  </Table.Row>
               );
             })
           )}
-          {!loading && !error && messageInfo?.length === 0 && (
-              <RowWithContent>Ingen mottaker ident informasjon funnet !</RowWithContent>
+          {!loading && !error && ebmessageInfo?.length === 0 && (
+              <RowWithContent>Ingen EBMessage ident informasjon funnet !</RowWithContent>
           )}
           {error?.message && <RowWithContent>{error.message}</RowWithContent>}
         </Table.Body>
@@ -129,4 +129,4 @@ const MottakIdSok = () => {
       </>
   );
 };
-export default MottakIdSok;
+export default EBEMessageIdInfoSok;

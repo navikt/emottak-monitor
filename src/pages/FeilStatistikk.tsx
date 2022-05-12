@@ -132,7 +132,7 @@ const FeilStatistikk = () => {
           )}
 
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>No statistics</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>Ingen statistikk informasjon funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((event, index) => {
               return (

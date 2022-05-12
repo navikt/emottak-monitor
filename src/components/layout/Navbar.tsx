@@ -8,7 +8,9 @@ import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
 import MottakIdSok from "../../pages/MottakIdSok";
 import CpaIdSok from "../../pages/CpaIdSok";
+import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
+import PartnerIdSok from "../../pages/PartnerIdSok";
 
 type Page = {
   title: string;
@@ -19,8 +21,10 @@ type Page = {
 export const pages: Page[] = [
   { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
-  { title: "Mottakid Søk", path: "/mottakidsok", element: <MottakIdSok /> },
-  { title: "CpaId Søk", path: "/cpaidsok", element: <CpaIdSok /> },
+  { title: "Mottak id-søk", path: "/mottakidsok", element: <MottakIdSok /> },
+  { title: "EBMessage id-søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
+  { title: "CPA id-søk", path: "/cpaidsok", element: <CpaIdSok /> },
+  {title: "Partner id-søk", path: "/partnersok", element: <PartnerIdSok /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 ];
 
