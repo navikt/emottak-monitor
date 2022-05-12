@@ -24,7 +24,6 @@ spec:
     outbound:
       external:
         - host: https://emottak-monitor.dev.intern.nav.no
-    inbound:
       rules:
         - application: emottak-monitor
           namespace: team-emottak
