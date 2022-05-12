@@ -20,6 +20,19 @@ spec:
     {{/each}}
   tracing:
     enabled: true
+
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
+      replyURLs:
+        - 'https://emottak-monitor.dev.intern.nav.no/callback'
+    vault:
+      enabled: true
+      paths:
+        - kvPath: /kv/preprod/fss/emottak-monitor-frontend/team-emottak
+          mountPath: /secrets/emottak-monitor-frontend
+    webproxy: true
   accessPolicy:
     outbound:
       external:
