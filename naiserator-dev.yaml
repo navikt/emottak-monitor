@@ -49,10 +49,12 @@ spec:
 #        groups:
 #          - id: "cbe3ea8d-a684-41c0-8a3d-276aa8b1dd31"
       tenant: nav.no
-  #accessPolicy:
-  #  inbound:
-  #    rules:
-  #      - application: emottak-monitor-frontend
+  accessPolicy:
+    inbound:
+      rules:
+        - application: emottak-monitor-frontend
+          namespace: team-emottak
+          cluster: dev-gcp
   env:
    # - name: AADACCESSTOKEN_URL
    #   value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
