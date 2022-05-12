@@ -38,17 +38,15 @@ spec:
     paths:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-monitor/credentials
-  webproxy: true
-  ingresses:
-    - "https://emottak-monitor.dev.intern.nav.no"
+      - kvPath: /kv/preprod/fss/emottak-monitor/team-emottak
+          mountPath: /secrets/default
   azure:
     application:
       enabled: true
-# Frontend config
-#      claims:
-#        groups:
-#          - id: "cbe3ea8d-a684-41c0-8a3d-276aa8b1dd31"
-      tenant: nav.no
+      tenant: trygdeetaten.no
+  webproxy: true
+  ingresses:
+    - "https://emottak-monitor.dev.intern.nav.no"
   accessPolicy:
     inbound:
       rules:
