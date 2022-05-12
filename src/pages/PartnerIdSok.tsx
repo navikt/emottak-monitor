@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import { Input } from "nav-frontend-skjema";
-import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
