@@ -39,7 +39,7 @@ spec:
       - kvPath: oracle/data/dev/creds/emottak_q1-srvemottaknais
         mountPath: /secrets/emottak-monitor/credentials
       - kvPath: /kv/preprod/fss/emottak-monitor/team-emottak
-          mountPath: /secrets/default
+        mountPath: /secrets/default
   azure:
     application:
       enabled: true
