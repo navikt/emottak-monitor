@@ -2,6 +2,7 @@ package no.nav.emottak.application.api
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.auth.*
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -83,18 +84,20 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             log.info("Partner id for $cpaid: ${cpaInfo.size}")
             call.respond(cpaInfo)
         }
-        get("/hentmessageinfo") {
-            val mottakid = call.request.queryParameters.get("mottakId")
-            if (mottakid.isNullOrEmpty()) {
-                log.info("Mangler parameter: mottakid")
-                call.respond(HttpStatusCode.BadRequest)
+        authenticate("jwt") {
+            get("/hentmessageinfo") {
+                val mottakid = call.request.queryParameters.get("mottakId")
+                if (mottakid.isNullOrEmpty()) {
+                    log.info("Mangler parameter: mottakid")
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+
+                log.info("Henter info for $mottakid")
+                val messageInfo = meldingService.mottakid(mottakid)
+
+                log.info("Melding info for $mottakid: ${messageInfo.size}")
+                call.respond(messageInfo)
             }
-
-            log.info("Henter info for $mottakid")
-            val messageInfo = meldingService.mottakid(mottakid)
-
-            log.info("Melding info for $mottakid: ${messageInfo.size}")
-            call.respond(messageInfo)
         }
         get("/hentcpaidinfo") {
             val cpaid = call.request.queryParameters.get("cpaId")
