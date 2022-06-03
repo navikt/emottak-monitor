@@ -22,6 +22,8 @@ spec:
     enabled: true
 
   azure:
+    sidecar:
+      enabled: true
     application:
       enabled: true
       tenant: trygdeetaten.no
