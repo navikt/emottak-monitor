@@ -1,7 +1,5 @@
 import {NextFunction, Request, Response} from "express";
 import {decodeJwt, JWTPayload} from "jose";
-import {AuthError} from "./error";
-import {getBearerToken} from "./onBehalfOf";
 
 export type Brukerinformasjon = {
     navn: string;
@@ -40,9 +38,13 @@ export const hentInnloggetAnsattMiddleware = (
     } else {
         const bearerToken = getBearerToken(req);
         if (!bearerToken) {
-            return next(new AuthError("Mangler token i auth header"));
+            return next(new Error("Mangler token i auth header"));
         }
         const jwtPayload = decodeJwt(bearerToken);
         return res.send(hentBrukerinfoFraToken(jwtPayload));
     }
 };
+
+export function getBearerToken(req: Request) {
+    return req.headers?.authorization?.substring("Bearer ".length);
+}
