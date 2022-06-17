@@ -19,7 +19,7 @@ export const hentBrukerinfoFraToken = (jwtPayload : JWTPayload) : Brukerinformas
     const navn = jwtPayload["name"] as string;
     const ident = jwtPayload["NAVident"] as string;
     const preferredUsername = jwtPayload["preferred_username"] as string;
-    const tokenUtløper = jwtPayload.exp * 1000 // konverterer fra sekunder til ms
+    const tokenUtløper = jwtPayload["exp"] as number * 1000 // konverterer fra sekunder til ms
     return {
         navn: navn,
         ident: ident,
