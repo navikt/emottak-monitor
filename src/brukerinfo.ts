@@ -5,14 +5,12 @@ export type Brukerinformasjon = {
     navn: string;
     ident: string;
     epost: string;
-    tokenUtløper: number
 };
 
 const lokalMockBruker: Brukerinformasjon = {
     navn: "Ansatt, Lokal",
     ident: "A123456",
     epost: "lokal.ansatt@nav.no",
-    tokenUtløper: Date.now() + 5000
 };
 
 export const hentBrukerinfoFraToken = (jwtPayload : JWTPayload) : Brukerinformasjon => {
@@ -23,8 +21,7 @@ export const hentBrukerinfoFraToken = (jwtPayload : JWTPayload) : Brukerinformas
     return {
         navn: navn,
         ident: ident,
-        epost: preferredUsername,
-        tokenUtløper: tokenUtløper
+        epost: preferredUsername
     }
 }
 
@@ -41,6 +38,9 @@ export const hentInnloggetAnsattMiddleware = (
             return next(new Error("Mangler token i auth header"));
         }
         const jwtPayload = decodeJwt(bearerToken);
+        if (!jwtPayload) {
+            return next(new Error("Kunne ikke decode token i auth header"));
+        }
         return res.send(hentBrukerinfoFraToken(jwtPayload));
     }
 };
