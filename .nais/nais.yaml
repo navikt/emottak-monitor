@@ -22,9 +22,11 @@ spec:
     enabled: true
 
   azure:
+    sidecar:
+      enabled: true
     application:
       enabled: true
-      tenant: trygdeetaten.no
+      tenant: nav.no
       replyURLs:
         - 'https://emottak-monitor.dev.intern.nav.no/callback'
     vault:
