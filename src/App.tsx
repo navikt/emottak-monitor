@@ -10,7 +10,6 @@ import CpaTable from "./pages/CpaTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
-import BrukerInfo from "./pages/BrukerInfo";
 
 export default function App() {
   const location = useLocation();
@@ -31,7 +30,6 @@ export default function App() {
         <Route path="/isalive" element={<IsAlive />} />
         <Route path="/isready" element={<IsReady />} />
         <Route path="/metrics" element={<div>Metrics</div>} />
-        <Route path="/brukerinfo" element={<BrukerInfo />} />
       </Routes>
 
       {/* using react router functionality for showing modal with url change */}
