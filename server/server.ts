@@ -15,6 +15,12 @@ server.use(
   createProxyMiddleware({
     target: "https://emottak-monitor.dev.intern.nav.no",
     changeOrigin: true,
+      onProxyReq: (req) => {
+        console.log("PROXYREQ")
+        console.log(req.path)
+          console.log(req.headersSent)
+          console.log(req)
+      }
   })
 );
 
@@ -24,6 +30,14 @@ server.use(bodyParser.json());
 
 server.use("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+  console.log("REQ")
+    console.log(req.path)
+    console.log(req.headers)
+    console.log(req.cookies)
+
+    console.log("RES")
+    console.log(res.header)
+    console.log(res.cookie)
 });
 
 // start express server on specified or default port
