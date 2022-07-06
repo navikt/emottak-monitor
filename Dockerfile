@@ -1,5 +1,4 @@
-FROM node:16.14.0-alpine
-
+FROM node:16.15.1-alpine
 WORKDIR /usr/src/app
 COPY server server/
 COPY build build/
