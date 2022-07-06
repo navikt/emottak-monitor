@@ -17,9 +17,6 @@ import java.text.SimpleDateFormat
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
         get("/hentmeldinger") {
-            call.request.headers.forEach { header, values ->
-                log.info("$header: ${values.firstOrNull()}")
-            }
             val fromDate = call.request.queryParameters.get("fromDate")
             val toDate = call.request.queryParameters.get("toDate")
             if (fromDate.isNullOrEmpty()) {
@@ -89,9 +86,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         }
         authenticate("jwt") {
             get("/hentmessageinfo") {
-                call.request.headers.forEach { header, values ->
-                    log.info("$header: ${values.firstOrNull()}")
-                }
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
                     log.info("Mangler parameter: mottakid")

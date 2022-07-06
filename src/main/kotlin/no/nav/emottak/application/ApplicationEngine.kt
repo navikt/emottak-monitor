@@ -46,7 +46,7 @@ fun createApplicationEngine(
             }
         }
         install(CallLogging) {
-            level = Level.DEBUG
+            level = Level.INFO
         }
         install(StatusPages) {
             exception<Throwable> { call, cause ->
