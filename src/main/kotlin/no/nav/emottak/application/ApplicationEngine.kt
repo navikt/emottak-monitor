@@ -13,6 +13,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -24,6 +25,7 @@ import no.nav.emottak.application.api.registerMeldingerApi
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
+import org.slf4j.event.Level
 
 @InternalAPI
 fun createApplicationEngine(
@@ -42,6 +44,9 @@ fun createApplicationEngine(
                 configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             }
+        }
+        install(CallLogging) {
+            level = Level.DEBUG
         }
         install(StatusPages) {
             exception<Throwable> { call, cause ->
