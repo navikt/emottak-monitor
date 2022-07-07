@@ -28,14 +28,14 @@ spec:
     application:
       enabled: true
       tenant: nav.no
-      allowAllUsers: false
+      #allowAllUsers: false
       replyURLs:
         - 'https://emottak-monitor.dev.intern.nav.no/callback'
       claims:
         extra:
           - NAVident
-        groups:
-          - id: "0000-GA-Mottak-Monitor"
+#        groups:
+#          - id: "0000-GA-Mottak-Monitor"
     vault:
       enabled: true
       paths:
