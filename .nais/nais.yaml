@@ -34,8 +34,8 @@ spec:
       claims:
         extra:
           - NAVident
-#        groups:
-#          - id: "0000-GA-Mottak-Monitor"
+        groups:
+          - id: "cbe3ea8d-a684-41c0-8a3d-276aa8b1dd31"
     vault:
       enabled: true
       paths:
