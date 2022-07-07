@@ -24,11 +24,18 @@ spec:
   azure:
     sidecar:
       enabled: true
+      autologin: true
     application:
       enabled: true
       tenant: nav.no
+      allowAllUsers: false
       replyURLs:
         - 'https://emottak-monitor.dev.intern.nav.no/callback'
+      claims:
+        extra:
+          - NAVident
+        groups:
+          - id: "0000-GA-Mottak-Monitor"
     vault:
       enabled: true
       paths:
