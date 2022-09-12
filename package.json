@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "@craco/craco": "^6.3.0",
-    "@navikt/ds-css": "^0.18.14",
+    "@navikt/ds-css": "^0.18.27",
     "@navikt/ds-css-internal": "^0.7.1",
     "@navikt/ds-icons": "^0.8.11",
     "@navikt/ds-react": "^0.19.13",
-    "@navikt/ds-react-internal": "^0.12.30",
+    "@navikt/ds-react-internal": "^0.14.26",
     "@navikt/fnrvalidator": "^1.1.4",
     "@reduxjs/toolkit": "^1.8.0",
     "@sentry/react": "^7.12.1",
