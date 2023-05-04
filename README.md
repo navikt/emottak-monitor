@@ -48,4 +48,4 @@ Remeber to also update the gradle version in the build.gradle.kts file
 Questions related to the code or project can be asked as issues here on GitHub.
 
 ## For NAV employees
-We are available at the Slack channel #team-emottak 
+We are available at the Slack channel #emottak 
