@@ -9,5 +9,5 @@ data class EBMessageIdInfo(
     val referanse: String? = null,
     val avsender: String? = null,
     val cpaid: String? = null,
-    val status: String? = null
+    val status: String? = null,
 )

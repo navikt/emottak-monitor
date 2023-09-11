@@ -9,7 +9,7 @@ import java.sql.ResultSet
 
 class Database(
     private val env: Environment,
-    private val vaultCredentials: VaultSecrets
+    private val vaultCredentials: VaultSecrets,
 ) : DatabaseInterface {
 
     private val dataSource: HikariDataSource
@@ -27,7 +27,7 @@ class Database(
                 isAutoCommit = false
                 driverClassName = "oracle.jdbc.OracleDriver"
                 validate()
-            }
+            },
         )
     }
 }

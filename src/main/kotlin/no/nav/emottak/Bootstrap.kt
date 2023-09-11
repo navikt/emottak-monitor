@@ -43,7 +43,7 @@ fun main() {
         applicationState,
         jwkProvider,
         wellKnown.issuer,
-        messageQueryService
+        messageQueryService,
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 

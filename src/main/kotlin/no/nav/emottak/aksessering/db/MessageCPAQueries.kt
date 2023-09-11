@@ -7,7 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.getMessageCPA(
     databasePrefix: String,
-    cpaid: String?
+    cpaid: String?,
 ): List<MessageCPAInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -16,7 +16,7 @@ fun DatabaseInterface.getMessageCPA(
                 FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER 
                 WHERE PARTNER.PARTNER_ID = PARTNER_CPA.PARTNER_ID
                 AND PARTNER_CPA.CPA_ID = ?
-                """
+                """,
         )
         statement.setObject(1, cpaid)
         statement.use {
@@ -29,5 +29,5 @@ fun ResultSet.toMessageCPAInfo(): MessageCPAInfo =
         getString("PARTNER_ID"),
         getString("NAVN"),
         getString("HER_ID"),
-        getString("ORGNUMMER")
+        getString("ORGNUMMER"),
     )
