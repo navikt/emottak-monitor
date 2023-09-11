@@ -9,12 +9,12 @@ class ApplicationServer(private val applicationServer: ApplicationEngine, privat
             Thread {
                 this.applicationState.ready = false
                 this.applicationServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            },
+            }
         )
     }
 
     fun start() {
-        applicationServer.start(false)
+        applicationServer.start(true)
         applicationState.alive = true
     }
 }

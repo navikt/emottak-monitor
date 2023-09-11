@@ -12,24 +12,21 @@ class Database(
     private val vaultCredentials: VaultSecrets,
 ) : DatabaseInterface {
 
-    private val dataSource: HikariDataSource
+    private val dataSource: HikariDataSource = HikariDataSource(
+        HikariConfig().apply {
+            jdbcUrl = env.databaseUrl
+            username = vaultCredentials.databaseUsername
+            password = vaultCredentials.databasePassword
+            maximumPoolSize = 3
+            isAutoCommit = false
+            driverClassName = "oracle.jdbc.OracleDriver"
+            validate()
+        },
+    )
 
     override val connection: Connection
         get() = dataSource.connection
 
-    init {
-        dataSource = HikariDataSource(
-            HikariConfig().apply {
-                jdbcUrl = env.databaseUrl
-                username = vaultCredentials.databaseUsername
-                password = vaultCredentials.databasePassword
-                maximumPoolSize = 3
-                isAutoCommit = false
-                driverClassName = "oracle.jdbc.OracleDriver"
-                validate()
-            },
-        )
-    }
 }
 
 fun <T> ResultSet.toList(mapper: ResultSet.() -> T) = mutableListOf<T>().apply {
