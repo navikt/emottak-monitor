@@ -30,7 +30,7 @@ spec:
       tenant: nav.no
       allowAllUsers: false
       replyURLs:
-        - 'https://emottak-monitor.dev.intern.nav.no/callback'
+        - 'https://emottak-monitor.intern.dev.nav.no/callback'
       claims:
         extra:
           - NAVident
@@ -45,7 +45,7 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: emottak-monitor.dev.intern.nav.no
+        - host: emottak-monitor.intern.dev.nav.no
       rules:
         - application: emottak-monitor
           namespace: team-emottak
