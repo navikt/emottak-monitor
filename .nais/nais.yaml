@@ -46,6 +46,7 @@ spec:
     outbound:
       external:
         - host: emottak-monitor.intern.dev.nav.no
+        - host: emottak-monitor.dev-fss-pub.nais.io
       rules:
         - application: emottak-monitor
           namespace: team-emottak
