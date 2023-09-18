@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.emottak"
 version = "1.0.0"
 
-val coroutinesVersion = "1.7.0"
-val jacksonVersion = "2.15.0"
+val coroutinesVersion = "1.7.3"
+val jacksonVersion = "2.15.2"
 val kluentVersion = "1.73"
 val ktorVersion = "2.3.0"
 val spekVersion = "2.0.19"
 val logbackVersion = "1.4.11"
-val logstashEncoderVersion = "7.3"
+val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.11.0"
 val nimbusjosejwtVersion = "9.31"
@@ -23,10 +23,15 @@ val jvmTargetVersion = "17"
 
 plugins {
     kotlin("jvm") version "1.8.21"
-    id("org.jmailen.kotlinter") version "3.14.0"
+    id("org.jmailen.kotlinter") version "3.15.0"
     id("com.diffplug.spotless") version "6.18.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.github.ben-manes.versions") version "0.46.0"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -99,7 +104,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.4.2"
+        gradleVersion = "8.3"
     }
 
     withType<Test> {

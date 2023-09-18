@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 fun DatabaseInterface.hentHendelser(
     databasePrefix: String,
     fom: LocalDateTime,
-    tom: LocalDateTime
+    tom: LocalDateTime,
 ): List<HendelseInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -20,7 +20,7 @@ fun DatabaseInterface.hentHendelser(
                 WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
                 ORDER BY LOGG.HENDELSEDATO DESC
-            """
+            """,
         )
         statement.setObject(1, fom)
         statement.setObject(2, tom)
@@ -39,5 +39,5 @@ fun ResultSet.toHendelseInfo(): HendelseInfo =
         getString("SERVICE"),
         getString("ACTION"),
         getString("REFERANSEPARAM"),
-        getString("AVSENDER")
+        getString("AVSENDER"),
     )

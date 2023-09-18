@@ -10,7 +10,7 @@ fun DatabaseInterface.hentCpaIdInfo(
     databasePrefix: String,
     cpaid: String?,
     fom: LocalDateTime,
-    tom: LocalDateTime
+    tom: LocalDateTime,
 ): List<CpaIdInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -21,7 +21,7 @@ fun DatabaseInterface.hentCpaIdInfo(
                     FROM $databasePrefix.MELDING 
                     WHERE MELDING.AVTALE_ID = ? AND
                     MELDING.DATOMOTTAT BETWEEN ? AND ?
-                """
+                """,
         )
         statement.setObject(1, cpaid)
         statement.setObject(2, fom)
@@ -41,5 +41,5 @@ fun ResultSet.toCpaIdInfo(): CpaIdInfo =
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
-        getString("STATUS")
+        getString("STATUS"),
     )

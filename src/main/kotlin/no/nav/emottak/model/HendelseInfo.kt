@@ -9,5 +9,5 @@ data class HendelseInfo(
     val service: String? = null,
     val action: String? = null,
     val referanse: String? = null,
-    val avsender: String? = null
+    val avsender: String? = null,
 )

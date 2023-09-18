@@ -7,7 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.hentMottakIdInfo(
     databasePrefix: String,
-    mottakid: String?
+    mottakid: String?,
 ): List<MottakIdInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -17,7 +17,7 @@ fun DatabaseInterface.hentMottakIdInfo(
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
                     WHERE MELDING.MOTTAK_ID = ?
-                """
+                """,
         )
         statement.setObject(1, mottakid)
         statement.use {
@@ -35,5 +35,5 @@ fun ResultSet.toMottakIdInfo(): MottakIdInfo =
         getString("REFERANSEPARAM"),
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
-        getString("STATUS")
+        getString("STATUS"),
     )

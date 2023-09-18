@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 fun DatabaseInterface.hentFeilStatistikk(
     databasePrefix: String,
     fom: LocalDateTime,
-    tom: LocalDateTime
+    tom: LocalDateTime,
 ): List<FeilStatistikkInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -21,7 +21,7 @@ fun DatabaseInterface.hentFeilStatistikk(
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
                 GROUP BY HENDELSE.HENDELSEDESKR
                 ORDER BY ANTALL_FEIL DESC
-            """
+            """,
         )
         statement.setObject(1, fom)
         statement.setObject(2, tom)
@@ -33,5 +33,5 @@ fun DatabaseInterface.hentFeilStatistikk(
 fun ResultSet.toFeilStatikk(): FeilStatistikkInfo =
     FeilStatistikkInfo(
         getString("HENDELSEDESKR"),
-        getString("ANTALL_FEIL")
+        getString("ANTALL_FEIL"),
     )

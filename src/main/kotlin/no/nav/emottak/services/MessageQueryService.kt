@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 
 class MessageQueryService(
     private val databaseInterface: DatabaseInterface,
-    private val databasePrefix: String
+    private val databasePrefix: String,
 ) {
     fun meldinger(fom: LocalDateTime, tom: LocalDateTime): List<MessageInfo> =
         databaseInterface.hentMeldinger(databasePrefix, fom, tom)

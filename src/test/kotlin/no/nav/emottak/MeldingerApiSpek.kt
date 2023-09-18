@@ -69,7 +69,7 @@ class MeldingerApiSpek : Spek({
             it("Should return 401 Unauthorized") {
                 with(
                     handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.Unauthorized
                 }
@@ -78,10 +78,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10"
+                        "/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -90,10 +90,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentlogg?mottakId=123456789012345678901"
+                        "/v1/hentlogg?mottakId=123456789012345678901",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -102,10 +102,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentcpa?cpaid=nav:qass:30823"
+                        "/v1/hentcpa?cpaid=nav:qass:30823",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -114,10 +114,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentmessageinfo?mottakId=123456789012345678901"
+                        "/v1/hentmessageinfo?mottakId=123456789012345678901",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -126,10 +126,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept&fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10"
+                        "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept&fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -138,10 +138,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no"
+                        "/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -150,10 +150,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentpartneridinfo?partnerId=18736"
+                        "/v1/hentpartneridinfo?partnerId=18736",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
@@ -163,9 +163,9 @@ class MeldingerApiSpek : Spek({
                     handleRequest(HttpMethod.Get, "/v1/hentmeldinger") {
                         addHeader(
                             "Authorization",
-                            "Bearer ${generateJWT("5", "1")}"
+                            "Bearer ${generateJWT("5", "1")}",
                         )
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.Unauthorized
                 }
@@ -174,10 +174,10 @@ class MeldingerApiSpek : Spek({
                 with(
                     handleRequest(
                         HttpMethod.Get,
-                        "/v1/hentfeilstatistikk?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10"
+                        "/v1/hentfeilstatistikk?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10",
                     ) {
                         addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                    }
+                    },
                 ) {
                     response.status() shouldBe HttpStatusCode.OK
                 }
