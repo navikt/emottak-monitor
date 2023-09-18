@@ -16,7 +16,7 @@ fun DatabaseInterface.hentPartnerIdInfo(
                     FROM $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
                     WHERE PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID
                     AND PARTNER_ID = ?
-                """
+                """,
         )
         statement.setObject(1, partnerid)
         statement.use {
@@ -31,5 +31,5 @@ fun ResultSet.toPartnereIdInfo(): PartnerIdInfo =
         getString("HER_ID"),
         getString("ORGNUMMER"),
         getString("KOMMUNIKASJONSSYSTEM_ID"),
-        getString("BESKRIVELSE")
+        getString("BESKRIVELSE"),
     )

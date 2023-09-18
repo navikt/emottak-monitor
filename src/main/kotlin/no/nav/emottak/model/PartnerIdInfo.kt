@@ -6,5 +6,5 @@ data class PartnerIdInfo(
     val herid: String? = null,
     val orgnummer: String? = null,
     val kommunikasjonssystemid: String,
-    val beskrivelse: String
+    val beskrivelse: String,
 )

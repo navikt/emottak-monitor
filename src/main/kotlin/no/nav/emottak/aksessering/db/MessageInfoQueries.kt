@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
     fom: LocalDateTime,
-    tom: LocalDateTime
+    tom: LocalDateTime,
 ): List<MessageInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -21,7 +21,7 @@ fun DatabaseInterface.hentMeldinger(
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
-                """
+                """,
 
         )
         statement.setObject(1, fom)
@@ -42,5 +42,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        getString("STATUS")
+        getString("STATUS"),
     )

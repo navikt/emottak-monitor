@@ -4,7 +4,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
-import io.ktor.server.plugins.cors.CORS
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
@@ -55,7 +55,7 @@ internal class CORSTest {
             with(
                 handleRequest(HttpMethod.Get, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "invalid-host")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
@@ -81,7 +81,7 @@ internal class CORSTest {
             with(
                 handleRequest(HttpMethod.Get, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
@@ -106,7 +106,7 @@ internal class CORSTest {
             with(
                 handleRequest(HttpMethod.Get, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
@@ -131,7 +131,7 @@ internal class CORSTest {
             with(
                 handleRequest(HttpMethod.Get, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "null")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "*"
@@ -158,7 +158,7 @@ internal class CORSTest {
                 handleRequest(HttpMethod.Options, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
@@ -186,7 +186,7 @@ internal class CORSTest {
                 handleRequest(HttpMethod.Options, "/is_ready") {
                     addHeader(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     addHeader(HttpHeaders.AccessControlRequestMethod, "GET")
-                }
+                },
             ) {
                 response.status() shouldBeEqualTo HttpStatusCode.OK
                 response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"

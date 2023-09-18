@@ -10,5 +10,5 @@ data class MessageInfo(
     val avsender: String? = null,
     val cpaid: String? = null,
     val antall: Int,
-    val status: String? = null
+    val status: String? = null,
 )

@@ -43,11 +43,9 @@ fun main() {
         applicationState,
         jwkProvider,
         wellKnown.issuer,
-        messageQueryService
+        messageQueryService,
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 
     applicationServer.start()
-    applicationState.ready = true
-    log.info("Application started")
 }

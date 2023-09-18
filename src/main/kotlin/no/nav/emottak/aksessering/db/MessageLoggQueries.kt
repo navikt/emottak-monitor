@@ -7,7 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.getMessageLogg(
     databasePrefix: String,
-    mottakid: String?
+    mottakid: String?,
 ): List<MessageLoggInfo> =
     connection.use { connection ->
         val statement = connection.prepareStatement(
@@ -16,7 +16,7 @@ fun DatabaseInterface.getMessageLogg(
                 FROM $databasePrefix.MELDING, $databasePrefix.LOGG, $databasePrefix.HENDELSE
                 WHERE MELDING.MOTTAK_ID = LOGG.MOTTAK_ID AND LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID 
                 AND LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO ASC
-                """
+                """,
         )
         statement.setObject(1, mottakid)
         statement.use {
@@ -28,5 +28,5 @@ fun ResultSet.toMessageLoggInfo(): MessageLoggInfo =
     MessageLoggInfo(
         getString("HENDELSEDATO"),
         getString("HENDELSEDESKR"),
-        getString("HENDELSE_ID")
+        getString("HENDELSE_ID"),
     )
