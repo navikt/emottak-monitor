@@ -8,6 +8,9 @@ env:
     "docker.pkg.github.com/${{ github.repository }}/emottak-monitor-frontend:${{\
     \ github.sha }}"
 jobs:
+  permissions:
+    contents: read
+    packages: write
   build:
     name: "build"
     runs-on: "ubuntu-latest"
