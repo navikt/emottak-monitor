@@ -46,7 +46,7 @@ spec:
       tenant: nav.no
   webproxy: true
   ingresses:
-    - "https://emottak-monitor.dev.intern.nav.no"
+    - "https://emottak-monitor.intern.dev.nav.no"
     - "https://emottak-monitor.dev-fss-pub.nais.io"
   accessPolicy:
     inbound:
@@ -66,6 +66,6 @@ spec:
     - name: DATABASE_PREFIX
       value: nmt3
     - name: EMOTTAK_ADMIN_FRONTEND_URL
-      value: emottak-monitor-frontend.dev.intern.nav.no
+      value: emottak-monitor-frontend.intern.dev.nav.no
     - name: DEVELOPMENT
       value: "true"
