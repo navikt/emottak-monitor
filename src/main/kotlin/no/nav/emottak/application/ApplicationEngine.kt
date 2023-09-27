@@ -79,12 +79,12 @@ private fun Application.serverSetup(
     routing {
         registerNaisApi(applicationState)
 
-        if (env.isDevelopment) {
-            registerMeldingerApi(meldingService)
-        } else {
-            authenticate("jwt") {
-                registerMeldingerApi(meldingService)
-            }
-        }
+//        if (env.isDevelopment) {
+//            registerMeldingerApi(meldingService)
+//        } else {
+//            authenticate("jwt") {
+//                registerMeldingerApi(meldingService)
+//            }
+//        }
     }
 }
