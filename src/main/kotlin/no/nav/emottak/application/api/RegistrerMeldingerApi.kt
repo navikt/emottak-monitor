@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
-        authenticate("jwt") {
+        //authenticate("jwt") {
             get("/hentmeldinger") {
                 val fromDate = call.request.queryParameters.get("fromDate")
                 val toDate = call.request.queryParameters.get("toDate")
@@ -170,4 +170,4 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
         }
     }
-}
+//}
