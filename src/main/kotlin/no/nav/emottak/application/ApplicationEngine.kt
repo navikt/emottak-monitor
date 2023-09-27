@@ -78,7 +78,7 @@ private fun Application.serverSetup(
     }
     routing {
         registerNaisApi(applicationState)
-
+        registerMeldingerApi(meldingService) // todo fjern denne linjen
 //        if (env.isDevelopment) {
 //            registerMeldingerApi(meldingService)
 //        } else {
