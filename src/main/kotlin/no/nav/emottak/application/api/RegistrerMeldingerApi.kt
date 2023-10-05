@@ -12,6 +12,7 @@ import io.ktor.util.InternalAPI
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
+import io.prometheus.client.Counter
 
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
@@ -168,6 +169,14 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
+        val hentmeldingerCounter: Counter =
+            Counter.build()
+                .namespace("emottak_monitor")
+                .name("hentmeldinger_count")
+                .help("Counts the number of api calls to hentmeldinger")
+                .register()
+
+        hentmeldingerCounter.inc()
         }
     }
 //}
