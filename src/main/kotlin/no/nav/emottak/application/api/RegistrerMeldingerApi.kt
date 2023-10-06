@@ -39,6 +39,16 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
                 call.respond(meldinger)
+
+                val hentmeldingerCounter: Counter =
+                    Counter.build()
+                        .namespace("emottak_monitor")
+                        .name("hentmeldinger_count")
+                        .help("Counts the number of api calls to hentmeldinger")
+                        .register()
+
+                hentmeldingerCounter.inc()
+                log.info("Counter : " + hentmeldingerCounter.get().toInt())
             }
             get("/henthendelser") {
                 val fromDate = call.request.queryParameters.get("fromDate")
@@ -169,15 +179,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
-        val hentmeldingerCounter: Counter =
-            Counter.build()
-                .namespace("emottak_monitor")
-                .name("hentmeldinger_count")
-                .help("Counts the number of api calls to hentmeldinger")
-                .register()
-
-        hentmeldingerCounter.inc()
-        log.info("Counter : " + hentmeldingerCounter.get().toInt())
         }
     }
 //}
