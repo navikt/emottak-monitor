@@ -47,7 +47,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                         .register()
 
                 hentmeldingerCounter.inc()
-                log.info("Counter : " + hentmeldingerCounter.get().toInt())
                 call.respond(meldinger)
             }
             get("/henthendelser") {
