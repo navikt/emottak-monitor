@@ -38,7 +38,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
-                call.respond(meldinger)
 
                 val hentmeldingerCounter: Counter =
                     Counter.build()
@@ -49,6 +48,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
                 hentmeldingerCounter.inc()
                 log.info("Counter : " + hentmeldingerCounter.get().toInt())
+                call.respond(meldinger)
             }
             get("/henthendelser") {
                 val fromDate = call.request.queryParameters.get("fromDate")
