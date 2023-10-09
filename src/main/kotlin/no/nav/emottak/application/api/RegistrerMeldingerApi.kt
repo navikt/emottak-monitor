@@ -38,15 +38,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
-
-                val hentmeldingerCounter: Counter =
-                    Counter.build()
-                        .namespace("emottak_monitor")
-                        .name("hentmeldinger_count")
-                        .help("Counts the number of api calls to hentmeldinger")
-                        .register()
-
-                hentmeldingerCounter.inc()
                 call.respond(meldinger)
             }
             get("/henthendelser") {
