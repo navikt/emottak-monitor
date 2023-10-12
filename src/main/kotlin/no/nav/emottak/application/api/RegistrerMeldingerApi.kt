@@ -6,8 +6,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import io.ktor.util.*
-import no.nav.emottak.hentmeldingerCounter
 import no.nav.emottak.log
+import no.nav.emottak.metrics.hentmeldingerCounter
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 
