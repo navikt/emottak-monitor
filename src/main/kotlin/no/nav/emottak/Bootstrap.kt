@@ -2,13 +2,12 @@ package no.nav.emottak
 
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.util.InternalAPI
+import io.prometheus.client.Counter
 import no.nav.emottak.application.ApplicationServer
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.createApplicationEngine
 import no.nav.emottak.application.getWellKnown
 import no.nav.emottak.db.Database
-import no.nav.emottak.metrics.henthendelserCounter
-import no.nav.emottak.metrics.hentmeldingerCounter
 import no.nav.emottak.services.MessageQueryService
 import no.nav.emottak.util.getFileAsString
 import org.slf4j.Logger
@@ -17,6 +16,10 @@ import java.net.URL
 import java.util.concurrent.TimeUnit
 
 val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
+val hentmeldingerCounter: Counter =
+    Counter.build().namespace("emottak_monitor").name("hentmeldinger_count")
+        .help("Counts the number of api calls to hentmeldinger")
+        .register()
 
 @InternalAPI
 fun main() {
@@ -48,8 +51,6 @@ fun main() {
         messageQueryService,
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
-
         hentmeldingerCounter.inc()
-        henthendelserCounter.inc()
         applicationServer.start()
 }
