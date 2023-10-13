@@ -1,15 +1,17 @@
 package no.nav.emottak.application.api
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.util.*
-import io.ktor.util.*
-import no.nav.emottak.hentmeldingerCounter
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import io.ktor.server.util.toLocalDateTime
+import io.ktor.util.InternalAPI
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
+import no.nav.emottak.hentmeldingerCounter
 
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
@@ -35,6 +37,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
+
                 hentmeldingerCounter.inc()
                 call.respond(meldinger)
             }
