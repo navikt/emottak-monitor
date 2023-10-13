@@ -21,6 +21,10 @@ val hentmeldingerCounter: Counter =
         .help("Counts the number of api calls to hentmeldinger")
         .register()
 
+val henthendelserCounter: Counter =
+    Counter.build().namespace("emottak_monitor").name("henthendelser_count")
+        .help("Counts the number of api calls to hentmhendelser")
+        .register()
 @InternalAPI
 fun main() {
     val environment = Environment()
@@ -52,5 +56,6 @@ fun main() {
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
         hentmeldingerCounter.inc()
+        henthendelserCounter.inc()
         applicationServer.start()
 }

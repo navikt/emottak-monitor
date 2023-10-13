@@ -8,6 +8,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.util.toLocalDateTime
 import io.ktor.util.InternalAPI
+import no.nav.emottak.henthendelserCounter
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
@@ -59,6 +60,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val hendelser = meldingService.hendelser(fom, tom)
 
                 log.info("Hendelser antall : ${hendelser.size}")
+                henthendelserCounter.inc()
                 call.respond(hendelser)
             }
             get("/hentlogg") {
