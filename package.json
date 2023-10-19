@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "vite",
+    "postinstall": "./strip-less.sh",
     "start": "craco start",
-    "build": "craco build",
+    "build": "vite build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prepare": "husky install"
@@ -28,6 +30,7 @@
     "@types/react": "^17.0.44",
     "@types/react-collapse": "^5.0.1",
     "@types/react-dom": "^17.0.15",
+    "@vitejs/plugin-react": "^4.1.0",
     "axios": "^0.26.0",
     "classnames": "^2.3.1",
     "clsx": "^1.1.1",
@@ -71,6 +74,7 @@
     "sass": "^1.53.0",
     "typescript": "^4.7.3",
     "url-parse": "1.5.9",
+    "vite": "^4.4.11",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
