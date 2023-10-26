@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
     "postinstall": "./strip-less.sh",
-    "start": "craco start",
     "build": "vite build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
