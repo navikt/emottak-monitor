@@ -73,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ isNavbarOpen, setIsNavbarOpen }) => {
           }}
         >
           <img
-            src={"/public/nav.svg"}
+            src={"/nav.svg"}
             alt="nav logo in svg format"
             style={{ maxWidth: "70px" }}
           />
