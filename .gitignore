@@ -1,3 +1,10 @@
+# Machine-specific secrets not to be checked into git
+.env*
+
+# Nix stuffs
+.direnv/
+result*
+
 # Idea project files
 *.iml
 .idea/
