@@ -1,5 +1,5 @@
 {
-  description = "A Nix-flake based Kotlin development environment";
+  description = "A Nix-flake based Kotlin & Typescript development environment";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
