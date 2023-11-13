@@ -41,7 +41,12 @@
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           # project's code specific
+          ## Backend
           gradle
+          ## Frontend
+          yarn
+          python39
+          nodejs_20
 
           # Editor stuffs
           helix

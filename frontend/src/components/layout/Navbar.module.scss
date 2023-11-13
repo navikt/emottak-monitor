@@ -1,0 +1,107 @@
+@import "@navikt/ds-css/dist/index.css";
+@import "../../styles/variables.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+  transition: width 1s;
+  position: relative;
+  z-index: 100;
+  background-color: white;
+  overflow: hidden;
+  box-shadow: 0px 1px 4px 0px var(--navds-global-color-gray-400);
+}
+
+.header {
+  padding: $header-padding;
+  height: $header-height;
+  width: 100%;
+  background-color: var(--navds-global-color-orange-300);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.open {
+  width: $nav-width;
+}
+
+.closed {
+  width: 0;
+}
+
+.navLink {
+  list-style: none;
+  text-decoration: none;
+  width: $nav-width;
+  height: 2.5em;
+  position: relative;
+  color: black;
+
+  :hover {
+    background-color: var(--navds-global-color-gray-200);
+  }
+
+  .linkText {
+    width: 100%;
+    height: 100%;
+    line-height: 2.5;
+    vertical-align: middle;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+  }
+}
+.active {
+  background-color: var(--navds-global-color-gray-100);
+}
+
+.button {
+  position: absolute;
+  top: calc(#{$header-height}/2 - #{$nav-button-diameter}/2);
+  height: $nav-button-diameter;
+  width: $nav-button-diameter;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0px 1px 4px 0px var(--navds-global-color-gray-400);
+}
+
+.button:hover {
+  background-color: var(--navds-global-color-gray-100);
+}
+
+.closeButton {
+  z-index: 200;
+  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
+  display: flex;
+  transition: left 1s;
+}
+
+.closeButtonCollapsed {
+  left: calc(-1 * #{$nav-button-diameter});
+}
+
+.closeButtonHidden {
+  transition: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.closeButtonVisible {
+  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
+}
+
+.openButton {
+  left: 15px;
+  z-index: 0;
+}
