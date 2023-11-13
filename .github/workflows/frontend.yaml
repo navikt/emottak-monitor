@@ -6,8 +6,8 @@ on:
     - .github/workflows/
     - backend/
     - .envrc
-    - **/flake*
-    - **/README.md
+    - "**/flake*"
+    - "**/README.md"
 
 jobs:
   test_and_build:
