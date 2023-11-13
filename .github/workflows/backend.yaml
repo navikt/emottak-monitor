@@ -1,0 +1,74 @@
+name: Build & deploy emottak-monitor-backend
+
+on: 
+  push:
+    paths-ignore:
+    - .github/workflows/
+    - frontend/
+    - .envrc
+    - "**/flake*"
+    - "**/README.md"
+
+jobs:
+  test_and_build_and_deploy:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      # Set-up git repo for backend tests & build
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('backend/build.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-cache-
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('backend/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-wrapper-
+
+      # Build & test backend + Docker Image
+      - run: cd backend && ./gradlew test
+        env:
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - run: cd backend && ./gradlew shadowJar -x test
+        env:
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - uses: nais/docker-build-push@v0
+        id: docker-push
+        with:
+          team: team-emottak # required
+          pull: true # optional, default false
+          dockerfile: backend/Dockerfile # optional, default Dockerfile
+          docker_context: backend/ # optional, default .
+          image_suffix: backend # optional, default empty
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # required, but is defined as an organization variable
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # required, but is defined as an organization secret
+          salsa: true # optional, default true, generates a attestation for the image
+
+      # Deloy to dev
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          IMAGE: ${{ steps.docker-push.outputs.image }}
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: backend/naiserator-dev.yaml
+
+      # # Deloy to prod
+      # - uses: nais/deploy/actions/deploy@v1
+      #   # if: TODO
+      #   env:
+      #     IMAGE: ${{ steps.docker-push.outputs.image }}
+      #     APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+      #     CLUSTER: prod-fss
+      #     RESOURCE: backend/naiserator-prod.yaml
