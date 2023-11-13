@@ -3,8 +3,8 @@ name: Build & deploy emottak-monitor-frontend
 on: 
   push:
     paths-ignore:
-    - .github/workflows/
-    - backend/
+    - ".github/workflows/**"
+    - "backend/**"
     - .envrc
     - "**/flake*"
     - "**/README.md"
