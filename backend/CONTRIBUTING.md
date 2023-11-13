@@ -7,7 +7,7 @@ Please fork the repo and start a new branch to work on.
 This project is using [Gradle](https://gradle.org/) for its build tool.
 A Gradle Wrapper is included in the code though so you do not have to manage your own installation.
 
-To run a build simply exucute the following:
+To run a build simply execute the following:
 
 ```shell script
 ./gradlew build
