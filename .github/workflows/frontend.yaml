@@ -1,4 +1,4 @@
-name: Build emottak-monitor-frontend
+name: Build & deploy emottak-monitor-frontend
 
 on: 
   push:
@@ -10,7 +10,7 @@ on:
     - "**/README.md"
 
 jobs:
-  test_and_build:
+  test_and_build_and_deploy:
     permissions:
       contents: read
       id-token: write
