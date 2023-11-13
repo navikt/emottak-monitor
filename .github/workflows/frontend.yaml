@@ -21,10 +21,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      - run: yarn install --frozen-lockfile
+      - run: cd frontend && yarn install --frozen-lockfile
 
       # Build & test frontend + Docker Image
-      - run: yarn build
+      - run: cd frontend && yarn build
       - uses: nais/docker-build-push@v0
         id: docker-push
         with:
