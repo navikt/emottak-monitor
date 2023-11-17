@@ -1,0 +1,9 @@
+@import "../../styles/variables.scss";
+
+.pageWrapper {
+  margin: 0 50px;
+  transition: margin 1s;
+  width: 100%;
+  padding: 24px;
+  flex-grow: 1;
+}
