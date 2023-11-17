@@ -4,29 +4,29 @@ group = "no.nav.emottak"
 version = "1.0.0"
 
 val coroutinesVersion = "1.7.3"
-val jacksonVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
 val kluentVersion = "1.73"
-val ktorVersion = "2.3.5"
+val ktorVersion = "2.3.6"
 val spekVersion = "2.0.19"
 val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.5.0"
-val micrometerRegistryPrometheusVersion = "1.11.5"
+val micrometerRegistryPrometheusVersion = "1.12.0"
 val nimbusjosejwtVersion = "9.37.1"
 val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
-val hikariVersion = "5.0.1"
+val hikariVersion = "5.1.0"
 val mockkVersion = "1.13.8"
 val kotlinVersion = "1.6.21"
 
 val jvmTargetVersion = "17"
 
 plugins {
-    kotlin("jvm") version "1.9.10"
-    id("org.jmailen.kotlinter") version "4.0.0"
+    kotlin("jvm") version "1.9.20"
+    id("org.jmailen.kotlinter") version "4.1.0"
     id("com.diffplug.spotless") version "6.22.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.49.0"
+    id("com.github.ben-manes.versions") version "0.50.0"
 }
 
 java {

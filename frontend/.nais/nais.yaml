@@ -1,0 +1,53 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: "emottak-monitor-frontend"
+  namespace: "team-emottak"
+  labels:
+    "team": "team-emottak"
+spec:
+  image: {{image}}
+  replicas:
+    min: 2
+    max: 2
+    cpuThresholdPercentage: 50
+  prometheus:
+    enabled: false
+    path: "/metrics"
+  ingresses: 
+    {{#each ingresses as |url|}}
+      - {{url}}
+    {{/each}}
+  tracing:
+    enabled: true
+
+  azure:
+    sidecar:
+      enabled: true
+      autoLogin: true
+    application:
+      enabled: true
+      tenant: nav.no
+      allowAllUsers: false
+      replyURLs:
+        - 'https://emottak-monitor.intern.dev.nav.no/callback'
+      claims:
+        extra:
+          - NAVident
+        groups:
+          - id: "eb7722ab-17c3-4822-8325-2a9e3ab86815"
+    vault:
+      enabled: true
+      paths:
+        - kvPath: /kv/preprod/fss/emottak-monitor-frontend/team-emottak
+          mountPath: /secrets/emottak-monitor-frontend
+    webproxy: true
+  accessPolicy:
+    outbound:
+      external:
+        - host: emottak-monitor.intern.dev.nav.no
+        - host: emottak-monitor.dev-fss-pub.nais.io
+      rules:
+        - application: emottak-monitor
+          namespace: team-emottak
+          cluster: dev-fss

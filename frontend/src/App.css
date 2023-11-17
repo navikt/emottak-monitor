@@ -1,0 +1,75 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+#timetable {
+  background-color: #61dafb;
+  padding: 15px;
+  border-style: double;
+}
+
+#timetable th {
+  text-align: right;
+}
+
+#select {
+  background-color: #61dafb;
+  width: 190px;
+  margin: 5px;
+}
+
+#select:focus {
+  min-width: 150px;
+  width: auto;
+}
+
+.row {
+  margin-left: 5px;
+  margin-right: -5px;
+}
+
+.column {
+  float: left;
+  width: 36%;
+  padding: 5px;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+ul.mottakidliste {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
