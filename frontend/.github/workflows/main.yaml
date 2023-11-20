@@ -1,0 +1,60 @@
+name: "Build and deploy emottak-monitor-frontend"
+on:
+  push:
+    branches:
+      - "master"
+env:
+  "IMAGE":
+    "docker.pkg.github.com/${{ github.repository }}/emottak-monitor-frontend:${{\
+    \ github.sha }}"
+jobs:
+  build:
+    name: "build"
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "actions/setup-node@v3"
+        with:
+          node-version: "16.10.0"
+      - name: "install dependencies"
+        run: "yarn"
+      #    - name: "run tests"
+      #      run: "yarn test"
+      - name: "Build app"
+        run: "yarn build"
+      - name: "Build and publish Docker image"
+        run:
+          "docker build --pull --tag ${IMAGE} . && echo $GITHUB_TOKEN | docker login\
+          \ --username $GITHUB_REPOSITORY --password-stdin https://docker.pkg.github.com\
+          \ && docker push ${IMAGE}"
+        env:
+          "GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+  deployAppToDev:
+    name: "Deploy to dev"
+    needs: "build"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - name: "Deploy to DEV"
+        uses: "nais/deploy/actions/deploy@v1"
+        env:
+          "APIKEY": "${{ secrets.NAIS_DEPLOY_APIKEY }}"
+          "CLUSTER": "dev-gcp"
+          "RESOURCE": ".nais/nais.yaml"
+          "VARS": ".nais/dev.yaml"
+#  "deployAppToProd":
+#    name: "Deploy to prod"
+#    needs: "deployAppToDev"
+#    runs-on: "ubuntu-18.04"
+#    steps:
+#    - uses: "actions/checkout@v4"
+#    - name: "Deploy to PROD"
+#      uses: "nais/deploy/actions/deploy@v1"
+#      env:
+#        "APIKEY": "${{ secrets.NAIS_DEPLOY_APIKEY }}"
+#        "CLUSTER": "prod-gcp"
+#        "RESOURCE": ".nais/nais.yaml"
+#        "VARS": ".nais/prod.yaml"
