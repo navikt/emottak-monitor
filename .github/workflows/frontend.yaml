@@ -2,6 +2,8 @@ name: Build & deploy emottak-monitor-frontend
 
 on: 
   push:
+    branches:
+    - main
     paths-ignore:
     - ".github/workflows/**"
     - "backend/**"
