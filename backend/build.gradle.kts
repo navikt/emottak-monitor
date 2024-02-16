@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.emottak"
 version = "1.0.0"
 
-val coroutinesVersion = "1.7.3"
+val coroutinesVersion = "1.8.0"
 val jacksonVersion = "2.16.1"
 val kluentVersion = "1.73"
 val ktorVersion = "2.3.7"
