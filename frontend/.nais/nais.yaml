@@ -18,8 +18,6 @@ spec:
     {{#each ingresses as |url|}}
       - {{url}}
     {{/each}}
-  tracing:
-    enabled: true
 
   azure:
     sidecar:
@@ -36,12 +34,6 @@ spec:
           - NAVident
         groups:
           - id: "eb7722ab-17c3-4822-8325-2a9e3ab86815"
-    vault:
-      enabled: true
-      paths:
-        - kvPath: /kv/preprod/fss/emottak-monitor-frontend/team-emottak
-          mountPath: /secrets/emottak-monitor-frontend
-    webproxy: true
   accessPolicy:
     outbound:
       external:
