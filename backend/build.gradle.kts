@@ -6,7 +6,7 @@ version = "1.0.0"
 val coroutinesVersion = "1.7.3"
 val jacksonVersion = "2.16.1"
 val kluentVersion = "1.73"
-val ktorVersion = "2.3.7"
+val ktorVersion = "2.3.8"
 val spekVersion = "2.0.19"
 val logbackVersion = "1.4.14"
 val logstashEncoderVersion = "7.4"
@@ -23,10 +23,10 @@ val jvmTargetVersion = "17"
 
 plugins {
     kotlin("jvm") version "1.9.22"
-    id("org.jmailen.kotlinter") version "4.1.1"
-    id("com.diffplug.spotless") version "6.23.3"
+    id("com.diffplug.spotless") version "6.25.0"
+    id("org.jmailen.kotlinter") version "4.2.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 java {
