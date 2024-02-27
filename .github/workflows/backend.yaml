@@ -66,11 +66,11 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: backend/naiserator-dev.yaml
 
-      # # Deloy to prod
-      # - uses: nais/deploy/actions/deploy@v1
-      #   # if: TODO
-      #   env:
-      #     IMAGE: ${{ steps.docker-push.outputs.image }}
-      #     APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-      #     CLUSTER: prod-fss
-      #     RESOURCE: backend/naiserator-prod.yaml
+      # Deloy to prod
+      - uses: nais/deploy/actions/deploy@v1
+         # if: TODO
+        env:
+           IMAGE: ${{ steps.docker-push.outputs.image }}
+           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+           CLUSTER: prod-fss
+           RESOURCE: backend/naiserator-prod.yaml
