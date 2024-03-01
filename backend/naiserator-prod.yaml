@@ -42,6 +42,10 @@ spec:
         mountPath: /secrets/azuread/emottak-monitor
       - kvPath: /kv/prod/fss/emottak-monitor/default
         mountPath: /secrets/default
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   webproxy: true
   ingresses:
     - "https://emottak-monitor.intern.nav.no"
