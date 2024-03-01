@@ -44,7 +44,7 @@ spec:
         mountPath: /secrets/default
   webproxy: true
   ingresses:
-    - "https://emottak-monitor.nais.adeo.local"
+    - "https://emottak-monitor.intern.nav.no"
   env:
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
