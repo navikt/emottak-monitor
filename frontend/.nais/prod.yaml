@@ -1,5 +1,5 @@
 ingresses:
   - "https://emottak-monitor-frontend.intern.nav.no"
 backend:
-  - host: "emottak-monitor.intern.nav.no"
-  - cluster: prod-fss
+  host: "emottak-monitor.intern.nav.no"
+  cluster: prod-fss
