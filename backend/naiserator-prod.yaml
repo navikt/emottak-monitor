@@ -61,7 +61,7 @@ spec:
     - name: DATABASE_PREFIX
       value: emottak
     - name: EMOTTAK_ADMIN_FRONTEND_URL
-      value: emottak-monitor-frontend.nais.adeo.no
+      value: emottak-monitor-frontend.intern.nav.no
     - name: EMOTTAK_AMDIN_CLIENT_PATH
       value: /secrets/azuread/emottak-monitor/client_id
     - name: OID_WELL_KNOWN_URI
