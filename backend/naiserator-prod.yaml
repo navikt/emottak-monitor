@@ -42,9 +42,13 @@ spec:
         mountPath: /secrets/azuread/emottak-monitor
       - kvPath: /kv/prod/fss/emottak-monitor/default
         mountPath: /secrets/default
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   webproxy: true
   ingresses:
-    - "https://emottak-monitor.nais.adeo.local"
+    - "https://emottak-monitor.intern.nav.no"
   env:
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
