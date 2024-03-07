@@ -13,7 +13,7 @@ server.use(express.static(root));
 server.use(
   "/v1",
   createProxyMiddleware({
-    target: "https://emottak-monitor.intern.dev.nav.no",
+    target: "https://emottak-monitor.dev-fss-pub.nais.io",
     changeOrigin: true,
       onProxyReq: (req) => {
         console.log("PROXYREQ")
