@@ -38,6 +38,7 @@ spec:
     outbound:
       external:
         - host: {{backend.host}}
+        - host: "https://emottak-monitor.dev-fss-pub.nais.io"
       rules:
         - application: emottak-monitor
           namespace: team-emottak
