@@ -49,6 +49,7 @@ spec:
   webproxy: true
   ingresses:
     - "https://emottak-monitor.intern.nav.no"
+    - "https://emottak-monitor.prod-fss-pub.nais.io"
   env:
     - name: AADACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
