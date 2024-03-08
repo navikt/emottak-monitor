@@ -50,6 +50,12 @@ spec:
   ingresses:
     - "https://emottak-monitor.intern.nav.no"
     - "https://emottak-monitor.prod-fss-pub.nais.io"
+  accessPolicy:
+    inbound:
+      rules:
+        - application: emottak-monitor-frontend
+          namespace: team-emottak
+          cluster: prod-gcp
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
@@ -57,13 +63,16 @@ spec:
 #      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
 #    - name: JWT_ISSUER
 #      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
+#    - name: EMOTTAK_AMDIN_CLIENT_PATH
+#      value: /secrets/azuread/emottak-monitor/client_id
+#    - name: OID_WELL_KNOWN_URI
+#      value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
+
     - name: DATABASE_URL
       value: jdbc:oracle:thin:@a01dbfl050.adeo.no:1521/emottak
     - name: DATABASE_PREFIX
       value: nmp5
     - name: EMOTTAK_ADMIN_FRONTEND_URL
       value: emottak-monitor-frontend.intern.nav.no
-#    - name: EMOTTAK_AMDIN_CLIENT_PATH
-#      value: /secrets/azuread/emottak-monitor/client_id
-#    - name: OID_WELL_KNOWN_URI
-#      value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
+    - name: PRODUCTION
+      value: "true"
