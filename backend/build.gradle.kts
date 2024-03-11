@@ -4,7 +4,7 @@ group = "no.nav.emottak"
 version = "1.0.0"
 
 val coroutinesVersion = "1.8.0"
-val jacksonVersion = "2.16.1"
+val jacksonVersion = "2.16.2"
 val kluentVersion = "1.73"
 val ktorVersion = "2.3.9"
 val spekVersion = "2.0.19"
