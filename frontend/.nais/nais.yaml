@@ -42,3 +42,6 @@ spec:
         - application: emottak-monitor
           namespace: team-emottak
           cluster: {{backend.cluster}}
+  env:
+    - name: REACT_APP_URL
+      value: {{url.react_app_url}}
