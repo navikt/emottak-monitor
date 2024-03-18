@@ -76,3 +76,5 @@ spec:
       value: emottak-monitor-frontend.intern.nav.no
     - name: PRODUCTION
       value: "true"
+    - name: AZURE_APP_CLIENT_ID
+      value: 51c1af58-0676-4de7-aea0-60bc97208947
