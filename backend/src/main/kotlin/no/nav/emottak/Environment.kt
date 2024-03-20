@@ -12,7 +12,7 @@ data class Environment(
     val databasePrefix: String = getEnvVar("DATABASE_PREFIX"),
     val emottakFrontEndUrl: String = getEnvVar("EMOTTAK_ADMIN_FRONTEND_URL"),
     val oidcWellKnownUriUrl: String = getEnvVar("AZURE_APP_WELL_KNOWN_URL"),
-    val emottakMonitorClientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
+    val emottakMonitorClientId: String = getEnvVar("AZURE_APP_EMOTTAK_CLIENT_ID"),
     val isDevelopment: Boolean = getEnvVar("DEVELOPMENT", "false").toBoolean(),
 )
 
