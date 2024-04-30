@@ -38,8 +38,6 @@ spec:
     paths:
       - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
         mountPath: /secrets/emottak-monitor/credentials
-      - kvPath: /azuread/data/prod/creds/emottak-monitor
-        mountPath: /secrets/azuread/emottak-monitor
       - kvPath: /kv/prod/fss/emottak-monitor/default
         mountPath: /secrets/default
   azure:
@@ -63,10 +61,6 @@ spec:
 #      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
 #    - name: JWT_ISSUER
 #      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
-#    - name: EMOTTAK_AMDIN_CLIENT_PATH
-#      value: /secrets/azuread/emottak-monitor/client_id
-#    - name: OID_WELL_KNOWN_URI
-#      value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
 
     - name: DATABASE_URL
       value: jdbc:oracle:thin:@a01dbfl050.adeo.no:1521/emottak
