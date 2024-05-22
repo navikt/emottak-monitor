@@ -1,9 +1,5 @@
 name: Build & deploy emottak-monitor-frontend
 
-permissions:
-  contents: read
-  id-token: write
-   
 on: 
   push:
     branches:
