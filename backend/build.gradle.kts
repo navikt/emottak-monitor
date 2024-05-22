@@ -16,7 +16,7 @@ val nimbusjosejwtVersion = "9.39.1"
 val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "5.1.0"
-val mockkVersion = "1.13.10"
+val mockkVersion = "1.13.11"
 val kotlinVersion = "1.6.21"
 
 val jvmTargetVersion = "17"
