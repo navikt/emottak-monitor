@@ -22,7 +22,7 @@ val kotlinVersion = "1.6.21"
 val jvmTargetVersion = "17"
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
     id("com.diffplug.spotless") version "6.25.0"
     id("org.jmailen.kotlinter") version "4.4.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
