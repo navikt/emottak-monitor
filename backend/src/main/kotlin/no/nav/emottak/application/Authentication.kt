@@ -41,6 +41,7 @@ fun unauthorized(credentials: JWTCredential): Principal? {
     return null
 }
 
-fun hasEmottakAdminClientIdAudience(credentials: JWTCredential, env: Environment): Boolean {
-    return credentials.payload.audience.contains(env.emottakMonitorClientId)
-}
+fun hasEmottakAdminClientIdAudience(
+    credentials: JWTCredential,
+    env: Environment,
+): Boolean = credentials.payload.audience.contains(env.emottakMonitorClientId)

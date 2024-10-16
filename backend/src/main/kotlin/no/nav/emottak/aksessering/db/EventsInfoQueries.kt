@@ -12,8 +12,9 @@ fun DatabaseInterface.hentHendelser(
     tom: LocalDateTime,
 ): List<HendelseInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                 SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.ROLE,
                 MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
                 FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
@@ -21,7 +22,7 @@ fun DatabaseInterface.hentHendelser(
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
                 ORDER BY LOGG.HENDELSEDATO DESC
             """,
-        )
+            )
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         statement.use {

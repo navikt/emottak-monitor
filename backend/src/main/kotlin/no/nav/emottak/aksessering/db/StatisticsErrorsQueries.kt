@@ -12,8 +12,9 @@ fun DatabaseInterface.hentFeilStatistikk(
     tom: LocalDateTime,
 ): List<FeilStatistikkInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                 SELECT DISTINCT HENDELSE.HENDELSEDESKR, COUNT(*) AS ANTALL_FEIL 
                 FROM $databasePrefix.LOGG, $databasePrefix.HENDELSE
                 WHERE HENDELSE.DISPOSABLE = 0 AND HENDELSE.STATUSLEVEL = 30
@@ -22,7 +23,7 @@ fun DatabaseInterface.hentFeilStatistikk(
                 GROUP BY HENDELSE.HENDELSEDESKR
                 ORDER BY ANTALL_FEIL DESC
             """,
-        )
+            )
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         statement.use {

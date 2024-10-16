@@ -10,14 +10,15 @@ fun DatabaseInterface.hentPartnerIdInfo(
     partnerid: String?,
 ): List<PartnerIdInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                     SELECT PARTNER.PARTNER_ID, PARTNER.NAVN, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER.KOMMUNIKASJONSSYSTEM_ID, KOMMUNIKASJONSSYSTEM.BESKRIVELSE 
                     FROM $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
                     WHERE PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID
                     AND PARTNER_ID = ?
                 """,
-        )
+            )
         statement.setObject(1, partnerid)
         statement.use {
             it.executeQuery().toList { toPartnereIdInfo() }

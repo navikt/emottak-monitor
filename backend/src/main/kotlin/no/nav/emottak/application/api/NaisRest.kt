@@ -34,7 +34,10 @@ fun Routing.registerNaisApi(
         }
     }
     get("/prometheus") {
-        val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
+        val names =
+            call.request.queryParameters
+                .getAll("name[]")
+                ?.toSet() ?: setOf()
         call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
             TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
         }

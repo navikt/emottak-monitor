@@ -15,7 +15,6 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Test
 
 internal class CORSTest {
-
     @InternalAPI
     @Test
     internal fun `No origin header`() {

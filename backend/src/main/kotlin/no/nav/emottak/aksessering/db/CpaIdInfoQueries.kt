@@ -13,8 +13,9 @@ fun DatabaseInterface.hentCpaIdInfo(
     tom: LocalDateTime,
 ): List<CpaIdInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
                     MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
@@ -22,7 +23,7 @@ fun DatabaseInterface.hentCpaIdInfo(
                     WHERE MELDING.AVTALE_ID = ? AND
                     MELDING.DATOMOTTAT BETWEEN ? AND ?
                 """,
-        )
+            )
         statement.setObject(1, cpaid)
         statement.setObject(2, fom)
         statement.setObject(3, tom)

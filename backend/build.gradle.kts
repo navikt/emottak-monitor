@@ -6,7 +6,7 @@ version = "1.0.0"
 val coroutinesVersion = "1.9.0"
 val jacksonVersion = "2.17.2"
 val kluentVersion = "1.73"
-val ktorVersion = "2.3.11"
+val ktorVersion = "2.3.12"
 val spekVersion = "2.0.19"
 val logbackVersion = "1.5.7"
 val logstashEncoderVersion = "8.0"
@@ -19,7 +19,7 @@ val hikariVersion = "5.1.0"
 val mockkVersion = "1.13.12"
 val kotlinVersion = "1.6.21"
 
-val jvmTargetVersion = "17"
+val jvmTargetVersion = "21"
 
 plugins {
     kotlin("jvm") version "2.0.10"
@@ -30,8 +30,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {

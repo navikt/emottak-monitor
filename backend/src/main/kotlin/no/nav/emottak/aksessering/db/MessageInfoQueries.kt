@@ -12,8 +12,9 @@ fun DatabaseInterface.hentMeldinger(
     tom: LocalDateTime,
 ): List<MessageInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                     SELECT MELDING.DATOMOTTAT, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
                     WHERE MELDING2.EBCONVERS_ID = MELDING.EBCONVERS_ID GROUP BY MELDING2.EBCONVERS_ID) AS MOTTAK_ID_LISTE,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
@@ -22,8 +23,7 @@ fun DatabaseInterface.hentMeldinger(
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
                 """,
-
-        )
+            )
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         statement.use {

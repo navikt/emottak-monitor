@@ -20,17 +20,19 @@ val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
 fun main() {
     val environment = Environment()
 
-    val vaultSecrets = VaultSecrets(
-        databasePassword = getFileAsString("/secrets/emottak-monitor/credentials/password"),
-        databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
-    )
+    val vaultSecrets =
+        VaultSecrets(
+            databasePassword = getFileAsString("/secrets/emottak-monitor/credentials/password"),
+            databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
+        )
 
     val wellKnown = getWellKnown(environment.oidcWellKnownUriUrl)
     log.info("WellKnown is ok")
-    val jwkProvider = JwkProviderBuilder(URL(wellKnown.jwks_uri))
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+    val jwkProvider =
+        JwkProviderBuilder(URL(wellKnown.jwks_uri))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
 
     val database = Database(environment, vaultSecrets)
     log.info("Database is ok")
@@ -38,13 +40,14 @@ fun main() {
 
     val applicationState = ApplicationState()
 
-    val applicationEngine = createApplicationEngine(
-        environment,
-        applicationState,
-        jwkProvider,
-        wellKnown.issuer,
-        messageQueryService,
-    )
+    val applicationEngine =
+        createApplicationEngine(
+            environment,
+            applicationState,
+            jwkProvider,
+            wellKnown.issuer,
+            messageQueryService,
+        )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 
     applicationServer.start()

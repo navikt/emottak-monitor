@@ -10,15 +10,16 @@ fun DatabaseInterface.hentEBMessageIdInfo(
     ebmessageid: String?,
 ): List<EBMessageIdInfo> =
     connection.use { connection ->
-        val statement = connection.prepareStatement(
-            """
+        val statement =
+            connection.prepareStatement(
+                """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
                     MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
                     WHERE MELDING.EBMESAGE_ID = ?
                 """,
-        )
+            )
         statement.setObject(1, ebmessageid)
         statement.use {
             it.executeQuery().toList { toEBMessageIdInfo() }

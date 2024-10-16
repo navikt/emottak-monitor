@@ -63,7 +63,8 @@ private fun Application.serverSetup(
         exception<Throwable> { call, cause ->
             call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
 
-            no.nav.emottak.log.error("Caught exception", cause)
+            no.nav.emottak.log
+                .error("Caught exception", cause)
             throw cause
         }
     }

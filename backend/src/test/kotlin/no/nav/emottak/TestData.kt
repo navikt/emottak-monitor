@@ -9,34 +9,18 @@ import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.PartnerIdInfo
 
-fun getMessages(): List<MessageInfo> {
-    return emptyList()
-}
+fun getMessages(): List<MessageInfo> = emptyList()
 
-fun getMessageLogg(): List<MessageLoggInfo> {
-    return emptyList()
-}
+fun getMessageLogg(): List<MessageLoggInfo> = emptyList()
 
-fun getMessageCpa(): List<MessageCPAInfo> {
-    return emptyList()
-}
+fun getMessageCpa(): List<MessageCPAInfo> = emptyList()
 
-fun getMottakIdInfo(): List<MottakIdInfo> {
-    return emptyList()
-}
+fun getMottakIdInfo(): List<MottakIdInfo> = emptyList()
 
-fun getEBMessageIdInfo(): List<EBMessageIdInfo> {
-    return emptyList()
-}
+fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 
-fun getPartnerIdInfo(): List<PartnerIdInfo> {
-    return emptyList()
-}
+fun getPartnerIdInfo(): List<PartnerIdInfo> = emptyList()
 
-fun getCpaIdInfo(): List<CpaIdInfo> {
-    return emptyList()
-}
+fun getCpaIdInfo(): List<CpaIdInfo> = emptyList()
 
-fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> {
-    return emptyList()
-}
+fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
