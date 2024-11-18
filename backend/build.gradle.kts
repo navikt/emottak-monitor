@@ -15,7 +15,7 @@ val micrometerRegistryPrometheusVersion = "1.12.6"
 val nimbusjosejwtVersion = "9.41.2"
 val spekjunitVersion = "2.0.16"
 val ojdbc8Version = "19.3.0.0"
-val hikariVersion = "6.0.0"
+val hikariVersion = "6.2.1"
 val mockkVersion = "1.13.13"
 val kotlinVersion = "1.6.21"
 
