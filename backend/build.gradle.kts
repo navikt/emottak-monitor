@@ -26,7 +26,7 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0"
     id("org.jmailen.kotlinter") version "5.0.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
 }
 
 java {
