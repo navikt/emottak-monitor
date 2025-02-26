@@ -13,11 +13,11 @@ val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.14.2"
 val nimbusjosejwtVersion = "9.48"
-val spekjunitVersion = "2.0.16"
+val spekjunitVersion = "2.0.19"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "6.2.1"
 val mockkVersion = "1.13.16"
-val kotlinVersion = "1.6.21"
+val kotlinVersion = "2.1.10"
 
 val jvmTargetVersion = "21"
 

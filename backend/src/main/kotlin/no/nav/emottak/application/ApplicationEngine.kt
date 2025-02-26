@@ -11,16 +11,17 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
-import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
-import io.ktor.util.InternalAPI
+import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.Environment
 import no.nav.emottak.application.api.registerMeldingerApi
 import no.nav.emottak.application.api.registerNaisApi
@@ -34,7 +35,7 @@ fun createApplicationEngine(
     jwkProvider: JwkProvider,
     issuer: String,
     meldingService: MessageQueryService,
-): ApplicationEngine =
+): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
     embeddedServer(Netty, env.applicationPort) {
         serverSetup(env, jwkProvider, issuer, applicationState, meldingService)
     }
