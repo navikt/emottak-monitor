@@ -63,7 +63,7 @@ spec:
 #      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
 
     - name: DATABASE_URL
-      value: jdbc:oracle:thin:@a01dbfl050.adeo.no:1521/emottak
+      value: jdbc:oracle:thin:@dmv28-scan.adeo.no:1521/emottak_ha
     - name: DATABASE_PREFIX
       value: nmp5
     - name: EMOTTAK_ADMIN_FRONTEND_URL
