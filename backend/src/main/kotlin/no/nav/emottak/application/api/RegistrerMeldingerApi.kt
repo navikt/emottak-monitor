@@ -75,8 +75,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
                 log.info("Henter hendelser fra events endepunktet til ebms ...")
                 // val hendelser = meldingService.hendelser(fom, tom)
-                val hendelserebms = "... Skal hente data fra hendelser i nye eMottak "
-                // log.info("Hendelser antall : ${hendelser.size}")
+                val hendelserebms = meldingService.hendelserebms(fom, tom)
+                log.info("Antall hendelser fra ebms : ${hendelserebms.size}")
                 call.respond(hendelserebms)
             }
             get("/hentlogg") {
