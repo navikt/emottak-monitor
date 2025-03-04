@@ -59,6 +59,26 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Hendelser antall : ${hendelser.size}")
                 call.respond(hendelser)
             }
+            get("/henthendelserebms") {
+                val fromDate = call.request.queryParameters.get("fromDate")
+                val toDate = call.request.queryParameters.get("toDate")
+                if (fromDate.isNullOrEmpty()) {
+                    log.info("Mangler parameter: from date")
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+                val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
+                if (toDate.isNullOrEmpty()) {
+                    log.info("Mangler parameter: to date")
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+                val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
+
+                log.info("Henter hendelser fra events endepunktet til ebms ...")
+                // val hendelser = meldingService.hendelser(fom, tom)
+                val hendelserebms = "... Skal hente data fra hendelser i nye eMottak "
+                // log.info("Hendelser antall : ${hendelser.size}")
+                call.respond(hendelserebms)
+            }
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {

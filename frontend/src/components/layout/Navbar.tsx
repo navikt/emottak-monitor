@@ -11,6 +11,7 @@ import CpaIdSok from "../../pages/CpaIdSok";
 import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 import PartnerIdSok from "../../pages/PartnerIdSok";
+import EventsTableEbms from "../../pages/EventsTableEbms";
 
 type Page = {
   title: string;
@@ -21,6 +22,7 @@ type Page = {
 export const pages: Page[] = [
   { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
+  { title: "Hendelser ebms", path: "/hendelserebms", element: <EventsTableEbms /> },
   { title: "Mottak id-søk", path: "/mottakidsok", element: <MottakIdSok /> },
   { title: "EBMessage id-søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
   { title: "CPA id-søk", path: "/cpaidsok", element: <CpaIdSok /> },
