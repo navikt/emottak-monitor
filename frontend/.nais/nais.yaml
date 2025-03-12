@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: "emottak-monitor-frontend"
+  name: "emottak-monitor"
   namespace: "team-emottak"
   labels:
     "team": "team-emottak"
@@ -28,7 +28,7 @@ spec:
       tenant: nav.no
       allowAllUsers: false
       replyURLs:
-        - 'https://emottak-monitor.intern.dev.nav.no/callback'
+        - 'https://emottak-monitor-backend.intern.dev.nav.no/callback'
       claims:
         extra:
           - NAVident

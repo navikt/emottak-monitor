@@ -46,8 +46,8 @@ spec:
       tenant: nav.no
   webproxy: true
   ingresses:
-    - "https://emottak-monitor.intern.dev.nav.no"
-    - "https://emottak-monitor.dev-fss-pub.nais.io"
+    - "https://emottak-monitor-backend.intern.dev.nav.no"
+    - "https://emottak-monitor-backend.dev-fss-pub.nais.io"
   accessPolicy:
     inbound:
       rules:

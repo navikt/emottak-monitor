@@ -1,7 +1,9 @@
 ingresses:
-  - "https://emottak-monitor-frontend.intern.nav.no"
+  - "https://emottak-monitor.intern.nav.no"
+  - "https://emottak-monitor.ansatt.intern.nav.no"
+
 backend:
-  host: "emottak-monitor.prod-fss-pub.nais.io"
+  host: "emottak-monitor-backend.prod-fss-pub.nais.io"
   cluster: prod-fss
 url:
-  react_app_url: "https://emottak-monitor.prod-fss-pub.nais.io"
+  react_app_url: "https://emottak-monitor-backend.prod-fss-pub.nais.io"
