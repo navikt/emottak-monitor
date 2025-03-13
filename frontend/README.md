@@ -1,6 +1,6 @@
 # eMottak Monitor Frontend
 
-URL til tjenesten i dev: https://emottak-monitor.intern.dev.nav.no/
+URL til tjenesten i dev: https://emottak-monitor-frontend.intern.dev.nav.no/
 
 ## Lokal utvikling
 
