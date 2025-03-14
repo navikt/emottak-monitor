@@ -45,7 +45,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val hendelserebms =
                     HttpClient(CIO) {
                     }.get(
-                        "https://emottak-event-manager.intern.dev.nav.no/fetchevents?fromDate=fom&toDate=tom").bodyAsText()
+                        "https://emottak-event-manager.intern.dev.nav.no/fetchevents?fromDate=${fom}&toDate=${tom}").bodyAsText()
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
                 call.respond(hendelserebms)
             }
