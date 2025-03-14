@@ -1,4 +1,4 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.emottak"
@@ -19,8 +19,6 @@ val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "6.2.1"
 val mockkVersion = "1.13.16"
 val kotlinVersion = "2.1.10"
-
-val jvmTargetVersion = "21"
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -99,11 +97,15 @@ tasks {
         }
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = jvmTargetVersion
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = jvmTargetVersion
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
     }
 
     withType<Wrapper> {

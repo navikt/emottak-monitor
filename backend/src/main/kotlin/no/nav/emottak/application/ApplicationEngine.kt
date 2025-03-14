@@ -19,6 +19,7 @@ import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
@@ -59,6 +60,9 @@ private fun Application.serverSetup(
     }
     install(CallLogging) {
         level = Level.INFO
+        filter { call ->
+            call.request.path().startsWith("/v1")
+        }
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
