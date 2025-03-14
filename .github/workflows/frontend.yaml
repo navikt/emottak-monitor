@@ -40,7 +40,7 @@ jobs:
           salsa: true # optional, default true, generates a attestation for the image
 
       # Deloy to dev
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ steps.docker-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
@@ -49,7 +49,7 @@ jobs:
           VARS: frontend/.nais/dev.yaml
 
       # Deloy to prod
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
            IMAGE: ${{ steps.docker-push.outputs.image }}
            APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
