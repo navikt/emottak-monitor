@@ -1,5 +1,5 @@
 ingresses:
-  - "https://emottak-monitor-frontend.intern.nav.no"
+  - "https://emottak-monitor.intern.nav.no"
 #  - "https://emottak-monitor.ansatt.intern.nav.no"
 
 backend:
