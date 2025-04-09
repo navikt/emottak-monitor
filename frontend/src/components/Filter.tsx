@@ -164,6 +164,7 @@ const Filter = <T, K extends keyof T>({
               }
             }}
             value={toTime}
+            format="HH:mm"
           />
         </div>
       </div>
