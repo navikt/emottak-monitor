@@ -39,13 +39,14 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
             get("/henthendelserebms") {
                 // val (fom, tom) = localDateTimeLocalDateTimePair()
-                val fom = "2025-03-10%2012:00"
-                val tom = "2025-03-10%2014:00"
+                val fom = "2025-04-09%2009:52"
+                val tom = "2025-04-09%2010:00"
                 log.info("Henter hendelser fra events endepunktet til ebms ...")
                 val hendelserebms =
                     HttpClient(CIO) {
                     }.get(
                         "https://emottak-event-manager.intern.dev.nav.no/fetchevents?fromDate=${fom}&toDate=${tom}").bodyAsText()
+                log.info("Hendelser fra ebms : ${hendelserebms}")
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
                 call.respond(hendelserebms)
             }
