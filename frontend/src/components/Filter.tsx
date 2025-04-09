@@ -77,6 +77,7 @@ const Filter = <T, K extends keyof T>({
               }
             }}
             value={fromTime}
+            format="HH:mm"
           />
         </div>
       </div>
