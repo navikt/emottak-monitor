@@ -30,6 +30,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
                 call.respond(meldinger)
             }
+            get("/hentmeldingerebms") {
+                val (fom, tom) = localDateTimeLocalDateTimePair()
+                log.info("Fom : $fom, Tom : $tom")
+                log.info("Henter meldinger fra meldinger endepunktet til ebms ...")
+                val meldingerrebms =
+                    HttpClient(CIO) {
+                    }.get(
+                        "https://emottak-event-manager.intern.dev.nav.no/fetchMessageDetails?fromDate=${fom}&toDate=${tom}").bodyAsText()
+                log.info("Meldinger fra ebms : ${meldingerrebms}")
+                log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
+                call.respond(meldingerrebms)
+            }
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente hendelser...")

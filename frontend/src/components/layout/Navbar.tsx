@@ -12,6 +12,8 @@ import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 import PartnerIdSok from "../../pages/PartnerIdSok";
 import EventsTableEbms from "../../pages/EventsTableEbms";
+import MessagesTableEbms from "../../pages/MessagesTableEbms";
+
 
 type Page = {
   title: string;
@@ -21,6 +23,7 @@ type Page = {
 
 export const pages: Page[] = [
   { title: "Meldinger", path: "/meldinger", element: <MessagesTable /> },
+  { title: "Meldinger ebms", path: "/meldingerebms", element: <MessagesTableEbms /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
   { title: "Hendelser ebms", path: "/hendelserebms", element: <EventsTableEbms /> },
   { title: "Mottak id-søk", path: "/mottakidsok", element: <MottakIdSok /> },
