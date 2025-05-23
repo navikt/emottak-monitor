@@ -43,7 +43,7 @@ const MessagesTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   //const [pageSize, setPageSize] = useState(10);
 
-  const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
