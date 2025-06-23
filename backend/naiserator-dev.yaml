@@ -40,6 +40,10 @@ spec:
         mountPath: /secrets/emottak-monitor/credentials
       - kvPath: /kv/preprod/fss/emottak-monitor/team-emottak
         mountPath: /secrets/default
+  observability:
+    logging:
+      destinations:
+        - id: loki
   azure:
     application:
       enabled: true

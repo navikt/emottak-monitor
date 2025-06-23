@@ -18,7 +18,10 @@ spec:
     {{#each ingresses as |url|}}
       - {{url}}
     {{/each}}
-
+  observability:
+    logging:
+      destinations:
+        - id: loki
   azure:
     sidecar:
       enabled: true
