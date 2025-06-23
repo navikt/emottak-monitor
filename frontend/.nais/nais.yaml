@@ -22,6 +22,7 @@ spec:
     logging:
       destinations:
         - id: loki
+        - id: elastic
   azure:
     sidecar:
       enabled: true
