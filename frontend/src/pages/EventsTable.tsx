@@ -55,7 +55,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action"]
+    ["role", "service", "action", "hendelsedeskr"]
   );
 
   const {
@@ -106,7 +106,7 @@ const EventsTable = () => {
         onToTimeChange={setToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
-        filterKeys={["service", "action", "role"]}
+        filterKeys={["service", "action", "role", "hendelsedeskr"]}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} hendelser

@@ -3,7 +3,7 @@ import { Datepicker, isISODateString } from "nav-datovelger";
 import React from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
-export type FilterKeys = "role" | "service" | "action" | "status";
+export type FilterKeys = "role" | "service" | "action" | "status " | "hendelsedeskr";
 
 type FilterProps<T, K extends keyof T> = {
   messages: T[];
@@ -212,6 +212,28 @@ const Filter = <T, K extends keyof T>({
           })}
         </Select>
       )}
+        {filterKeys.includes("hendelsedeskr" as K) && (
+        <Select
+            label="Hendelse"
+            size="small"
+            onChange={(event) =>
+                onFilterChange(
+                    "hendelsedeskr" as K,
+                    event.currentTarget.value as unknown as T[K]
+                )
+            }
+            style={{ gridArea: "hendelsedeskr" }}
+        >
+            <option value="">Velg hendelse</option>
+            {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
+                return (
+                    <option key={hendelsedeskr} value={hendelsedeskr}>
+                        {hendelsedeskr}
+                    </option>
+                );
+            })}
+        </Select>
+    )}
     </div>
   );
 };
