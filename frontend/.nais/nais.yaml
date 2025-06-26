@@ -32,7 +32,7 @@ spec:
       tenant: nav.no
       allowAllUsers: false
       replyURLs:
-        - 'https://emottak-monitor.intern.dev.nav.no/callback'
+        - {{ url.reply_url }}
       claims:
         extra:
           - NAVident
@@ -49,3 +49,7 @@ spec:
   env:
     - name: REACT_APP_URL
       value: {{url.react_app_url}}
+    - name: PROXY_URL
+      value: {{url.proxy_url}}
+    - name: EVENT_MANAGER_URL
+      value: {{url.event_manager_url}}

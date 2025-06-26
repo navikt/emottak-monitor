@@ -7,3 +7,6 @@ backend:
   cluster: prod-fss
 url:
   react_app_url: "https://emottak-monitor.prod-fss-pub.nais.io"
+  proxy_url: "https://emottak-monitor.intern.nav.no"
+  reply_utl: "https://emottak-monitor.intern.nav.no/callback"
+  event_manager_url: "https://emottak-event-manager.intern.nav.no"
