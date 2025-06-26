@@ -1,6 +1,7 @@
 name: Build & deploy emottak-monitor-frontend
 
-on: 
+on:
+  workflow_dispatch:
   push:
     branches:
     - main
