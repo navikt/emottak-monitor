@@ -51,5 +51,3 @@ spec:
       value: {{url.react_app_url}}
     - name: PROXY_URL
       value: {{url.proxy_url}}
-    - name: EVENT_MANAGER_URL
-      value: {{url.event_manager_url}}

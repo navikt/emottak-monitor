@@ -8,5 +8,4 @@ url:
   react_app_url: "https://emottak-monitor.dev-fss-pub.nais.io"
   proxy_url: "https://emottak-monitor.intern.dev.nav.no"
   reply_utl: "https://emottak-monitor.intern.dev.nav.no/callback"
-  event_manager_url: "https://emottak-event-manager.intern.dev.nav.no"
 
