@@ -77,3 +77,5 @@ spec:
       value: "true"
     - name: AZURE_APP_EMOTTAK_CLIENT_ID
       value: 51c1af58-0676-4de7-aea0-60bc97208947
+    - name: EVENT_MANAGER_URL
+      value: https://emottak-event-manager.intern.dev.nav.no

@@ -6,3 +6,6 @@ backend:
   cluster: dev-fss
 url:
   react_app_url: "https://emottak-monitor.dev-fss-pub.nais.io"
+  proxy_url: "https://emottak-monitor.intern.dev.nav.no"
+  reply_url: "https://emottak-monitor.intern.dev.nav.no/callback"
+

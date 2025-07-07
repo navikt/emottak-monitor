@@ -13,10 +13,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.util.toLocalDateTime
 import io.ktor.utils.io.InternalAPI
+import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+
+val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
@@ -37,8 +40,9 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val meldingerrebms =
                     HttpClient(CIO) {
                     }.get(
-                        "https://emottak-event-manager.intern.dev.nav.no/fetchMessageDetails?fromDate=${fom}&toDate=${tom}").bodyAsText()
-                log.info("Meldinger fra ebms : ${meldingerrebms}")
+                        "$eventManagerUrl/fetchMessageDetails?fromDate=$fom&toDate=$tom",
+                    ).bodyAsText()
+                log.info("Meldinger fra ebms : $meldingerrebms")
                 log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
                 call.respond(meldingerrebms)
             }
@@ -56,8 +60,9 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val hendelserebms =
                     HttpClient(CIO) {
                     }.get(
-                        "https://emottak-event-manager.intern.dev.nav.no/fetchevents?fromDate=${fom}&toDate=${tom}").bodyAsText()
-                log.info("Hendelser fra ebms : ${hendelserebms}")
+                        "$eventManagerUrl/fetchevents?fromDate=$fom&toDate=$tom",
+                    ).bodyAsText()
+                log.info("Hendelser fra ebms : $hendelserebms")
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
                 call.respond(hendelserebms)
             }
