@@ -5,12 +5,22 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: "08:00"
-    open-pull-requests-limit: 15
+      time: "06:00"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-patch"
+          - "version-update:semver-minor"
   - package-ecosystem: gradle
     directory: "/backend"
     schedule:
       interval: weekly
       day: monday
-      time: "08:00"
-    open-pull-requests-limit: 15
+      time: "06:00"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-patch"
+          - "version-update:semver-minor"
