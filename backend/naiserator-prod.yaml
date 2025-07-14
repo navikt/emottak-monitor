@@ -38,8 +38,6 @@ spec:
     paths:
       - kvPath: oracle/data/prod/creds/emottak-srvemottaknais
         mountPath: /secrets/emottak-monitor/credentials
-      - kvPath: /kv/prod/fss/emottak-monitor/default
-        mountPath: /secrets/default
   observability:
     logging:
       destinations:
