@@ -72,12 +72,27 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: mottakid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
                 log.info("Henter hendelseslogg for $mottakid")
                 val logg = meldingService.messagelogg(mottakid)
-
                 log.info("Antall hendelser for $mottakid: ${logg.size}")
                 call.respond(logg)
+            }
+
+            get("/hentloggebms") {
+                val mottakid = call.request.queryParameters.get("mottakId")
+                if (mottakid.isNullOrEmpty()) {
+                    log.info("Mangler parameter: mottakid")
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+                log.info("Henter hendelseslogg fra endepunktet til ebms for $mottakid")
+                val loggebms =
+                    HttpClient(CIO) {
+                    }.get(
+                        "$eventManagerUrl/logg",
+                    ).bodyAsText()
+
+                log.info("Antall hendelser for $mottakid: ${loggebms.length}")
+                call.respond(loggebms)
             }
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters.get("cpaId")
