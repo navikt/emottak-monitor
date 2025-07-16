@@ -88,7 +88,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val loggebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/logg",
+                        "$eventManagerUrl/fetchMessageLoggInfo?requestId=$mottakid",
                     ).bodyAsText()
 
                 log.info("Antall hendelser for $mottakid: ${loggebms.length}")
