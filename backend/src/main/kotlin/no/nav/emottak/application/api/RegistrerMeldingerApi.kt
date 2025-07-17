@@ -121,6 +121,24 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Melding info for $mottakid: ${messageInfo.size}")
                 call.respond(messageInfo)
             }
+
+            get("/hentmessageinfoebms") {
+                val mottakid = call.request.queryParameters.get("mottakId")
+                if (mottakid.isNullOrEmpty()) {
+                    log.info("Mangler parameter: mottakid")
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+
+                log.info("Henter info fra events endepunktet til ebms for $mottakid")
+                val messageInfoEbms =
+                    HttpClient(CIO) {
+                    }.get(
+                        "$eventManagerUrl/fetchMessageLoggInfo?requestId=?$mottakid",
+                    ).bodyAsText()
+                log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.length}")
+                call.respond(messageInfoEbms)
+            }
+
             get("/hentcpaidinfo") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {

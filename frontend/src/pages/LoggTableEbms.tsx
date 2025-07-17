@@ -12,11 +12,11 @@ type LogDetails = {
   hendelsesid: string;
 };
 
-type LoggTableProps = {
+type LoggTableEbmsProps = {
   mottakid?: string;
 };
 
-const LoggTable = (props: LoggTableProps) => {
+const LoggTableEbms = (props: LoggTableEbmsProps) => {
   const params = useParams();
   const mottakid = props.mottakid ?? params.mottakid;
 
@@ -44,7 +44,7 @@ const LoggTable = (props: LoggTableProps) => {
 
   return (
     <div>
-      <h1>Hendelsesdetaljer for mottak-id : {mottakid}</h1>
+      <h1>Hendelsesdetaljer ebms for mottak-id : {mottakid}</h1>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
@@ -75,4 +75,4 @@ const LoggTable = (props: LoggTableProps) => {
     </div>
   );
 };
-export default LoggTable;
+export default LoggTableEbms;

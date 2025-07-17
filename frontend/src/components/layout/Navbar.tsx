@@ -13,6 +13,7 @@ import FeilStatistikk from "../../pages/FeilStatistikk";
 import PartnerIdSok from "../../pages/PartnerIdSok";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
+import MottakIdSokEbms from "../../pages/MottakIdSokEbms";
 
 
 type Page = {
@@ -27,7 +28,7 @@ export const pages: Page[] = [
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
   { title: "Hendelser ebms", path: "/hendelserebms", element: <EventsTableEbms /> },
   { title: "Mottak id-søk", path: "/mottakidsok", element: <MottakIdSok /> },
-  { title: "Mottak id-søk ebms", path: "/mottakidsokebms", element: <MottakIdSok /> },
+  { title: "Mottak id-søk ebms", path: "/mottakidsokebms", element: <MottakIdSokEbms /> },
   { title: "EBMessage id-søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
   { title: "CPA id-søk", path: "/cpaidsok", element: <CpaIdSok /> },
   {title: "Partner id-søk", path: "/partnersok", element: <PartnerIdSok /> },
