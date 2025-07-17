@@ -22,7 +22,7 @@ type MottakIdInfo = {
   service: string;
   status: string;
 };
-const MottakIdSok = () => {
+const MottakIdSokEbms = () => {
   const [messageId, setMessageId] = useState("");
 
  const { fetchState, callRequest } = useFetch<MottakIdInfo[]>(
@@ -129,4 +129,4 @@ const MottakIdSok = () => {
       </>
   );
 };
-export default MottakIdSok;
+export default MottakIdSokEbms;
