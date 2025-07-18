@@ -151,7 +151,7 @@ const EventsTable = () => {
                     {event.mottakid.split(",").map((mottakid) => (
                       <Link
                         key={mottakid}
-                        to={`/logg/${mottakid}`}
+                        to={`/loggebms/${mottakid}`}
                         state={{ backgroundLocation: location }}
                       >
                         {mottakid}

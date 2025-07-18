@@ -149,7 +149,7 @@ const MessagesTable = () => {
                   </Table.DataCell>
                   <Table.DataCell>
                     {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke key={mottakid} href={`/logg/${mottakid}`}>
+                      <Lenke key={mottakid} href={`/loggebms/${mottakid}`}>
                         {mottakid}{" "}
                       </Lenke>
                     ))}
