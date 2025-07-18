@@ -27,7 +27,7 @@ export default function App() {
           ))}
           <Route path="/" element={<Navigate to="/meldinger" />} />
           <Route path="/logg/:mottakid" element={<LoggTable />} />
-          <Route path="/loggembs/:mottakid" element={<LoggTableEbms />} />
+          <Route path="/loggebms/:mottakid" element={<LoggTableEbms />} />
         </Route>
         <Route path="/cpa/:cpaid" element={<CpaTable />} />
         <Route path="/isalive" element={<IsAlive />} />
