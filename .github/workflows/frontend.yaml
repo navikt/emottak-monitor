@@ -26,9 +26,19 @@ jobs:
           node-version: 20
       - run: cd frontend && yarn install --frozen-lockfile
 
+      - name: 'Get current date'
+        id: date
+        run: echo "date=$(date +'%Y.%m.%d-%H.%M')" >> $GITHUB_OUTPUT
+
+      - name: 'Set version in index.html'
+        run: sed -i "s/__VERSION__/${{ steps.date.outputs.date }}/g" frontend/index.html
+
       # Build & test frontend + Docker Image
-      - run: cd frontend && yarn build
-      - uses: nais/docker-build-push@v0
+      - name: 'yarn build'
+        run: cd frontend && yarn build
+
+      - name: 'Build Docker Image'
+        uses: nais/docker-build-push@v0
         id: docker-push
         with:
           team: team-emottak # required
@@ -40,8 +50,8 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # required, but is defined as an organization secret
           salsa: true # optional, default true, generates a attestation for the image
 
-      # Deloy to dev
-      - uses: nais/deploy/actions/deploy@v2
+      - name: 'Deloy to dev'
+        uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ steps.docker-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
@@ -49,8 +59,8 @@ jobs:
           RESOURCE: frontend/.nais/nais.yaml
           VARS: frontend/.nais/dev.yaml
 
-      # Deloy to prod
-      - uses: nais/deploy/actions/deploy@v2
+      - name: 'Deloy to prod'
+        uses: nais/deploy/actions/deploy@v2
         env:
            IMAGE: ${{ steps.docker-push.outputs.image }}
            APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
