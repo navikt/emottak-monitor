@@ -135,7 +135,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     }.get(
                         "$eventManagerUrl/fetchMottakIdInfo?requestId=$mottakid",
                     ).bodyAsText()
-                log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.length}")
+                log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.}")
                 call.respond(messageInfoEbms)
             }
 
