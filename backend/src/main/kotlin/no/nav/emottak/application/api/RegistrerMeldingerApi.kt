@@ -128,12 +128,12 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: mottakid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
+                log.info("Kaller endepunktet : /hentmessageinfoebms")
                 log.info("Henter info fra events endepunktet til ebms for $mottakid")
                 val messageInfoEbms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMessageLoggInfo?requestId=$mottakid",
+                        "$eventManagerUrl/fetchMottakIdInfo?requestId=$mottakid",
                     ).bodyAsText()
                 log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.length}")
                 call.respond(messageInfoEbms)
