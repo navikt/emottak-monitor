@@ -103,7 +103,7 @@ const MottakIdSokEbms = () => {
                       {detail.datomottat.substring(0, 23)}
                     </Table.DataCell>
                     <Table.DataCell>
-                      <Lenke href={`/logg/${detail.mottakid}`}>
+                      <Lenke href={`/loggebms/${detail.mottakid}`}>
                         {detail.mottakid}{" "}
                       </Lenke>
                     </Table.DataCell>
