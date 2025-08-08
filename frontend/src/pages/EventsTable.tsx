@@ -19,6 +19,7 @@ type EventInfo = {
   avsender: string | null;
   hendelsedato: string;
   hendelsedeskr: string;
+  requestid: string | null;
   mottakid: string;
   referanse: string | null;
   role: string;
@@ -80,7 +81,8 @@ const EventsTable = () => {
   const headers: { key: keyof EventInfo; name: string }[] = [
     { key: "hendelsedato", name: "Mottatt" },
     { key: "hendelsedeskr", name: "Hendelse" },
-    { key: "mottakid", name: "Mottak-id" },
+    { key: "requestid", name: "Request ID" },
+    { key: "mottakid", name: "Mottak ID" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
@@ -147,6 +149,7 @@ const EventsTable = () => {
                         {event.tillegsinfo}
                       </Ekspanderbartpanel>
                   </Table.DataCell>
+                  <Table.DataCell>{event.requestid}</Table.DataCell>
                   <Table.DataCell>
                     {event.mottakid.split(",").map((mottakid) => (
                       <Link
