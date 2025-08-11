@@ -80,7 +80,7 @@ const EventsTable = () => {
   const headers: { key: keyof EventInfo; name: string }[] = [
     { key: "hendelsedato", name: "Mottatt" },
     { key: "hendelsedeskr", name: "Hendelse" },
-    { key: "mottakid", name: "Mottak ID" },
+    { key: "mottakid", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
