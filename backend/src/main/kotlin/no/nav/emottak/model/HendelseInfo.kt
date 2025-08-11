@@ -1,6 +1,6 @@
 package no.nav.emottak.model
 
-data class EventInfo(
+data class HendelseInfo(
     val hendelsedato: String,
     val hendelsedeskr: String,
     val tillegsinfo: String,

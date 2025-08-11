@@ -2,7 +2,7 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.model.EventInfo
+import no.nav.emottak.model.HendelseInfo
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
@@ -10,7 +10,7 @@ fun DatabaseInterface.hentHendelser(
     databasePrefix: String,
     fom: LocalDateTime,
     tom: LocalDateTime,
-): List<EventInfo> =
+): List<HendelseInfo> =
     connection.use { connection ->
         val statement =
             connection.prepareStatement(
@@ -30,8 +30,8 @@ fun DatabaseInterface.hentHendelser(
         }
     }
 
-fun ResultSet.toHendelseInfo(): EventInfo =
-    EventInfo(
+fun ResultSet.toHendelseInfo(): HendelseInfo =
+    HendelseInfo(
         getString("HENDELSEDATO"),
         getString("HENDELSEDESKR"),
         getString("TILLEGSINFO"),

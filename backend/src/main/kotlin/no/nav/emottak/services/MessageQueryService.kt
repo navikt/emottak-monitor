@@ -12,8 +12,8 @@ import no.nav.emottak.aksessering.db.hentPartnerIdInfo
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.CpaIdInfo
 import no.nav.emottak.model.EBMessageIdInfo
-import no.nav.emottak.model.EventInfo
 import no.nav.emottak.model.FeilStatistikkInfo
+import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
@@ -33,7 +33,7 @@ class MessageQueryService(
     fun hendelser(
         fom: LocalDateTime,
         tom: LocalDateTime,
-    ): List<EventInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom)
+    ): List<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom)
 
     fun messagelogg(mottakid: String?): List<MessageLoggInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
 
