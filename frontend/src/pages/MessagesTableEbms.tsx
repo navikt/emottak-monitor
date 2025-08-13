@@ -19,7 +19,6 @@ type MessageInfo = {
   avsender: string;
   cpaid: string;
   datomottat: string;
-  requestid: string | null;
   mottakidliste: string;
   referanse: string;
   role: string;
@@ -83,7 +82,6 @@ const MessagesTable = () => {
 
   const headers: { key: keyof MessageInfo; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
-    { key: "requestid", name: "Request ID" },
     { key: "mottakidliste", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
@@ -149,7 +147,6 @@ const MessagesTable = () => {
                   <Table.DataCell className="tabell__td--sortert">
                     {message.datomottat.substring(0, 23)}
                   </Table.DataCell>
-                  <Table.DataCell>{message.requestid}</Table.DataCell>
                   <Table.DataCell>
                     {message.mottakidliste.split(",").map((mottakid) => (
                       <Lenke key={mottakid} href={`/loggebms/${mottakid}`}>
