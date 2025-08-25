@@ -2,6 +2,15 @@ name: Build & deploy emottak-monitor-backend
 
 on: 
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Choose the environment to deploy"
+        required: true
+        default: "dev-fss"
+        type: choice
+        options:
+          - dev-fss
+          - prod-fss
   push:
     branches:
     - main
@@ -67,17 +76,18 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # required, but is defined as an organization secret
           salsa: true # optional, default true, generates a attestation for the image
 
-      # Deloy to dev
-      - uses: nais/deploy/actions/deploy@v2
+      - name: Deploy to dev
+        if: ${{ inputs.environment == 'dev-fss' }}
+        uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ steps.docker-push.outputs.image }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: backend/naiserator-dev.yaml
 
-      # Deloy to prod
-      - uses: nais/deploy/actions/deploy@v2
-         # if: TODO
+      - name: Deploy to prod
+        if: ${{ inputs.environment == 'prod-fss' }}
+        uses: nais/deploy/actions/deploy@v2
         env:
            IMAGE: ${{ steps.docker-push.outputs.image }}
            APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
