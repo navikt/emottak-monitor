@@ -29,6 +29,11 @@ type EventInfo = {
 const EventsTable = () => {
   const location = useLocation();
 
+  const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
+  const [toDateDraft, setToDateDraft] = useState(initialDate(""));
+  const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
+  const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
+
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
@@ -43,6 +48,11 @@ const EventsTable = () => {
   const { fetchState, callRequest } = useFetch<EventInfo[]>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`
   );
+
+  const commitFromDate   = () => setFromDate(fromDateDraft);
+  const commitToDate     = () => setToDate(toDateDraft);
+  const commitFromTime   = () => setFromTime(fromTimeDraft);
+  const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: events } = fetchState;
   let pageSize = 10;
@@ -100,10 +110,14 @@ const EventsTable = () => {
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDate}
-        onFromTimeChange={setFromTime}
-        onToDateChange={setToDate}
-        onToTimeChange={setToTime}
+        onFromDateChange={setFromDateDraft}
+        onFromTimeChange={setFromTimeDraft}
+        onToDateChange={setToDateDraft}
+        onToTimeChange={setToTimeDraft}
+        onFromDateBlur={commitFromDate}
+        onFromTimeBlur={commitFromTime}
+        onToDateBlur={commitToDate}
+        onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
         filterKeys={["service", "action", "role", "hendelsedeskr"]}
