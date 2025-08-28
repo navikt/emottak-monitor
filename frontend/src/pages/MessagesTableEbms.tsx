@@ -27,6 +27,12 @@ type MessageInfo = {
 };
 
 const MessagesTable = () => {
+
+  const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
+  const [toDateDraft, setToDateDraft] = useState(initialDate(""));
+  const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
+  const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
+
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
@@ -46,6 +52,11 @@ const MessagesTable = () => {
   const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
+
+  const commitFromDate   = () => setFromDate(fromDateDraft);
+  const commitToDate     = () => setToDate(toDateDraft);
+  const commitFromTime   = () => setFromTime(fromTimeDraft);
+  const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: messages } = fetchState;
 
@@ -105,10 +116,14 @@ const MessagesTable = () => {
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDate}
-        onFromTimeChange={setFromTime}
-        onToDateChange={setToDate}
-        onToTimeChange={setToTime}
+        onFromDateChange={setFromDateDraft}
+        onFromTimeChange={setFromTimeDraft}
+        onToDateChange={setToDateDraft}
+        onToTimeChange={setToTimeDraft}
+        onFromDateBlur={commitFromDate}
+        onFromTimeBlur={commitFromTime}
+        onToDateBlur={commitToDate}
+        onToTimeBlur={commitToTime}
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
       />
