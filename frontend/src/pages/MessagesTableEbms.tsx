@@ -136,7 +136,7 @@ const MessagesTable = () => {
             </RowWithContent>
           )}
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>Ingen meldinder funnet !</RowWithContent>}
+          {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((message, index) => {
               return (
