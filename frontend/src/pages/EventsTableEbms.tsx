@@ -167,9 +167,7 @@ const EventsTable = () => {
                         key={mottakid}
                         to={`/loggebms/${mottakid}`}
                         state={{ backgroundLocation: location }}
-                      >
-                        {mottakid}
-                      </Link>
+                      >{mottakid}</Link>,
                     ))}
                   </Table.DataCell>
                   <Table.DataCell>{event.role}</Table.DataCell>

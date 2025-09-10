@@ -40,7 +40,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val meldingerrebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMessageDetails?fromDate=$fom&toDate=$tom",
+                        "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom",
                     ).bodyAsText()
                 log.info("Meldinger fra ebms : $meldingerrebms")
                 log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
