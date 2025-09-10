@@ -151,7 +151,6 @@ const EventsTable = () => {
           {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((event, index) => {
-              console.log(event)
               return (
                 <Table.Row
                   key={event.description + index}

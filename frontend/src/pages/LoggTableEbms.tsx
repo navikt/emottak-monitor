@@ -7,9 +7,9 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 
 type LogDetails = {
-  hendelsesdato: string;
-  hendelsesbeskrivelse: string;
-  hendelsesid: string;
+  eventDate: string;
+  eventDescription: string;
+  eventId: string;
 };
 
 type LoggTableEbmsProps = {
@@ -25,6 +25,7 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
   );
 
   const { loading, error, data: logMessages } = fetchState;
+  console.log(logMessages);
 
   useEffect(() => {
     callRequest();
@@ -33,13 +34,13 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
   const { items } = useTableSorting(logMessages ?? []);
 
   if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+    return <div>Ingen gyldig mottak-id</div>;
   }
 
   const headers: { key: keyof LogDetails; name: string }[] = [
-    { key: "hendelsesdato", name: "Dato" },
-    { key: "hendelsesbeskrivelse", name: "Beskrivelse" },
-    { key: "hendelsesid", name: "ID" },
+    { key: "eventDate", name: "Dato" },
+    { key: "eventDescription", name: "Beskrivelse" },
+    { key: "eventId", name: "ID" },
   ];
 
   return (
@@ -57,14 +58,14 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
           {!loading &&
             items.map((logDetails) => {
               return (
-                <Table.Row key={logDetails.hendelsesid}>
+                <Table.Row key={logDetails.eventId}>
                   <Table.DataCell className="tabell__td--sortert">
-                    {logDetails.hendelsesdato.substring(0, 23)}
+                    {logDetails.eventDate.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {logDetails.hendelsesbeskrivelse}
+                    {logDetails.eventDescription}
                   </Table.DataCell>
-                  <Table.DataCell>{logDetails.hendelsesid}</Table.DataCell>
+                  <Table.DataCell>{logDetails.eventId}</Table.DataCell>
                 </Table.Row>
               );
             })}

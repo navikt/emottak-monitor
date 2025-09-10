@@ -154,7 +154,6 @@ const MessagesTable = () => {
           {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((message, index) => {
-              console.log(message)
               return (
                 <Table.Row
                   key={message.cpaId + index}
