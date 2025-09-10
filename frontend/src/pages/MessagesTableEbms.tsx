@@ -59,6 +59,7 @@ const MessagesTable = () => {
   const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: messages } = fetchState;
+  console.log(messages);
 
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],

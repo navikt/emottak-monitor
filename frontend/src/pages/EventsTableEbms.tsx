@@ -55,6 +55,8 @@ const EventsTable = () => {
   const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: events } = fetchState;
+  console.log(events);
+
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);

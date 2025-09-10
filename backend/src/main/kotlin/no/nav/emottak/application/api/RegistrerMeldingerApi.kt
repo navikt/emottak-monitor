@@ -37,7 +37,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Fom : $fom, Tom : $tom")
                 val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom"
-                log.info("Henter meldinger fra meldinger endepunktet til ebms ($url)")
+                log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
                 val meldingerrebms =
                     HttpClient(CIO) {
                     }.get(
@@ -57,11 +57,12 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/henthendelserebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Fom : $fom, Tom : $tom")
-                log.info("Henter hendelser fra events endepunktet til ebms ...")
+                val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
+                log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                 val hendelserebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchevents?fromDate=$fom&toDate=$tom",
+                        url,
                     ).bodyAsText()
                 log.info("Hendelser fra ebms : $hendelserebms")
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
