@@ -15,12 +15,12 @@ import { initialDate, initialTime } from "../util";
 
 type MessageInfo = {
   action: string;
-  antall: number;
-  avsender: string;
-  cpaid: string;
-  datomottat: string;
-  mottakidliste: string;
-  referanse: string;
+  count: number;
+  senderName: string;
+  cpaId: string;
+  receivedDate: string;
+  readableIdList: string;
+  referenceParameter: string;
   role: string;
   service: string;
   status: string;
@@ -59,7 +59,6 @@ const MessagesTable = () => {
   const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: messages } = fetchState;
-  console.log(messages);
 
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],
@@ -93,14 +92,14 @@ const MessagesTable = () => {
   }, [currentPage, pageSize, filteredAndSortedMessages]);
 
   const headers: { key: keyof MessageInfo; name: string }[] = [
-    { key: "datomottat", name: "Mottatt" },
-    { key: "mottakidliste", name: "Mottak-id" },
+    { key: "receivedDate", name: "Mottatt" },
+    { key: "readableIdList", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
-    { key: "referanse", name: "Referanse" },
-    { key: "avsender", name: "Avsender" },
-    { key: "cpaid", name: "CPA-id" },
+    { key: "referenceParameter", name: "Referanse" },
+    { key: "senderName", name: "Avsender" },
+    { key: "cpaId", name: "CPA-id" },
     { key: "status", name: "Status" },
   ];
 
@@ -155,28 +154,29 @@ const MessagesTable = () => {
           {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((message, index) => {
+              console.log(message)
               return (
                 <Table.Row
-                  key={message.cpaid + index}
+                  key={message.cpaId + index}
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
                   <Table.DataCell className="tabell__td--sortert">
-                    {message.datomottat.substring(0, 23)}
+                    {message.receivedDate.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke key={mottakid} href={`/loggebms/${mottakid}`}>
-                        {mottakid}{" "}
-                      </Lenke>
+                    {message.readableIdList.split(",").map((readableId) => (
+                      <Lenke key={readableId} href={`/loggebms/${readableId}`}>
+                        {readableId}
+                      </Lenke>, "
                     ))}
                   </Table.DataCell>
                   <Table.DataCell>{message.role}</Table.DataCell>
                   <Table.DataCell>{message.service}</Table.DataCell>
                   <Table.DataCell>{message.action}</Table.DataCell>
-                  <Table.DataCell>{message.referanse}</Table.DataCell>
-                  <Table.DataCell>{message.avsender}</Table.DataCell>
+                  <Table.DataCell>{message.referenceParameter}</Table.DataCell>
+                  <Table.DataCell>{message.senderName}</Table.DataCell>
                   <Table.DataCell>
-                    <Lenke href={`/cpa/${message.cpaid}`}>
+                    <Lenke href={`/cpa/${message.cpaId}`}>
                       {message.cpaid}
                     </Lenke>
                   </Table.DataCell>
