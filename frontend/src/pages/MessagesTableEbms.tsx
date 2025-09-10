@@ -165,10 +165,11 @@ const MessagesTable = () => {
                   </Table.DataCell>
                   <Table.DataCell>
                     {message.readableIdList.split(",").map((readableId) => (
-                      <Lenke key={readableId} href={`/loggebms/${readableId}`}>
-                        {readableId}
-                      </Lenke>, "
-                    ))}
+                      <Lenke
+                          key={readableId}
+                          href={`/loggebms/${readableId}`}
+                      >{readableId}</Lenke>
+                    )).reduce((prev, curr) => [prev, ', ', curr])}
                   </Table.DataCell>
                   <Table.DataCell>{message.role}</Table.DataCell>
                   <Table.DataCell>{message.service}</Table.DataCell>

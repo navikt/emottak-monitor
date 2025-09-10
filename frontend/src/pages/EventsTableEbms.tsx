@@ -169,8 +169,8 @@ const EventsTable = () => {
                         key={readableId}
                         to={`/loggebms/${readableId}`}
                         state={{ backgroundLocation: location }}
-                      >{readableId}</Link>,
-                    ))}
+                      >{readableId}</Link>
+                    )).reduce((prev, curr) => [prev, ', ', curr])}
                   </Table.DataCell>
                   <Table.DataCell>{event.role}</Table.DataCell>
                   <Table.DataCell>{event.service}</Table.DataCell>

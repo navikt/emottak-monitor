@@ -47,6 +47,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
                 call.respond(meldingerrebms)
             }
+
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente hendelser...")
@@ -68,6 +69,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
                 call.respond(hendelserebms)
             }
+
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
@@ -79,23 +81,23 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Antall hendelser for $mottakid: ${logg.size}")
                 call.respond(logg)
             }
-
             get("/hentloggebms") {
-                val mottakid = call.request.queryParameters.get("mottakId")
-                if (mottakid.isNullOrEmpty()) {
+                val mottakId = call.request.queryParameters.get("mottakId")
+                if (mottakId.isNullOrEmpty()) {
                     log.info("Mangler parameter: mottakid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-                log.info("Henter hendelseslogg fra endepunktet til ebms for $mottakid")
+                val url = "$eventManagerUrl/message-details/$mottakId/events"
+                log.info("Henter hendelseslogg fra endepunktet til ebms for $mottakId ($url)")
                 val loggebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMessageLoggInfo?id=$mottakid",
+                        url,
                     ).bodyAsText()
-
-                log.info("Antall hendelser for $mottakid: ${loggebms.length}")
+                log.info("Antall hendelser for $mottakId: ${loggebms.length}")
                 call.respond(loggebms)
             }
+
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
