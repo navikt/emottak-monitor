@@ -177,7 +177,7 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.senderName}</Table.DataCell>
                   <Table.DataCell>
                     <Lenke href={`/cpa/${message.cpaId}`}>
-                      {message.cpaid}
+                      {message.cpaId}
                     </Lenke>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>

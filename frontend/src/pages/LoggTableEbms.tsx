@@ -13,15 +13,15 @@ type LogDetails = {
 };
 
 type LoggTableEbmsProps = {
-  mottakid?: string;
+  readableId?: string;
 };
 
 const LoggTableEbms = (props: LoggTableEbmsProps) => {
   const params = useParams();
-  const mottakid = props.mottakid ?? params.mottakid;
+  const readableId = props.readableId ?? params.readableId;
 
   const { fetchState, callRequest } = useFetch<LogDetails[]>(
-    `/v1/hentloggebms?mottakId=${mottakid}`
+    `/v1/hentloggebms?readableId=${readableId}`
   );
 
   const { loading, error, data: logMessages } = fetchState;
@@ -33,7 +33,7 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
 
   const { items } = useTableSorting(logMessages ?? []);
 
-  if (!mottakid) {
+  if (!readableId) {
     return <div>Ingen gyldig mottak-id</div>;
   }
 
@@ -45,7 +45,7 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
 
   return (
     <div>
-      <h1>Hendelsesdetaljer ebms for mottak-id : {mottakid}</h1>
+      <h1>Hendelsesdetaljer ebms for mottak-id : {readableId}</h1>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>

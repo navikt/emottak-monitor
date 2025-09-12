@@ -82,19 +82,19 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(logg)
             }
             get("/hentloggebms") {
-                val mottakId = call.request.queryParameters.get("mottakId")
-                if (mottakId.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                val readableId = call.request.queryParameters.get("readableId")
+                if (readableId.isNullOrEmpty()) {
+                    log.info("Mangler parameter: readableId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-                val url = "$eventManagerUrl/message-details/$mottakId/events"
-                log.info("Henter hendelseslogg fra endepunktet til ebms for $mottakId ($url)")
+                val url = "$eventManagerUrl/message-details/$readableId/events"
+                log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
                 val loggebms =
                     HttpClient(CIO) {
                     }.get(
                         url,
                     ).bodyAsText()
-                log.info("Antall hendelser for $mottakId: ${loggebms.length}")
+                log.info("Antall hendelser for $readableId: ${loggebms.length}")
                 call.respond(loggebms)
             }
 
@@ -118,28 +118,25 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: mottakid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
                 log.info("Henter info for $mottakid")
                 val messageInfo = meldingService.mottakid(mottakid)
-
                 log.info("Melding info for $mottakid: ${messageInfo.size}")
                 call.respond(messageInfo)
             }
-
             get("/hentmessageinfoebms") {
-                val mottakid = call.request.queryParameters.get("mottakId")
-                if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                val readableId = call.request.queryParameters.get("readableId")
+                if (readableId.isNullOrEmpty()) {
+                    log.info("Mangler parameter: readableId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-                log.info("Kaller endepunktet : /hentmessageinfoebms")
-                log.info("Henter info fra events endepunktet til ebms for $mottakid")
+                val url = "$eventManagerUrl/message-details/$readableId"
+                log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
                 val messageInfoEbms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMottakIdInfo?id=$mottakid",
+                        url,
                     ).bodyAsText()
-                log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.length}")
+                log.info("Melding info fra ebms for $readableId: ${messageInfoEbms.length}")
                 call.respond(messageInfoEbms)
             }
 
@@ -173,7 +170,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: partnerid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
                 log.info("Henter info for partnerid : $partnerid")
                 val partnerIdInfo = meldingService.partnerid(partnerid)
                 log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
@@ -183,7 +179,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente feil statistikk...")
                 val feilStatistikk = meldingService.feilstatistikk(fom, tom)
-
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
