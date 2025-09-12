@@ -36,16 +36,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Fom : $fom, Tom : $tom")
-                log.info("Henter meldinger fra meldinger endepunktet til ebms ...")
+                val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom"
+                log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
                 val meldingerrebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMessageDetails?fromDate=$fom&toDate=$tom",
+                        url,
                     ).bodyAsText()
                 log.info("Meldinger fra ebms : $meldingerrebms")
                 log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
                 call.respond(meldingerrebms)
             }
+
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente hendelser...")
@@ -56,16 +58,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/henthendelserebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Fom : $fom, Tom : $tom")
-                log.info("Henter hendelser fra events endepunktet til ebms ...")
+                val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
+                log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                 val hendelserebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchevents?fromDate=$fom&toDate=$tom",
+                        url,
                     ).bodyAsText()
                 log.info("Hendelser fra ebms : $hendelserebms")
                 log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
                 call.respond(hendelserebms)
             }
+
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
@@ -77,23 +81,23 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Antall hendelser for $mottakid: ${logg.size}")
                 call.respond(logg)
             }
-
             get("/hentloggebms") {
-                val mottakid = call.request.queryParameters.get("mottakId")
-                if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                val readableId = call.request.queryParameters.get("readableId")
+                if (readableId.isNullOrEmpty()) {
+                    log.info("Mangler parameter: readableId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-                log.info("Henter hendelseslogg fra endepunktet til ebms for $mottakid")
+                val url = "$eventManagerUrl/message-details/$readableId/events"
+                log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
                 val loggebms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMessageLoggInfo?id=$mottakid",
+                        url,
                     ).bodyAsText()
-
-                log.info("Antall hendelser for $mottakid: ${loggebms.length}")
+                log.info("Antall hendelser for $readableId: ${loggebms.length}")
                 call.respond(loggebms)
             }
+
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
@@ -114,28 +118,25 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: mottakid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
                 log.info("Henter info for $mottakid")
                 val messageInfo = meldingService.mottakid(mottakid)
-
                 log.info("Melding info for $mottakid: ${messageInfo.size}")
                 call.respond(messageInfo)
             }
-
             get("/hentmessageinfoebms") {
-                val mottakid = call.request.queryParameters.get("mottakId")
-                if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                val readableId = call.request.queryParameters.get("readableId")
+                if (readableId.isNullOrEmpty()) {
+                    log.info("Mangler parameter: readableId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-                log.info("Kaller endepunktet : /hentmessageinfoebms")
-                log.info("Henter info fra events endepunktet til ebms for $mottakid")
+                val url = "$eventManagerUrl/message-details/$readableId"
+                log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
                 val messageInfoEbms =
                     HttpClient(CIO) {
                     }.get(
-                        "$eventManagerUrl/fetchMottakIdInfo?id=$mottakid",
+                        url,
                     ).bodyAsText()
-                log.info("Melding info fra ebms for $mottakid: ${messageInfoEbms.length}")
+                log.info("Melding info fra ebms for $readableId: ${messageInfoEbms.length}")
                 call.respond(messageInfoEbms)
             }
 
@@ -169,7 +170,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     log.info("Mangler parameter: partnerid")
                     call.respond(HttpStatusCode.BadRequest)
                 }
-
                 log.info("Henter info for partnerid : $partnerid")
                 val partnerIdInfo = meldingService.partnerid(partnerid)
                 log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
@@ -179,7 +179,6 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente feil statistikk...")
                 val feilStatistikk = meldingService.feilstatistikk(fom, tom)
-
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }

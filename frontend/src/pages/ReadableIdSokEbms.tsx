@@ -10,23 +10,23 @@ import useFilter from "../hooks/useFilter";
 import clsx from "clsx";
 import RowWithContent from "../components/RowWithContent";
 
-type MottakIdInfo = {
+type ReadableIdInfo = {
   action: string;
-  antall: number;
-  avsender: string;
-  cpaid: string;
-  datomottat: string;
-  mottakid: string;
-  referanse: string;
+  //count: number; // Ikke i bruk?
+  senderName: string;
+  cpaId: string;
+  receivedDate: string;
+  readableId: string;
+  referenceParameter: string;
   role: string;
   service: string;
   status: string;
 };
-const MottakIdSokEbms = () => {
+const ReadableIdSokEbms = () => {
   const [messageId, setMessageId] = useState("");
 
- const { fetchState, callRequest } = useFetch<MottakIdInfo[]>(
-    `/v1/hentmessageinfoebms?mottakId=${messageId}`
+ const { fetchState, callRequest } = useFetch<ReadableIdInfo[]>(
+    `/v1/hentmessageinfoebms?readableId=${messageId}`
   );
 
   useEffect(() => {
@@ -46,22 +46,22 @@ const MottakIdSokEbms = () => {
   } = useTableSorting(filteredMessageInfo);
 
 
-  const getClassNamesFor = (name: keyof MottakIdInfo) => {
+  const getClassNamesFor = (name: keyof ReadableIdInfo) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const headers: { key: keyof MottakIdInfo; name: string }[] = [
-    { key: "datomottat", name: "Mottatt" },
-    { key: "mottakid", name: "Mottak-id" },
+  const headers: { key: keyof ReadableIdInfo; name: string }[] = [
+    { key: "receivedDate", name: "Mottatt" },
+    { key: "readableId", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
-    { key: "referanse", name: "Referanse" },
-    { key: "avsender", name: "Avsender" },
-    { key: "cpaid", name: "CPA-id" },
+    { key: "referenceParameter", name: "Referanse" },
+    { key: "senderName", name: "Avsender" },
+    { key: "cpaId", name: "CPA-id" },
     { key: "status", name: "Status" },
   ];
 
@@ -96,24 +96,24 @@ const MottakIdSokEbms = () => {
               filteredMessageInfo.map((detail, index) => {
               return (
                   <Table.Row
-                    key={detail.mottakid + index}
+                    key={detail.readableId + index}
                     className={clsx({ [styles.coloredRow]: index % 2 })}
                   >
                     <Table.DataCell className="tabell__td--sortert">
-                      {detail.datomottat.substring(0, 23)}
+                      {detail.receivedDate.substring(0, 23)}
                     </Table.DataCell>
                     <Table.DataCell>
-                      <Lenke href={`/loggebms/${detail.mottakid}`}>
-                        {detail.mottakid}{" "}
+                      <Lenke href={`/loggebms/${detail.readableId}`}>
+                        {detail.readableId}{" "}
                       </Lenke>
                     </Table.DataCell>
                   <Table.DataCell>{detail.role}</Table.DataCell>
                   <Table.DataCell>{detail.service}</Table.DataCell>
                   <Table.DataCell>{detail.action}</Table.DataCell>
-                  <Table.DataCell>{detail.referanse}</Table.DataCell>
-                  <Table.DataCell>{detail.avsender}</Table.DataCell>
+                  <Table.DataCell>{detail.referenceParameter}</Table.DataCell>
+                  <Table.DataCell>{detail.senderName}</Table.DataCell>
                   <Table.DataCell>
-                    <Lenke href={`/cpa/${detail.cpaid}`}>{detail.cpaid} </Lenke>
+                    <Lenke href={`/cpa/${detail.cpaId}`}>{detail.cpaId} </Lenke>
                   </Table.DataCell>
                   <Table.DataCell>{detail.status}</Table.DataCell>
                 </Table.Row>
@@ -129,4 +129,4 @@ const MottakIdSokEbms = () => {
       </>
   );
 };
-export default MottakIdSokEbms;
+export default ReadableIdSokEbms;
