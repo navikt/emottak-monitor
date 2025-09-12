@@ -163,13 +163,11 @@ const EventsTable = () => {
                       </Ekspanderbartpanel>
                   </Table.DataCell>
                   <Table.DataCell>
-                    {event.readableId.split(",").map((readableId) => (
                       <Link
-                        key={readableId}
-                        to={`/loggebms/${readableId}`}
+                        key={event.readableId}
+                        to={`/loggebms/${event.readableId}`}
                         state={{ backgroundLocation: location }}
-                      >{readableId}</Link>
-                    )).reduce((prev, curr) => [prev, ', ', curr])}
+                      >{event.readableId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{event.role}</Table.DataCell>
                   <Table.DataCell>{event.service}</Table.DataCell>
