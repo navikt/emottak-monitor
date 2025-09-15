@@ -163,11 +163,14 @@ const MessagesTable = () => {
                     {message.datomottat.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke key={mottakid} href={`/logg/${mottakid}`}>
-                        {mottakid}
-                      </Lenke>
-                    )).reduce((prev, curr) => [prev, ', ', curr])}
+                    {message.mottakidliste.split(",").map((mottakid, idx, arr) => (
+                      <React.Fragment key={mottakid}>
+                        <Lenke key={mottakid} href={`/logg/${mottakid}`}>
+                          {mottakid}
+                        </Lenke>
+                        {idx < arr.length - 1 && ', '}
+                      </React.Fragment>
+                    ))}
                   </Table.DataCell>
                   <Table.DataCell>{message.role}</Table.DataCell>
                   <Table.DataCell>{message.service}</Table.DataCell>

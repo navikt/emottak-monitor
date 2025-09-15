@@ -163,12 +163,15 @@ const MessagesTable = () => {
                     {message.receivedDate.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {message.readableIdList.split(",").map((readableId) => (
-                      <Lenke
-                          key={readableId}
-                          href={`/loggebms/${readableId}`}
-                      >{readableId}</Lenke>
-                    )).reduce((prev, curr) => [prev, ', ', curr])}
+                    {message.readableIdList.split(",").map((readableId, idx, arr) => (
+                      <React.Fragment key={readableId}>
+                        <Lenke
+                            key={readableId}
+                            href={`/loggebms/${readableId}`}
+                        >{readableId}</Lenke>
+                        {idx < arr.length - 1 && ', '}
+                      </React.Fragment>
+                    ))}
                   </Table.DataCell>
                   <Table.DataCell>{message.role}</Table.DataCell>
                   <Table.DataCell>{message.service}</Table.DataCell>
