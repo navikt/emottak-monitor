@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -38,14 +39,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Fom : $fom, Tom : $tom")
                 val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom"
                 log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
-                val meldingerrebms =
-                    HttpClient(CIO) {
-                    }.get(
-                        url,
-                    ).bodyAsText()
-                log.info("Meldinger fra ebms : $meldingerrebms")
-                log.info("Antall meldinger fra ebms : ${meldingerrebms.length}")
-                call.respond(meldingerrebms)
+                executeREST(url)
             }
 
             get("/henthendelser") {
@@ -60,14 +54,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Fom : $fom, Tom : $tom")
                 val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
                 log.info("Henter hendelser fra events endepunktet til ebms ($url)")
-                val hendelserebms =
-                    HttpClient(CIO) {
-                    }.get(
-                        url,
-                    ).bodyAsText()
-                log.info("Hendelser fra ebms : $hendelserebms")
-                log.info("Antall hendelser fra ebms : ${hendelserebms.length}")
-                call.respond(hendelserebms)
+                executeREST(url)
             }
 
             get("/hentlogg") {
@@ -89,13 +76,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 }
                 val url = "$eventManagerUrl/message-details/$readableId/events"
                 log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
-                val loggebms =
-                    HttpClient(CIO) {
-                    }.get(
-                        url,
-                    ).bodyAsText()
-                log.info("Antall hendelser for $readableId: ${loggebms.length}")
-                call.respond(loggebms)
+                executeREST(url)
             }
 
             get("/hentcpa") {
@@ -131,13 +112,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 }
                 val url = "$eventManagerUrl/message-details/$readableId"
                 log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
-                val messageInfoEbms =
-                    HttpClient(CIO) {
-                    }.get(
-                        url,
-                    ).bodyAsText()
-                log.info("Melding info fra ebms for $readableId: ${messageInfoEbms.length}")
-                call.respond(messageInfoEbms)
+                executeREST(url)
             }
 
             get("/hentcpaidinfo") {
@@ -201,4 +176,17 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
     }
     val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
     return Pair(fom, tom)
+}
+
+@InternalAPI
+private suspend fun RoutingContext.executeREST(url: String) {
+    val response = HttpClient(CIO) {}.get(url)
+    val responseText = response.bodyAsText()
+    if (response.status.isSuccess()) {
+        log.info("Lengde på responstekst : ${responseText.length}")
+        call.respond(responseText)
+    } else {
+        log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
+        call.respond(response.status, responseText)
+    }
 }
