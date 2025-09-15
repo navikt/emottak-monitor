@@ -44,9 +44,6 @@ const useFetch = <T>(url: string) => {
       dispatch({ type: "reqStart" });
       const res = await axios.get<T>(url);
       const data = await res.data;
-      if (res.status >= 300) {
-        console.warn("We got HTTP " + res.status + " in return!");
-      }
       dispatch({type: "reqSuccess", data});
     } catch (e) {
       if (axios.isAxiosError(e)) {
