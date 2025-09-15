@@ -1,6 +1,5 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
-import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import Filter from "../components/Filter";
@@ -12,6 +11,7 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pagination from "../components/Pagination";
 import { initialDate, initialTime } from "../util";
+import {Link, useLocation} from "react-router-dom";
 
 type MessageInfo = {
   action: string;
@@ -27,6 +27,7 @@ type MessageInfo = {
 };
 
 const MessagesTable = () => {
+  const location = useLocation();
 
   const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
   const [toDateDraft, setToDateDraft] = useState(initialDate(""));
@@ -165,10 +166,11 @@ const MessagesTable = () => {
                   <Table.DataCell>
                     {message.readableIdList.split(",").map((readableId, idx, arr) => (
                       <React.Fragment key={readableId}>
-                        <Lenke
+                        <Link
                             key={readableId}
-                            href={`/loggebms/${readableId}`}
-                        >{readableId}</Lenke>
+                            to={`/logg/${readableId}`}
+                            state={{ backgroundLocation: location }}
+                        >{readableId}</Link>
                         {idx < arr.length - 1 && ', '}
                       </React.Fragment>
                     ))}
@@ -179,9 +181,10 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.referenceParameter}</Table.DataCell>
                   <Table.DataCell>{message.senderName}</Table.DataCell>
                   <Table.DataCell>
-                    <Lenke href={`/cpa/${message.cpaId}`}>
-                      {message.cpaId}
-                    </Lenke>
+                    <Link
+                      to={`/cpa/${message.cpaId}`}
+                      state={{ backgroundLocation: location }}
+                  >{message.cpaId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
                 </Table.Row>

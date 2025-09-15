@@ -1,6 +1,5 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
-import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import Filter from "../components/Filter";
@@ -182,9 +181,11 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.referanse}</Table.DataCell>
                   <Table.DataCell>{message.avsender}</Table.DataCell>
                   <Table.DataCell>
-                    <Lenke href={`/cpa/${message.cpaid}`}>
-                      {message.cpaid}
-                    </Lenke>
+                    <Link
+                        key={message.cpaid}
+                        to={`/cpa/${message.cpaid}`}
+                        state={{ backgroundLocation: location }}
+                    >{message.cpaid}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
                 </Table.Row>
