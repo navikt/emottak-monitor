@@ -55,7 +55,6 @@ const CpaTable = () => {
               );
             })}
         </Table.Body>
-        <caption>CPA informasjon</caption>
       </Table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
