@@ -12,6 +12,7 @@ import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
 import LoggTableEbms from "./pages/LoggTableEbms";
 import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
+import CpaTableModal from "./components/CpaTableModal";
 
 export default function App() {
   const location = useLocation();
@@ -40,6 +41,7 @@ export default function App() {
         <Routes>
           <Route path="/logg/:mottakid" element={<LoggTableModal />} />
           <Route path="/loggebms/:readableId" element={<LoggTableEbmsModal />} />
+          <Route path="/cpa/:cpaid" element={<CpaTableModal />} />
         </Routes>
       )}
     </div>

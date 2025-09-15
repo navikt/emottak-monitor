@@ -182,7 +182,9 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.senderName}</Table.DataCell>
                   <Table.DataCell>
                     <Link
+                      key={message.cpaId}
                       to={`/cpa/${message.cpaId}`}
+                      state={{ backgroundLocation: location }}
                   >{message.cpaId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>

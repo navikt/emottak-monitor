@@ -182,8 +182,9 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.avsender}</Table.DataCell>
                   <Table.DataCell>
                     <Link
-                        key={message.cpaid}
-                        to={`/cpa/${message.cpaid}`}
+                      key={message.cpaid}
+                      to={`/cpa/${message.cpaid}`}
+                      state={{ backgroundLocation: location }}
                     >{message.cpaid}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
