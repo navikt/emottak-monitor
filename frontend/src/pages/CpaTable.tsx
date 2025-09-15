@@ -1,8 +1,10 @@
+import { Table } from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
+import tableStyles from "../styles/Table.module.scss";
 
 type CpaDetails = {
   partnerid: string;
@@ -29,32 +31,32 @@ const CpaTable = () => {
   return (
     <div>
       <h1>CPA info for cpa-id : {cpaid}</h1>
-      <table className="tabell tabell--stripet">
-        <thead>
-          <tr>
-            <th>Partner-ID</th>
-            <th>Navn</th>
-            <th>HER-ID</th>
-            <th>Organisajonsnummer</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table className={tableStyles.table}>
+        <Table.Header className={tableStyles.tableHeader}>
+          <Table.Row>
+            <Table.HeaderCell>Partner-ID</Table.HeaderCell>
+            <Table.HeaderCell>Navn</Table.HeaderCell>
+            <Table.HeaderCell>HER-ID</Table.HeaderCell>
+            <Table.HeaderCell>Organisajonsnummer</Table.HeaderCell>
+          </Table.Row>
+          </Table.Header>
+        <Table.Body>
           {!loading &&
             items.map((cpaDetails) => {
               return (
-                <tr key={cpaDetails.partnerorgnummer}>
-                  <td className="tabell__td--sortert">
+                <Table.Row key={cpaDetails.partnerorgnummer}>
+                  <Table.DataCell className="tabell__td--sortert">
                     {cpaDetails.partnerid}
-                  </td>
-                  <td>{cpaDetails.navn}</td>
-                  <td>{cpaDetails.partnerherid}</td>
-                  <td>{cpaDetails.partnerorgnummer}</td>
-                </tr>
+                  </Table.DataCell>
+                  <Table.DataCell>{cpaDetails.navn}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.partnerherid}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.partnerorgnummer}</Table.DataCell>
+                </Table.Row>
               );
             })}
-        </tbody>
+        </Table.Body>
         <caption>CPA informasjon</caption>
-      </table>
+      </Table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}
     </div>
