@@ -183,7 +183,6 @@ const MessagesTable = () => {
                   <Table.DataCell>
                     <Link
                       to={`/cpa/${message.cpaId}`}
-                      state={{ backgroundLocation: location }}
                   >{message.cpaId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
