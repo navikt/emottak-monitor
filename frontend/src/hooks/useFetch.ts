@@ -43,9 +43,8 @@ const useFetch = <T>(url: string) => {
     try {
       dispatch({ type: "reqStart" });
       const res = await axios.get<T>(url);
-
       const data = await res.data;
-      dispatch({ type: "reqSuccess", data });
+      dispatch({type: "reqSuccess", data});
     } catch (e) {
       if (axios.isAxiosError(e)) {
         typeof e.response?.data === "string"

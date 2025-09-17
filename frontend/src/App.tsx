@@ -12,6 +12,7 @@ import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
 import LoggTableEbms from "./pages/LoggTableEbms";
 import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
+import CpaTableModal from "./components/CpaTableModal";
 
 export default function App() {
   const location = useLocation();
@@ -27,7 +28,7 @@ export default function App() {
           ))}
           <Route path="/" element={<Navigate to="/meldinger" />} />
           <Route path="/logg/:mottakid" element={<LoggTable />} />
-          <Route path="/loggebms/:mottakid" element={<LoggTableEbms />} />
+          <Route path="/loggebms/:readableId" element={<LoggTableEbms />} />
         </Route>
         <Route path="/cpa/:cpaid" element={<CpaTable />} />
         <Route path="/isalive" element={<IsAlive />} />
@@ -39,7 +40,8 @@ export default function App() {
       {state?.backgroundLocation && (
         <Routes>
           <Route path="/logg/:mottakid" element={<LoggTableModal />} />
-          <Route path="/loggebms/:mottakid" element={<LoggTableEbmsModal />} />
+          <Route path="/loggebms/:readableId" element={<LoggTableEbmsModal />} />
+          <Route path="/cpa/:cpaid" element={<CpaTableModal />} />
         </Routes>
       )}
     </div>

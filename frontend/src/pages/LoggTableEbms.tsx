@@ -7,24 +7,25 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 
 type LogDetails = {
-  hendelsesdato: string;
-  hendelsesbeskrivelse: string;
-  hendelsesid: string;
+  eventDate: string;
+  eventDescription: string;
+  eventId: string;
 };
 
 type LoggTableEbmsProps = {
-  mottakid?: string;
+  readableId?: string;
 };
 
 const LoggTableEbms = (props: LoggTableEbmsProps) => {
   const params = useParams();
-  const mottakid = props.mottakid ?? params.mottakid;
+  const readableId = props.readableId ?? params.readableId;
 
   const { fetchState, callRequest } = useFetch<LogDetails[]>(
-    `/v1/hentloggebms?mottakId=${mottakid}`
+    `/v1/hentloggebms?readableId=${readableId}`
   );
 
   const { loading, error, data: logMessages } = fetchState;
+  console.log(logMessages);
 
   useEffect(() => {
     callRequest();
@@ -32,19 +33,19 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
 
   const { items } = useTableSorting(logMessages ?? []);
 
-  if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+  if (!readableId) {
+    return <div>Ingen gyldig mottak-id</div>;
   }
 
   const headers: { key: keyof LogDetails; name: string }[] = [
-    { key: "hendelsesdato", name: "Dato" },
-    { key: "hendelsesbeskrivelse", name: "Beskrivelse" },
-    { key: "hendelsesid", name: "ID" },
+    { key: "eventDate", name: "Dato" },
+    { key: "eventDescription", name: "Beskrivelse" },
+    { key: "eventId", name: "ID" },
   ];
 
   return (
     <div>
-      <h1>Hendelsesdetaljer ebms for mottak-id : {mottakid}</h1>
+      <h1>Hendelsesdetaljer ebms for mottak-id : {readableId}</h1>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
@@ -57,14 +58,14 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
           {!loading &&
             items.map((logDetails) => {
               return (
-                <Table.Row key={logDetails.hendelsesid}>
+                <Table.Row key={logDetails.eventId}>
                   <Table.DataCell className="tabell__td--sortert">
-                    {logDetails.hendelsesdato.substring(0, 23)}
+                    {logDetails.eventDate.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {logDetails.hendelsesbeskrivelse}
+                    {logDetails.eventDescription}
                   </Table.DataCell>
-                  <Table.DataCell>{logDetails.hendelsesid}</Table.DataCell>
+                  <Table.DataCell>{logDetails.eventId}</Table.DataCell>
                 </Table.Row>
               );
             })}

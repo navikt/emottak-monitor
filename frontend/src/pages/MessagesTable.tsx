@@ -1,6 +1,5 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
-import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import Filter from "../components/Filter";
@@ -12,6 +11,7 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pagination from "../components/Pagination";
 import { initialDate, initialTime } from "../util";
+import {Link, useLocation} from "react-router-dom";
 
 type MessageInfo = {
   action: string;
@@ -27,6 +27,7 @@ type MessageInfo = {
 };
 
 const MessagesTable = () => {
+  const location = useLocation();
 
   const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
   const [toDateDraft, setToDateDraft] = useState(initialDate(""));
@@ -163,10 +164,15 @@ const MessagesTable = () => {
                     {message.datomottat.substring(0, 23)}
                   </Table.DataCell>
                   <Table.DataCell>
-                    {message.mottakidliste.split(",").map((mottakid) => (
-                      <Lenke key={mottakid} href={`/logg/${mottakid}`}>
-                        {mottakid}{" "}
-                      </Lenke>
+                    {message.mottakidliste.split(",").map((mottakid, idx, arr) => (
+                      <React.Fragment key={mottakid}>
+                        <Link
+                            key={mottakid}
+                            to={`/logg/${mottakid}`}
+                            state={{ backgroundLocation: location }}
+                        >{mottakid}</Link>
+                        {idx < arr.length - 1 && ', '}
+                      </React.Fragment>
                     ))}
                   </Table.DataCell>
                   <Table.DataCell>{message.role}</Table.DataCell>
@@ -175,9 +181,11 @@ const MessagesTable = () => {
                   <Table.DataCell>{message.referanse}</Table.DataCell>
                   <Table.DataCell>{message.avsender}</Table.DataCell>
                   <Table.DataCell>
-                    <Lenke href={`/cpa/${message.cpaid}`}>
-                      {message.cpaid}
-                    </Lenke>
+                    <Link
+                      key={message.cpaid}
+                      to={`/cpa/${message.cpaid}`}
+                      state={{ backgroundLocation: location }}
+                    >{message.cpaid}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
                 </Table.Row>

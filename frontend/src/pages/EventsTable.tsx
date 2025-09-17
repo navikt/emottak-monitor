@@ -162,15 +162,13 @@ const EventsTable = () => {
                       </Ekspanderbartpanel>
                   </Table.DataCell>
                   <Table.DataCell>
-                    {event.mottakid.split(",").map((mottakid) => (
-                      <Link
-                        key={mottakid}
-                        to={`/logg/${mottakid}`}
-                        state={{ backgroundLocation: location }}
-                      >
-                        {mottakid}
-                      </Link>
-                    ))}
+                    <Link
+                      key={event.mottakid}
+                      to={`/logg/${event.mottakid}`}
+                      state={{ backgroundLocation: location }}
+                    >
+                      {event.mottakid}
+                    </Link>
                   </Table.DataCell>
                   <Table.DataCell>{event.role}</Table.DataCell>
                   <Table.DataCell>{event.service}</Table.DataCell>

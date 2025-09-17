@@ -16,14 +16,14 @@ import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 
 type EventInfo = {
   action: string;
-  avsender: string | null;
-  hendelsedato: string;
-  hendelsedeskr: string;
-  mottakid: string;
-  referanse: string | null;
+  senderName: string | null;
+  eventDate: string;
+  description: string;
+  readableId: string;
+  referenceParameter: string | null;
   role: string;
   service: string;
-  tillegsinfo: string | null;
+  eventData: string | null;
 };
 
 const EventsTable = () => {
@@ -55,6 +55,7 @@ const EventsTable = () => {
   const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data: events } = fetchState;
+
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,7 +66,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action", "hendelsedeskr"]
+    ["role", "service", "action", "description"]
   );
 
   const {
@@ -120,7 +121,7 @@ const EventsTable = () => {
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
-        filterKeys={["service", "action", "role", "hendelsedeskr"]}
+        filterKeys={["service", "action", "role", "description"]}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} hendelser
@@ -152,31 +153,27 @@ const EventsTable = () => {
             currentTableData.map((event, index) => {
               return (
                 <Table.Row
-                  key={event.hendelsedeskr + index}
+                  key={event.description + index}
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
-                  <Table.DataCell>{event.hendelsedato.substring(0, 23)}</Table.DataCell>
+                  <Table.DataCell>{event.eventDate.substring(0, 23)}</Table.DataCell>
                   <Table.DataCell>
-                      <Ekspanderbartpanel tittel={event.hendelsedeskr}>
-                        {event.tillegsinfo}
+                      <Ekspanderbartpanel tittel={event.description}>
+                        {event.eventData}
                       </Ekspanderbartpanel>
                   </Table.DataCell>
                   <Table.DataCell>
-                    {event.mottakid.split(",").map((mottakid) => (
                       <Link
-                        key={mottakid}
-                        to={`/loggebms/${mottakid}`}
+                        key={event.readableId}
+                        to={`/loggebms/${event.readableId}`}
                         state={{ backgroundLocation: location }}
-                      >
-                        {mottakid}
-                      </Link>
-                    ))}
+                      >{event.readableId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{event.role}</Table.DataCell>
                   <Table.DataCell>{event.service}</Table.DataCell>
                   <Table.DataCell>{event.action}</Table.DataCell>
-                  <Table.DataCell>{event.referanse}</Table.DataCell>
-                  <Table.DataCell>{event.avsender}</Table.DataCell>
+                  <Table.DataCell>{event.referenceParameter}</Table.DataCell>
+                  <Table.DataCell>{event.senderName}</Table.DataCell>
                 </Table.Row>
               );
             })}
