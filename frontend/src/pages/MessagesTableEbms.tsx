@@ -135,27 +135,23 @@ const MessagesTable = () => {
       />
       <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
         <div style={{ gridArea: "mottakId" }}>
-          <label
-            className="navds-select__label navds-label navds-label--small"
-            htmlFor="mottakId-input"
-          >Mottak-Id</label>
           <Input
-            bredde={"XL"}
             id="mottakId-input"
-            className={[filterStyles.inputId, "navds-select__label navds-label navds-label--small"].join(' ')}
+            label="Mottak-Id"
+            className="navds-form-field navds-form-field--small"
+            bredde={"XXL"}
+            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
             onChange={(event) => setMottakId(event.target.value)}
             value={mottakId}
           />
         </div>
         <div style={{ gridArea: "cpaId" }}>
-          <label
-            className="navds-select__label navds-label navds-label--small"
-            htmlFor="cpaId-input"
-          >CPA-Id</label>
           <Input
-            bredde={"L"}
             id="cpaId-input"
-            className={[filterStyles.inputId, "navds-select__label navds-label navds-label--small"].join(' ')}
+            label="CPA-Id"
+            className="navds-form-field navds-form-field--small"
+            bredde={"L"}
+            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
             onChange={(event) => setCpaId(event.target.value)}
             value={cpaId}
           />
