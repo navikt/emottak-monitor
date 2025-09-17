@@ -29,8 +29,6 @@ type MessageInfo = {
 const MessagesTable = () => {
   const location = useLocation();
 
-  const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
-  const [toDateDraft, setToDateDraft] = useState(initialDate(""));
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
@@ -54,8 +52,6 @@ const MessagesTable = () => {
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
-  const commitFromDate   = () => setFromDate(fromDateDraft);
-  const commitToDate     = () => setToDate(toDateDraft);
   const commitFromTime   = () => setFromTime(fromTimeDraft);
   const commitToTime     = () => setToTime(toTimeDraft);
 
@@ -117,13 +113,11 @@ const MessagesTable = () => {
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDateDraft}
+        onFromDateChange={setFromDate}
         onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setToDateDraft}
+        onToDateChange={setToDate}
         onToTimeChange={setToTimeDraft}
-        onFromDateBlur={commitFromDate}
         onFromTimeBlur={commitFromTime}
-        onToDateBlur={commitToDate}
         onToTimeBlur={commitToTime}
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
