@@ -7,3 +7,19 @@
   row-gap: 10px;
   margin: 20px 0;
 }
+
+.gridContainerIds {
+  grid-template-areas: "mottakId cpaId" !important;
+}
+
+.inputId {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--navds-select-color-background);
+  border-radius: var(--navds-border-radius-medium);
+  border: 1px solid var(--navds-select-color-border);
+  box-sizing: border-box;
+  display: inline-block;
+  position: relative;
+}
