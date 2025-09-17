@@ -168,7 +168,7 @@ const MessagesTable = () => {
                       <React.Fragment key={readableId}>
                         <Link
                             key={readableId}
-                            to={`/logg/${readableId}`}
+                            to={`/loggebms/${readableId}`}
                             state={{ backgroundLocation: location }}
                         >{readableId}</Link>
                         {idx < arr.length - 1 && ', '}
