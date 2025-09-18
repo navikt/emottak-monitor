@@ -20,7 +20,6 @@ type FilterProps<T, K extends keyof T> = {
   onToTimeBlur?: () => void;
   onFilterChange: (key: K, value: T[K]) => void;
   filterKeys?: K[];
-  action?: string;
   onRoleChange: (value: string) => void;
   onServiceChange: (value: string) => void;
   onActionChange: (value: string) => void;

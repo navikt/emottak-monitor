@@ -129,7 +129,6 @@ const MessagesTable = () => {
         onToTimeBlur={commitToTime}
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
-        action={action}
         onRoleChange={setRole}
         onServiceChange={setService}
         onActionChange={setAction}

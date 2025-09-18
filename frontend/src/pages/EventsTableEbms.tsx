@@ -13,6 +13,7 @@ import useTableSorting from "../hooks/useTableSorting";
 import { initialDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
+import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
 type EventInfo = {
   action: string;
@@ -29,8 +30,6 @@ type EventInfo = {
 const EventsTable = () => {
   const location = useLocation();
 
-  const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
-  const [toDateDraft, setToDateDraft] = useState(initialDate(""));
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
@@ -45,12 +44,14 @@ const EventsTable = () => {
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
 
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
+
   const { fetchState, callRequest } = useFetch<EventInfo[]>(
-    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`
+    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&role=${role}&service=${service}&action=${action}`
   );
 
-  const commitFromDate   = () => setFromDate(fromDateDraft);
-  const commitToDate     = () => setToDate(toDateDraft);
   const commitFromTime   = () => setFromTime(fromTimeDraft);
   const commitToTime     = () => setToTime(toTimeDraft);
 
@@ -106,22 +107,23 @@ const EventsTable = () => {
 
   return (
     <>
-      <Filter
+      <PrepopulatedFilter
         fromDate={debouncedFromDate}
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDateDraft}
+        onFromDateChange={setFromDate}
         onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setToDateDraft}
+        onToDateChange={setFromDate}
         onToTimeChange={setToTimeDraft}
-        onFromDateBlur={commitFromDate}
         onFromTimeBlur={commitFromTime}
-        onToDateBlur={commitToDate}
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
         filterKeys={["service", "action", "role", "description"]}
+        onRoleChange={setRole}
+        onServiceChange={setService}
+        onActionChange={setAction}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} hendelser
