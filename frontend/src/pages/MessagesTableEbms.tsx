@@ -49,6 +49,8 @@ const MessagesTable = () => {
 
   const [mottakId, setMottakId] = useState("");
   const [cpaId, setCpaId] = useState("");
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
   const [action, setAction] = useState("");
 
   let pageSize = 10;
@@ -56,7 +58,7 @@ const MessagesTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   //const [pageSize, setPageSize] = useState(10);
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${mottakId}&cpaId=${cpaId}&action=${action}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${mottakId}&cpaId=${cpaId}&role=${role}&service=${service}&action=${action}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
@@ -134,6 +136,8 @@ const MessagesTable = () => {
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
         action={action}
+        onRoleChange={setRole}
+        onServiceChange={setService}
         onActionChange={setAction}
       />
       <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>

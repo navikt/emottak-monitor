@@ -3,6 +3,7 @@ import { Datepicker, isISODateString } from "nav-datovelger";
 import React from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
+import filterValues from "../data/filterValues.json";
 export type FilterKeys = "role" | "service" | "action" | "status " | "hendelsedeskr";
 
 type FilterProps<T, K extends keyof T> = {
@@ -22,6 +23,8 @@ type FilterProps<T, K extends keyof T> = {
   onFilterChange: (key: K, value: T[K]) => void;
   filterKeys?: K[];
   action?: string;
+  onRoleChange: (value: string) => void;
+  onServiceChange: (value: string) => void;
   onActionChange: (value: string) => void;
 };
 
@@ -41,6 +44,8 @@ const PrepopulatedFilter = <T, K extends keyof T>({
   onToDateBlur,
   onToTimeBlur,
   filterKeys = ["role", "service", "action", "status"] as K[],
+  onRoleChange,
+  onServiceChange,
   onActionChange
 }: FilterProps<T, K>) => {
   const uniqueFilters = filterKeys.reduce((prevVal, filterKey) => {
@@ -51,27 +56,6 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       ),
     };
   }, {} as Record<K, string[]>);
-
-  const actionsList = [
-    "AbonnementStatus",
-    "Avvisning",
-    "EgenandelForesporsel",
-    "Foresporsel",
-    "HentAbonnementStatus",
-    "HentPasientliste",
-    "InntektInformasjon",
-    "Kvittering",
-    "OppgjorsMelding",
-    "OppgjorsMeldingVirksomhet",
-    "Oppgjorskrav",
-    "Oppgjorsresultat",
-    "Registrering",
-    "StartAbonnement",
-    "StoppAbonnement",
-    "Svar",
-    "Svarmelding",
-    "Utbetaling"
-  ];
 
   return (
     <div className={styles.gridContainer}>
@@ -123,15 +107,10 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           }}
           label="Rolle"
           size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "role" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
-          }
+          onChange={(event) => onRoleChange(event.target.value)}
         >
           <option value="">Velg rolle</option>
-          {uniqueFilters["role" as K].map((role) => {
+          {filterValues["service"].map((role) => {
             return (
               <option key={role} value={role}>
                 {role}
@@ -147,15 +126,10 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           }}
           label="Service"
           size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "service" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
-          }
+          onChange={(event) => onServiceChange(event.target.value)}
         >
           <option value="">Velg service</option>
-          {uniqueFilters["service" as K].map((service) => {
+          {filterValues["service"].map((service) => {
             return (
               <option key={service} value={service}>
                 {service}
@@ -212,7 +186,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           style={{ gridArea: "action" }}
         >
           <option value="">Velg action</option>
-          {actionsList.map((action) => {
+          {filterValues["action"].map((action) => {
             return (
               <option key={action} value={action}>
                 {action}
