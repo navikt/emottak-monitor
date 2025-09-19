@@ -12,6 +12,8 @@ import tableStyles from "../styles/Table.module.scss";
 import Pagination from "../components/Pagination";
 import { initialDate, initialTime } from "../util";
 import {Link, useLocation} from "react-router-dom";
+import filterStyles from "../components/Filter.module.scss";
+import {Input} from "nav-frontend-skjema";
 
 type MessageInfo = {
   action: string;
@@ -45,12 +47,15 @@ const MessagesTable = () => {
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
 
+  const [mottakId, setMottakId] = useState("");
+  const [cpaId, setCpaId] = useState("");
+
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
   //const [pageSize, setPageSize] = useState(10);
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${mottakId}&cpaId=${cpaId}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
@@ -128,13 +133,37 @@ const MessagesTable = () => {
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
       />
-      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
+      <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
+        <div style={{ gridArea: "mottakId" }}>
+          <Input
+            id="mottakId-input"
+            label="Mottak-Id"
+            className="navds-form-field navds-form-field--small"
+            bredde={"XXL"}
+            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+            onChange={(event) => setMottakId(event.target.value)}
+            value={mottakId}
+          />
+        </div>
+        <div style={{ gridArea: "cpaId" }}>
+          <Input
+            id="cpaId-input"
+            label="CPA-Id"
+            className="navds-form-field navds-form-field--small"
+            bredde={"L"}
+            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+            onChange={(event) => setCpaId(event.target.value)}
+            value={cpaId}
+          />
+        </div>
+      </div>
+      <span style={{position: "relative", float: "left", margin: "20px 0"}}>
         {filteredMessages.length} meldinger
       </span>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
-            {headers.map(({ key, name }) => (
+            {headers.map(({key, name}) => (
               <Table.HeaderCell
                 key={key}
                 onClick={() => requestSort(key)}
@@ -148,7 +177,7 @@ const MessagesTable = () => {
         <Table.Body>
           {showSpinner && (
             <RowWithContent>
-              <NavFrontendSpinner />
+              <NavFrontendSpinner/>
             </RowWithContent>
           )}
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
@@ -158,7 +187,7 @@ const MessagesTable = () => {
               return (
                 <Table.Row
                   key={message.cpaId + index}
-                  className={clsx({ [tableStyles.coloredRow]: index % 2 })}
+                  className={clsx({[tableStyles.coloredRow]: index % 2})}
                 >
                   <Table.DataCell className="tabell__td--sortert">
                     {message.receivedDate.substring(0, 23)}
@@ -169,7 +198,7 @@ const MessagesTable = () => {
                         <Link
                             key={readableId}
                             to={`/loggebms/${readableId}`}
-                            state={{ backgroundLocation: location }}
+                            state={{backgroundLocation: location}}
                         >{readableId}</Link>
                         {idx < arr.length - 1 && ', '}
                       </React.Fragment>
@@ -184,8 +213,8 @@ const MessagesTable = () => {
                     <Link
                       key={message.cpaId}
                       to={`/cpa/${message.cpaId}`}
-                      state={{ backgroundLocation: location }}
-                  >{message.cpaId}</Link>
+                      state={{backgroundLocation: location}}
+                    >{message.cpaId}</Link>
                   </Table.DataCell>
                   <Table.DataCell>{message.status}</Table.DataCell>
                 </Table.Row>

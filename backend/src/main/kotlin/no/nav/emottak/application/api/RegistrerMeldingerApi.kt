@@ -34,8 +34,10 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                log.info("Fom : $fom, Tom : $tom")
-                val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom"
+                val mottakId = call.request.queryParameters.get("mottakId")
+                val cpaId = call.request.queryParameters.get("cpaId")
+                log.info("Fom : $fom, Tom : $tom, mottakId : '$mottakId', cpaId : '$cpaId'")
+                val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId"
                 log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
                 executeREST(url)
             }
