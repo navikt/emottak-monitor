@@ -60,7 +60,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                    log.info("Mangler parameter: mottakId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter hendelseslogg for $mottakid")
@@ -82,7 +82,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: cpaid")
+                    log.info("Mangler parameter: cpaId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
 
@@ -96,7 +96,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentmessageinfo") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                    log.info("Mangler parameter: mottakId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter info for $mottakid")
@@ -118,7 +118,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentcpaidinfo") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: cpaid")
+                    log.info("Mangler parameter: cpaId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 val (fom, tom) = localDateTimeLocalDateTimePair()
@@ -130,7 +130,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentebmessageidinfo") {
                 val ebmessageid = call.request.queryParameters.get("ebmessageId")
                 if (ebmessageid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: ebmessageid")
+                    log.info("Mangler parameter: ebmessageId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
 
@@ -142,7 +142,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentpartneridinfo") {
                 val partnerid = call.request.queryParameters.get("partnerId")
                 if (partnerid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: partnerid")
+                    log.info("Mangler parameter: partnerId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter info for partnerid : $partnerid")
