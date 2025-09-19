@@ -1,7 +1,5 @@
 package no.nav.emottak.application.api
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -62,7 +60,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                    log.info("Mangler parameter: mottakId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter hendelseslogg for $mottakid")
@@ -84,7 +82,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: cpaid")
+                    log.info("Mangler parameter: cpaId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
 
@@ -98,7 +96,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentmessageinfo") {
                 val mottakid = call.request.queryParameters.get("mottakId")
                 if (mottakid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: mottakid")
+                    log.info("Mangler parameter: mottakId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter info for $mottakid")
@@ -120,7 +118,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentcpaidinfo") {
                 val cpaid = call.request.queryParameters.get("cpaId")
                 if (cpaid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: cpaid")
+                    log.info("Mangler parameter: cpaId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 val (fom, tom) = localDateTimeLocalDateTimePair()
@@ -132,7 +130,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentebmessageidinfo") {
                 val ebmessageid = call.request.queryParameters.get("ebmessageId")
                 if (ebmessageid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: ebmessageid")
+                    log.info("Mangler parameter: ebmessageId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
 
@@ -144,7 +142,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             get("/hentpartneridinfo") {
                 val partnerid = call.request.queryParameters.get("partnerId")
                 if (partnerid.isNullOrEmpty()) {
-                    log.info("Mangler parameter: partnerid")
+                    log.info("Mangler parameter: partnerId")
                     call.respond(HttpStatusCode.BadRequest)
                 }
                 log.info("Henter info for partnerid : $partnerid")
@@ -182,13 +180,21 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
-    val response = HttpClient(CIO) {}.get(url)
-    val responseText = response.bodyAsText()
-    if (response.status.isSuccess()) {
-        log.info("Lengde på responstekst : ${responseText.length}")
-        call.respond(responseText)
-    } else {
-        log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
-        call.respond(response.status, responseText)
+    try {
+        val response = scopedAuthHttpClient(getScope()).invoke().get(url)
+        val responseText = response.bodyAsText()
+        log.info("Response tekst: $responseText")
+
+        if (response.status.isSuccess()) {
+            log.info("Lengde på responstekst : ${responseText.length}")
+            call.respond(responseText)
+        } else {
+            log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
+            call.respond(response.status, responseText)
+        }
+    }
+    catch (e: Exception) {
+        log.error("Feil ved kall mot $url: ${e.message}", e)
+        call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
     }
 }
