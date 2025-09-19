@@ -46,7 +46,6 @@ spec:
   azure:
     application:
       enabled: true
-      tenant: nav.no
   webproxy: true
   ingresses:
     - "https://emottak-monitor.intern.dev.nav.no"
