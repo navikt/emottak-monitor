@@ -15,9 +15,7 @@ type FilterProps<T, K extends keyof T> = {
   onFromTimeChange: (value: string) => void;
   onToDateChange: (value: string) => void;
   onToTimeChange: (value: string) => void;
-  onFromDateBlur?: () => void;
   onFromTimeBlur?: () => void;
-  onToDateBlur?: () => void;
   onToTimeBlur?: () => void;
   onFilterChange: (key: K, value: T[K]) => void;
   filterKeys?: K[];
@@ -34,9 +32,7 @@ const Filter = <T, K extends keyof T>({
   onToDateChange,
   onToTimeChange,
   onFilterChange,
-  onFromDateBlur,
   onFromTimeBlur,
-  onToDateBlur,
   onToTimeBlur,
   filterKeys = ["role", "service", "action", "status"] as K[],
 }: FilterProps<T, K>) => {
@@ -68,7 +64,6 @@ const Filter = <T, K extends keyof T>({
             inputId="datepicker-input-fom"
             value={fromDate}
             onChange={onFromDateChange}
-            onBlur={onFromDateBlur ?? (() => {})}
             inputProps={{
               name: "dateInput",
               "aria-invalid":
@@ -157,7 +152,6 @@ const Filter = <T, K extends keyof T>({
             inputId="datepicker-input-tom"
             value={toDate}
             onChange={onToDateChange}
-            onBlur={onToDateBlur ?? (() => {})}
             inputProps={{
               name: "dateInput",
               "aria-invalid":
