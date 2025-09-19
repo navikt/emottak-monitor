@@ -1,7 +1,5 @@
 package no.nav.emottak.application.api
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -180,7 +178,7 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
-    val response = HttpClient(CIO) {}.get(url)
+    val response = scopedAuthHttpClient(getScope()).invoke().get(url)
     val responseText = response.bodyAsText()
     if (response.status.isSuccess()) {
         log.info("Lengde på responstekst : ${responseText.length}")

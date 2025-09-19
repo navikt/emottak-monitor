@@ -57,6 +57,11 @@ spec:
         - application: emottak-monitor-frontend
           namespace: team-emottak
           cluster: dev-gcp
+    outbound:
+      rules:
+        - application: emottak-event-manager
+          namespace: team-emottak
+          cluster: dev-fss
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
