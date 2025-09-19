@@ -29,7 +29,7 @@ spec:
       autoLogin: true
     application:
       enabled: true
-#      tenant: nav.no
+      tenant: nav.no
       allowAllUsers: false
       replyURLs:
         - {{ url.reply_url }}
