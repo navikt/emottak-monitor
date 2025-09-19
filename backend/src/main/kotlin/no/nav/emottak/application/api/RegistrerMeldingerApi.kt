@@ -178,13 +178,21 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
-    val response = scopedAuthHttpClient(getScope()).invoke().get(url)
-    val responseText = response.bodyAsText()
-    if (response.status.isSuccess()) {
-        log.info("Lengde på responstekst : ${responseText.length}")
-        call.respond(responseText)
-    } else {
-        log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
-        call.respond(response.status, responseText)
+    try {
+        val response = scopedAuthHttpClient(getScope()).invoke().get(url)
+        val responseText = response.bodyAsText()
+        log.info("Response tekst: $responseText")
+
+        if (response.status.isSuccess()) {
+            log.info("Lengde på responstekst : ${responseText.length}")
+            call.respond(responseText)
+        } else {
+            log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
+            call.respond(response.status, responseText)
+        }
+    }
+    catch (e: Exception) {
+        log.error("Feil ved kall mot $url", e)
+        call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
     }
 }
