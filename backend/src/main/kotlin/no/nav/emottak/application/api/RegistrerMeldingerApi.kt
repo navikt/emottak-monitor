@@ -192,7 +192,7 @@ private suspend fun RoutingContext.executeREST(url: String) {
         }
     }
     catch (e: Exception) {
-        log.error("Feil ved kall mot $url", e)
+        log.error("Feil ved kall mot $url: ${e.message}", e)
         call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
     }
 }
