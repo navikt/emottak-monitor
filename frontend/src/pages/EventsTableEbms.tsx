@@ -29,8 +29,6 @@ type EventInfo = {
 const EventsTable = () => {
   const location = useLocation();
 
-  const [fromDateDraft, setFromDateDraft] = useState(initialDate(""));
-  const [toDateDraft, setToDateDraft] = useState(initialDate(""));
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
@@ -49,8 +47,6 @@ const EventsTable = () => {
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`
   );
 
-  const commitFromDate   = () => setFromDate(fromDateDraft);
-  const commitToDate     = () => setToDate(toDateDraft);
   const commitFromTime   = () => setFromTime(fromTimeDraft);
   const commitToTime     = () => setToTime(toTimeDraft);
 
@@ -111,13 +107,11 @@ const EventsTable = () => {
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDateDraft}
+        onFromDateChange={setFromDate}
         onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setToDateDraft}
+        onToDateChange={setToDate}
         onToTimeChange={setToTimeDraft}
-        onFromDateBlur={commitFromDate}
         onFromTimeBlur={commitFromTime}
-        onToDateBlur={commitToDate}
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
