@@ -15,10 +15,10 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
+import no.nav.emottak.log
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URI
-import no.nav.emottak.log
 
 const val AZURE_AD_AUTH = "AZURE_AD"
 val LENIENT_JSON_PARSER =
@@ -69,11 +69,14 @@ fun scopedAuthHttpClient(scope: String): () -> HttpClient =
                                 headers {
                                     header("Content-Type", "application/x-www-form-urlencoded")
                                 }
-                                val request = "client_id=" + getEnvVar("AZURE_APP_CLIENT_ID", "dummyclient") +
+                                val request =
+                                    "client_id=" + getEnvVar("AZURE_APP_CLIENT_ID", "dummyclient") +
                                         "&client_secret=" + getEnvVar("AZURE_APP_CLIENT_SECRET", "dummysecret") +
                                         "&scope=" + scope +
                                         "&grant_type=client_credentials"
+                                log.info("Autentiserins server URL: ${getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")}")
                                 log.info("Autentiserings forespørsel: $request")
+
 
                                 setBody(request)
                             }.bodyAsText()

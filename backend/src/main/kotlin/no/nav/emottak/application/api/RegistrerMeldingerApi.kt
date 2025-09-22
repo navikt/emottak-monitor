@@ -192,8 +192,7 @@ private suspend fun RoutingContext.executeREST(url: String) {
             log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
             call.respond(response.status, responseText)
         }
-    }
-    catch (e: Exception) {
+    } catch (e: Exception) {
         log.error("Feil ved kall mot $url: ${e.message}", e)
         call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
     }
