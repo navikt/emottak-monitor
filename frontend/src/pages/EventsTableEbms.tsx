@@ -3,7 +3,6 @@ import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Filter from "../components/Filter";
 import Pagination from "../components/Pagination";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";

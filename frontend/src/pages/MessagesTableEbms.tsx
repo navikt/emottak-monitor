@@ -54,7 +54,6 @@ const MessagesTable = () => {
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
-  //const [pageSize, setPageSize] = useState(10);
 
   const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${mottakId}&cpaId=${cpaId}&role=${role}&service=${service}&action=${action}`;
 
@@ -69,9 +68,6 @@ const MessagesTable = () => {
     messages ?? [],
     ["role", "service", "action", "status"]
   );
-
-  //const numberOfItems = visibleMessages.length;
-  //const numberOfPages = pageSize > 0 ? Math.ceil(numberOfItems / pageSize) : 1
 
   useEffect(() => {
     callRequest();
