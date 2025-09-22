@@ -28,8 +28,11 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         authenticate("jwt") {
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
+                val mottakId = getIdParameter("mottakId")
+                val cpaId = getIdParameter("cpaId")
+                val messageId = getIdParameter("messageId")
                 log.info("Kjører dabasespørring for å hente meldinger...")
-                val meldinger = meldingService.meldinger(fom, tom)
+                val meldinger = meldingService.meldinger(fom, tom, mottakId, cpaId, messageId)
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
                 call.respond(meldinger)
@@ -179,6 +182,8 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
     val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
     return Pair(fom, tom)
 }
+
+private fun RoutingContext.getIdParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {

@@ -28,7 +28,10 @@ class MessageQueryService(
     fun meldinger(
         fom: LocalDateTime,
         tom: LocalDateTime,
-    ): List<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom)
+        mottakId: String,
+        cpaId: String,
+        messageId: String,
+    ): List<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId)
 
     fun hendelser(
         fom: LocalDateTime,
