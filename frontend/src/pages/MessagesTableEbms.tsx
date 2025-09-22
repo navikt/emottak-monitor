@@ -41,21 +41,25 @@ const MessagesTable = () => {
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 
+  const [mottakId, setMottakId] = useState("");
+  const [cpaId, setCpaId] = useState("");
+  const [messageId, setMessageId] = useState("");
+
   // using debounce to not use value until there has been no new changes
   const debouncedFromDate = useDebounce(fromDate, 200);
   const debouncedToDate = useDebounce(toDate, 200);
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
-
-  const [mottakId, setMottakId] = useState("");
-  const [cpaId, setCpaId] = useState("");
+  const debouncedMottakId = useDebounce(mottakId, 1000);
+  const debouncedCpaId = useDebounce(cpaId, 1000);
+  const debouncedMessageId = useDebounce(cpaId, 1000);
 
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
   //const [pageSize, setPageSize] = useState(10);
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${mottakId}&cpaId=${cpaId}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
@@ -154,6 +158,17 @@ const MessagesTable = () => {
             inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
             onChange={(event) => setCpaId(event.target.value)}
             value={cpaId}
+          />
+        </div>
+        <div style={{ gridArea: "messageId" }}>
+          <Input
+            id="messageId-input"
+            label="Message-Id"
+            className="navds-form-field navds-form-field--small"
+            bredde={"XXL"}
+            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+            onChange={(event) => setMessageId(event.target.value)}
+            value={messageId}
           />
         </div>
       </div>
