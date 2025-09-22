@@ -42,7 +42,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val service = call.request.queryParameters.get("service")
                 val action = call.request.queryParameters.get("action")
 
-                log.info("Fom : $fom, Tom : $tom, mottakId : '$mottakId', cpaId : '$cpaId', role : '$role', service : '$service', action : '$action'")
+                log.info("Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, role : $role, service : $service, action : $action")
                 val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId&role=$role&service=$service&action=$action"
                 log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
                 executeREST(url)
@@ -61,7 +61,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val service = call.request.queryParameters.get("service")
                 val action = call.request.queryParameters.get("action")
 
-                log.info("Fom : $fom, Tom : $tom, role : '$role', service : '$service', action : '$action'")
+                log.info("Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action")
                 val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom,role=$role&service=$service&action=$action"
                 log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                 executeREST(url)
