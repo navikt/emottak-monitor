@@ -50,7 +50,7 @@ const MessagesTable = () => {
   const debouncedToTime = useDebounce(toTime, 200);
   const debouncedMottakId = useDebounce(mottakId, 1000);
   const debouncedCpaId = useDebounce(cpaId, 1000);
-  const debouncedMessageId = useDebounce(cpaId, 1000);
+  const debouncedMessageId = useDebounce(messageId, 1000);
 
   let pageSize = 10;
 

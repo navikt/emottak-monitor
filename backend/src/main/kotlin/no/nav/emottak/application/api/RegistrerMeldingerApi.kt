@@ -36,9 +36,9 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                val mottakId = getIdParameter("mottakId")
-                val cpaId = getIdParameter("cpaId")
-                val messageId = getIdParameter("messageId")
+                val mottakId = getQueryParameter("mottakId")
+                val cpaId = getQueryParameter("cpaId")
+                val messageId = getQueryParameter("messageId")
                 log.info("Fom : $fom, Tom : $tom, mottakId : '$mottakId', cpaId : '$cpaId', messageId : '$messageId'")
                 val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId&messageId=$messageId"
                 log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
@@ -181,9 +181,7 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
     return Pair(fom, tom)
 }
 
-private fun RoutingContext.getIdParameter(paramName: String): String {
-    return call.request.queryParameters[paramName]?.trim() ?: ""
-}
+private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
