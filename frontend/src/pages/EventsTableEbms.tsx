@@ -114,7 +114,7 @@ const EventsTable = () => {
         toTime={debouncedToTime}
         onFromDateChange={setFromDate}
         onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setFromDate}
+        onToDateChange={setToDate}
         onToTimeChange={setToTimeDraft}
         onFromTimeBlur={commitFromTime}
         onToTimeBlur={commitToTime}
