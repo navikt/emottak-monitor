@@ -69,12 +69,13 @@ fun scopedAuthHttpClient(scope: String): () -> HttpClient =
                                 headers {
                                     header("Content-Type", "application/x-www-form-urlencoded")
                                 }
-                                setBody(
-                                    "client_id=" + getEnvVar("AZURE_APP_CLIENT_ID", "dummyclient") +
+                                val request = "client_id=" + getEnvVar("AZURE_APP_CLIENT_ID", "dummyclient") +
                                         "&client_secret=" + getEnvVar("AZURE_APP_CLIENT_SECRET", "dummysecret") +
                                         "&scope=" + scope +
-                                        "&grant_type=client_credentials",
-                                )
+                                        "&grant_type=client_credentials"
+                                log.info("Autentiserings forespørsel: $request")
+
+                                setBody(request)
                             }.bodyAsText()
                             .let { tokenResponseString ->
                                 log.info("The token response string we received was: $tokenResponseString")
