@@ -104,7 +104,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           onChange={(event) => onRoleChange(event.target.value)}
         >
           <option value="">Velg rolle</option>
-          {filterValues["service"].map((role) => {
+          {filterValues["role"].map((role) => {
             return (
               <option key={role} value={role}>
                 {role}
