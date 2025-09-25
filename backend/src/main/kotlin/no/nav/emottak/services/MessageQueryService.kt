@@ -18,6 +18,8 @@ import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
+import no.nav.emottak.model.Page
+import no.nav.emottak.model.Pageable
 import no.nav.emottak.model.PartnerIdInfo
 import java.time.LocalDateTime
 
@@ -28,12 +30,14 @@ class MessageQueryService(
     fun meldinger(
         fom: LocalDateTime,
         tom: LocalDateTime,
-    ): List<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom)
+        pageable: Pageable? = null,
+    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, pageable)
 
     fun hendelser(
         fom: LocalDateTime,
         tom: LocalDateTime,
-    ): List<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom)
+        pageable: Pageable? = null,
+    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom, pageable)
 
     fun messagelogg(mottakid: String?): List<MessageLoggInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
 

@@ -16,6 +16,7 @@ import io.ktor.server.util.toLocalDateTime
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
+import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -28,11 +29,16 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         authenticate("jwt") {
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                log.info("Kjører dabasespørring for å hente meldinger...")
-                val meldinger = meldingService.meldinger(fom, tom)
-                log.info("Meldinger antall : ${meldinger.size}")
-                log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
-                call.respond(meldinger)
+                val page: String? = getQueryParameter("page")
+                val size: String? = getQueryParameter("size")
+                val pageable = getPageable(page, size)
+                if (pageable != null) {
+                    log.info("Kjører dabasespørring for å hente meldinger...")
+                    val meldinger = meldingService.meldinger(fom, tom, pageable)
+                    log.info("Meldinger antall : ${meldinger.content.size}")
+                    log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakidliste}")
+                    call.respond(meldinger)
+                }
             }
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
@@ -47,17 +53,27 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
 
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                log.info("Kjører dabasespørring for å hente hendelser...")
-                val hendelser = meldingService.hendelser(fom, tom)
-                log.info("Hendelser antall : ${hendelser.size}")
-                call.respond(hendelser)
+                val page = getQueryParameter("page")
+                val size = getQueryParameter("size")
+                val pageable = getPageable(page, size)
+                if (pageable != null) {
+                    log.info("Kjører dabasespørring for å hente hendelser...")
+                    val hendelser = meldingService.hendelser(fom, tom, pageable)
+                    log.info("Hendelser antall : ${hendelser.content.size}")
+                    call.respond(hendelser)
+                }
             }
             get("/henthendelserebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                log.info("Fom : $fom, Tom : $tom")
-                val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
-                log.info("Henter hendelser fra events endepunktet til ebms ($url)")
-                executeREST(url)
+                val page = getQueryParameter("page")
+                val size = getQueryParameter("size")
+                val pageable = getPageable(page, size)
+                if (pageable != null) {
+                    log.info("Fom : $fom, Tom : $tom")
+                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
+                    log.info("Henter hendelser fra events endepunktet til ebms ($url)")
+                    executeREST(url)
+                }
             }
 
             get("/hentlogg") {
@@ -162,6 +178,34 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
         }
     }
+}
+
+const val MAX_PAGE_SIZE = 1000
+
+private suspend fun RoutingContext.getPageable(
+    page: String?,
+    size: String?,
+    defaultSize: Int = 50,
+): Pageable? {
+    var pageSize = defaultSize
+    if (!size.isNullOrEmpty()) {
+        if (size.toInt() > MAX_PAGE_SIZE || size.toInt() < 1) {
+            log.info("Page size $size must be between 1 and $MAX_PAGE_SIZE")
+            call.respond(HttpStatusCode.BadRequest)
+            return null
+        }
+        pageSize = size.toInt()
+    }
+    var pageNumber = 1
+    if (!page.isNullOrEmpty()) {
+        if (page.toInt() < 1) {
+            log.info("Page number $page must be 1 or more")
+            call.respond(HttpStatusCode.BadRequest)
+            return null
+        }
+        pageNumber = page.toInt()
+    }
+    return Pageable(pageNumber, pageSize)
 }
 
 @InternalAPI
