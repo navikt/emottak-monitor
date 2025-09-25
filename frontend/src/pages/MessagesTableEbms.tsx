@@ -59,7 +59,8 @@ const MessagesTable = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}&role=${role}&service=${service}&action=${action}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}&role=${role}&service=${service}&action=${action}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
