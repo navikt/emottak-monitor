@@ -45,8 +45,15 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val mottakId = getQueryParameter("mottakId")
                 val cpaId = getQueryParameter("cpaId")
                 val messageId = getQueryParameter("messageId")
-                log.info("Fom : $fom, Tom : $tom, mottakId : '$mottakId', cpaId : '$cpaId', messageId : '$messageId'")
-                val url = "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId&messageId=$messageId"
+                val role = getQueryParameter("role")
+                val service = getQueryParameter("service")
+                val action = getQueryParameter("action")
+                log.info(
+                    "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, role : $role, service : $service, action : $action",
+                )
+                val url =
+                    "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
+                        "&messageId=$messageId&role=$role&service=$service&action=$action"
                 log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
                 executeREST(url)
             }
@@ -67,10 +74,13 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 val page = getQueryParameter("page")
                 val size = getQueryParameter("size")
+                val role = getQueryParameter("role")
+                val service = getQueryParameter("service")
+                val action = getQueryParameter("action")
                 val pageable = getPageable(page, size)
                 if (pageable != null) {
-                    log.info("Fom : $fom, Tom : $tom")
-                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom"
+                    log.info("Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action")
+                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom&role=$role&service=$service&action=$action"
                     log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                     executeREST(url)
                 }
