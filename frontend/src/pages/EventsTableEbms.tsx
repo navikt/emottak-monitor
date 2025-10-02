@@ -109,6 +109,14 @@ const EventsTable = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
+  const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value, 10);
+    if (newSize !== pageSize) {
+      setCurrentPage(1);
+      setPageSize(newSize);
+    }
+  };
+
   const headers: { key: keyof EventInfo; name: string }[] = [
     { key: "eventDate", name: "Mottatt" },
     { key: "description", name: "Hendelse" },
@@ -145,9 +153,18 @@ const EventsTable = () => {
         onServiceChange={onServiceChange}
         onActionChange={onActionChange}
       />
-      <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-        {totalCount} hendelser
-      </span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0" }}>
+        <span>{totalCount} hendelser</span>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span>Rows per page</span>
+          <select value={pageSize} onChange={onPageSizeChange}>
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </label>
+      </div>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
