@@ -79,8 +79,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val action = getQueryParameter("action")
                 val pageable = getPageable(page, size)
                 if (pageable != null) {
-                    log.info("Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action")
-                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom&role=$role&service=$service&action=$action"
+                    log.info("Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action, page number: $page, page size: $size")
+                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom&role=$role&service=$service&action=$action&page=$page&size=$size"
                     log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                     executeREST(url)
                 }
