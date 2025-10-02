@@ -40,10 +40,12 @@ fun DatabaseInterface.hentMeldinger(
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
-                    ORDER BY MELDING.DATOMOTTAT DESC
                 """
-
         if (pageable != null) {
+            if (pageable.sort != null) {
+                val orderBy = " ORDER BY MELDING.DATOMOTTAT " + pageable.sort
+                sql = sql + orderBy
+            }
             sql = sql + " LIMIT ? OFFSET ? "
         }
         val statement = connection.prepareStatement(sql)
@@ -61,7 +63,7 @@ fun DatabaseInterface.hentMeldinger(
                 }.toList()
         var returnPageable = pageable
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
-        Page(returnPageable.pageNumber, returnPageable.pageSize, totalCount, list)
+        Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)
     }
 
 fun ResultSet.toMessageInfo(): MessageInfo =

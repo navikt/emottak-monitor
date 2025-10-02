@@ -39,10 +39,13 @@ fun DatabaseInterface.hentHendelser(
                 FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
                 WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
-                ORDER BY LOGG.HENDELSEDATO DESC
             """
 
         if (pageable != null) {
+            if (pageable.sort != null) {
+                val orderBy = " ORDER BY LOGG.HENDELSEDATO " + pageable.sort
+                sql = sql + orderBy
+            }
             sql = sql + " LIMIT ? OFFSET ? "
         }
         val statement = connection.prepareStatement(sql)
@@ -59,7 +62,7 @@ fun DatabaseInterface.hentHendelser(
                 }.toList()
         var returnPageable = pageable
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
-        Page(returnPageable.pageNumber, returnPageable.pageSize, totalCount, list)
+        Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)
     }
 
 fun ResultSet.toHendelseInfo(): HendelseInfo =

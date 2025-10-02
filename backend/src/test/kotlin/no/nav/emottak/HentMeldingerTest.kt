@@ -24,6 +24,9 @@ class HentMeldingerTest {
     @AfterEach
     fun tearDown() {
         testDatabase.connection.rollback()
+        testDatabase.runSql("delete from LOGG")
+        testDatabase.runSql("delete from MELDING")
+        testDatabase.runSql("delete from STATUS")
     }
 
     @Test
@@ -45,8 +48,59 @@ class HentMeldingerTest {
         insertMelding(9999, "mId9", insideRequestedInterval + ".009")
         insertMelding(1000, "mId10", outsideRequestedInterval)
 
-        // NOTE: currently we query with DESC ordering on datomottat, so we expect the latest melding to be first in the resultset
+        // Default is ascending
         var requestedPage = Pageable(1, 4)
+        var resultPage = messageQueryService.meldinger(fom, tom, requestedPage)
+        println("Result: " + resultPage)
+        resultPage.page shouldBe 1
+        resultPage.content.size shouldBe 4
+        resultPage.totalPages shouldBe 3
+        resultPage.totalElements shouldBe 9
+        resultPage.content[0].mottakidliste shouldBeEqualTo "mId1"
+        resultPage.content[1].mottakidliste shouldBeEqualTo "mId2"
+        resultPage.content[2].mottakidliste shouldBeEqualTo "mId3"
+        resultPage.content[3].mottakidliste shouldBeEqualTo "mId4"
+
+        requestedPage = requestedPage.next()
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage.page shouldBe 2
+        resultPage.content.size shouldBe 4
+        resultPage.totalPages shouldBe 3
+        resultPage.totalElements shouldBe 9
+        resultPage.content[0].mottakidliste shouldBeEqualTo "mId5"
+        resultPage.content[1].mottakidliste shouldBeEqualTo "mId6"
+        resultPage.content[2].mottakidliste shouldBeEqualTo "mId7"
+        resultPage.content[3].mottakidliste shouldBeEqualTo "mId8"
+
+        requestedPage = requestedPage.next()
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage.page shouldBe 3
+        resultPage.content.size shouldBe 1
+        resultPage.totalPages shouldBe 3
+        resultPage.totalElements shouldBe 9
+        resultPage.content[0].mottakidliste shouldBeEqualTo "mId9"
+    }
+
+    @Test
+    fun testHentMeldingerDescending() {
+        val fom = LocalDateTime.parse("2025-09-17T00:00:00")
+        val tom = LocalDateTime.parse("2025-09-18T00:00:00")
+        val insideRequestedInterval = "2025-09-17T12:00:00"
+        val outsideRequestedInterval = "2025-09-16T12:00:00"
+
+        insertStatus()
+        insertMelding(1111, "mId1", insideRequestedInterval + ".001")
+        insertMelding(2222, "mId2", insideRequestedInterval + ".002")
+        insertMelding(3333, "mId3", insideRequestedInterval + ".003")
+        insertMelding(4444, "mId4", insideRequestedInterval + ".004")
+        insertMelding(5555, "mId5", insideRequestedInterval + ".005")
+        insertMelding(6666, "mId6", insideRequestedInterval + ".006")
+        insertMelding(7777, "mId7", insideRequestedInterval + ".007")
+        insertMelding(8888, "mId8", insideRequestedInterval + ".008")
+        insertMelding(9999, "mId9", insideRequestedInterval + ".009")
+        insertMelding(1000, "mId10", outsideRequestedInterval)
+
+        var requestedPage = Pageable(1, 4, "DESC")
         var resultPage = messageQueryService.meldinger(fom, tom, requestedPage)
         println("Result: " + resultPage)
         resultPage.page shouldBe 1
