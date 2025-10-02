@@ -156,7 +156,7 @@ const EventsTable = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0" }}>
         <span>{totalCount} hendelser</span>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <span>Rows per page</span>
+          <span>Rader per side</span>
           <select value={pageSize} onChange={onPageSizeChange}>
             <option value={10}>10</option>
             <option value={25}>25</option>
