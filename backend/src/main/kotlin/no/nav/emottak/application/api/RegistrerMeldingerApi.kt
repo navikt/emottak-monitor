@@ -29,9 +29,10 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         authenticate("jwt") {
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
-                val page: String? = getQueryParameter("page")
-                val size: String? = getQueryParameter("size")
-                val pageable = getPageable(page, size)
+                val page = getQueryParameter("page")
+                val size = getQueryParameter("size")
+                val sort = getQueryParameter("sort")
+                val pageable = getPageable(page, size, sort)
                 if (pageable != null) {
                     log.info("Kjører dabasespørring for å hente meldinger...")
                     val meldinger = meldingService.meldinger(fom, tom, pageable)
@@ -42,27 +43,34 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             }
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
+                val page = getQueryParameter("page")
+                val size = getQueryParameter("size")
+                val sort = getQueryParameter("sort")
                 val mottakId = getQueryParameter("mottakId")
                 val cpaId = getQueryParameter("cpaId")
                 val messageId = getQueryParameter("messageId")
                 val role = getQueryParameter("role")
                 val service = getQueryParameter("service")
                 val action = getQueryParameter("action")
-                log.info(
-                    "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, role : $role, service : $service, action : $action",
-                )
-                val url =
-                    "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
-                        "&messageId=$messageId&role=$role&service=$service&action=$action"
-                log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
-                executeREST(url)
+                val pageable = getPageable(page, size, sort) // just for validation
+                if (pageable != null) {
+                    log.info(
+                        "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+                    )
+                    val url =
+                        "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
+                            "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+                    log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
+                    executeREST(url)
+                }
             }
 
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 val page = getQueryParameter("page")
                 val size = getQueryParameter("size")
-                val pageable = getPageable(page, size)
+                val sort = getQueryParameter("sort")
+                val pageable = getPageable(page, size, sort)
                 if (pageable != null) {
                     log.info("Kjører dabasespørring for å hente hendelser...")
                     val hendelser = meldingService.hendelser(fom, tom, pageable)
@@ -74,13 +82,18 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 val page = getQueryParameter("page")
                 val size = getQueryParameter("size")
+                val sort = getQueryParameter("sort")
                 val role = getQueryParameter("role")
                 val service = getQueryParameter("service")
                 val action = getQueryParameter("action")
-                val pageable = getPageable(page, size)
+                val pageable = getPageable(page, size, sort) // just for validation
                 if (pageable != null) {
-                    log.info("Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action")
-                    val url = "$eventManagerUrl/events?fromDate=$fom&toDate=$tom&role=$role&service=$service&action=$action"
+                    log.info(
+                        "Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+                    )
+                    val url =
+                        "$eventManagerUrl/events?fromDate=$fom&toDate=$tom" +
+                            "&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
                     log.info("Henter hendelser fra events endepunktet til ebms ($url)")
                     executeREST(url)
                 }
@@ -195,6 +208,7 @@ const val MAX_PAGE_SIZE = 1000
 private suspend fun RoutingContext.getPageable(
     page: String?,
     size: String?,
+    sort: String?,
     defaultSize: Int = 50,
 ): Pageable? {
     var pageSize = defaultSize
@@ -215,7 +229,17 @@ private suspend fun RoutingContext.getPageable(
         }
         pageNumber = page.toInt()
     }
-    return Pageable(pageNumber, pageSize)
+    var sortOrder = "DESC"
+    if (!sort.isNullOrBlank()) {
+        if (!sort.startsWith("ASC", true) && !sort.startsWith("DESC", true)) {
+            val errorMessage = "Invalid sort order specification: $sort, must be ASC or DESC"
+            log.error(errorMessage)
+            call.respond(HttpStatusCode.BadRequest)
+            return null
+        }
+        sortOrder = sort
+    }
+    return Pageable(pageNumber, pageSize, sortOrder)
 }
 
 @InternalAPI
