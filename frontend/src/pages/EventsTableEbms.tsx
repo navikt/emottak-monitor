@@ -69,7 +69,7 @@ const EventsTable = () => {
   const commitToTime     = () => setToTime(toTimeDraft);
 
   const { loading, error, data } = fetchState;
-  const events: EventInfo[] = Array.isArray(data?.content) ? data!.content : [];
+  const events = data?.content ?? [];
   const totalCount = data?.totalElements ?? 0;
 
   useEffect(() => {
@@ -86,16 +86,16 @@ const EventsTable = () => {
     setCurrentPage(1);
   }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action]);
 
-  // const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
-  //   events ?? [],
-  //   ["role", "service", "action", "description"]
-  // );
+  const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
+    events ?? [],
+    ["role", "service", "action", "description"]
+  );
 
-  // const {
-  //   items: filteredAndSortedEvents,
-  //   requestSort,
-  //   sortConfig,
-  // } = useTableSorting(filteredEvents);
+  const {
+    items: filteredAndSortedEvents,
+    requestSort,
+    sortConfig,
+  } = useTableSorting(filteredEvents);
 
   const getClassNamesFor = (name: keyof EventInfo) => {
     if (!sortConfig) {
@@ -167,7 +167,7 @@ const EventsTable = () => {
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
           {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
-              events.map((event, index) => {
+              filteredAndSortedEvents.map((event, index) => {
               return (
                 <Table.Row
                   key={event.description + index}
