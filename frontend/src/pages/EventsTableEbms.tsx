@@ -65,8 +65,13 @@ const EventsTable = () => {
       `&page=${currentPage}&size=${pageSize}`
   );
 
-  const commitFromTime   = () => setFromTime(fromTimeDraft);
-  const commitToTime     = () => setToTime(toTimeDraft);
+  const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
+  const onToDateChange   = (value: string) => { setCurrentPage(1); setToDate(value); };
+  const onRoleChange     = (value: string) => { setCurrentPage(1); setRole(value); };
+  const onServiceChange  = (value: string) => { setCurrentPage(1); setService(value); };
+  const onActionChange   = (value: string) => { setCurrentPage(1); setAction(value); };
+  const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
+  const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
   const { loading, error, data } = fetchState;
   const events = data?.content ?? [];
@@ -127,18 +132,18 @@ const EventsTable = () => {
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
         toTime={debouncedToTime}
-        onFromDateChange={setFromDate}
+        onFromDateChange={onFromDateChange}
         onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setToDate}
+        onToDateChange={onToDateChange}
         onToTimeChange={setToTimeDraft}
         onFromTimeBlur={commitFromTime}
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
         filterKeys={["service", "action", "role", "description"]}
-        onRoleChange={setRole}
-        onServiceChange={setService}
-        onActionChange={setAction}
+        onRoleChange={onRoleChange}
+        onServiceChange={onServiceChange}
+        onActionChange={onActionChange}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {totalCount} hendelser
