@@ -1,7 +1,7 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import RowWithContent from "../components/RowWithContent";
@@ -26,6 +26,14 @@ type EventInfo = {
   eventData: string | null;
 };
 
+type Page = {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  content: EventInfo[];
+};
+
 const EventsTable = () => {
   const location = useLocation();
 
@@ -47,22 +55,36 @@ const EventsTable = () => {
   const [service, setService] = useState("");
   const [action, setAction] = useState("");
 
-  const { fetchState, callRequest } = useFetch<EventInfo[]>(
-    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&role=${role}&service=${service}&action=${action}`
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { fetchState, callRequest } = useFetch<Page>(
+    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
+      `&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&role=${role}&service=${service}&action=${action}` +
+      `&page=${currentPage}&size=${pageSize}`
   );
 
   const commitFromTime   = () => setFromTime(fromTimeDraft);
   const commitToTime     = () => setToTime(toTimeDraft);
 
-  const { loading, error, data: events } = fetchState;
-
-  let pageSize = 10;
-
-  const [currentPage, setCurrentPage] = useState(1);
+  const { loading, error, data } = fetchState;
+  const events = data?.content ?? [];
+  const totalCount = data?.totalElements ?? 0;
 
   useEffect(() => {
     callRequest();
   }, [callRequest]);
+
+  useEffect(() => {
+    if (!data) return;
+    if (data.page !== currentPage) setCurrentPage(data.page);
+    if (data.size !== pageSize) setPageSize(data.size);
+  }, [data]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action]);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
@@ -82,21 +104,15 @@ const EventsTable = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * pageSize;
-    const lastPageIndex = firstPageIndex + pageSize;
-    return filteredAndSortedEvents.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, pageSize, filteredAndSortedEvents]);
-
   const headers: { key: keyof EventInfo; name: string }[] = [
-    { key: "hendelsedato", name: "Mottatt" },
-    { key: "hendelsedeskr", name: "Hendelse" },
-    { key: "mottakid", name: "Mottak-id" },
+    { key: "eventDate", name: "Mottatt" },
+    { key: "description", name: "Hendelse" },
+    { key: "readableId", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
-    { key: "referanse", name: "Referanse" },
-    { key: "avsender", name: "Avsender" },
+    { key: "referenceParameter", name: "Referanse" },
+    { key: "senderName", name: "Avsender" },
   ];
 
   const showSpinner = loading;
@@ -125,7 +141,7 @@ const EventsTable = () => {
         onActionChange={setAction}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-        {filteredEvents.length} hendelser
+        {totalCount} hendelser
       </span>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
@@ -151,7 +167,7 @@ const EventsTable = () => {
           {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
           {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
-            currentTableData.map((event, index) => {
+              filteredAndSortedEvents.map((event, index) => {
               return (
                 <Table.Row
                   key={event.description + index}
@@ -182,7 +198,7 @@ const EventsTable = () => {
       </Table>
 
       <Pagination
-        totalCount={filteredEvents.length}
+        totalCount={totalCount}
         pageSize={pageSize}
         siblingCount={1}
         currentPage={currentPage}
