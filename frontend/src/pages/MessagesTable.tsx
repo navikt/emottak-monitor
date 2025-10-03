@@ -1,7 +1,7 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
