@@ -57,12 +57,13 @@ const EventsTable = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sortOrder, setSortOrder] = useState("DESC");
 
   const { fetchState, callRequest } = useFetch<Page>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&role=${role}&service=${service}&action=${action}` +
-      `&page=${currentPage}&size=${pageSize}`
+      `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`
   );
 
   const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
@@ -89,7 +90,7 @@ const EventsTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, sortOrder]);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
@@ -114,6 +115,14 @@ const EventsTable = () => {
     if (newSize !== pageSize) {
       setCurrentPage(1);
       setPageSize(newSize);
+    }
+  };
+
+  const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const order = e.target.value;
+    if (order !== sortOrder) {
+      setCurrentPage(1);
+      setSortOrder(order);
     }
   };
 
@@ -155,15 +164,24 @@ const EventsTable = () => {
       />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0" }}>
         <span>{totalCount} hendelser</span>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <span>Rader per side</span>
-          <select value={pageSize} onChange={onPageSizeChange}>
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </label>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 16 }}>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <span>Sorting order</span>
+            <select value={sortOrder} onChange={onSortOrderChange}>
+              <option value="DESC">DESC</option>
+              <option value="ASC">ASC</option>
+            </select>
+          </label>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <span>Rader per side</span>
+            <select value={pageSize} onChange={onPageSizeChange}>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </label>
+        </div>
       </div>
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
