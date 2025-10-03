@@ -166,10 +166,10 @@ const EventsTable = () => {
         <span>{totalCount} hendelser</span>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 16 }}>
           <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <span>Sorting order</span>
+            <span>Sorteringsrekkefølge</span>
             <select value={sortOrder} onChange={onSortOrderChange}>
-              <option value="DESC">DESC</option>
-              <option value="ASC">ASC</option>
+              <option value="DESC">Siste først</option>
+              <option value="ASC">Tidligste først</option>
             </select>
           </label>
           <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
