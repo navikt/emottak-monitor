@@ -11,7 +11,7 @@ class TestDatabase : DatabaseInterface {
     private val dataSource: DataSource =
         HikariDataSource(
             HikariConfig().apply {
-                jdbcUrl = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1"
+                jdbcUrl = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Oracle;"
                 username = "sa"
                 password = ""
                 maximumPoolSize = 3

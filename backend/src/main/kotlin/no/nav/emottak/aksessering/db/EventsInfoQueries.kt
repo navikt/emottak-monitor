@@ -46,14 +46,14 @@ fun DatabaseInterface.hentHendelser(
                 val orderBy = " ORDER BY LOGG.HENDELSEDATO " + pageable.sort
                 sql = sql + orderBy
             }
-            sql = sql + " LIMIT ? OFFSET ? "
+            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         if (pageable != null) {
-            statement.setObject(3, pageable.pageSize)
-            statement.setObject(4, pageable.offset)
+            statement.setObject(3, pageable.offset)
+            statement.setObject(4, pageable.pageSize)
         }
         val list =
             statement
