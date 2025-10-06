@@ -28,8 +28,11 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
         authenticate("jwt") {
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
+                val mottakId = getQueryParameter("mottakId")
+                val cpaId = getQueryParameter("cpaId")
+                val messageId = getQueryParameter("messageId")
                 log.info("Kjører dabasespørring for å hente meldinger...")
-                val meldinger = meldingService.meldinger(fom, tom)
+                val meldinger = meldingService.meldinger(fom, tom, mottakId, cpaId, messageId)
                 log.info("Meldinger antall : ${meldinger.size}")
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
                 call.respond(meldinger)
