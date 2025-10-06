@@ -2,7 +2,6 @@ import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
-import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
@@ -14,6 +13,7 @@ import { initialDate, initialTime } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
+import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
 type MessageInfo = {
   action: string;
@@ -42,6 +42,9 @@ const MessagesTable = () => {
   const [mottakId, setMottakId] = useState("");
   const [cpaId, setCpaId] = useState("");
   const [messageId, setMessageId] = useState("");
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
 
   // using debounce to not use value until there has been no new changes
   const debouncedFromDate = useDebounce(fromDate, 200);
@@ -55,9 +58,9 @@ const MessagesTable = () => {
   let pageSize = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
-  //const [pageSize, setPageSize] = useState(10);
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}&role=${role}&service=${service}&action=${action}`;
 
   const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
 
@@ -70,9 +73,6 @@ const MessagesTable = () => {
     messages ?? [],
     ["role", "service", "action", "status"]
   );
-
-  //const numberOfItems = visibleMessages.length;
-  //const numberOfPages = pageSize > 0 ? Math.ceil(numberOfItems / pageSize) : 1
 
   useEffect(() => {
     callRequest();
@@ -117,7 +117,7 @@ const MessagesTable = () => {
 
   return (
     <>
-      <Filter
+      <PrepopulatedFilter
         fromDate={debouncedFromDate}
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
@@ -130,6 +130,9 @@ const MessagesTable = () => {
         onToTimeBlur={commitToTime}
         messages={messages ?? []}
         onFilterChange={handleFilterChange}
+        onRoleChange={setRole}
+        onServiceChange={setService}
+        onActionChange={setAction}
       />
       <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
         <div style={{ gridArea: "mottakId" }}>

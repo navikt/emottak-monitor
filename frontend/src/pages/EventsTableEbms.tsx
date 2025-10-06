@@ -3,7 +3,6 @@ import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Filter from "../components/Filter";
 import Pagination from "../components/Pagination";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
@@ -13,6 +12,7 @@ import useTableSorting from "../hooks/useTableSorting";
 import { initialDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
+import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
 type EventInfo = {
   action: string;
@@ -43,8 +43,12 @@ const EventsTable = () => {
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
 
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
+
   const { fetchState, callRequest } = useFetch<EventInfo[]>(
-    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}`
+    `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}&role=${role}&service=${service}&action=${action}`
   );
 
   const commitFromTime   = () => setFromTime(fromTimeDraft);
@@ -102,7 +106,7 @@ const EventsTable = () => {
 
   return (
     <>
-      <Filter
+      <PrepopulatedFilter
         fromDate={debouncedFromDate}
         fromTime={debouncedFromTime}
         toDate={debouncedToDate}
@@ -116,6 +120,9 @@ const EventsTable = () => {
         messages={events ?? []}
         onFilterChange={handleFilterChange}
         filterKeys={["service", "action", "role", "description"]}
+        onRoleChange={setRole}
+        onServiceChange={setService}
+        onActionChange={setAction}
       />
       <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
         {filteredEvents.length} hendelser
