@@ -204,12 +204,12 @@ const MessagesTable = () => {
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
               <span>Sorteringsrekkefølge</span>
               <select value={sortOrder} onChange={onSortOrderChange}>
-                <option value="DESC">Siste først</option>
-                <option value="ASC">Tidligste først</option>
+                <option value="DESC">Nyeste først</option>
+                <option value="ASC">Eldste først</option>
               </select>
             </label>
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-              <span>Rader per side</span>
+            <span>Rader per side</span>
               <select value={pageSize} onChange={onPageSizeChange}>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
