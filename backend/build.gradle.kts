@@ -19,6 +19,8 @@ val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val mockkVersion = "1.14.0"
 val kotlinVersion = "2.1.10"
+val junitVersion = "1.12.2"
+val h2Version = "2.3.232"
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -78,6 +80,8 @@ dependencies {
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
         exclude(group = "org.jetbrains.kotlin")
     }
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitVersion}")
+    testRuntimeOnly("com.h2database:h2:${h2Version}")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
@@ -115,6 +119,7 @@ tasks {
     withType<Test> {
         useJUnitPlatform {
             includeEngines("spek2")
+            includeEngines("junit-jupiter")
         }
         testLogging {
             showStandardStreams = true
