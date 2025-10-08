@@ -47,7 +47,7 @@ class HentHendelserTest {
         insertHendelse(9999, "mId9", insideRequestedInterval + ".009")
         insertHendelse(1000, "mId10", outsideRequestedInterval)
 
-        // Default is ascending
+        // Default for Pageable is ascending
         var requestedPage = Pageable(1, 4)
         var resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
         resultPage.page shouldBe 1
@@ -126,6 +126,41 @@ class HentHendelserTest {
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
         resultPage.content[0].mottakid shouldBeEqualTo "mId1"
+    }
+
+    @Test
+    fun testHentHendelserUnpaged() {
+        val fom = LocalDateTime.parse("2025-09-17T00:00:00")
+        val tom = LocalDateTime.parse("2025-09-18T00:00:00")
+        val insideRequestedInterval = "2025-09-17T12:00:00"
+        val outsideRequestedInterval = "2025-09-16T12:00:00"
+
+        insertHendelse(1111, "mId1", insideRequestedInterval + ".001")
+        insertHendelse(2222, "mId2", insideRequestedInterval + ".002")
+        insertHendelse(3333, "mId3", insideRequestedInterval + ".003")
+        insertHendelse(4444, "mId4", insideRequestedInterval + ".004")
+        insertHendelse(5555, "mId5", insideRequestedInterval + ".005")
+        insertHendelse(6666, "mId6", insideRequestedInterval + ".006")
+        insertHendelse(7777, "mId7", insideRequestedInterval + ".007")
+        insertHendelse(8888, "mId8", insideRequestedInterval + ".008")
+        insertHendelse(9999, "mId9", insideRequestedInterval + ".009")
+        insertHendelse(1000, "mId10", outsideRequestedInterval)
+
+        // Default for unpaged is descending
+        var resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom)
+        resultPage.page shouldBe 1
+        resultPage.content.size shouldBe 9
+        resultPage.totalPages shouldBe 1
+        resultPage.totalElements shouldBe 9
+        resultPage.content[0].mottakid shouldBeEqualTo "mId9"
+        resultPage.content[1].mottakid shouldBeEqualTo "mId8"
+        resultPage.content[2].mottakid shouldBeEqualTo "mId7"
+        resultPage.content[3].mottakid shouldBeEqualTo "mId6"
+        resultPage.content[4].mottakid shouldBeEqualTo "mId5"
+        resultPage.content[5].mottakid shouldBeEqualTo "mId4"
+        resultPage.content[6].mottakid shouldBeEqualTo "mId3"
+        resultPage.content[7].mottakid shouldBeEqualTo "mId2"
+        resultPage.content[8].mottakid shouldBeEqualTo "mId1"
     }
 
     fun insertHendelse(

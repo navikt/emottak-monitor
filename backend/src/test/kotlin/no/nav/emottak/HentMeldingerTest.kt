@@ -48,7 +48,7 @@ class HentMeldingerTest {
         insertMelding(9999, "mId9", insideRequestedInterval + ".009")
         insertMelding(1000, "mId10", outsideRequestedInterval)
 
-        // Default is ascending
+        // Default for Pageable is ascending
         var requestedPage = Pageable(1, 4)
         var resultPage = messageQueryService.meldinger(fom, tom, requestedPage)
         println("Result: " + resultPage)
@@ -130,6 +130,43 @@ class HentMeldingerTest {
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
         resultPage.content[0].mottakidliste shouldBeEqualTo "mId1"
+    }
+
+    @Test
+    fun testHentMeldingerUnpaged() {
+        val fom = LocalDateTime.parse("2025-09-17T00:00:00")
+        val tom = LocalDateTime.parse("2025-09-18T00:00:00")
+        val insideRequestedInterval = "2025-09-17T12:00:00"
+        val outsideRequestedInterval = "2025-09-16T12:00:00"
+
+        insertStatus()
+        insertMelding(1111, "mId1", insideRequestedInterval + ".001")
+        insertMelding(2222, "mId2", insideRequestedInterval + ".002")
+        insertMelding(3333, "mId3", insideRequestedInterval + ".003")
+        insertMelding(4444, "mId4", insideRequestedInterval + ".004")
+        insertMelding(5555, "mId5", insideRequestedInterval + ".005")
+        insertMelding(6666, "mId6", insideRequestedInterval + ".006")
+        insertMelding(7777, "mId7", insideRequestedInterval + ".007")
+        insertMelding(8888, "mId8", insideRequestedInterval + ".008")
+        insertMelding(9999, "mId9", insideRequestedInterval + ".009")
+        insertMelding(1000, "mId10", outsideRequestedInterval)
+
+        // Default for unpaged is descending
+        var resultPage = messageQueryService.meldinger(fom, tom)
+        println("Result: " + resultPage)
+        resultPage.page shouldBe 1
+        resultPage.content.size shouldBe 9
+        resultPage.totalPages shouldBe 1
+        resultPage.totalElements shouldBe 9
+        resultPage.content[0].mottakidliste shouldBeEqualTo "mId9"
+        resultPage.content[1].mottakidliste shouldBeEqualTo "mId8"
+        resultPage.content[2].mottakidliste shouldBeEqualTo "mId7"
+        resultPage.content[3].mottakidliste shouldBeEqualTo "mId6"
+        resultPage.content[4].mottakidliste shouldBeEqualTo "mId5"
+        resultPage.content[5].mottakidliste shouldBeEqualTo "mId4"
+        resultPage.content[6].mottakidliste shouldBeEqualTo "mId3"
+        resultPage.content[7].mottakidliste shouldBeEqualTo "mId2"
+        resultPage.content[8].mottakidliste shouldBeEqualTo "mId1"
     }
 
     fun insertMelding(

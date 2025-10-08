@@ -214,6 +214,16 @@ class MeldingerApiSpek :
                     response.status shouldBe HttpStatusCode.BadRequest
                 }
             }
+            it("should return 400 BAD REQUEST for non-numeric page") {
+                testApplication {
+                    setupMeldingEndpoints()
+                    val response =
+                        client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=zero&size=50") {
+                            header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                        }
+                    response.status shouldBe HttpStatusCode.BadRequest
+                }
+            }
             it("should return 400 BAD REQUEST for size less than 1") {
                 testApplication {
                     setupMeldingEndpoints()
@@ -229,6 +239,16 @@ class MeldingerApiSpek :
                     setupMeldingEndpoints()
                     val response =
                         client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=1&size=1001") {
+                            header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                        }
+                    response.status shouldBe HttpStatusCode.BadRequest
+                }
+            }
+            it("should return 400 BAD REQUEST for non-numeric size") {
+                testApplication {
+                    setupMeldingEndpoints()
+                    val response =
+                        client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=1&size=BIG") {
                             header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                         }
                     response.status shouldBe HttpStatusCode.BadRequest
@@ -259,6 +279,16 @@ class MeldingerApiSpek :
                     setupMeldingEndpoints()
                     val response =
                         client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&sort=ASC") {
+                            header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                        }
+                    response.status shouldBe HttpStatusCode.OK
+                }
+            }
+            it("should return 200 OK for blank page, size and sort") {
+                testApplication {
+                    setupMeldingEndpoints()
+                    val response =
+                        client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=&size=&sort=") {
                             header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                         }
                     response.status shouldBe HttpStatusCode.OK

@@ -16,7 +16,7 @@ fun DatabaseInterface.hentMeldinger(
 ): Page<MessageInfo> =
     connection.use { connection ->
         val countStatement =
-            connection.prepareStatement( // todo does this count the same rows as the query below ???
+            connection.prepareStatement(
                 """
                 SELECT count(*)
                     FROM $databasePrefix.MELDING
@@ -40,12 +40,16 @@ fun DatabaseInterface.hentMeldinger(
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
+                    ORDER BY MELDING.DATOMOTTAT  
                 """
+        // We always use ORDER BY, with default DESC
+        var orderBy = "DESC"
+        if (pageable != null && pageable.sort != null) {
+            orderBy = pageable.sort
+        }
+        sql = sql + orderBy
+        // We only use LIMIT and OFFSET when asked for a page
         if (pageable != null) {
-            if (pageable.sort != null) {
-                val orderBy = " ORDER BY MELDING.DATOMOTTAT " + pageable.sort
-                sql = sql + orderBy
-            }
             sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
         val statement = connection.prepareStatement(sql)

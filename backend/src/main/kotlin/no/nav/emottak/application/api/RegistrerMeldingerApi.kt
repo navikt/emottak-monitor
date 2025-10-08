@@ -213,6 +213,11 @@ private suspend fun RoutingContext.getPageable(
 ): Pageable? {
     var pageSize = defaultSize
     if (!size.isNullOrEmpty()) {
+        if (size.toIntOrNull() == null) {
+            log.info("Page size ($size) must be numeric")
+            call.respond(HttpStatusCode.BadRequest)
+            return null
+        }
         if (size.toInt() > MAX_PAGE_SIZE || size.toInt() < 1) {
             log.info("Page size $size must be between 1 and $MAX_PAGE_SIZE")
             call.respond(HttpStatusCode.BadRequest)
@@ -222,8 +227,13 @@ private suspend fun RoutingContext.getPageable(
     }
     var pageNumber = 1
     if (!page.isNullOrEmpty()) {
+        if (page.toIntOrNull() == null) {
+            log.info("Page number ($page) must be numeric")
+            call.respond(HttpStatusCode.BadRequest)
+            return null
+        }
         if (page.toInt() < 1) {
-            log.info("Page number $page must be 1 or more")
+            log.info("Page number ($page) must be 1 or more")
             call.respond(HttpStatusCode.BadRequest)
             return null
         }
