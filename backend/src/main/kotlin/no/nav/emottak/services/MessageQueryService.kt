@@ -30,9 +30,9 @@ class MessageQueryService(
     fun meldinger(
         fom: LocalDateTime,
         tom: LocalDateTime,
-        mottakId: String,
-        cpaId: String,
-        messageId: String,
+        mottakId: String? = null,
+        cpaId: String? = null,
+        messageId: String? = null,
         pageable: Pageable? = null,
     ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId, pageable)
 

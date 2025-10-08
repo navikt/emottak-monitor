@@ -50,7 +50,7 @@ class HentMeldingerTest {
 
         // Default for Pageable is ascending
         var requestedPage = Pageable(1, 4)
-        var resultPage = messageQueryService.meldinger(fom, tom, requestedPage)
+        var resultPage = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
         println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
@@ -62,7 +62,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakidliste shouldBeEqualTo "mId4"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -73,7 +73,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakidliste shouldBeEqualTo "mId8"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 3
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
@@ -101,7 +101,7 @@ class HentMeldingerTest {
         insertMelding(1000, "mId10", outsideRequestedInterval)
 
         var requestedPage = Pageable(1, 4, "DESC")
-        var resultPage = messageQueryService.meldinger(fom, tom, requestedPage)
+        var resultPage = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
         println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
@@ -113,7 +113,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakidliste shouldBeEqualTo "mId6"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -124,7 +124,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakidliste shouldBeEqualTo "mId2"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 3
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
@@ -152,7 +152,7 @@ class HentMeldingerTest {
         insertMelding(1000, "mId10", outsideRequestedInterval)
 
         // Default for unpaged is descending
-        var resultPage = messageQueryService.meldinger(fom, tom)
+        val resultPage = messageQueryService.meldinger(fom, tom)
         println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 9
