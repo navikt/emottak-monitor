@@ -12,6 +12,9 @@ fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
     fom: LocalDateTime,
     tom: LocalDateTime,
+    mottakId: String,
+    cpaId: String,
+    messageId: String,
     pageable: Pageable? = null,
 ): Page<MessageInfo> =
     connection.use { connection ->
@@ -39,9 +42,13 @@ fun DatabaseInterface.hentMeldinger(
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING
-                    WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
-                    ORDER BY MELDING.DATOMOTTAT  
+                    WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL 
                 """
+        if (!mottakId.isNullOrBlank()) sqlStatement += " AND LOWER(MELDING.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
+        if (!cpaId.isNullOrBlank()) sqlStatement += " AND LOWER(MELDING.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
+        if (!messageId.isNullOrBlank()) sqlStatement += " AND LOWER(MELDING.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
+        
+        sqlStatement += " ORDER BY MELDING.DATOMOTTAT "
         // We always use ORDER BY, with default DESC
         var orderBy = "DESC"
         if (pageable != null && pageable.sort != null) {
@@ -53,7 +60,6 @@ fun DatabaseInterface.hentMeldinger(
             sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
         val statement = connection.prepareStatement(sql)
-
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         if (pageable != null) {
@@ -69,6 +75,7 @@ fun DatabaseInterface.hentMeldinger(
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
         Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)
     }
+}
 
 fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
