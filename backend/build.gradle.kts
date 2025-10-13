@@ -19,7 +19,7 @@ val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val mockkVersion = "1.14.0"
 val kotlinVersion = "2.1.10"
-val junitVersion = "1.12.2"
+val junitVersion = "6.0.0"
 val h2Version = "2.3.232"
 
 plugins {
