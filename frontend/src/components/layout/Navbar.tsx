@@ -8,6 +8,7 @@ import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
 import MottakIdSok from "../../pages/MottakIdSok";
 import CpaIdSok from "../../pages/CpaIdSok";
+import CpaIdSokEbms from "../../pages/CpaIdSokEbms";
 import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 import PartnerIdSok from "../../pages/PartnerIdSok";
@@ -31,6 +32,7 @@ export const pages: Page[] = [
   { title: "Mottak-id søk ebms", path: "/readableidsokebms", element: <ReadableIdSokEbms /> },
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
   { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
+  { title: "CPA-id søk ebms", path: "/cpaidsokebms", element: <CpaIdSokEbms /> },
   {title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 ];
