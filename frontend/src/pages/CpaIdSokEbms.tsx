@@ -137,6 +137,7 @@ const CpaIdSokEbms = () => {
     { key: "action", name: "Action" },
     { key: "referenceParameter", name: "Referanse" },
     { key: "senderName", name: "Avsender" },
+    { key: "cpaId", name: "CPA-id" },
     { key: "status", name: "Status" },
   ];
 
@@ -243,6 +244,13 @@ const CpaIdSokEbms = () => {
                         <Table.DataCell>{message.action}</Table.DataCell>
                         <Table.DataCell>{message.referenceParameter}</Table.DataCell>
                         <Table.DataCell>{message.senderName}</Table.DataCell>
+                        <Table.DataCell>
+                          <Link
+                              key={message.cpaId}
+                              to={`/cpa/${message.cpaId}`}
+                              state={{backgroundLocation: location}}
+                          >{message.cpaId}</Link>
+                        </Table.DataCell>
                         <Table.DataCell>{message.status}</Table.DataCell>
                       </Table.Row>
                   );

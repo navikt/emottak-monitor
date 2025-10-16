@@ -27,7 +27,6 @@ val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
         authenticate("jwt") {
-
             // Meldinger (frontend: /meldinger)
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
@@ -262,7 +261,10 @@ private suspend fun RoutingContext.getPageable(
 }
 
 @InternalAPI
-private suspend fun RoutingContext.hentMeldingerEbms(fom: LocalDateTime, tom: LocalDateTime) {
+private suspend fun RoutingContext.hentMeldingerEbms(
+    fom: LocalDateTime,
+    tom: LocalDateTime,
+) {
     val page = getQueryParameter("page")
     val size = getQueryParameter("size")
     val sort = getQueryParameter("sort")
@@ -276,11 +278,11 @@ private suspend fun RoutingContext.hentMeldingerEbms(fom: LocalDateTime, tom: Lo
     if (pageable != null) {
         log.info(
             "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, " +
-                    "role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+                "role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
         )
         val url =
             "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
-                    "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+                "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
         log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
         executeREST(url)
     }
