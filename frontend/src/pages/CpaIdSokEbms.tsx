@@ -64,7 +64,7 @@ const CpaIdSokEbms = () => {
   const [sortOrder, setSortOrder] = useState("DESC");
 
   const url = `/v1/hentcpaidinfoebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
-      `&toDate=${debouncedToDate}%20${debouncedToTime}&cpaId=${cpaId}` +
+      `&toDate=${debouncedToDate}%20${debouncedToTime}&cpaId=${debouncedCpaId}` +
       `&role=${role}&service=${service}&action=${action}` +
       `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`;
 
