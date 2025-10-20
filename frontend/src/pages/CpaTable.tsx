@@ -1,24 +1,29 @@
 import { Table } from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
+import clsx from "clsx";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
+// @ts-ignore
 import tableStyles from "../styles/Table.module.scss";
 
 type CpaDetails = {
-  partnerid: string;
-  navn: string;
-  partnerherid: string;
-  partnerorgnummer: string;
+  cpaId: string;
+  partnerID: string;
+  navCppID: string;
+  partnerCppID: string;
+  partnerSubjectDN: string;
+  partnerEndpoint: string;
+  lastUsed: string;
 };
 
 const CpaTable = () => {
   const { cpaid } = useParams();
+  let pageSize = 10;
 
-  const { fetchState, callRequest } = useFetch<CpaDetails[]>(
-    `/v1/hentcpa?cpaId=${cpaid}`
-  );
+  const url = `/v1/hentcpaliste`;
+  const { fetchState, callRequest } = useFetch<CpaDetails[]>(url);
 
   const { loading, error, data: cpaInfo } = fetchState;
 
@@ -26,35 +31,65 @@ const CpaTable = () => {
     callRequest();
   }, [callRequest]);
 
+
   const { items } = useTableSorting(cpaInfo ?? []);
+
+  const headers: { key: keyof CpaDetails; name: string }[] = [
+    { key: "cpaId", name: "cpaId" },
+    { key: "partnerID", name: "partnerID" },
+    { key: "navCppID", name: "navCppID" },
+    { key: "partnerCppID", name: "partnerCppID" },
+    { key: "partnerSubjectDN", name: "partnerSubjectDN" },
+    { key: "partnerEndpoint", name: "partnerEndpoint" },
+    { key: "lastUsed", name: "lastUsed" },
+  ];
 
   return (
     <div>
-      <h1>CPA info for cpa-id : {cpaid}</h1>
       <Table className={tableStyles.table}>
+
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
-            <Table.HeaderCell>Partner-ID</Table.HeaderCell>
-            <Table.HeaderCell>Navn</Table.HeaderCell>
-            <Table.HeaderCell>HER-ID</Table.HeaderCell>
-            <Table.HeaderCell>Organisajonsnummer</Table.HeaderCell>
+            {headers.map(({ key, name }) => (
+                <Table.HeaderCell
+                    key={key}
+                >
+                  {name}
+                </Table.HeaderCell>
+            ))}
           </Table.Row>
           </Table.Header>
+
+
+
+
         <Table.Body>
           {!loading &&
-            items.map((cpaDetails) => {
+            items.map((cpaDetails, index) => {
               return (
-                <Table.Row key={cpaDetails.partnerorgnummer}>
+                <Table.Row
+                    key={cpaDetails.cpaId + index}
+                    className={clsx({ [tableStyles.coloredRow]: index % 2 })}
+                >
+
+                  <Table.DataCell>{cpaDetails.cpaId}</Table.DataCell>
                   <Table.DataCell className="tabell__td--sortert">
-                    {cpaDetails.partnerid}
+                    {cpaDetails.partnerID}
                   </Table.DataCell>
-                  <Table.DataCell>{cpaDetails.navn}</Table.DataCell>
-                  <Table.DataCell>{cpaDetails.partnerherid}</Table.DataCell>
-                  <Table.DataCell>{cpaDetails.partnerorgnummer}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.navCppID}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.partnerCppID}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.partnerSubjectDN}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.partnerEndpoint}</Table.DataCell>
+                  <Table.DataCell>{cpaDetails.lastUsed}</Table.DataCell>
                 </Table.Row>
               );
             })}
         </Table.Body>
+
+
+
+
+
       </Table>
       {loading && <NavFrontendSpinner />}
       {error?.message && <p>{error.message}</p>}

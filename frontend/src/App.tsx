@@ -26,7 +26,7 @@ export default function App() {
           {pages.map((page) => (
             <Route key={page.path} path={page.path} element={page.element} />
           ))}
-          <Route path="/" element={<Navigate to="/meldinger" />} />
+          <Route path="/" element={<Navigate to="/meldissssnger" />} />
           <Route path="/logg/:mottakid" element={<LoggTable />} />
           <Route path="/loggebms/:readableId" element={<LoggTableEbms />} />
         </Route>

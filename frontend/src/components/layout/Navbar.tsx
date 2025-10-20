@@ -3,6 +3,7 @@ import { Heading } from "@navikt/ds-react";
 import clsx from "clsx";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+// @ts-ignore
 import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
@@ -14,6 +15,8 @@ import PartnerIdSok from "../../pages/PartnerIdSok";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
+import PartnerTable from "../../pages/PartnerTable";
+import CpaTable from "../../pages/CpaTable";
 
 
 type Page = {
@@ -32,6 +35,8 @@ export const pages: Page[] = [
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
   { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
   {title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
+  {title: "Partnerliste", path: "/PartnerTable", element: <PartnerTable /> },
+  {title: "Cpaliste", path: "/cpaliste", element: <CpaTable /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 ];
 

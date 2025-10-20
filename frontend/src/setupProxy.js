@@ -7,7 +7,8 @@ module.exports = function (app) {
   app.use(
     "/v1",
     createProxyMiddleware({
-      target: `${process.env.PROXY_URL}`,
+        //TODO Parviz: use "localhost" in local environment
+      target: `http://localhost:8081`,
       changeOrigin: true,
       secure: false,
     })

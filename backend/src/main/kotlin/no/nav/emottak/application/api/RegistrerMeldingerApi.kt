@@ -25,7 +25,8 @@ val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 @InternalAPI
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
-        authenticate("jwt") {
+        //TODO Parviz: use frontend in local environment
+        //authenticate("jwt") {
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 log.info("Kjører dabasespørring for å hente meldinger...")
@@ -34,6 +35,24 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Meldingsliste !!!! : ${meldinger.firstOrNull()?.mottakidliste}")
                 call.respond(meldinger)
             }
+        get("/hentcpaliste") {
+            log.info("Kjører dabasespørring for å hente cpaer...")
+            val cpaliste = meldingService.cpaliste()
+            log.info("Meldinger antall : ${cpaliste.size}")
+            log.info("Partnersliste !!!! : ${cpaliste.firstOrNull()?.cpaId}")
+            call.respond(cpaliste)
+        }
+        get("/hentpartnerlist") {
+            log.info("Kjører dabasespørring for å hente partnere...")
+            val partnerlist = meldingService.partnerlist()
+            log.info("Antall Partnere  : ${partnerlist.size}")
+            log.info("Partnersliste !!!! : ${partnerlist.firstOrNull()?.partnerID}")
+            log.info("Partnersliste !!!! : ${partnerlist.firstOrNull()?.name}")
+            log.info("Partnersliste !!!! : ${partnerlist.firstOrNull()?.herId}")
+            log.info("Partnersliste !!!! : ${partnerlist.firstOrNull()?.ORGNUMMER}")
+            log.info("Partnersliste !!!! : ${partnerlist.firstOrNull()?.BESKRIVELSE}")
+            call.respond(partnerlist)
+        }
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair()
                 val mottakId = getQueryParameter("mottakId")
@@ -171,7 +190,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
-        }
+        //}
     }
 }
 

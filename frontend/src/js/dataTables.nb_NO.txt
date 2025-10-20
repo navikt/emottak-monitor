@@ -1,0 +1,34 @@
+{
+	"sProcessing": "",
+    "sLengthMenu": "Vis _MENU_ rader pr. side",
+    "sZeroRecords": "Ingen rader funnet",
+    "sEmptyTable": "Ingen data tilgjengelig",
+    "sLoadingRecords": "Laster...",
+    "sInfo": "Viser _START_ til _END_ av _TOTAL_ rader",
+    "sInfoUnknownSize": "Viser rad _START_ til _END_",
+    "sInfoEmpty": "Ingen rader &aring; vise",
+    "sInfoFiltered": "(filtrert fra totalt _MAX_ rader)",
+    "sInfoPostFix": "",
+    "sInfoThousands": " ",
+    "sSearch": "S&oslash;k _INPUT_",
+    "sUrl": "",
+    "oPaginate": {
+       	"sFirst":    "",
+       	"sPrevious": "",
+       	"sNext":     "",
+       	"sLast":     ""
+    },
+    "oAria": {
+    	"sSortAscending": "klikk/retur for &aring; sortere stigende",
+    	"sSortDescending": "klikk/retur for &aring; sortere synkende"
+    },
+    "sFilterCaseInsensitive": "_INPUT_ case-insensitiv",
+    "oFilterMethod": {
+    	"sMethod":		"som _INPUT_",
+    	"sEquals":		"er lik",
+    	"sStartsWith":	"starter med",
+    	"sContains":	"inneholder"
+    },
+    "sFilterColumnsIn": "i _INPUT_",
+    "sFilterEraseSource": "images/erase.gif"
+}

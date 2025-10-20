@@ -1,0 +1,35 @@
+services:
+  oracle_admin_service:
+    container_name: oracledb_aemottak
+    build: ./oracle
+    environment:
+      - ORACLE_ALLOW_REMOTE=true
+      - ORACLE_DISABLE_ASYNCH_IO=true
+      - ORACLE_ENABLE_XDB=true
+      - IMPORT_FROM_VOLUME=true
+      - ORACLE_SID=XE
+      - ORACLE_USR=admin
+      - ORACLE_PWD=admin
+      - ORACLE_CHARACTERSET=AL32UTF8
+    ports:
+      - "8084:8084"
+      - "1521:1521"
+    networks:
+      - oracle
+    volumes:
+      - ./oracle/docker-entrypoint-initdb-emottak.d:/opt/oracle/oradata
+      - ./oracle/docker-entrypoint-initdb-emottak.d:/docker-entrypoint-initdb-emottak.d
+
+  emottak-db_service:
+    container_name: oracledbadmin
+    build: ./oracle
+    environment:
+      - "DATABASE_URL=jdbc:oracle:thin:@localhost:1521/XE"
+      - "DATABASE_PREFIX=nmt2"
+      - "EMOTTAK_ADMIN_FRONTEND_URL=http://localhost:5173"
+      - "AZURE_APP_WELL_KNOWN_URL=https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
+    ports:
+      - "8080:8082"
+
+networks:
+  oracle:

@@ -39,14 +39,15 @@ class MeldingerApiSpek :
         io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
         io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
 
+        //TODO Parviz: use databaseUrl & emottakFrontEndUrl in local environment
         fun ApplicationTestBuilder.setupMeldingEndpoints() {
             application {
                 val env =
                     Environment(
                         emottakMonitorClientId = "clientId",
-                        databaseUrl = "http://localhost:8080",
+                        databaseUrl = "http://localhost:8082",
                         databasePrefix = "db",
-                        emottakFrontEndUrl = "http://localhost:8080",
+                        emottakFrontEndUrl = " http://localhost:5173",
                         oidcWellKnownUriUrl = "https://sts.issuer.net/myid",
                     )
 
@@ -75,10 +76,11 @@ class MeldingerApiSpek :
             receiver.start()
             val env =
                 Environment(
+
                     emottakMonitorClientId = "clientId",
-                    databaseUrl = "http://localhost:8080",
+                    databaseUrl = "http://localhost:8082",
                     databasePrefix = "db",
-                    emottakFrontEndUrl = "http://localhost:8080",
+                    emottakFrontEndUrl = " http://localhost:5173",
                     oidcWellKnownUriUrl = "https://sts.issuer.net/myid",
                 )
 
@@ -167,6 +169,24 @@ class MeldingerApiSpek :
                     setupMeldingEndpoints()
                     val response =
                         client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
+                            header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                        }
+                    response.status shouldBe HttpStatusCode.OK
+                }
+            }
+            it("Should return 401 Unauthorized") {
+                testApplication {
+                    setupMeldingEndpoints()
+                    with(client.get("/v1/hentmeldinger")) {
+                        this.status shouldBe HttpStatusCode.Unauthorized
+                    }
+                }
+            }
+            it("should return 200 OK") {
+                testApplication {
+                    setupMeldingEndpoints()
+                    val response =
+                        client.get("/v1/hentcpaliste") {
                             header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                         }
                     response.status shouldBe HttpStatusCode.OK

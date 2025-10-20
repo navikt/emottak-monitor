@@ -9,6 +9,8 @@ import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.aksessering.db.hentPartnerIdInfo
+import no.nav.emottak.aksessering.db.hentPartnerList
+import no.nav.emottak.aksessering.db.hentCpaliste
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.CpaIdInfo
 import no.nav.emottak.model.EBMessageIdInfo
@@ -19,6 +21,8 @@ import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.PartnerIdInfo
+import no.nav.emottak.model.PartnerList
+import no.nav.emottak.model.CpaListe
 import java.time.LocalDateTime
 
 class MessageQueryService(
@@ -44,6 +48,12 @@ class MessageQueryService(
     fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, ebmessageid)
 
     fun partnerid(partnerid: String?): List<PartnerIdInfo> = databaseInterface.hentPartnerIdInfo(databasePrefix, partnerid)
+
+    fun cpaliste(): List<CpaListe> =
+        databaseInterface.hentCpaliste(databasePrefix)
+
+    fun partnerlist(): List<PartnerList> =
+        databaseInterface.hentPartnerList(databasePrefix)
 
     fun cpaid(
         cpaid: String?,

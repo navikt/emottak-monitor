@@ -79,7 +79,8 @@ private fun Application.serverSetup(
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Options)
         allowHeader("Content-Type")
-        allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
+        //TODO Parviz: use "localhost" in local environment
+        allowHost("localhost", schemes = listOf("http", "http"))
         allowCredentials = true
     }
     routing {
@@ -88,9 +89,9 @@ private fun Application.serverSetup(
         if (env.isDevelopment) {
             registerMeldingerApi(meldingService)
         } else {
-            authenticate("jwt") {
+            //authenticate("jwt") {
                 registerMeldingerApi(meldingService)
-            }
+            //}
         }
     }
 }

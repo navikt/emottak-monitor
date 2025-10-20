@@ -13,7 +13,7 @@ server.use(express.static(root));
 server.use(
   "/v1",
   createProxyMiddleware({
-    target: `${process.env.REACT_APP_URL}`,
+    target: `${process.env.PROXY_URL}`,
     changeOrigin: true,
       onProxyReq: (req) => {
         console.log("PROXYREQ")

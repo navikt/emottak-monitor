@@ -8,6 +8,12 @@ import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.PartnerIdInfo
+import no.nav.emottak.model.PartnerList
+import no.nav.emottak.model.CpaListe
+
+fun getCpaListe(): List<CpaListe> = emptyList()
+
+fun getPartnerList(): List<PartnerList> = emptyList()
 
 fun getMessages(): List<MessageInfo> = emptyList()
 

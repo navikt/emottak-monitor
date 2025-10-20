@@ -1,0 +1,11 @@
+CREATE TABLE "NMT2"."ADAPTER"
+(
+    TYPE varchar2(25) PRIMARY KEY NOT NULL,
+    BESKRIVELSE varchar2(120) NOT NULL
+);
+
+INSERT INTO "NMT2"."ADAPTER" (TYPE,BESKRIVELSE) VALUES ('Cppa','Cppa');
+INSERT INTO "NMT2"."ADAPTER" (TYPE,BESKRIVELSE) VALUES ('Flat2XML','Flatfil til XML konvertering');
+INSERT INTO "NMT2"."ADAPTER" (TYPE,BESKRIVELSE) VALUES ('LoggEgenandel','Logger hver spørring mot tokt egenandel');
+INSERT INTO "NMT2"."ADAPTER" (TYPE,BESKRIVELSE) VALUES ('NoAdapter','NoAdapter');
+INSERT INTO "NMT2"."ADAPTER" (TYPE,BESKRIVELSE) VALUES ('StrippFF','Stripp FellesFormat fra melding');
