@@ -1,7 +1,7 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
@@ -26,6 +26,14 @@ type MessageInfo = {
   role: string;
   service: string;
   status: string;
+};
+
+type Page = {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  content: MessageInfo[];
 };
 
 const MessagesTable = () => {
@@ -55,28 +63,51 @@ const MessagesTable = () => {
   const debouncedCpaId = useDebounce(cpaId, 1000);
   const debouncedMessageId = useDebounce(messageId, 1000);
 
-  let pageSize = 10;
-
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortOrder, setSortOrder] = useState("DESC");
 
-  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +
-      `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}&role=${role}&service=${service}&action=${action}`;
+  const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
+      `&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
+      `&role=${role}&service=${service}&action=${action}` +
+      `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`;
 
-  const { fetchState, callRequest } = useFetch<MessageInfo[]>(url);
+  const { fetchState, callRequest } = useFetch<Page>(url);
 
-  const commitFromTime   = () => setFromTime(fromTimeDraft);
-  const commitToTime     = () => setToTime(toTimeDraft);
+  const onFromDateChange  = (value: string) => { setCurrentPage(1); setFromDate(value); };
+  const onToDateChange    = (value: string) => { setCurrentPage(1); setToDate(value); };
+  const onRoleChange      = (value: string) => { setCurrentPage(1); setRole(value); };
+  const onServiceChange   = (value: string) => { setCurrentPage(1); setService(value); };
+  const onActionChange    = (value: string) => { setCurrentPage(1); setAction(value); };
+  const onMottakIdChange  = (value: string) => { setCurrentPage(1); setMottakId(value); };
+  const onCpaIdChange     = (value: string) => { setCurrentPage(1); setCpaId(value); };
+  const onMessageIdChange = (value: string) => { setCurrentPage(1); setMessageId(value); };
+  const commitFromTime    = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
+  const commitToTime      = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
-  const { loading, error, data: messages } = fetchState;
+  const { loading, error, data } = fetchState;
+  const messages = data?.content ?? [];
+  const totalCount = data?.totalElements ?? 0;
+
+  useEffect(() => {
+    callRequest();
+  }, [callRequest]);
+
+  useEffect(() => {
+    if (!data) return;
+    if (data.page !== currentPage) setCurrentPage(data.page);
+    if (data.size !== pageSize) setPageSize(data.size);
+  }, [data]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, debouncedMottakId, debouncedCpaId, debouncedMessageId, role, service, action, sortOrder]);
 
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],
     ["role", "service", "action", "status"]
   );
-
-  useEffect(() => {
-    callRequest();
-  }, [callRequest]);
 
   const {
     items: filteredAndSortedMessages,
@@ -91,11 +122,21 @@ const MessagesTable = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * pageSize;
-    const lastPageIndex = firstPageIndex + pageSize;
-    return filteredAndSortedMessages.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, pageSize, filteredAndSortedMessages]);
+  const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value, 10);
+    if (newSize !== pageSize) {
+      setCurrentPage(1);
+      setPageSize(newSize);
+    }
+  };
+
+  const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const order = e.target.value;
+    if (order !== sortOrder) {
+      setCurrentPage(1);
+      setSortOrder(order);
+    }
+  };
 
   const headers: { key: keyof MessageInfo; name: string }[] = [
     { key: "receivedDate", name: "Mottatt" },
@@ -116,132 +157,150 @@ const MessagesTable = () => {
   const showData = !loading && !error?.message && !!messages?.length;
 
   return (
-    <>
-      <PrepopulatedFilter
-        fromDate={debouncedFromDate}
-        fromTime={debouncedFromTime}
-        toDate={debouncedToDate}
-        toTime={debouncedToTime}
-        onFromDateChange={setFromDate}
-        onFromTimeChange={setFromTimeDraft}
-        onToDateChange={setToDate}
-        onToTimeChange={setToTimeDraft}
-        onFromTimeBlur={commitFromTime}
-        onToTimeBlur={commitToTime}
-        messages={messages ?? []}
-        onFilterChange={handleFilterChange}
-        onRoleChange={setRole}
-        onServiceChange={setService}
-        onActionChange={setAction}
-      />
-      <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
-        <div style={{ gridArea: "mottakId" }}>
-          <Input
-            id="mottakId-input"
-            label="Mottak-Id"
-            className="navds-form-field navds-form-field--small"
-            bredde={"XXL"}
-            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
-            onChange={(event) => setMottakId(event.target.value)}
-            value={mottakId}
-          />
+      <>
+        <PrepopulatedFilter
+            fromDate={debouncedFromDate}
+            fromTime={debouncedFromTime}
+            toDate={debouncedToDate}
+            toTime={debouncedToTime}
+            onFromDateChange={onFromDateChange}
+            onFromTimeChange={setFromTimeDraft}
+            onToDateChange={onToDateChange}
+            onToTimeChange={setToTimeDraft}
+            onFromTimeBlur={commitFromTime}
+            onToTimeBlur={commitToTime}
+            messages={messages ?? []}
+            onFilterChange={handleFilterChange}
+            onRoleChange={onRoleChange}
+            onServiceChange={onServiceChange}
+            onActionChange={onActionChange}
+        />
+        <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
+          <div style={{gridArea: "mottakId"}}>
+            <Input
+                id="mottakId-input"
+                label="Mottak-Id"
+                className="navds-form-field navds-form-field--small"
+                bredde={"XXL"}
+                inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                onChange={(event) => onMottakIdChange(event.target.value)}
+                value={mottakId}
+            />
+          </div>
+          <div style={{gridArea: "cpaId"}}>
+            <Input
+                id="cpaId-input"
+                label="CPA-Id"
+                className="navds-form-field navds-form-field--small"
+                bredde={"L"}
+                inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                onChange={(event) => onCpaIdChange(event.target.value)}
+                value={cpaId}
+            />
+          </div>
+          <div style={{gridArea: "messageId"}}>
+            <Input
+                id="messageId-input"
+                label="Message-Id"
+                className="navds-form-field navds-form-field--small"
+                bredde={"XXL"}
+                inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                onChange={(event) => onMessageIdChange(event.target.value)}
+                value={messageId}
+            />
+          </div>
         </div>
-        <div style={{ gridArea: "cpaId" }}>
-          <Input
-            id="cpaId-input"
-            label="CPA-Id"
-            className="navds-form-field navds-form-field--small"
-            bredde={"L"}
-            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
-            onChange={(event) => setCpaId(event.target.value)}
-            value={cpaId}
-          />
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
+          <span>{totalCount} hendelser</span>
+          <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
+            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
+              <span>Sorteringsrekkefølge</span>
+              <select value={sortOrder} onChange={onSortOrderChange}>
+                <option value="DESC">Nyeste først</option>
+                <option value="ASC">Eldste først</option>
+              </select>
+            </label>
+            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
+              <span>Rader per side</span>
+              <select value={pageSize} onChange={onPageSizeChange}>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <div style={{ gridArea: "messageId" }}>
-          <Input
-            id="messageId-input"
-            label="Message-Id"
-            className="navds-form-field navds-form-field--small"
-            bredde={"XXL"}
-            inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
-            onChange={(event) => setMessageId(event.target.value)}
-            value={messageId}
-          />
-        </div>
-      </div>
-      <span style={{position: "relative", float: "left", margin: "20px 0"}}>
-        {filteredMessages.length} meldinger
-      </span>
-      <Table className={tableStyles.table}>
-        <Table.Header className={tableStyles.tableHeader}>
-          <Table.Row>
-            {headers.map(({key, name}) => (
-              <Table.HeaderCell
-                key={key}
-                onClick={() => requestSort(key)}
-                className={getClassNamesFor(key)}
-              >
-                {name}
-              </Table.HeaderCell>
-            ))}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {showSpinner && (
-            <RowWithContent>
-              <NavFrontendSpinner/>
-            </RowWithContent>
-          )}
-          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
-          {showData &&
-            currentTableData.map((message, index) => {
-              return (
-                <Table.Row
-                  key={message.cpaId + index}
-                  className={clsx({[tableStyles.coloredRow]: index % 2})}
-                >
-                  <Table.DataCell className="tabell__td--sortert">
-                    {message.receivedDate.substring(0, 23)}
-                  </Table.DataCell>
-                  <Table.DataCell>
-                    {message.readableIdList.split(",").map((readableId, idx, arr) => (
-                      <React.Fragment key={readableId}>
-                        <Link
-                            key={readableId}
-                            to={`/loggebms/${readableId}`}
-                            state={{backgroundLocation: location}}
-                        >{readableId}</Link>
-                        {idx < arr.length - 1 && ', '}
-                      </React.Fragment>
-                    ))}
-                  </Table.DataCell>
-                  <Table.DataCell>{message.role}</Table.DataCell>
-                  <Table.DataCell>{message.service}</Table.DataCell>
-                  <Table.DataCell>{message.action}</Table.DataCell>
-                  <Table.DataCell>{message.referenceParameter}</Table.DataCell>
-                  <Table.DataCell>{message.senderName}</Table.DataCell>
-                  <Table.DataCell>
-                    <Link
-                      key={message.cpaId}
-                      to={`/cpa/${message.cpaId}`}
-                      state={{backgroundLocation: location}}
-                    >{message.cpaId}</Link>
-                  </Table.DataCell>
-                  <Table.DataCell>{message.status}</Table.DataCell>
-                </Table.Row>
-              );
-            })}
-        </Table.Body>
-      </Table>
-      <Pagination
-        totalCount={filteredMessages.length}
-        pageSize={pageSize}
-        siblingCount={1}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
-    </>
+        <Table className={tableStyles.table}>
+          <Table.Header className={tableStyles.tableHeader}>
+            <Table.Row>
+              {headers.map(({key, name}) => (
+                  <Table.HeaderCell
+                      key={key}
+                      onClick={() => requestSort(key)}
+                      className={getClassNamesFor(key)}
+                  >
+                    {name}
+                  </Table.HeaderCell>
+              ))}
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {showSpinner && (
+                <RowWithContent>
+                  <NavFrontendSpinner/>
+                </RowWithContent>
+            )}
+            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+            {showData &&
+                filteredAndSortedMessages.map((message, index) => {
+                  return (
+                      <Table.Row
+                          key={message.cpaId + index}
+                          className={clsx({[tableStyles.coloredRow]: index % 2})}
+                      >
+                        <Table.DataCell className="tabell__td--sortert">
+                          {message.receivedDate.substring(0, 23)}
+                        </Table.DataCell>
+                        <Table.DataCell>
+                          {message.readableIdList.split(",").map((readableId, idx, arr) => (
+                              <React.Fragment key={readableId}>
+                                <Link
+                                    key={readableId}
+                                    to={`/loggebms/${readableId}`}
+                                    state={{backgroundLocation: location}}
+                                >{readableId}</Link>
+                                {idx < arr.length - 1 && ', '}
+                              </React.Fragment>
+                          ))}
+                        </Table.DataCell>
+                        <Table.DataCell>{message.role}</Table.DataCell>
+                        <Table.DataCell>{message.service}</Table.DataCell>
+                        <Table.DataCell>{message.action}</Table.DataCell>
+                        <Table.DataCell>{message.referenceParameter}</Table.DataCell>
+                        <Table.DataCell>{message.senderName}</Table.DataCell>
+                        <Table.DataCell>
+                          <Link
+                              key={message.cpaId}
+                              to={`/cpa/${message.cpaId}`}
+                              state={{backgroundLocation: location}}
+                          >{message.cpaId}</Link>
+                        </Table.DataCell>
+                        <Table.DataCell>{message.status}</Table.DataCell>
+                      </Table.Row>
+                  );
+                })}
+          </Table.Body>
+        </Table>
+        <Pagination
+            totalCount={totalCount}
+            pageSize={pageSize}
+            siblingCount={1}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+        />
+      </>
   );
 };
 export default MessagesTable;
