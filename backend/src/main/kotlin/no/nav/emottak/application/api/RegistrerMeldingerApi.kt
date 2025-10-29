@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.encodeURLParameter
 import io.ktor.http.isSuccess
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
@@ -272,7 +273,8 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
     return Pair(fom, tom)
 }
 
-private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
+private fun RoutingContext.getQueryParameter(paramName: String): String =
+    call.request.queryParameters[paramName]?.trim()?.encodeURLParameter(spaceToPlus = false) ?: ""
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
