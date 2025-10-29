@@ -202,6 +202,12 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
+
+            get("/hentrollerservicesaction") {
+                val url = "$eventManagerUrl/filter-values"
+                log.info("Henter filter-verdier for rolle, service, action ($url)")
+                executeREST(url)
+            }
         }
     }
 }

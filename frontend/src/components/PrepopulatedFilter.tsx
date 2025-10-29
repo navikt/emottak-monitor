@@ -1,9 +1,10 @@
 import { Select } from "@navikt/ds-react";
 import { Datepicker, isISODateString } from "nav-datovelger";
-import React from "react";
+import React, {useEffect} from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
-import filterValues from "../data/filterValues.json";
+import useFetch from "../hooks/useFetch";
+import NavFrontendSpinner from "nav-frontend-spinner";
 export type FilterKeys = "role" | "service" | "action" | "status " | "hendelsedeskr";
 
 type FilterProps<T, K extends keyof T> = {
@@ -23,6 +24,13 @@ type FilterProps<T, K extends keyof T> = {
   onRoleChange: (value: string) => void;
   onServiceChange: (value: string) => void;
   onActionChange: (value: string) => void;
+};
+
+type DistinctRolesServicesActions = {
+    roles: string[];
+    services: string[];
+    actions: string[];
+    refreshedAt: string;
 };
 
 const PrepopulatedFilter = <T, K extends keyof T>({
@@ -52,6 +60,29 @@ const PrepopulatedFilter = <T, K extends keyof T>({
     };
   }, {} as Record<K, string[]>);
 
+  const url = `/v1/hentrollerservicesaction`;
+  const { fetchState, callRequest } = useFetch<DistinctRolesServicesActions>(url);
+
+  useEffect(() => {
+      callRequest();
+  }, [callRequest]);
+
+  const { loading, error, data } = fetchState;
+  const roles = data?.roles ?? [];
+  const services = data?.services ?? [];
+  const actions = data?.actions ?? [];
+
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage = !loading && !error?.message && roles?.length === 0;
+
+  if (showSpinner)
+    return <NavFrontendSpinner />
+  else if (showErrorMessage)
+    return <p>ERROR: {error.message}</p>
+  else if (showNoDataMessage)
+    return <p>Feilet med å hente filter-verdier!</p>
+  else
   return (
     <div className={styles.gridContainer}>
       <div
@@ -104,7 +135,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           onChange={(event) => onRoleChange(event.target.value)}
         >
           <option value="">Velg rolle</option>
-          {filterValues["role"].map((role) => {
+          {roles.map((role) => {
             return (
               <option key={role} value={role}>
                 {role}
@@ -123,7 +154,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           onChange={(event) => onServiceChange(event.target.value)}
         >
           <option value="">Velg service</option>
-          {filterValues["service"].map((service) => {
+          {services.map((service) => {
             return (
               <option key={service} value={service}>
                 {service}
@@ -179,7 +210,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
           style={{ gridArea: "action" }}
         >
           <option value="">Velg action</option>
-          {filterValues["action"].map((action) => {
+          {actions.map((action) => {
             return (
               <option key={action} value={action}>
                 {action}
