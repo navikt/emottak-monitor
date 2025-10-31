@@ -82,7 +82,6 @@ const PrepopulatedFilter = <T, K extends keyof T>({
     return <p>ERROR: {error.message}</p>
   else if (showNoDataMessage)
     return <p>Feilet med å hente filter-verdier!</p>
-  else
   return (
     <div className={styles.gridContainer}>
       <div
