@@ -65,7 +65,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
 
   useEffect(() => {
       callRequest();
-  }, [callRequest]);
+  }, []);
 
   const { loading, error, data } = fetchState;
   const roles = data?.roles ?? [];
