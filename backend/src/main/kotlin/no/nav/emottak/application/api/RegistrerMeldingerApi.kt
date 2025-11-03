@@ -28,6 +28,7 @@ val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
     route("/v1") {
         authenticate("jwt") {
+            // Meldinger (frontend: /meldinger)
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
                 val mottakId = getURLEncodedQueryParameter("mottakId")
@@ -45,30 +46,14 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     call.respond(meldinger)
                 }
             }
+
+            // Meldinger ebms (frontend: /meldingerebms)
             get("/hentmeldingerebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-                val page = getURLEncodedQueryParameter("page")
-                val size = getURLEncodedQueryParameter("size")
-                val sort = getURLEncodedQueryParameter("sort")
-                val mottakId = getURLEncodedQueryParameter("mottakId")
-                val cpaId = getURLEncodedQueryParameter("cpaId")
-                val messageId = getURLEncodedQueryParameter("messageId")
-                val role = getURLEncodedQueryParameter("role")
-                val service = getURLEncodedQueryParameter("service")
-                val action = getURLEncodedQueryParameter("action")
-                val pageable = getPageable(page, size, sort) // just for validation
-                if (pageable != null) {
-                    log.info(
-                        "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
-                    )
-                    val url =
-                        "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
-                            "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
-                    log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
-                    executeREST(url)
-                }
+                hentMeldingerEbms(fom, tom)
             }
 
+            // Hendelser (frontend: /hendelser)
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
                 val page = getURLEncodedQueryParameter("page")
@@ -82,6 +67,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                     call.respond(hendelser)
                 }
             }
+
+            // Hendelser ebms (frontend: /hendelserebms)
             get("/henthendelserebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
                 val page = getURLEncodedQueryParameter("page")
@@ -103,6 +90,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 }
             }
 
+            // Modal: Ved klikk på mottak-id (frontend: /logg)
             get("/hentlogg") {
                 val mottakid = call.request.queryParameters["mottakId"]
                 if (mottakid.isNullOrEmpty()) {
@@ -114,6 +102,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Antall hendelser for $mottakid: ${logg.size}")
                 call.respond(logg)
             }
+
+            // Modal: Ved klikk på mottak-id for ebms (frontend: /loggebms)
             get("/hentloggebms") {
                 val readableId = call.request.queryParameters["readableId"]
                 if (readableId.isNullOrEmpty()) {
@@ -125,6 +115,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 executeREST(url)
             }
 
+            // Modal: Ved klikk på CPA-id (frontend: /cpa/...)
             get("/hentcpa") {
                 val cpaid = call.request.queryParameters["cpaId"]
                 if (cpaid.isNullOrEmpty()) {
@@ -139,6 +130,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(cpaInfo)
             }
 
+            // Mottak-id søk (frontend: /mottakidsok)
             get("/hentmessageinfo") {
                 val mottakid = call.request.queryParameters["mottakId"]
                 if (mottakid.isNullOrEmpty()) {
@@ -150,6 +142,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Melding info for $mottakid: ${messageInfo.size}")
                 call.respond(messageInfo)
             }
+
+            // Mottak-id søk ebms (frontend: /readableidsokebms)
             get("/hentmessageinfoebms") {
                 val readableId = call.request.queryParameters["readableId"]
                 if (readableId.isNullOrEmpty()) {
@@ -161,6 +155,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 executeREST(url)
             }
 
+            // CPA-id søk (frontend: /cpaidsok)
             get("/hentcpaidinfo") {
                 val cpaid = call.request.queryParameters["cpaId"]
                 if (cpaid.isNullOrEmpty()) {
@@ -173,18 +168,32 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
                 call.respond(cpaIdInfo)
             }
+
+            // CPA-id søk ebms (frontend: /cpaidsokebms)
+            get("/hentcpaidinfoebms") {
+                val cpaid = call.request.queryParameters["cpaId"]
+                if (cpaid.isNullOrEmpty()) {
+                    returnBadRequest("Mangler parameter: cpaId")
+                    return@get
+                }
+                val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
+                hentMeldingerEbms(fom, tom)
+            }
+
+            // EBMessage-id søk (frontend: /ebmessageidsok)
             get("/hentebmessageidinfo") {
                 val ebmessageid = call.request.queryParameters["ebmessageId"]
                 if (ebmessageid.isNullOrEmpty()) {
                     returnBadRequest("Mangler parameter: ebmessageId")
                     return@get
                 }
-
                 log.info("Henter info for $ebmessageid")
                 val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
                 log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
                 call.respond(ebMessageIdIdInfo)
             }
+
+            // Partner-id søk (frontend: /partnersok)
             get("/hentpartneridinfo") {
                 val partnerid = call.request.queryParameters["partnerId"]
                 if (partnerid.isNullOrEmpty()) {
@@ -196,6 +205,8 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
                 call.respond(partnerIdInfo)
             }
+
+            // Feilstatistikk (frontend: /feilstatistikk)
             get("/hentfeilstatistikk") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
                 log.info("Kjører dabasespørring for å hente feil statistikk...")
@@ -204,6 +215,7 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 call.respond(feilStatistikk)
             }
 
+            // Henting av ulike from_role, service, action for bruk som filter på EBMS-hendelser
             get("/hentrollerservicesaction") {
                 val url = "$eventManagerUrl/filter-values"
                 log.info("Henter filter-verdier for rolle, service, action ($url)")
@@ -254,6 +266,34 @@ private suspend fun RoutingContext.getPageable(
         sortOrder = sort
     }
     return Pageable(pageNumber, pageSize, sortOrder)
+}
+
+@InternalAPI
+private suspend fun RoutingContext.hentMeldingerEbms(
+    fom: LocalDateTime,
+    tom: LocalDateTime,
+) {
+    val page = getURLEncodedQueryParameter("page")
+    val size = getURLEncodedQueryParameter("size")
+    val sort = getURLEncodedQueryParameter("sort")
+    val mottakId = getURLEncodedQueryParameter("mottakId")
+    val cpaId = getURLEncodedQueryParameter("cpaId")
+    val messageId = getURLEncodedQueryParameter("messageId")
+    val role = getURLEncodedQueryParameter("role")
+    val service = getURLEncodedQueryParameter("service")
+    val action = getURLEncodedQueryParameter("action")
+    val pageable = getPageable(page, size, sort) // just for validation
+    if (pageable != null) {
+        log.info(
+            "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, " +
+                "role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+        )
+        val url =
+            "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
+                "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+        log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
+        executeREST(url)
+    }
 }
 
 @InternalAPI
