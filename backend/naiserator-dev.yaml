@@ -46,7 +46,7 @@ spec:
   azure:
     application:
       enabled: true
-      tenant: nav.no
+      tenant: trygdeetaten.no
   webproxy: true
   ingresses:
     - "https://emottak-monitor.intern.dev.nav.no"
@@ -57,6 +57,11 @@ spec:
         - application: emottak-monitor-frontend
           namespace: team-emottak
           cluster: dev-gcp
+    outbound:
+      rules:
+        - application: emottak-event-manager
+          namespace: team-emottak
+          cluster: dev-fss
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
@@ -74,6 +79,6 @@ spec:
     - name: DEVELOPMENT
       value: "true"
     - name: AZURE_APP_EMOTTAK_CLIENT_ID
-      value: 51c1af58-0676-4de7-aea0-60bc97208947
+      value: fd08a0fb-c59a-4aaf-a1c0-568c423bf102
     - name: EVENT_MANAGER_URL
       value: https://emottak-event-manager.intern.dev.nav.no
