@@ -9,3 +9,6 @@ url:
   proxy_url: "https://emottak-monitor.intern.dev.nav.no"
   reply_url: "https://emottak-monitor.intern.dev.nav.no/callback"
 
+allowedUsers:
+  tenant: trygdeetaten.no
+  groupid: "cf69aedf-bd8c-4bcc-81ae-ecaccdf00b93"
