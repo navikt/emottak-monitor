@@ -3,6 +3,7 @@ package no.nav.emottak.application.api
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.encodeURLParameter
 import io.ktor.http.isSuccess
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
@@ -28,12 +29,12 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             // Meldinger (frontend: /meldinger)
             get("/hentmeldinger") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-                val mottakId = getQueryParameter("mottakId")
-                val cpaId = getQueryParameter("cpaId")
-                val messageId = getQueryParameter("messageId")
-                val page = getQueryParameter("page")
-                val size = getQueryParameter("size")
-                val sort = getQueryParameter("sort")
+                val mottakId = getURLEncodedQueryParameter("mottakId")
+                val cpaId = getURLEncodedQueryParameter("cpaId")
+                val messageId = getURLEncodedQueryParameter("messageId")
+                val page = getURLEncodedQueryParameter("page")
+                val size = getURLEncodedQueryParameter("size")
+                val sort = getURLEncodedQueryParameter("sort")
                 val pageable = getPageable(page, size, sort)
                 if (pageable != null) {
                     log.info("Kjører dabasespørring for å hente meldinger...")
@@ -53,9 +54,9 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             // Hendelser (frontend: /hendelser)
             get("/henthendelser") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-                val page = getQueryParameter("page")
-                val size = getQueryParameter("size")
-                val sort = getQueryParameter("sort")
+                val page = getURLEncodedQueryParameter("page")
+                val size = getURLEncodedQueryParameter("size")
+                val sort = getURLEncodedQueryParameter("sort")
                 val pageable = getPageable(page, size, sort)
                 if (pageable != null) {
                     log.info("Kjører dabasespørring for å hente hendelser...")
@@ -68,12 +69,12 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
             // Hendelser ebms (frontend: /hendelserebms)
             get("/henthendelserebms") {
                 val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-                val page = getQueryParameter("page")
-                val size = getQueryParameter("size")
-                val sort = getQueryParameter("sort")
-                val role = getQueryParameter("role")
-                val service = getQueryParameter("service")
-                val action = getQueryParameter("action")
+                val page = getURLEncodedQueryParameter("page")
+                val size = getURLEncodedQueryParameter("size")
+                val sort = getURLEncodedQueryParameter("sort")
+                val role = getURLEncodedQueryParameter("role")
+                val service = getURLEncodedQueryParameter("service")
+                val action = getURLEncodedQueryParameter("action")
                 val pageable = getPageable(page, size, sort) // just for validation
                 if (pageable != null) {
                     log.info(
@@ -211,6 +212,13 @@ fun Route.registerMeldingerApi(meldingService: MessageQueryService) {
                 log.info("feil statistikk antall : ${feilStatistikk.size}")
                 call.respond(feilStatistikk)
             }
+
+            // Henting av ulike from_role, service, action for bruk som filter på EBMS-hendelser
+            get("/hentrollerservicesaction") {
+                val url = "$eventManagerUrl/filter-values"
+                log.info("Henter filter-verdier for rolle, service, action ($url)")
+                executeREST(url)
+            }
         }
     }
 }
@@ -263,15 +271,15 @@ private suspend fun RoutingContext.hentMeldingerEbms(
     fom: LocalDateTime,
     tom: LocalDateTime,
 ) {
-    val page = getQueryParameter("page")
-    val size = getQueryParameter("size")
-    val sort = getQueryParameter("sort")
-    val mottakId = getQueryParameter("mottakId")
-    val cpaId = getQueryParameter("cpaId")
-    val messageId = getQueryParameter("messageId")
-    val role = getQueryParameter("role")
-    val service = getQueryParameter("service")
-    val action = getQueryParameter("action")
+    val page = getURLEncodedQueryParameter("page")
+    val size = getURLEncodedQueryParameter("size")
+    val sort = getURLEncodedQueryParameter("sort")
+    val mottakId = getURLEncodedQueryParameter("mottakId")
+    val cpaId = getURLEncodedQueryParameter("cpaId")
+    val messageId = getURLEncodedQueryParameter("messageId")
+    val role = getURLEncodedQueryParameter("role")
+    val service = getURLEncodedQueryParameter("service")
+    val action = getURLEncodedQueryParameter("action")
     val pageable = getPageable(page, size, sort) // just for validation
     if (pageable != null) {
         log.info(
@@ -303,7 +311,8 @@ private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalD
     return Pair(fom, tom)
 }
 
-private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
+private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): String =
+    call.request.queryParameters[paramName]?.trim()?.encodeURLParameter(spaceToPlus = false) ?: ""
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(url: String) {
