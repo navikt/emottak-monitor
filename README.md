@@ -28,7 +28,7 @@ For å få tilgang må man ha rettigheter nevnt under [tilgangsstyring](https://
 
 ### Opprette trygdeetaten-bruker
 * Personlig bruker:
-    - Du har sannsynligvis allerede en slik bruker, bare bytt ut @nav.no med @trygdeetaten.no (f.eks. fornavn.etternavn@trygdeetaten.no). Default førstegangspassord er f.eks Ex99999 som du blir bedt om å oppdatere når du logger inn for første gang.
+    - Du har sannsynligvis allerede en slik bruker, bare bytt ut @nav.no med @trygdeetaten.no (f.eks. fornavn.etternavn@trygdeetaten.no). Default førstegangspassord er f.eks Nx123456 som du blir bedt om å oppdatere når du logger inn for første gang.
 * Testbruker (fellesbrukere som kan ha ulike tilganger):
     - Opprettes i [ida](https://ida.intern.nav.no/).
 * Administrering av grupper skjer via [mygroups](https://mygroups.microsoft.com/).
