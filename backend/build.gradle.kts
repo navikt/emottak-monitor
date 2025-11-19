@@ -9,16 +9,13 @@ val jacksonVersion = "2.18.2"
 val kluentVersion = "1.73"
 val ktorVersion = "3.1.3"
 val kotestVersion = "5.9.1"
-val logbackVersion = "1.5.15"
+val logbackVersion = "1.5.19"
 val logstashEncoderVersion = "9.0"
-val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.14.6"
 val nimbusjosejwtVersion = "9.48"
-val spekjunitVersion = "2.0.19"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val mockkVersion = "1.14.0"
-val kotlinVersion = "2.1.10"
 val junitVersion = "6.0.0"
 val h2Version = "2.3.232"
 
@@ -37,7 +34,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://repo1.maven.org/maven2/")
 }
 
