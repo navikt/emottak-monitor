@@ -4,10 +4,16 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.fullPath
+import io.ktor.http.headersOf
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
@@ -44,6 +50,7 @@ class MeldingerApiSpek :
     DescribeSpec(
         {
             lateinit var messageQueryService: MessageQueryService
+            lateinit var mockHttpClient: HttpClient
 
             beforeSpec {
                 messageQueryService = mockk()
@@ -58,20 +65,88 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
+
+                val eventManagerMock =
+                    MockEngine { request ->
+                        with(request.url.fullPath) {
+                            when {
+                                contains("filter-values") ->
+                                    respond(
+                                        content =
+                                            """{"roles":
+                                            |["Role1","ROLE_2","Role 3"],"services":
+                                            |["BehandlerKrav","HarBorgerFrikort","Inntektsforesporsel"],
+                                            |"actions":["Acknowledgment","Foresporsel"],"refreshedAt":"2025-11-19T14:12:26.789263Z"}
+                                            """.trimMargin(),
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                contains("message-details/") && contains("/events") ->
+                                    respond(
+                                        content =
+                                            """[
+                                            |{"eventDate":"2025-11-19T15:11:59.667195+01:00[Europe/Oslo]","eventDescription":"Melding mottatt via HTTP","eventId":"5"},
+                                            |{"eventDate":"2025-11-19T15:11:59.698177+01:00[Europe/Oslo]","eventDescription":"Melding validert mot CPA","eventId":"37"}]
+                                            """.trimMargin(),
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                contains("message-details/") ->
+                                    respond(
+                                        content =
+                                            """[{"receivedDate":"2025-11-19T15:11:59.646898+01:00[Europe/Oslo]",
+                                            |"readableId":"IN.2511191511.UNKN.123",
+                                            |"role":"Utleverer",
+                                            |"service":"HarBorgerEgenandelFritak",
+                                            |"action":"EgenandelForesporsel",
+                                            |"referenceParameter":"123",
+                                            |"senderName":"Unknown",
+                                            |"cpaId":"nav:qass:123",
+                                            |"status":"Meldingen er ferdigbehandlet"}]
+                                            """.trimMargin(),
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                contains("message-details?") ->
+                                    respond(
+                                        content = """{"page":1,"size":10,"sort":"DESC","totalElements":0,"content":[],"totalPages":1}""",
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                else ->
+                                    respond(
+                                        content = """{ "status":"bad_request" }""",
+                                        status = HttpStatusCode.BadRequest,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                            }
+                        }
+                    }
+                mockHttpClient =
+                    HttpClient(eventManagerMock) {
+                    }
             }
 
             describe("Validate requests with authentication") {
 
-                it("Should return 401 Unauthorized") {
-                    withTestApplicationForApi(messageQueryService) {
+                it("Should return 401 Unauthorized (messageQueryService)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         with(client.get("/v1/hentmeldinger")) {
                             this.status shouldBe HttpStatusCode.Unauthorized
                         }
                     }
                 }
 
+                it("Should return 401 Unauthorized (mockHttpClient)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        with(client.get("/v1/hentmeldingerebms")) {
+                            this.status shouldBe HttpStatusCode.Unauthorized
+                        }
+                    }
+                }
+
                 it("Should return 200 OK (hentmeldinger)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -80,8 +155,18 @@ class MeldingerApiSpek :
                     }
                 }
 
+                it("Should return 200 OK (hentmeldingerebms)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentmeldingerebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
                 it("Should return 200 OK (hentlogg)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentlogg?mottakId=123456789012345678901") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -90,8 +175,18 @@ class MeldingerApiSpek :
                     }
                 }
 
+                it("Should return 200 OK (hentloggebms)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentloggebms?readableId=IN.2511191511.UNKN.123") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
                 it("Should return 200 OK (hentcpa)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentcpa?cpaid=nav:qass:30823") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -101,7 +196,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK (hentmessageinfo)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmessageinfo?mottakId=123456789012345678901") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -110,8 +205,18 @@ class MeldingerApiSpek :
                     }
                 }
 
+                it("Should return 200 OK (hentmessageinfoebms)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentmessageinfoebms?readableId=IN.2511191511.UNKN.123") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
                 it("Should return 200 OK (hentcpaidinfo)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get(
                                 "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept&fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10",
@@ -123,7 +228,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK (hentebmessageidinfo)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -133,7 +238,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK (hentpartneridinfo)") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentpartneridinfo?partnerId=18736") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -143,7 +248,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 401 Unauthorized when appId not allowed") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("5", "1")}")
@@ -152,8 +257,8 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK") {
-                    withTestApplicationForApi(messageQueryService) {
+                it("Should return 200 OK (hentfeilstatistikk)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentfeilstatistikk?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -161,9 +266,12 @@ class MeldingerApiSpek :
                         response.status shouldBe HttpStatusCode.OK
                     }
                 }
+            }
+
+            describe("Pagination tests") {
 
                 it("Should return 400 BAD REQUEST for page less than 1") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=0&size=50") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -173,7 +281,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 400 BAD REQUEST for non-numeric page") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=zero&size=50") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -183,7 +291,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 400 BAD REQUEST for size less than 1") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=1&size=0") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -193,7 +301,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 400 BAD REQUEST for size greater than 1000") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=1&size=1001") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -203,7 +311,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 400 BAD REQUEST for non-numeric size") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=1&size=BIG") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -213,7 +321,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK for OK page and size given") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=10&size=1000") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -223,7 +331,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 400 BAD REQUEST for bad sort order") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&sort=UPWARDS") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -233,7 +341,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK for OK sort order") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&sort=ASC") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -243,7 +351,7 @@ class MeldingerApiSpek :
                 }
 
                 it("Should return 200 OK for blank page, size and sort") {
-                    withTestApplicationForApi(messageQueryService) {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldinger?fromDate=01-10-2021 10:10:10&toDate=03-10-2021 11:10:10&page=&size=&sort=") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
@@ -258,6 +366,7 @@ class MeldingerApiSpek :
 @OptIn(InternalAPI::class)
 private fun <T> withTestApplicationForApi(
     messageQueryService: MessageQueryService,
+    mockHttpClient: HttpClient,
     testBlock: suspend ApplicationTestBuilder.() -> T,
 ) = testApplication {
     application({
@@ -283,20 +392,20 @@ private fun <T> withTestApplicationForApi(
             authenticate("jwt") {
                 route("/v1") {
                     hentMeldinger(messageQueryService)
-                    hentMeldingerEbms()
+                    hentMeldingerEbms(mockHttpClient)
                     hentHendelser(messageQueryService)
-                    hentHendelserEbms()
+                    hentHendelserEbms(mockHttpClient)
                     hentLogg(messageQueryService)
-                    hentLoggEbms()
+                    hentLoggEbms(mockHttpClient)
                     hentCpa(messageQueryService)
                     hentMessageInfo(messageQueryService)
-                    hentMessageInfoEbms()
+                    hentMessageInfoEbms(mockHttpClient)
                     hentCpaIdInfo(messageQueryService)
-                    hentCpaIdInfoEbms()
+                    hentCpaIdInfoEbms(mockHttpClient)
                     hentEbMessageIdInfo(messageQueryService)
                     hentPartnerIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
-                    hentRollerServicesAction()
+                    hentRollerServicesAction(mockHttpClient)
                 }
             }
         }

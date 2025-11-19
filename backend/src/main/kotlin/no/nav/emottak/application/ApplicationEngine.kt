@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
@@ -51,9 +52,10 @@ fun createApplicationEngine(
     jwkProvider: JwkProvider,
     issuer: String,
     meldingService: MessageQueryService,
+    scopedAuthHttpClient: HttpClient,
 ): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
     embeddedServer(Netty, env.applicationPort) {
-        serverSetup(env, jwkProvider, issuer, applicationState, meldingService)
+        serverSetup(env, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient)
     }
 
 @InternalAPI
@@ -63,6 +65,7 @@ private fun Application.serverSetup(
     issuer: String,
     applicationState: ApplicationState,
     meldingService: MessageQueryService,
+    scopedAuthHttpClient: HttpClient,
 ) {
     setupAuth(env, jwkProvider, issuer)
     install(ContentNegotiation) {
@@ -102,20 +105,20 @@ private fun Application.serverSetup(
         authenticate("jwt") {
             route("/v1") {
                 hentMeldinger(meldingService)
-                hentMeldingerEbms()
+                hentMeldingerEbms(scopedAuthHttpClient)
                 hentHendelser(meldingService)
-                hentHendelserEbms()
+                hentHendelserEbms(scopedAuthHttpClient)
                 hentLogg(meldingService)
-                hentLoggEbms()
+                hentLoggEbms(scopedAuthHttpClient)
                 hentCpa(meldingService)
                 hentMessageInfo(meldingService)
-                hentMessageInfoEbms()
+                hentMessageInfoEbms(scopedAuthHttpClient)
                 hentCpaIdInfo(meldingService)
-                hentCpaIdInfoEbms()
+                hentCpaIdInfoEbms(scopedAuthHttpClient)
                 hentEbMessageIdInfo(meldingService)
                 hentPartnerIdInfo(meldingService)
                 hentFeilstatistikk(meldingService)
-                hentRollerServicesAction()
+                hentRollerServicesAction(scopedAuthHttpClient)
             }
         }
     }

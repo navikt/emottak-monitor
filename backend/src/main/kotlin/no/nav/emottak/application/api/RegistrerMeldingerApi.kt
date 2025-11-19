@@ -1,5 +1,6 @@
 package no.nav.emottak.application.api
 
+import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -43,10 +44,10 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
 
 // Meldinger ebms (frontend: /meldingerebms)
 @InternalAPI
-fun Route.hentMeldingerEbms(): Route =
+fun Route.hentMeldingerEbms(httpClient: HttpClient): Route =
     get("/hentmeldingerebms") {
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(fom, tom)
+        hentMeldingerEbms(httpClient, fom, tom)
     }
 
 // Hendelser (frontend: /hendelser)
@@ -68,7 +69,7 @@ fun Route.hentHendelser(meldingService: MessageQueryService): Route =
 
 // Hendelser ebms (frontend: /hendelserebms)
 @InternalAPI
-fun Route.hentHendelserEbms(): Route =
+fun Route.hentHendelserEbms(httpClient: HttpClient): Route =
     get("/henthendelserebms") {
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
         val page = getURLEncodedQueryParameter("page")
@@ -86,7 +87,7 @@ fun Route.hentHendelserEbms(): Route =
                 "$eventManagerUrl/events?fromDate=$fom&toDate=$tom" +
                     "&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
             log.info("Henter hendelser fra events endepunktet til ebms ($url)")
-            executeREST(url)
+            executeREST(httpClient, url)
         }
     }
 
@@ -107,7 +108,7 @@ fun Route.hentLogg(meldingService: MessageQueryService): Route =
 
 // Modal: Ved klikk på mottak-id for ebms (frontend: /loggebms)
 @InternalAPI
-fun Route.hentLoggEbms(): Route =
+fun Route.hentLoggEbms(httpClient: HttpClient): Route =
     get("/hentloggebms") {
         val readableId = call.request.queryParameters["readableId"]
         if (readableId.isNullOrEmpty()) {
@@ -116,7 +117,7 @@ fun Route.hentLoggEbms(): Route =
         }
         val url = "$eventManagerUrl/message-details/$readableId/events"
         log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
-        executeREST(url)
+        executeREST(httpClient, url)
     }
 
 // Modal: Ved klikk på CPA-id (frontend: /cpa/...)
@@ -151,7 +152,7 @@ fun Route.hentMessageInfo(meldingService: MessageQueryService): Route =
 
 // Mottak-id søk ebms (frontend: /readableidsokebms)
 @InternalAPI
-fun Route.hentMessageInfoEbms(): Route =
+fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
     get("/hentmessageinfoebms") {
         val readableId = call.request.queryParameters["readableId"]
         if (readableId.isNullOrEmpty()) {
@@ -160,7 +161,7 @@ fun Route.hentMessageInfoEbms(): Route =
         }
         val url = "$eventManagerUrl/message-details/$readableId"
         log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
-        executeREST(url)
+        executeREST(httpClient, url)
     }
 
 // CPA-id søk (frontend: /cpaidsok)
@@ -181,7 +182,7 @@ fun Route.hentCpaIdInfo(meldingService: MessageQueryService): Route =
 
 // CPA-id søk ebms (frontend: /cpaidsokebms)
 @InternalAPI
-fun Route.hentCpaIdInfoEbms(): Route =
+fun Route.hentCpaIdInfoEbms(httpClient: HttpClient): Route =
     get("/hentcpaidinfoebms") {
         val cpaid = call.request.queryParameters["cpaId"]
         if (cpaid.isNullOrEmpty()) {
@@ -189,7 +190,7 @@ fun Route.hentCpaIdInfoEbms(): Route =
             return@get
         }
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(fom, tom)
+        hentMeldingerEbms(httpClient, fom, tom)
     }
 
 // EBMessage-id søk (frontend: /ebmessageidsok)
@@ -235,11 +236,11 @@ fun Route.hentFeilstatistikk(meldingService: MessageQueryService): Route =
 
 // Henting av ulike from_role, service, action for bruk som filter på EBMS-hendelser
 @InternalAPI
-fun Route.hentRollerServicesAction(): Route =
+fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
     get("/hentrollerservicesaction") {
         val url = "$eventManagerUrl/filter-values"
         log.info("Henter filter-verdier for rolle, service, action ($url)")
-        executeREST(url)
+        executeREST(httpClient, url)
     }
 
 const val MAX_PAGE_SIZE = 1000
@@ -287,6 +288,7 @@ private suspend fun RoutingContext.getPageable(
 
 @InternalAPI
 private suspend fun RoutingContext.hentMeldingerEbms(
+    httpClient: HttpClient,
     fom: LocalDateTime,
     tom: LocalDateTime,
 ) {
@@ -309,7 +311,7 @@ private suspend fun RoutingContext.hentMeldingerEbms(
             "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
                 "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
         log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
-        executeREST(url)
+        executeREST(httpClient, url)
     }
 }
 
@@ -336,9 +338,12 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
         ?.encodeURLParameter(spaceToPlus = false) ?: ""
 
 @InternalAPI
-private suspend fun RoutingContext.executeREST(url: String) {
+private suspend fun RoutingContext.executeREST(
+    httpClient: HttpClient,
+    url: String,
+) {
     try {
-        val response = scopedAuthHttpClient(getScope()).invoke().get(url)
+        val response = httpClient.get(url)
         val responseText = response.bodyAsText()
         log.info("Response tekst: $responseText")
 
