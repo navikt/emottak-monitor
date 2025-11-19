@@ -1,5 +1,6 @@
 package no.nav.emottak
 
+import io.kotest.core.spec.style.DescribeSpec
 import io.ktor.client.request.get
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpStatusCode
@@ -10,11 +11,9 @@ import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
 import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 @InternalAPI
-object SelfTestSpek : Spek({
+object SelfTestSpek : DescribeSpec({
 
     fun ApplicationTestBuilder.setupHealthEndpoints(applicationState: ApplicationState) {
         application {
@@ -27,6 +26,7 @@ object SelfTestSpek : Spek({
     }
 
     describe("Successfull liveness and readyness tests") {
+
         it("Returns ok on is_alive") {
             testApplication {
                 val applicationState = ApplicationState(true, true)
@@ -36,6 +36,7 @@ object SelfTestSpek : Spek({
                 String(response.readRawBytes()) shouldBeEqualTo "I'm alive! :)"
             }
         }
+
         it("Returns ok in is_ready") {
             testApplication {
                 val applicationState = ApplicationState(true, true)
@@ -46,7 +47,9 @@ object SelfTestSpek : Spek({
             }
         }
     }
+
     describe("Unsuccessful liveness and readyness") {
+
         it("Returns internal server error when liveness check fails") {
             testApplication {
                 val applicationState = ApplicationState(false, false)

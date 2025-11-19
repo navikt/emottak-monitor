@@ -1,11 +1,11 @@
 package no.nav.emottak
 
+import io.kotest.core.spec.style.DescribeSpec
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.install
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
@@ -14,11 +14,9 @@ import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
 import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 @InternalAPI
-object CORSTest : Spek(
+object CORSTest : DescribeSpec(
     {
 
         fun ApplicationTestBuilder.setupHealthEndpoints(applicationState: ApplicationState) {

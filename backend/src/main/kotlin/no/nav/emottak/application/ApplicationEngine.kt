@@ -21,10 +21,25 @@ import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
+import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.Environment
-import no.nav.emottak.application.api.registerMeldingerApi
+import no.nav.emottak.application.api.hentCpa
+import no.nav.emottak.application.api.hentCpaIdInfo
+import no.nav.emottak.application.api.hentCpaIdInfoEbms
+import no.nav.emottak.application.api.hentEbMessageIdInfo
+import no.nav.emottak.application.api.hentFeilstatistikk
+import no.nav.emottak.application.api.hentHendelser
+import no.nav.emottak.application.api.hentHendelserEbms
+import no.nav.emottak.application.api.hentLogg
+import no.nav.emottak.application.api.hentLoggEbms
+import no.nav.emottak.application.api.hentMeldinger
+import no.nav.emottak.application.api.hentMeldingerEbms
+import no.nav.emottak.application.api.hentMessageInfo
+import no.nav.emottak.application.api.hentMessageInfoEbms
+import no.nav.emottak.application.api.hentPartnerIdInfo
+import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.services.MessageQueryService
 import org.slf4j.event.Level
@@ -84,12 +99,23 @@ private fun Application.serverSetup(
     }
     routing {
         registerNaisApi(applicationState)
-
-        if (env.isDevelopment) {
-            registerMeldingerApi(meldingService)
-        } else {
-            authenticate("jwt") {
-                registerMeldingerApi(meldingService)
+        authenticate("jwt") {
+            route("/v1") {
+                hentMeldinger(meldingService)
+                hentMeldingerEbms()
+                hentHendelser(meldingService)
+                hentHendelserEbms()
+                hentLogg(meldingService)
+                hentLoggEbms()
+                hentCpa(meldingService)
+                hentMessageInfo(meldingService)
+                hentMessageInfoEbms()
+                hentCpaIdInfo(meldingService)
+                hentCpaIdInfoEbms()
+                hentEbMessageIdInfo(meldingService)
+                hentPartnerIdInfo(meldingService)
+                hentFeilstatistikk(meldingService)
+                hentRollerServicesAction()
             }
         }
     }
