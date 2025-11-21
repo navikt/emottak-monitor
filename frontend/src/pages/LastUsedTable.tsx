@@ -1,0 +1,176 @@
+import { Table } from "@navikt/ds-react";
+import clsx from "clsx";
+import NavFrontendSpinner from "nav-frontend-spinner";
+import React, {useEffect, useMemo, useState} from "react";
+import Filter from "../components/Filter";
+import RowWithContent from "../components/RowWithContent";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
+import tableStyles from "../styles/Table.module.scss";
+import Pagination from "../components/Pagination";
+import {Link, useLocation} from "react-router-dom";
+import filterStyles from "../components/Filter.module.scss";
+import {Input} from "nav-frontend-skjema";
+import useFilter from "../hooks/useFilter";
+import useTableSorting from "../hooks/useTableSorting";
+
+type LastUsedCpa = {
+  cpaId: string;
+  lastUsed: string;
+  lastUsedEbms: string;
+};
+
+const LastUsedTable = () => {
+  const location = useLocation();
+  const [cpaId, setCpaId] = useState("");
+
+  // using debounce to not use value until there has been no new changes
+  // const debouncedCpaId = useDebounce(cpaId, 1000);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(100);
+  const [sortOrder, setSortOrder] = useState("DESC");
+
+  const url = `/v1/hentsistbrukt`;
+
+  const { fetchState, callRequest } = useFetch<LastUsedCpa[]>(url);
+
+  const onCpaIdChange = (value: string) => {
+    setCurrentPage(1);
+    setCpaId(value);
+  };
+
+  const { loading, error, data } = fetchState;
+  const messages = data ?? [];
+  const totalCount = data?.length ?? 0;
+
+  useEffect(() => {
+    callRequest();
+  }, [callRequest]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortOrder]);
+
+  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
+    messages ?? [],
+    ["cpaId", "lastUsed", "lastUsedEbms"]
+  );
+
+  const {
+    items: filteredAndSortedCpas,
+    requestSort,
+    sortConfig,
+  } = useTableSorting(filteredMessages);
+
+  const getClassNamesFor = (name: keyof LastUsedCpa) => {
+    if (!sortConfig) {
+      return;
+    }
+      return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value, 10);
+    if (newSize !== pageSize) {
+      setCurrentPage(1);
+      setPageSize(newSize);
+    }
+  };
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return filteredAndSortedCpas.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedCpas]);
+
+  const headers: { key: keyof LastUsedCpa; name: string }[] = [
+    { key: "cpaId", name: "CPA-ID" },
+    { key: "lastUsed", name: "Sist brukt i gamle emottak" },
+    { key: "lastUsedEbms", name: "Sist brukt i nye emottak" },
+  ];
+
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage =
+    !loading && !error?.message && messages?.length === 0;
+  const showData = !loading && !error?.message && !!messages?.length;
+
+  return (
+      <>
+        <Input
+          id="cpaId-input"
+          className="navds-form-field navds-form-field--small"
+          bredde={"L"}
+          inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+          onChange={(event) => onCpaIdChange(event.target.value)}
+          value={cpaId}
+        />
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
+          <span>Totalt {totalCount} CPA'er</span>
+          <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
+            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
+            <span>Rader per side</span>
+              <select value={pageSize} onChange={onPageSizeChange}>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={200}>200</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <Table className={tableStyles.table}>
+          <Table.Header className={tableStyles.tableHeader}>
+            <Table.Row>
+              {headers.map(({key, name}) => (
+                  <Table.HeaderCell
+                      key={key}
+                      onClick={() => requestSort(key)}
+                      className={getClassNamesFor(key)}
+                  >
+                    {name}
+                  </Table.HeaderCell>
+              ))}
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {showSpinner && (
+                <RowWithContent>
+                  <NavFrontendSpinner/>
+                </RowWithContent>
+            )}
+            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+            {showData &&
+                currentTableData.map((cpa, index) => {
+                  return (
+                      <Table.Row
+                          key={cpa.cpaId + index}
+                          className={clsx({[tableStyles.coloredRow]: index % 2})}
+                      >
+                        <Table.DataCell>
+                          <Link
+                              key={cpa.cpaId}
+                              to={`/cpa/${cpa.cpaId}`}
+                              state={{backgroundLocation: location}}
+                          >{cpa.cpaId}</Link>
+                        </Table.DataCell>
+                          <Table.DataCell>{cpa.lastUsed}</Table.DataCell>
+                          <Table.DataCell>{cpa.lastUsedEbms}</Table.DataCell>
+                      </Table.Row>
+                  );
+                })}
+          </Table.Body>
+        </Table>
+        <Pagination
+            totalCount={totalCount}
+            pageSize={pageSize}
+            siblingCount={1}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+        />
+      </>
+  );
+};
+export default LastUsedTable;

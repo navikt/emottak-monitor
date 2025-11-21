@@ -41,6 +41,7 @@ import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
+import no.nav.emottak.application.api.hentSistBrukt
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.services.MessageQueryService
 import org.slf4j.event.Level
@@ -119,6 +120,7 @@ private fun Application.serverSetup(
                 hentPartnerIdInfo(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)
+                hentSistBrukt(meldingService, scopedAuthHttpClient)
             }
         }
     }

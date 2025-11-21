@@ -12,14 +12,17 @@ import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.get
 import io.ktor.server.util.toLocalDateTime
 import io.ktor.utils.io.InternalAPI
+import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
+import no.nav.emottak.model.CpaLastUsed
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
+val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
 
 // Meldinger (frontend: /meldinger)
 @InternalAPI
@@ -243,6 +246,46 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
+// Henting av sist brukt-datoer fra gamle og nye emottak (/lastused)
+@InternalAPI
+fun Route.hentSistBrukt(
+    meldingService: MessageQueryService,
+    httpClient: HttpClient,
+): Route =
+    get("/hentsistbrukt") {
+        val response: MutableList<CpaLastUsed> = mutableListOf()
+
+        // Gamle emottak:
+        // TODO
+
+        // Nye emottak:
+        val responseEbms = hentSistBruktEbms(httpClient) ?: return@get
+        responseEbms.forEach { (cpaId, lastUsed) ->
+            response
+                .find { cpaLastUsed ->
+                    cpaId == cpaLastUsed.cpaId
+                }?.let {
+                    it.lastUsedEbms = lastUsed
+                } ?: run {
+                response.add(CpaLastUsed(cpaId, null, lastUsed))
+            }
+        }
+        call.respond(response)
+    }
+
+@InternalAPI
+private suspend fun RoutingContext.hentSistBruktEbms(httpClient: HttpClient): Map<String, String>? {
+    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
+    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
+    val (responseCode, responseBody) = executeREST(httpClient, url, callRespond = false)
+    if (responseCode != HttpStatusCode.OK) {
+        // TODO: Returnere delvis normal respons, men med en feilmelding om at henting fra nye emottak feilet?
+        call.respond(responseCode, responseBody)
+        return null
+    }
+    return Json.decodeFromString<Map<String, String>>(responseBody)
+}
+
 const val MAX_PAGE_SIZE = 1000
 
 private suspend fun RoutingContext.getPageable(
@@ -341,7 +384,8 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
 private suspend fun RoutingContext.executeREST(
     httpClient: HttpClient,
     url: String,
-) {
+    callRespond: Boolean = true,
+): Pair<HttpStatusCode, String> {
     try {
         val response = httpClient.get(url)
         val responseText = response.bodyAsText()
@@ -349,15 +393,20 @@ private suspend fun RoutingContext.executeREST(
 
         if (response.status.isSuccess()) {
             log.info("Lengde på responstekst : ${responseText.length}")
-            call.respond(responseText)
+            if (callRespond) call.respond(responseText) else return Pair(HttpStatusCode.OK, responseText)
         } else {
             log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
-            call.respond(response.status, responseText)
+            if (callRespond) call.respond(response.status, responseText) else return Pair(response.status, responseText)
         }
     } catch (e: Exception) {
         log.error("Feil ved kall mot $url: ${e.message}", e)
-        call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
+        if (callRespond) {
+            call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
+        } else {
+            return Pair(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
+        }
     }
+    return Pair(HttpStatusCode.InternalServerError, "")
 }
 
 private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
