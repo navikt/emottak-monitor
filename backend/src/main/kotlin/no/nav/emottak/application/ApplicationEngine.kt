@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.ktor.client.HttpClient
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
@@ -21,10 +22,26 @@ import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
+import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.Environment
-import no.nav.emottak.application.api.registerMeldingerApi
+import no.nav.emottak.application.api.hentCpa
+import no.nav.emottak.application.api.hentCpaIdInfo
+import no.nav.emottak.application.api.hentCpaIdInfoEbms
+import no.nav.emottak.application.api.hentEbMessageIdInfo
+import no.nav.emottak.application.api.hentFeilstatistikk
+import no.nav.emottak.application.api.hentHendelser
+import no.nav.emottak.application.api.hentHendelserEbms
+import no.nav.emottak.application.api.hentLogg
+import no.nav.emottak.application.api.hentLoggEbms
+import no.nav.emottak.application.api.hentMeldinger
+import no.nav.emottak.application.api.hentMeldingerEbms
+import no.nav.emottak.application.api.hentMessageInfo
+import no.nav.emottak.application.api.hentMessageInfoEbms
+import no.nav.emottak.application.api.hentPartnerIdInfo
+import no.nav.emottak.application.api.hentRollerServicesAction
+import no.nav.emottak.application.api.hentSistBrukt
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.services.MessageQueryService
 import org.slf4j.event.Level
@@ -36,9 +53,10 @@ fun createApplicationEngine(
     jwkProvider: JwkProvider,
     issuer: String,
     meldingService: MessageQueryService,
+    scopedAuthHttpClient: HttpClient,
 ): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
     embeddedServer(Netty, env.applicationPort) {
-        serverSetup(env, jwkProvider, issuer, applicationState, meldingService)
+        serverSetup(env, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient)
     }
 
 @InternalAPI
@@ -48,6 +66,7 @@ private fun Application.serverSetup(
     issuer: String,
     applicationState: ApplicationState,
     meldingService: MessageQueryService,
+    scopedAuthHttpClient: HttpClient,
 ) {
     setupAuth(env, jwkProvider, issuer)
     install(ContentNegotiation) {
@@ -84,12 +103,24 @@ private fun Application.serverSetup(
     }
     routing {
         registerNaisApi(applicationState)
-
-        if (env.isDevelopment) {
-            registerMeldingerApi(meldingService)
-        } else {
-            authenticate("jwt") {
-                registerMeldingerApi(meldingService)
+        authenticate("jwt") {
+            route("/v1") {
+                hentMeldinger(meldingService)
+                hentMeldingerEbms(scopedAuthHttpClient)
+                hentHendelser(meldingService)
+                hentHendelserEbms(scopedAuthHttpClient)
+                hentLogg(meldingService)
+                hentLoggEbms(scopedAuthHttpClient)
+                hentCpa(meldingService)
+                hentMessageInfo(meldingService)
+                hentMessageInfoEbms(scopedAuthHttpClient)
+                hentCpaIdInfo(meldingService)
+                hentCpaIdInfoEbms(scopedAuthHttpClient)
+                hentEbMessageIdInfo(meldingService)
+                hentPartnerIdInfo(meldingService)
+                hentFeilstatistikk(meldingService)
+                hentRollerServicesAction(scopedAuthHttpClient)
+                hentSistBrukt(meldingService, scopedAuthHttpClient)
             }
         }
     }

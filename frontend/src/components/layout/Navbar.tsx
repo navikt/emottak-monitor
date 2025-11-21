@@ -15,6 +15,7 @@ import PartnerIdSok from "../../pages/PartnerIdSok";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
+import LastUsedTable from "../../pages/LastUsedTable";
 
 
 type Page = {
@@ -33,8 +34,9 @@ export const pages: Page[] = [
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
   { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
   { title: "CPA-id søk ebms", path: "/cpaidsokebms", element: <CpaIdSokEbms /> },
-  {title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
+  { title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
+  { title: "CPA sist brukt", path: "/hentsistbrukt", element: <LastUsedTable /> },
 ];
 
 type NavbarProps = {

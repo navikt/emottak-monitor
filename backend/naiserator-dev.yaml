@@ -62,6 +62,9 @@ spec:
         - application: emottak-event-manager
           namespace: team-emottak
           cluster: dev-fss
+        - application: cpa-repo
+          namespace: team-emottak
+          cluster: dev-fss
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
@@ -82,3 +85,5 @@ spec:
       value: fd08a0fb-c59a-4aaf-a1c0-568c423bf102
     - name: EVENT_MANAGER_URL
       value: https://emottak-event-manager.intern.dev.nav.no
+    - name: CPA_REPO_URL
+      value: https://cpa-repo-fss.intern.dev.nav.no
