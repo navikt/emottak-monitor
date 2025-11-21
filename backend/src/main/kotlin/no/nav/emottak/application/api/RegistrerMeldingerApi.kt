@@ -274,7 +274,7 @@ fun Route.hentSistBrukt(
     }
 
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktEbms(httpClient: HttpClient): Map<String, String>? {
+private suspend fun RoutingContext.hentSistBruktEbms(httpClient: HttpClient): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
     val (responseCode, responseBody) = executeREST(httpClient, url, callRespond = false)
@@ -283,7 +283,7 @@ private suspend fun RoutingContext.hentSistBruktEbms(httpClient: HttpClient): Ma
         call.respond(responseCode, responseBody)
         return null
     }
-    return Json.decodeFromString<Map<String, String>>(responseBody)
+    return Json.decodeFromString<Map<String, String?>>(responseBody)
 }
 
 const val MAX_PAGE_SIZE = 1000
