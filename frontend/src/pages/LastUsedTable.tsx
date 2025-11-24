@@ -2,16 +2,13 @@ import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, {useEffect, useMemo, useState} from "react";
-import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
-import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
 import tableStyles from "../styles/Table.module.scss";
 import Pagination from "../components/Pagination";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
-import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 
 type LastUsedCpa = {
@@ -24,21 +21,12 @@ const LastUsedTable = () => {
   const location = useLocation();
   const [cpaId, setCpaId] = useState("");
 
-  // using debounce to not use value until there has been no new changes
-  // const debouncedCpaId = useDebounce(cpaId, 1000);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
-  const [sortOrder, setSortOrder] = useState("DESC");
 
   const url = `/v1/hentsistbrukt`;
 
   const { fetchState, callRequest } = useFetch<LastUsedCpa[]>(url);
-
-  const onCpaIdChange = (value: string) => {
-    setCurrentPage(1);
-    setCpaId(value);
-  };
 
   const { loading, error, data } = fetchState;
   const messages = data ?? [];
@@ -48,14 +36,14 @@ const LastUsedTable = () => {
     callRequest();
   }, [callRequest]);
 
-  useEffect(() => {
+  const onCpaIdChange = (value: string) => {
     setCurrentPage(1);
-  }, [sortOrder]);
+    setCpaId(value);
+  };
 
-  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
-    messages ?? [],
-    ["cpaId", "lastUsed", "lastUsedEbms"]
-  );
+  const filteredMessages = messages.filter(
+    e => e.cpaId.toLocaleLowerCase().includes(cpaId.toLocaleLowerCase())
+  )
 
   const {
     items: filteredAndSortedCpas,
@@ -100,6 +88,7 @@ const LastUsedTable = () => {
       <>
         <Input
           id="cpaId-input"
+          label="CPA-ID"
           className="navds-form-field navds-form-field--small"
           bredde={"L"}
           inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
@@ -141,7 +130,7 @@ const LastUsedTable = () => {
                 </RowWithContent>
             )}
             {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>Ingen CPA funnet!</RowWithContent>}
             {showData &&
                 currentTableData.map((cpa, index) => {
                   return (

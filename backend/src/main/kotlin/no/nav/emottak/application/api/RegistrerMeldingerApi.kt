@@ -267,7 +267,7 @@ fun Route.hentSistBrukt(
                 }?.let {
                     it.lastUsedEbms = lastUsed
                 } ?: run {
-                response.add(CpaLastUsed(cpaId, null, lastUsed))
+                response.add(CpaLastUsed(cpaId, null, lastUsed?.split("T")[0]))
             }
         }
         call.respond(response)
