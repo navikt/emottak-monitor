@@ -1,10 +1,9 @@
 package no.nav.emottak
 
+import io.kotest.matchers.shouldBe
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,10 +55,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId1"
-        resultPage.content[1].mottakidliste shouldBeEqualTo "mId2"
-        resultPage.content[2].mottakidliste shouldBeEqualTo "mId3"
-        resultPage.content[3].mottakidliste shouldBeEqualTo "mId4"
+        resultPage.content[0].mottakidliste shouldBe "mId1"
+        resultPage.content[1].mottakidliste shouldBe "mId2"
+        resultPage.content[2].mottakidliste shouldBe "mId3"
+        resultPage.content[3].mottakidliste shouldBe "mId4"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -67,10 +66,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId5"
-        resultPage.content[1].mottakidliste shouldBeEqualTo "mId6"
-        resultPage.content[2].mottakidliste shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakidliste shouldBeEqualTo "mId8"
+        resultPage.content[0].mottakidliste shouldBe "mId5"
+        resultPage.content[1].mottakidliste shouldBe "mId6"
+        resultPage.content[2].mottakidliste shouldBe "mId7"
+        resultPage.content[3].mottakidliste shouldBe "mId8"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -78,7 +77,7 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId9"
+        resultPage.content[0].mottakidliste shouldBe "mId9"
     }
 
     @Test
@@ -107,10 +106,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId9"
-        resultPage.content[1].mottakidliste shouldBeEqualTo "mId8"
-        resultPage.content[2].mottakidliste shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakidliste shouldBeEqualTo "mId6"
+        resultPage.content[0].mottakidliste shouldBe "mId9"
+        resultPage.content[1].mottakidliste shouldBe "mId8"
+        resultPage.content[2].mottakidliste shouldBe "mId7"
+        resultPage.content[3].mottakidliste shouldBe "mId6"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -118,10 +117,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId5"
-        resultPage.content[1].mottakidliste shouldBeEqualTo "mId4"
-        resultPage.content[2].mottakidliste shouldBeEqualTo "mId3"
-        resultPage.content[3].mottakidliste shouldBeEqualTo "mId2"
+        resultPage.content[0].mottakidliste shouldBe "mId5"
+        resultPage.content[1].mottakidliste shouldBe "mId4"
+        resultPage.content[2].mottakidliste shouldBe "mId3"
+        resultPage.content[3].mottakidliste shouldBe "mId2"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -129,7 +128,7 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId1"
+        resultPage.content[0].mottakidliste shouldBe "mId1"
     }
 
     @Test
@@ -158,15 +157,15 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 9
         resultPage.totalPages shouldBe 1
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBeEqualTo "mId9"
-        resultPage.content[1].mottakidliste shouldBeEqualTo "mId8"
-        resultPage.content[2].mottakidliste shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakidliste shouldBeEqualTo "mId6"
-        resultPage.content[4].mottakidliste shouldBeEqualTo "mId5"
-        resultPage.content[5].mottakidliste shouldBeEqualTo "mId4"
-        resultPage.content[6].mottakidliste shouldBeEqualTo "mId3"
-        resultPage.content[7].mottakidliste shouldBeEqualTo "mId2"
-        resultPage.content[8].mottakidliste shouldBeEqualTo "mId1"
+        resultPage.content[0].mottakidliste shouldBe "mId9"
+        resultPage.content[1].mottakidliste shouldBe "mId8"
+        resultPage.content[2].mottakidliste shouldBe "mId7"
+        resultPage.content[3].mottakidliste shouldBe "mId6"
+        resultPage.content[4].mottakidliste shouldBe "mId5"
+        resultPage.content[5].mottakidliste shouldBe "mId4"
+        resultPage.content[6].mottakidliste shouldBe "mId3"
+        resultPage.content[7].mottakidliste shouldBe "mId2"
+        resultPage.content[8].mottakidliste shouldBe "mId1"
     }
 
     fun insertMelding(

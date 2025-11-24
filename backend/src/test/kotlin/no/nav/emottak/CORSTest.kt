@@ -1,6 +1,7 @@
 package no.nav.emottak
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.readRawBytes
@@ -13,7 +14,6 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
-import org.amshove.kluent.shouldBeEqualTo
 
 @InternalAPI
 object CORSTest : DescribeSpec(
@@ -38,9 +38,9 @@ object CORSTest : DescribeSpec(
                     val applicationState = ApplicationState(true, true)
                     setupHealthEndpoints(applicationState)
                     val response = client.get("/is_alive")
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm alive! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm alive! :)"
                 }
             }
         }
@@ -57,9 +57,9 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "invalid-host")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -76,9 +76,9 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -95,9 +95,9 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    // String(response.readRawBytes()) shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    // String(response.readRawBytes()) shouldBe "https://syfosmmanuell.nais.preprod.local"
                 }
             }
         }
@@ -114,9 +114,9 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "null")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "*"
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "*"
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -133,10 +133,10 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBeEqualTo "Content-Type"
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "https://syfosmmanuell.nais.preprod.local"
+                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBe "Content-Type"
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -153,10 +153,10 @@ object CORSTest : DescribeSpec(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBeEqualTo HttpHeaders.Origin
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "https://syfosmmanuell.nais.preprod.local"
+                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBe HttpHeaders.Origin
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }

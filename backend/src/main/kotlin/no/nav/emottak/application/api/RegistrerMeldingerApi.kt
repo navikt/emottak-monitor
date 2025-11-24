@@ -253,6 +253,7 @@ fun Route.hentSistBrukt(
     httpClient: HttpClient,
 ): Route =
     get("/hentsistbrukt") {
+        log.info("Henter sist brukt-timestamps")
         val response: MutableList<CpaLastUsed> = mutableListOf()
 
         // Gamle emottak:

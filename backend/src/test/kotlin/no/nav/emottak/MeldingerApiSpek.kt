@@ -4,11 +4,14 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -24,6 +27,7 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
+import no.nav.emottak.application.api.LENIENT_JSON_PARSER
 import no.nav.emottak.application.api.hentCpa
 import no.nav.emottak.application.api.hentCpaIdInfo
 import no.nav.emottak.application.api.hentCpaIdInfoEbms
@@ -39,10 +43,11 @@ import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
+import no.nav.emottak.application.api.hentSistBrukt
 import no.nav.emottak.application.setupAuth
+import no.nav.emottak.model.CpaLastUsed
 import no.nav.emottak.model.Page
 import no.nav.emottak.services.MessageQueryService
-import org.amshove.kluent.shouldBe
 import java.nio.file.Paths
 
 @InternalAPI
@@ -66,7 +71,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
 
-                val eventManagerMock =
+                val restBackendMock =
                     MockEngine { request ->
                         with(request.url.fullPath) {
                             when {
@@ -113,6 +118,17 @@ class MeldingerApiSpek :
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
                                     )
+                                contains("cpa/timestamps/last_used") ->
+                                    respond(
+                                        content =
+                                            """{"nav:qass:25695":null,
+                                            |"nav:qass:25696":"2025-11-24T07:30:48Z",
+                                            |"nav:qass:30358":"2025-11-21T07:57:20Z",
+                                            |"nav:autotest:1160":null}
+                                            """.trimMargin(),
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
                                 else ->
                                     respond(
                                         content = """{ "status":"bad_request" }""",
@@ -123,8 +139,7 @@ class MeldingerApiSpek :
                         }
                     }
                 mockHttpClient =
-                    HttpClient(eventManagerMock) {
-                    }
+                    HttpClient(restBackendMock) {}
             }
 
             describe("Validate requests with authentication") {
@@ -264,6 +279,19 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
+                it("Should return 200 OK (hentsistbrukt)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentsistbrukt") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val lastUsedList = LENIENT_JSON_PARSER.decodeFromString<List<CpaLastUsed>>(response.bodyAsText())
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", null, null)
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:25696", null, "2025-11-24")
                     }
                 }
             }
@@ -406,6 +434,7 @@ private fun <T> withTestApplicationForApi(
                     hentPartnerIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
+                    hentSistBrukt(messageQueryService, mockHttpClient)
                 }
             }
         }
