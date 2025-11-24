@@ -23,7 +23,7 @@ const LastUsedTable = () => {
 
   const [compact, setCompact] = useState(true);
   const toggleCompact = () => setCompact(prev => !prev);
-  const cellStyle = compact ? 'compactTableCell' : '';
+  const cellStyle = compact ? tableStyles.compactTableCell : '';
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
