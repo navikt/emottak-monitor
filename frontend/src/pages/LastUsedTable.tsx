@@ -21,6 +21,10 @@ const LastUsedTable = () => {
   const location = useLocation();
   const [cpaId, setCpaId] = useState("");
 
+  const [compact, setCompact] = useState(true);
+  const toggleCompact = () => setCompact(prev => !prev);
+  const cellStyle = compact ? 'compactTableCell' : 'navds-table__data-cell';
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
 
@@ -98,6 +102,10 @@ const LastUsedTable = () => {
         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
           <span>Totalt {totalCount} CPA'er</span>
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
+            <a  style={{display: "inline-flex", alignItems: "center", gap: 8}}
+                href="#" onClick={e => { e.preventDefault(); toggleCompact(); }}>
+              {compact ? 'Vis luftigere tabell' : 'Vis kompakt tabell'}
+            </a>
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
             <span>Rader per side</span>
               <select value={pageSize} onChange={onPageSizeChange}>
@@ -138,15 +146,15 @@ const LastUsedTable = () => {
                           key={cpa.cpaId + index}
                           className={clsx({[tableStyles.coloredRow]: index % 2})}
                       >
-                        <Table.DataCell>
+                        <Table.DataCell className={cellStyle}>
                           <Link
                               key={cpa.cpaId}
                               to={`/cpa/${cpa.cpaId}`}
                               state={{backgroundLocation: location}}
                           >{cpa.cpaId}</Link>
                         </Table.DataCell>
-                          <Table.DataCell>{cpa.lastUsed}</Table.DataCell>
-                          <Table.DataCell>{cpa.lastUsedEbms}</Table.DataCell>
+                          <Table.DataCell className={cellStyle}>{cpa.lastUsed}</Table.DataCell>
+                          <Table.DataCell className={cellStyle}>{cpa.lastUsedEbms}</Table.DataCell>
                       </Table.Row>
                   );
                 })}
