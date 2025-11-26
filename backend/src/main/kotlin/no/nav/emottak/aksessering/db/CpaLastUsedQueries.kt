@@ -12,6 +12,7 @@ fun DatabaseInterface.hentSistBrukt(databasePrefix: String): List<CpaLastUsed> =
                 """
                     SELECT PARTNER_CPA.CPA_ID, PARTNER_CPA.LASTUSED
                    FROM $databasePrefix.PARTNER_CPA
+                   ORDER BY PARTNER_CPA.LASTUSED DESC
                 """,
             )
         statement.use {
