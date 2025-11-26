@@ -20,8 +20,8 @@ type LastUsedCpa = {
 const LastUsedTable = () => {
   const location = useLocation();
   const [cpaId, setCpaId] = useState("");
-  const [months, setMonths] = useState("");
-  const [thresholdDate, setThresholdDate] = useState<Date | null>(null);
+  const [months, setMonths] = useState(0);
+  const [thresholdDate, setThresholdDate] = useState(new Date());
 
   const [compact, setCompact] = useState(true);
   const toggleCompact = () => setCompact(prev => !prev);
@@ -36,7 +36,6 @@ const LastUsedTable = () => {
 
   const { loading, error, data } = fetchState;
   const messages = data ?? [];
-  const totalCount = data?.length ?? 0;
 
   useEffect(() => {
     callRequest();
@@ -49,20 +48,19 @@ const LastUsedTable = () => {
 
   const onMonthsChange = (value: string) => {
     setCurrentPage(1);
-    setMonths(value.replace(/[^0-9]/ig, ''));
-    if (months == "") setThresholdDate(null);
-    else {
-      let d = new Date();
-      d.setMonth(d.getMonth() - parseInt(months));
-      setThresholdDate(d);
-    }
+    let m = value.replace(/[^0-9]/ig, '');
+    if (m == "") m = "0";
+    setMonths(parseInt(m));
+    let d = new Date();
+    d.setMonth(d.getMonth() - months);
+    console.log("Setter threshold-dato til: " + d);
+    setThresholdDate(d);
   };
 
   const filteredMessages = messages.filter(
     e => e.cpaId.toLocaleLowerCase().includes(cpaId.toLocaleLowerCase())
   ).filter(
     e => {
-      if (thresholdDate == null) return true;
       if (e.lastUsed == null && e.lastUsedEbms == null) return true;
       let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
       let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
@@ -71,6 +69,7 @@ const LastUsedTable = () => {
       return true;
     }
   )
+  const totalCount = filteredMessages.length;
 
   const {
     items: filteredAndSortedCpas,
@@ -116,15 +115,14 @@ const LastUsedTable = () => {
         <Input
           id="cpaId-input"
           label="CPA-ID"
-          className="navds-form-field navds-form-field--small"
+          className="navds-form-field--small"
           bredde={"L"}
           inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
           onChange={(event) => onCpaIdChange(event.target.value)}
           value={cpaId}
         />
-        <div className="navds-form-field navds-form-field--small">
-          Fjern CPA'er som har vært i bruk siste
-          <input
+        <div className="navds-form-field--small">
+          Fjern CPA'er som har vært i bruk siste <input
             id="months-input"
             type="number"
             size={1}
