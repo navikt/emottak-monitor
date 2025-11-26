@@ -52,8 +52,8 @@ const LastUsedTable = () => {
     if (m == "") m = "0";
     setMonths(parseInt(m));
     let d = new Date();
-    d.setMonth(d.getMonth() - months);
-    console.log("Setter threshold-dato til: " + d);
+    d.setMonth(d.getMonth() - parseInt(m));
+    console.log("Months er: '" + m + "', setter threshold-dato til: " + d);
     setThresholdDate(d);
   };
 
@@ -114,7 +114,7 @@ const LastUsedTable = () => {
       <>
         <Input
           id="cpaId-input"
-          label="CPA-ID"
+          label="CPA-ID: "
           className="navds-form-field--small"
           bredde={"L"}
           inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
