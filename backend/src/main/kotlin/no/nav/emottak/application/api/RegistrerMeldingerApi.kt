@@ -254,34 +254,36 @@ fun Route.hentSistBrukt(
 ): Route =
     get("/hentsistbrukt") {
         log.info("Henter sist brukt-timestamps")
-        val response: MutableList<CpaLastUsed> = mutableListOf()
 
         // Gamle emottak:
-        // TODO
+        val response: MutableList<CpaLastUsed> = meldingService.sistBrukt().toMutableList()
 
         // Nye emottak:
-        val responseEbms = hentSistBruktEbms(httpClient) ?: return@get
+        val responseEbms = hentSistBruktEbms(httpClient, response) ?: return@get
         responseEbms.forEach { (cpaId, lastUsed) ->
+            val lastUsedDate = lastUsed?.split("T")[0]
             response
                 .find { cpaLastUsed ->
                     cpaId == cpaLastUsed.cpaId
                 }?.let {
-                    it.lastUsedEbms = lastUsed
+                    it.lastUsedEbms = lastUsedDate
                 } ?: run {
-                response.add(CpaLastUsed(cpaId, null, lastUsed?.split("T")[0]))
+                response.add(CpaLastUsed(cpaId, null, lastUsedDate))
             }
         }
         call.respond(response)
     }
 
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktEbms(httpClient: HttpClient): Map<String, String?>? {
+private suspend fun RoutingContext.hentSistBruktEbms(
+    httpClient: HttpClient,
+    responseFraGamleEmottak: MutableList<CpaLastUsed>
+): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
     val (responseCode, responseBody) = executeREST(httpClient, url, callRespond = false)
     if (responseCode != HttpStatusCode.OK) {
-        // TODO: Returnere delvis normal respons, men med en feilmelding om at henting fra nye emottak feilet?
-        call.respond(responseCode, responseBody)
+        call.respond(HttpStatusCode.PartialContent, responseFraGamleEmottak)
         return null
     }
     return Json.decodeFromString<Map<String, String?>>(responseBody)

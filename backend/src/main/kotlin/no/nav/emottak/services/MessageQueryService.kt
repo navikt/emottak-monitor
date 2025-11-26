@@ -9,8 +9,10 @@ import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.aksessering.db.hentPartnerIdInfo
+import no.nav.emottak.aksessering.db.hentSistBrukt
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.CpaIdInfo
+import no.nav.emottak.model.CpaLastUsed
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
@@ -62,4 +64,6 @@ class MessageQueryService(
         fom: LocalDateTime,
         tom: LocalDateTime,
     ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
+
+    fun sistBrukt(): List<CpaLastUsed> = databaseInterface.hentSistBrukt(databasePrefix)
 }
