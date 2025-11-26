@@ -20,6 +20,8 @@ type LastUsedCpa = {
 const LastUsedTable = () => {
   const location = useLocation();
   const [cpaId, setCpaId] = useState("");
+  const [months, setMonths] = useState("");
+  const [thresholdDate, setThresholdDate] = useState<Date | null>(null);
 
   const [compact, setCompact] = useState(true);
   const toggleCompact = () => setCompact(prev => !prev);
@@ -45,8 +47,29 @@ const LastUsedTable = () => {
     setCpaId(value);
   };
 
+  const onMonthsChange = (value: string) => {
+    setCurrentPage(1);
+    setMonths(value.replace(/[^0-9]/ig, ''));
+    if (months == "") setThresholdDate(null);
+    else {
+      let d = new Date();
+      d.setMonth(d.getMonth() - parseInt(months));
+      setThresholdDate(d);
+    }
+  };
+
   const filteredMessages = messages.filter(
     e => e.cpaId.toLocaleLowerCase().includes(cpaId.toLocaleLowerCase())
+  ).filter(
+    e => {
+      if (thresholdDate == null) return true;
+      if (e.lastUsed == null && e.lastUsedEbms == null) return true;
+      let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
+      let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
+      if (lastUsed != null && lastUsed > thresholdDate) return false;
+      if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
+      return true;
+    }
   )
 
   const {
@@ -99,6 +122,17 @@ const LastUsedTable = () => {
           onChange={(event) => onCpaIdChange(event.target.value)}
           value={cpaId}
         />
+        <div className="navds-form-field navds-form-field--small">
+          Fjern CPA'er som har vært i bruk siste
+          <input
+            id="months-input"
+            type="number"
+            size={1}
+            className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+            onChange={(event) => onMonthsChange(event.target.value)}
+            value={months}
+          /> måneder
+        </div>
         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
           <span>Totalt {totalCount} CPA'er</span>
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
