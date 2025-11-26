@@ -70,6 +70,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
+                io.mockk.coEvery { messageQueryService.sistBrukt() } returns getLastUsed()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -290,8 +291,9 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.OK
                         val lastUsedList = LENIENT_JSON_PARSER.decodeFromString<List<CpaLastUsed>>(response.bodyAsText())
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", null, null)
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", "2025-11-25", null)
                         lastUsedList shouldContain CpaLastUsed("nav:qass:25696", null, "2025-11-24")
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:30358", "2025-11-22", "2025-11-21")
                     }
                 }
             }

@@ -53,7 +53,6 @@ const LastUsedTable = () => {
     setMonths(parseInt(m));
     let d = new Date();
     d.setMonth(d.getMonth() - parseInt(m));
-    console.log("Months er: '" + m + "', setter threshold-dato til: " + d);
     setThresholdDate(d);
   };
 

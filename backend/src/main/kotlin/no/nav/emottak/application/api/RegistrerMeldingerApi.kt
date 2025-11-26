@@ -256,10 +256,10 @@ fun Route.hentSistBrukt(
         log.info("Henter sist brukt-timestamps")
 
         // Gamle emottak:
-        val response: MutableList<CpaLastUsed> = meldingService.sistBrukt().toMutableList()
+        val response = hentSistBruktGamleEmottak(meldingService).toMutableList()
 
         // Nye emottak:
-        val responseEbms = hentSistBruktEbms(httpClient, response) ?: return@get
+        val responseEbms = hentSistBruktNyeEmottak(httpClient, response) ?: return@get
         responseEbms.forEach { (cpaId, lastUsed) ->
             val lastUsedDate = lastUsed?.split("T")[0]
             response
@@ -274,19 +274,29 @@ fun Route.hentSistBrukt(
         call.respond(response)
     }
 
+private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): List<CpaLastUsed> {
+    log.info("Henter sist brukt-timestamps fra gamle emottak")
+    return meldingService.sistBrukt().also {
+        log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
+    }
+}
+
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktEbms(
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(
     httpClient: HttpClient,
-    responseFraGamleEmottak: MutableList<CpaLastUsed>
+    responseFraGamleEmottak: MutableList<CpaLastUsed>,
 ): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
-    val (responseCode, responseBody) = executeREST(httpClient, url, callRespond = false)
+    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
     if (responseCode != HttpStatusCode.OK) {
+        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
         call.respond(HttpStatusCode.PartialContent, responseFraGamleEmottak)
         return null
     }
-    return Json.decodeFromString<Map<String, String?>>(responseBody)
+    return Json.decodeFromString<Map<String, String?>>(responseBody).also {
+        log.info("Antall CPA sist brukt nye emottak: ${it.size}")
+    }
 }
 
 const val MAX_PAGE_SIZE = 1000
@@ -387,7 +397,7 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
 private suspend fun RoutingContext.executeREST(
     httpClient: HttpClient,
     url: String,
-    callRespond: Boolean = true,
+    useCallRespond: Boolean = true,
 ): Pair<HttpStatusCode, String> {
     try {
         val response = httpClient.get(url)
@@ -396,14 +406,14 @@ private suspend fun RoutingContext.executeREST(
 
         if (response.status.isSuccess()) {
             log.info("Lengde på responstekst : ${responseText.length}")
-            if (callRespond) call.respond(responseText) else return Pair(HttpStatusCode.OK, responseText)
+            if (useCallRespond) call.respond(responseText) else return Pair(HttpStatusCode.OK, responseText)
         } else {
             log.warn("Fikk uventet statuskode ${response.status.value} tilbake: ${response.status.description}")
-            if (callRespond) call.respond(response.status, responseText) else return Pair(response.status, responseText)
+            if (useCallRespond) call.respond(response.status, responseText) else return Pair(response.status, responseText)
         }
     } catch (e: Exception) {
         log.error("Feil ved kall mot $url: ${e.message}", e)
-        if (callRespond) {
+        if (useCallRespond) {
             call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
         } else {
             return Pair(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
