@@ -121,7 +121,7 @@ const LastUsedTable = () => {
           value={cpaId}
         />
         <div className="navds-form-field--small">
-          Fjern CPA'er som har vært i bruk siste <input
+          Ikke vis CPA'er som har vært i bruk siste <input
             id="months-input"
             type="number"
             size={1}

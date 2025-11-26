@@ -22,6 +22,6 @@ fun DatabaseInterface.hentSistBrukt(databasePrefix: String): List<CpaLastUsed> =
 fun ResultSet.toCpaLastUsed(): CpaLastUsed =
     CpaLastUsed(
         getString("CPA_ID"),
-        getString("LASTUSED"),
+        getString("LASTUSED")?.split(" ")[0],
         null,
     )
