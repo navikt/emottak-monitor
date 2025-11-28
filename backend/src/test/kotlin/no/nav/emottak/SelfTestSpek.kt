@@ -25,7 +25,7 @@ object SelfTestSpek : DescribeSpec({
         }
     }
 
-    describe("Successfull liveness and readyness tests") {
+    describe("Successfull liveness and readiness tests") {
 
         it("Returns ok on is_alive") {
             testApplication {
@@ -48,7 +48,7 @@ object SelfTestSpek : DescribeSpec({
         }
     }
 
-    describe("Unsuccessful liveness and readyness") {
+    describe("Unsuccessful liveness and readiness") {
 
         it("Returns internal server error when liveness check fails") {
             testApplication {
@@ -60,7 +60,7 @@ object SelfTestSpek : DescribeSpec({
             }
         }
 
-        it("Returns internal server error when readyness check fails") {
+        it("Returns internal server error when readiness check fails") {
             testApplication {
                 val applicationState = ApplicationState(false, false)
                 setupHealthEndpoints(applicationState)

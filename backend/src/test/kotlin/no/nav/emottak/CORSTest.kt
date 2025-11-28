@@ -44,7 +44,7 @@ object CORSTest : DescribeSpec(
                 }
             }
         }
-        describe("Successfull readyness, wrong origin header") {
+        describe("Successfull readiness, wrong origin header") {
             it("Returns ok on is_ready") {
                 testApplication {
                     install(CORS) {
@@ -63,7 +63,7 @@ object CORSTest : DescribeSpec(
                 }
             }
         }
-        describe("Successfull readyness, wrong origin header is empty") {
+        describe("Successfull readiness, wrong origin header is empty") {
             it("Returns ok on is_ready") {
                 testApplication {
                     install(CORS) {
@@ -97,7 +97,6 @@ object CORSTest : DescribeSpec(
                     }
                     response.status shouldBe HttpStatusCode.OK
                     response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
-                    // String(response.readRawBytes()) shouldBe "https://syfosmmanuell.nais.preprod.local"
                 }
             }
         }
@@ -115,7 +114,6 @@ object CORSTest : DescribeSpec(
                         header(HttpHeaders.Origin, "null")
                     }
                     response.status shouldBe HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "*"
                     String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
@@ -134,8 +132,6 @@ object CORSTest : DescribeSpec(
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
                     response.status shouldBe HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBe "Content-Type"
                     String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
@@ -154,8 +150,6 @@ object CORSTest : DescribeSpec(
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
                     response.status shouldBe HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBe HttpHeaders.Origin
                     String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
