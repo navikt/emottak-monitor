@@ -259,7 +259,12 @@ fun Route.hentSistBrukt(
         val response = hentSistBruktGamleEmottak(meldingService).toMutableList()
 
         // Nye emottak:
-        val responseEbms = hentSistBruktNyeEmottak(httpClient, response) ?: return@get
+        val responseEbms : Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+        if (responseEbms == null) {
+            call.respond(HttpStatusCode.PartialContent, response)
+            return@get
+        }
+
         responseEbms.forEach { (cpaId, lastUsed) ->
             val lastUsedDate = lastUsed?.split("T")[0]
             response
@@ -282,16 +287,12 @@ private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): List
 }
 
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(
-    httpClient: HttpClient,
-    responseFraGamleEmottak: MutableList<CpaLastUsed>,
-): Map<String, String?>? {
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
     val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
     if (responseCode != HttpStatusCode.OK) {
         log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
-        call.respond(HttpStatusCode.PartialContent, responseFraGamleEmottak)
         return null
     }
     return Json.decodeFromString<Map<String, String?>>(responseBody).also {
