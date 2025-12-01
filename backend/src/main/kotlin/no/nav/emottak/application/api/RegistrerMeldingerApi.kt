@@ -319,7 +319,7 @@ private suspend fun RoutingContext.executeREST(url: String) {
     try {
         val response = scopedAuthHttpClient(getScope()).invoke().get(url)
         val responseText = response.bodyAsText()
-        log.info("Response tekst: $responseText")
+        log.debug("Response tekst: $responseText")
 
         if (response.status.isSuccess()) {
             log.info("Lengde på responstekst : ${responseText.length}")
@@ -335,6 +335,6 @@ private suspend fun RoutingContext.executeREST(url: String) {
 }
 
 private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
-    log.info(errorMessage)
+    log.error(errorMessage)
     call.respond(HttpStatusCode.BadRequest, errorMessage)
 }

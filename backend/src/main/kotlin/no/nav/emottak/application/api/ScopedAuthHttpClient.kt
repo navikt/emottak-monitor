@@ -74,7 +74,7 @@ fun scopedAuthHttpClient(scope: String): () -> HttpClient =
                                         "&client_secret=" + getEnvVar("AZURE_APP_CLIENT_SECRET", "dummysecret") +
                                         "&scope=" + scope +
                                         "&grant_type=client_credentials"
-                                log.info("Autentiserins server URL: ${getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")}")
+                                log.info("Autentiserings server URL: ${getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")}")
                                 log.info("Autentiserings forespørsel: $request")
 
 
