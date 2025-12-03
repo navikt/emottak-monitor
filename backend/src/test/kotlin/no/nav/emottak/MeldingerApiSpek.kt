@@ -296,6 +296,29 @@ class MeldingerApiSpek :
                         lastUsedList shouldContain CpaLastUsed("nav:qass:30358", "2025-11-22", "2025-11-21")
                     }
                 }
+
+                it("Should return 206 Partial Content (hentsistbrukt) when ebms fails to deliver lastused-timestamps") {
+                    val newRestBackendMock =
+                        MockEngine { _ ->
+                            respond(
+                                content =
+                                    """{"error": "Something went wrong"}""",
+                                status = HttpStatusCode.InternalServerError,
+                                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                            )
+                        }
+                    val anotherMockHttpClient = HttpClient(newRestBackendMock) {}
+                    withTestApplicationForApi(messageQueryService, anotherMockHttpClient) {
+                        val response =
+                            client.get("/v1/hentsistbrukt") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.PartialContent
+                        val lastUsedList = LENIENT_JSON_PARSER.decodeFromString<List<CpaLastUsed>>(response.bodyAsText())
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", "2025-11-25", null)
+                        lastUsedList shouldContain CpaLastUsed("nav:qass:30358", "2025-11-22", null)
+                    }
+                }
             }
 
             describe("Pagination tests") {
