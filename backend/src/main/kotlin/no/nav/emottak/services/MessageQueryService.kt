@@ -12,7 +12,6 @@ import no.nav.emottak.aksessering.db.hentPartnerIdInfo
 import no.nav.emottak.aksessering.db.hentSistBrukt
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.CpaIdInfo
-import no.nav.emottak.model.CpaLastUsed
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
@@ -65,5 +64,5 @@ class MessageQueryService(
         tom: LocalDateTime,
     ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
 
-    fun sistBrukt(): List<CpaLastUsed> = databaseInterface.hentSistBrukt(databasePrefix)
+    fun sistBrukt(): Map<String, String?> = databaseInterface.hentSistBrukt(databasePrefix)
 }

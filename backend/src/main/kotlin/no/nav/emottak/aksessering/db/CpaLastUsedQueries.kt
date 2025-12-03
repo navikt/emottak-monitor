@@ -1,11 +1,9 @@
 package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
-import no.nav.emottak.db.toList
-import no.nav.emottak.model.CpaLastUsed
 import java.sql.ResultSet
 
-fun DatabaseInterface.hentSistBrukt(databasePrefix: String): List<CpaLastUsed> =
+fun DatabaseInterface.hentSistBrukt(databasePrefix: String): Map<String, String?> =
     connection.use { connection ->
         val statement =
             connection.prepareStatement(
@@ -16,13 +14,16 @@ fun DatabaseInterface.hentSistBrukt(databasePrefix: String): List<CpaLastUsed> =
                 """,
             )
         statement.use {
-            it.executeQuery().toList { toCpaLastUsed() }
+            it.executeQuery().toMap { toKeyValue() }
         }
     }
 
-fun ResultSet.toCpaLastUsed(): CpaLastUsed =
-    CpaLastUsed(
-        getString("CPA_ID"),
-        getString("LASTUSED")?.split(" ")[0],
-        null,
-    )
+fun <K, V> ResultSet.toMap(mapper: ResultSet.() -> Pair<K, V?>): Map<K, V?> =
+    mutableMapOf<K, V?>().apply {
+        while (next()) {
+            val (key, value) = mapper()
+            this[key] = value
+        }
+    }
+
+fun ResultSet.toKeyValue() = Pair(getString("CPA_ID"), getString("LASTUSED"))

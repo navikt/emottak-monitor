@@ -1,7 +1,6 @@
 package no.nav.emottak
 
 import no.nav.emottak.model.CpaIdInfo
-import no.nav.emottak.model.CpaLastUsed
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -26,7 +25,8 @@ fun getCpaIdInfo(): List<CpaIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
 
-fun getLastUsed(): List<CpaLastUsed> = listOf(
-    CpaLastUsed("nav:qass:25695", "2025-11-25", null),
-    CpaLastUsed("nav:qass:30358", "2025-11-22", null),
-)
+fun getLastUsed(): Map<String, String?> =
+    mapOf(
+        "nav:qass:25695" to "2025-11-25 07:30:48",
+        "nav:qass:30358" to "2025-11-22 07:57:20",
+    )
