@@ -259,22 +259,22 @@ fun Route.hentSistBrukt(
         val responseEmottak: Map<String, String?> = hentSistBruktGamleEmottak(meldingService)
 
         // Nye emottak:
-        val responseEbms: Map<String, String?> = hentSistBruktNyeEmottak(httpClient)
+        val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
-        val cpaIds: Set<String> = responseEmottak.keys + responseEbms.keys
+        val cpaIds: Set<String> = responseEmottak.keys + (responseEbms?.keys ?: emptySet())
 
         val response: List<CpaLastUsed> =
             cpaIds.map { cpaId ->
                 CpaLastUsed(
                     cpaId,
                     responseEmottak[cpaId]?.split(" ")[0],
-                    responseEbms[cpaId]?.split("T")[0],
+                    responseEbms?.get(cpaId)?.split("T")[0],
                 )
             }
 
         call.respond(
             status =
-                when (responseEbms.isEmpty()) {
+                when (responseEbms == null) {
                     true -> HttpStatusCode.PartialContent
                     false -> HttpStatusCode.OK
                 },
@@ -290,13 +290,13 @@ private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<
 }
 
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?> {
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
     val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
     if (responseCode != HttpStatusCode.OK) {
         log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
-        return emptyMap()
+        return null
     }
     return Json
         .decodeFromString<Map<String, String?>>(responseBody)
