@@ -16,9 +16,14 @@ const useTableSorting = <T,>(
       const [sortConfig, setSortConfig] = React.useState(config);
       const sort = useMemo(
         () => (a: T[keyof T], b: T[keyof T], sortDirection: SortDirection) => {
+          if (a === null && b === null) return 0;
+          if (a === null) return sortDirection === SortDirection.ascending ? -1 : 1;
+          if (b === null) return sortDirection === SortDirection.ascending ? 1 : -1;
+          // @ts-ignore
           if (a < b) {
             return sortDirection === SortDirection.ascending ? -1 : 1;
           }
+          // @ts-ignore
           if (a > b) {
             return sortDirection === SortDirection.ascending ? 1 : -1;
           }

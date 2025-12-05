@@ -77,7 +77,6 @@ fun scopedAuthHttpClient(scope: String): () -> HttpClient =
                                 log.info("Autentiserings server URL: ${getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")}")
                                 log.info("Autentiserings forespørsel: $request")
 
-
                                 setBody(request)
                             }.bodyAsText()
                             .let { tokenResponseString ->

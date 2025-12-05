@@ -1,5 +1,7 @@
 package no.nav.emottak
 
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.ktor.client.request.get
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpStatusCode
@@ -9,12 +11,9 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
-import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 @InternalAPI
-object SelfTestSpek : Spek({
+object SelfTestSpek : DescribeSpec({
 
     fun ApplicationTestBuilder.setupHealthEndpoints(applicationState: ApplicationState) {
         application {
@@ -26,44 +25,48 @@ object SelfTestSpek : Spek({
         }
     }
 
-    describe("Successfull liveness and readyness tests") {
+    describe("Successfull liveness and readiness tests") {
+
         it("Returns ok on is_alive") {
             testApplication {
                 val applicationState = ApplicationState(true, true)
                 setupHealthEndpoints(applicationState)
                 val response = client.get("/is_alive")
-                response.status shouldBeEqualTo HttpStatusCode.OK
-                String(response.readRawBytes()) shouldBeEqualTo "I'm alive! :)"
+                response.status shouldBe HttpStatusCode.OK
+                String(response.readRawBytes()) shouldBe "I'm alive! :)"
             }
         }
+
         it("Returns ok in is_ready") {
             testApplication {
                 val applicationState = ApplicationState(true, true)
                 setupHealthEndpoints(applicationState)
                 val response = client.get("/is_ready")
-                response.status shouldBeEqualTo HttpStatusCode.OK
-                String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                response.status shouldBe HttpStatusCode.OK
+                String(response.readRawBytes()) shouldBe "I'm ready! :)"
             }
         }
     }
-    describe("Unsuccessful liveness and readyness") {
+
+    describe("Unsuccessful liveness and readiness") {
+
         it("Returns internal server error when liveness check fails") {
             testApplication {
                 val applicationState = ApplicationState(false, false)
                 setupHealthEndpoints(applicationState)
                 val response = client.get("/is_alive")
-                response.status shouldBeEqualTo HttpStatusCode.InternalServerError
-                String(response.readRawBytes()) shouldBeEqualTo "I'm dead x_x"
+                response.status shouldBe HttpStatusCode.InternalServerError
+                String(response.readRawBytes()) shouldBe "I'm dead x_x"
             }
         }
 
-        it("Returns internal server error when readyness check fails") {
+        it("Returns internal server error when readiness check fails") {
             testApplication {
                 val applicationState = ApplicationState(false, false)
                 setupHealthEndpoints(applicationState)
                 val response = client.get("/is_ready")
-                response.status shouldBeEqualTo HttpStatusCode.InternalServerError
-                String(response.readRawBytes()) shouldBeEqualTo "Please wait! I'm not ready :("
+                response.status shouldBe HttpStatusCode.InternalServerError
+                String(response.readRawBytes()) shouldBe "Please wait! I'm not ready :("
             }
         }
     }
