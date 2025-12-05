@@ -6,24 +6,22 @@ version = "1.0.0"
 
 val coroutinesVersion = "1.10.2"
 val jacksonVersion = "2.18.2"
-val kluentVersion = "1.73"
 val ktorVersion = "3.1.3"
-val spekVersion = "2.0.19"
-val logbackVersion = "1.5.15"
+val kotestVersion = "5.9.1"
+val logbackVersion = "1.5.19"
 val logstashEncoderVersion = "9.0"
-val prometheusVersion = "0.5.0"
 val micrometerRegistryPrometheusVersion = "1.14.6"
 val nimbusjosejwtVersion = "9.48"
-val spekjunitVersion = "2.0.19"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val mockkVersion = "1.14.0"
-val kotlinVersion = "2.1.10"
 val junitVersion = "6.0.0"
 val h2Version = "2.3.232"
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    val kotlinVersion = "2.1.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
     id("com.diffplug.spotless") version "8.0.0"
     id("org.jmailen.kotlinter") version "5.0.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -37,7 +35,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://repo1.maven.org/maven2/")
 }
 
@@ -74,15 +71,10 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-framework-datatest:$kotestVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitVersion}")
     testRuntimeOnly("com.h2database:h2:${h2Version}")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
@@ -120,10 +112,7 @@ tasks {
     }
 
     withType<Test> {
-        useJUnitPlatform {
-            includeEngines("spek2")
-            includeEngines("junit-jupiter")
-        }
+        useJUnitPlatform()
         testLogging {
             showStandardStreams = true
         }

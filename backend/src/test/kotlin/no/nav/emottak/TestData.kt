@@ -24,3 +24,9 @@ fun getPartnerIdInfo(): List<PartnerIdInfo> = emptyList()
 fun getCpaIdInfo(): List<CpaIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
+
+fun getLastUsed(): Map<String, String?> =
+    mapOf(
+        "nav:qass:25695" to "2025-11-25 07:30:48",
+        "nav:qass:30358" to "2025-11-22 07:57:20",
+    )

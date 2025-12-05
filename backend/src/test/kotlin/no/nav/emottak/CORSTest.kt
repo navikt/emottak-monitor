@@ -1,11 +1,12 @@
 package no.nav.emottak
 
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.install
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
@@ -13,12 +14,9 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationState
 import no.nav.emottak.application.api.registerNaisApi
-import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 @InternalAPI
-object CORSTest : Spek(
+object CORSTest : DescribeSpec(
     {
 
         fun ApplicationTestBuilder.setupHealthEndpoints(applicationState: ApplicationState) {
@@ -40,13 +38,13 @@ object CORSTest : Spek(
                     val applicationState = ApplicationState(true, true)
                     setupHealthEndpoints(applicationState)
                     val response = client.get("/is_alive")
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm alive! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm alive! :)"
                 }
             }
         }
-        describe("Successfull readyness, wrong origin header") {
+        describe("Successfull readiness, wrong origin header") {
             it("Returns ok on is_ready") {
                 testApplication {
                     install(CORS) {
@@ -59,13 +57,13 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "invalid-host")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
-        describe("Successfull readyness, wrong origin header is empty") {
+        describe("Successfull readiness, wrong origin header is empty") {
             it("Returns ok on is_ready") {
                 testApplication {
                     install(CORS) {
@@ -78,9 +76,9 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -97,9 +95,8 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo null
-                    // String(response.readRawBytes()) shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
+                    response.status shouldBe HttpStatusCode.OK
+                    response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBe null
                 }
             }
         }
@@ -116,9 +113,8 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "null")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "*"
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -135,10 +131,8 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBeEqualTo "Content-Type"
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }
@@ -155,10 +149,8 @@ object CORSTest : Spek(
                     client.get("/is_ready") {
                         header(HttpHeaders.Origin, "https://syfosmmanuell.nais.preprod.local")
                     }
-                    response.status shouldBeEqualTo HttpStatusCode.OK
-                    // response.headers[HttpHeaders.AccessControlAllowOrigin] shouldBeEqualTo "https://syfosmmanuell.nais.preprod.local"
-                    // response.headers[HttpHeaders.AccessControlRequestMethod] shouldBeEqualTo HttpHeaders.Origin
-                    String(response.readRawBytes()) shouldBeEqualTo "I'm ready! :)"
+                    response.status shouldBe HttpStatusCode.OK
+                    String(response.readRawBytes()) shouldBe "I'm ready! :)"
                 }
             }
         }

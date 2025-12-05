@@ -1,10 +1,9 @@
 package no.nav.emottak
 
+import io.kotest.matchers.shouldBe
 import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,10 +53,10 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId1"
-        resultPage.content[1].mottakid shouldBeEqualTo "mId2"
-        resultPage.content[2].mottakid shouldBeEqualTo "mId3"
-        resultPage.content[3].mottakid shouldBeEqualTo "mId4"
+        resultPage.content[0].mottakid shouldBe "mId1"
+        resultPage.content[1].mottakid shouldBe "mId2"
+        resultPage.content[2].mottakid shouldBe "mId3"
+        resultPage.content[3].mottakid shouldBe "mId4"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
@@ -65,10 +64,10 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId5"
-        resultPage.content[1].mottakid shouldBeEqualTo "mId6"
-        resultPage.content[2].mottakid shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakid shouldBeEqualTo "mId8"
+        resultPage.content[0].mottakid shouldBe "mId5"
+        resultPage.content[1].mottakid shouldBe "mId6"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId8"
 
         requestedPage = requestedPage.next()
         resultPage = messageQueryService.hendelser(fom, tom, requestedPage)
@@ -76,7 +75,7 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId9"
+        resultPage.content[0].mottakid shouldBe "mId9"
     }
 
     @Test
@@ -103,10 +102,10 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId9"
-        resultPage.content[1].mottakid shouldBeEqualTo "mId8"
-        resultPage.content[2].mottakid shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakid shouldBeEqualTo "mId6"
+        resultPage.content[0].mottakid shouldBe "mId9"
+        resultPage.content[1].mottakid shouldBe "mId8"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
@@ -114,10 +113,10 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId5"
-        resultPage.content[1].mottakid shouldBeEqualTo "mId4"
-        resultPage.content[2].mottakid shouldBeEqualTo "mId3"
-        resultPage.content[3].mottakid shouldBeEqualTo "mId2"
+        resultPage.content[0].mottakid shouldBe "mId5"
+        resultPage.content[1].mottakid shouldBe "mId4"
+        resultPage.content[2].mottakid shouldBe "mId3"
+        resultPage.content[3].mottakid shouldBe "mId2"
 
         requestedPage = requestedPage.next()
         resultPage = messageQueryService.hendelser(fom, tom, requestedPage)
@@ -125,7 +124,7 @@ class HentHendelserTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId1"
+        resultPage.content[0].mottakid shouldBe "mId1"
     }
 
     @Test
@@ -147,20 +146,20 @@ class HentHendelserTest {
         insertHendelse(1000, "mId10", outsideRequestedInterval)
 
         // Default for unpaged is descending
-        var resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom)
+        val resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 9
         resultPage.totalPages shouldBe 1
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBeEqualTo "mId9"
-        resultPage.content[1].mottakid shouldBeEqualTo "mId8"
-        resultPage.content[2].mottakid shouldBeEqualTo "mId7"
-        resultPage.content[3].mottakid shouldBeEqualTo "mId6"
-        resultPage.content[4].mottakid shouldBeEqualTo "mId5"
-        resultPage.content[5].mottakid shouldBeEqualTo "mId4"
-        resultPage.content[6].mottakid shouldBeEqualTo "mId3"
-        resultPage.content[7].mottakid shouldBeEqualTo "mId2"
-        resultPage.content[8].mottakid shouldBeEqualTo "mId1"
+        resultPage.content[0].mottakid shouldBe "mId9"
+        resultPage.content[1].mottakid shouldBe "mId8"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId6"
+        resultPage.content[4].mottakid shouldBe "mId5"
+        resultPage.content[5].mottakid shouldBe "mId4"
+        resultPage.content[6].mottakid shouldBe "mId3"
+        resultPage.content[7].mottakid shouldBe "mId2"
+        resultPage.content[8].mottakid shouldBe "mId1"
     }
 
     fun insertHendelse(

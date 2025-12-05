@@ -1,7 +1,6 @@
 package no.nav.emottak.application.api
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
@@ -13,7 +12,7 @@ import no.nav.emottak.application.ApplicationState
 @InternalAPI
 fun Routing.registerNaisApi(
     applicationState: ApplicationState,
-    readynessCheck: () -> Boolean = { applicationState.ready },
+    readinessCheck: () -> Boolean = { applicationState.ready },
     alivenessCheck: () -> Boolean = { applicationState.alive },
     prometheusRegistry: PrometheusRegistry = PrometheusRegistry.defaultRegistry,
 ) {
@@ -25,7 +24,7 @@ fun Routing.registerNaisApi(
         }
     }
     get("/is_ready") {
-        if (readynessCheck()) {
+        if (readinessCheck()) {
             call.respondText("I'm ready! :)")
         } else {
             call.respondText("Please wait! I'm not ready :(", status = HttpStatusCode.InternalServerError)
