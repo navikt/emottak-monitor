@@ -42,6 +42,14 @@ jobs:
       - name: 'Set version in index.html'
         run: sed -i "s/__VERSION__/${{ steps.date.outputs.date }}/g" frontend/index.html
 
+      # Choose the right env file
+      - name: 'Set env for development'
+        if: ${{ inputs.environment == 'dev-fss' }}
+        run: cp frontend/.env.dev frontend/.env
+      - name: 'Set env for production'
+        if: ${{ inputs.environment == 'prod-fss' }}
+        run: cp frontend/.env.prod frontend/.env
+
       # Build & test frontend + Docker Image
       - name: 'yarn build'
         run: cd frontend && yarn build

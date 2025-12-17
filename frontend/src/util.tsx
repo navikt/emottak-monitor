@@ -42,4 +42,6 @@ function initialFilter(filterString: string | null) {
   }
 }
 
+export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
+
 export { initialDate, initialTime, initialFilter, Cog };
