@@ -1,0 +1,23 @@
+:root[data-theme="light"] {
+  --root-bg:          #fff;
+  --table-bg:         #fff;
+  --text-primary:     var(--navds-semantic-color-text);
+  --hover-bg-color:   var(--navds-global-color-gray-200);
+  --active-bg-color:  var(--navds-global-color-gray-100);
+}
+
+[data-scheme="dev"] {
+  --header-bg:        var(--navds-global-color-orange-300);
+  --table-header-bg:  var(--navds-global-color-orange-200);
+  --table-header-fg:  var(--navds-semantic-color-text);
+  --table-row-bg:     var(--navds-global-color-orange-50);
+  --theme-button-bg:  var(--navds-global-color-orange-100);
+}
+
+[data-scheme="prod"] {
+  --header-bg:        var(--navds-global-color-blue-300);
+  --table-header-bg:  var(--navds-global-color-blue-200);
+  --table-header-fg:  var(--navds-semantic-color-text);
+  --table-row-bg:     var(--navds-global-color-blue-50);
+  --theme-button-bg:  var(--navds-global-color-blue-100);
+}
