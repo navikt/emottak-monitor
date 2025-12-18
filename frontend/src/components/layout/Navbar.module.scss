@@ -10,7 +10,8 @@
   transition: width 1s;
   position: relative;
   z-index: 100;
-  background-color: white;
+  background-color: var(--root-bg);
+  color: var(--text-primary);
   overflow: hidden;
   box-shadow: 0px 1px 4px 0px var(--navds-global-color-gray-400);
 }
@@ -19,7 +20,7 @@
   padding: $header-padding;
   height: $header-height;
   width: 100%;
-  background-color: var(--navds-global-color-orange-300);
+  background-color: var(--header-bg);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -41,10 +42,10 @@
   width: $nav-width;
   height: 2.5em;
   position: relative;
-  color: black;
+  color: var(--text-primary);
 
   :hover {
-    background-color: var(--navds-global-color-gray-200);
+    background-color: var(--hover-bg);
   }
 
   .linkText {
@@ -58,7 +59,7 @@
   }
 }
 .active {
-  background-color: var(--navds-global-color-gray-100);
+  background-color: var(--active-bg);
 }
 
 .button {
@@ -69,7 +70,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
+  background-color: var(--root-bg);
   border: none;
   cursor: pointer;
   border-radius: 50%;
@@ -77,7 +78,7 @@
 }
 
 .button:hover {
-  background-color: var(--navds-global-color-gray-100);
+  background-color: var(--active-bg);
 }
 
 .closeButton {
