@@ -2,8 +2,9 @@
   --root-bg:          #fff;
   --table-bg:         #fff;
   --text-primary:     var(--navds-semantic-color-text);
-  --hover-bg-color:   var(--navds-global-color-gray-200);
-  --active-bg-color:  var(--navds-global-color-gray-100);
+  --hover-bg:         var(--navds-global-color-gray-200);
+  --active-bg:        var(--navds-global-color-gray-100);
+  --input-bg:         rgba(253, 253, 253, 1);
 }
 
 [data-scheme="dev"] {

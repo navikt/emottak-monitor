@@ -13,6 +13,14 @@
   background-color: var(--table-row-bg);
 }
 
+.table th:hover {
+  background-color: var(--header-bg) !important;
+}
+
+.table tbody tr:hover {
+  background-color: var(--hover-bg) !important;
+}
+
 .compactTableCell {
   padding: 2px !important;
 }

@@ -20,3 +20,35 @@ code {
   background-color: var(--theme-button-bg);
   color: var(--text-primary);
 }
+
+input,
+select,
+option,
+.react-time-picker__inputGroup,
+.react-time-picker__button,
+.DayPicker,
+.nav-datovelger__navbar__knapp,
+.DayPicker-Weekday {
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+}
+
+.navds-select__chevron {
+  color: var(--text-primary) !important;
+}
+
+.nav-datovelger__kalenderknapp {
+  color: var(--text-primary);
+  background-color: var(--input-bg) !important;
+  border-color: var(--navds-global-color-gray-600) !important;
+}
+
+.nav-datovelger__navbar__knapp svg path {
+  fill: var(--text-primary) !important;
+}
+
+.react-time-picker__button__icon path,
+.react-time-picker__button__icon line,
+.react-time-picker__button__icon circle {
+  stroke: var(--text-primary) !important;
+}

@@ -45,7 +45,7 @@
   color: var(--text-primary);
 
   :hover {
-    background-color: var(--hover-bg-color);
+    background-color: var(--hover-bg);
   }
 
   .linkText {
@@ -59,7 +59,7 @@
   }
 }
 .active {
-  background-color: var(--active-bg-color);
+  background-color: var(--active-bg);
 }
 
 .button {
@@ -78,7 +78,7 @@
 }
 
 .button:hover {
-  background-color: var(--active-bg-color);
+  background-color: var(--active-bg);
 }
 
 .closeButton {
