@@ -17,6 +17,7 @@ import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
 // import LastUsedTable from "../../pages/LastUsedTable";
 import CpaIdTable from "../../pages/CpaIdTable";
+import CpaTable from "../../pages/CpaTable";
 
 
 type Page = {
@@ -36,7 +37,7 @@ export const pages: Page[] = [
 //  { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
 //  { title: "CPA-id søk ebms", path: "/cpaidsokebms", element: <CpaIdSokEbms /> },
 //  { title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
-  { title: "CPA-liste", path: "/cpaliste", element: <CpaIdTable /> },
+  { title: "CPA-liste", path: "/cpaliste", element: <CpaTable /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 //  { title: "CPA sist brukt", path: "/hentsistbrukt", element: <LastUsedTable /> },
 ];

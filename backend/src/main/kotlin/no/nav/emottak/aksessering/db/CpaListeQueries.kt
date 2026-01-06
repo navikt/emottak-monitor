@@ -165,6 +165,7 @@ fun DatabaseInterface.hentCpaliste(
                         it.executeQuery().toList { toCpaliste() }
                     }.toList()
         }
+        // TODO: Fiks pagable slik at spørringen ikke returnerer alle CPA'er
         var returnPageable = pageable
         if (returnPageable == null) {
             returnPageable = Pageable(1, listColmSearch.size)
