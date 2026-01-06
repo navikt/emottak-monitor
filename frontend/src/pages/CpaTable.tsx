@@ -278,18 +278,6 @@ const CpaTable = () => {
                 })}
           </Table.Body>
         </Table>
-        <!--<div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
-          <Pagination
-            totalCount={totalCount}
-            pageSize={pageSize}
-            siblingCount={1}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-          <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-            Totalt antall {totalCount} CPA'er
-          </span>
-        </div>-->
       </>
   );
 };
