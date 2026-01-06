@@ -6,13 +6,13 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
-import CpaTable from "./pages/CpaTable";
+import CpaIdTable from "./pages/CpaIdTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
 import LoggTableEbms from "./pages/LoggTableEbms";
 import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
-import CpaTableModal from "./components/CpaTableModal";
+import CpaIdTableModal from "./components/CpaIdTableModal";
 
 export default function App() {
   const location = useLocation();
@@ -30,7 +30,7 @@ export default function App() {
           <Route path="/logg/:mottakid" element={<LoggTable />} />
           <Route path="/loggebms/:readableId" element={<LoggTableEbms />} />
         </Route>
-        <Route path="/cpa/:cpaid" element={<CpaTable />} />
+        <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
         <Route path="/isalive" element={<IsAlive />} />
         <Route path="/isready" element={<IsReady />} />
         <Route path="/metrics" element={<div>Metrics</div>} />
@@ -41,7 +41,7 @@ export default function App() {
         <Routes>
           <Route path="/logg/:mottakid" element={<LoggTableModal />} />
           <Route path="/loggebms/:readableId" element={<LoggTableEbmsModal />} />
-          <Route path="/cpa/:cpaid" element={<CpaTableModal />} />
+          <Route path="/cpa/:cpaid" element={<CpaIdTableModal />} />
         </Routes>
       )}
     </div>

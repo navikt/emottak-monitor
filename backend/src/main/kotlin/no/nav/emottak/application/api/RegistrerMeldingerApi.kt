@@ -15,7 +15,8 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaLastUsed
+import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
@@ -246,7 +247,7 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// Henting av sist brukt-datoer fra gamle og nye emottak (/lastused)
+/* Henting av sist brukt-datoer fra gamle og nye emottak (/lastused)
 @InternalAPI
 fun Route.hentSistBrukt(
     meldingService: MessageQueryService,
@@ -263,9 +264,9 @@ fun Route.hentSistBrukt(
 
         val cpaIds: Set<String> = responseEmottak.keys + (responseEbms?.keys ?: emptySet())
 
-        val response: List<CpaLastUsed> =
+        val response: List<CpaListe> =
             cpaIds.map { cpaId ->
-                CpaLastUsed(
+                CpaListe(
                     cpaId,
                     responseEmottak[cpaId]?.split(" ")[0],
                     responseEbms?.get(cpaId)?.split("T")[0],
@@ -281,13 +282,75 @@ fun Route.hentSistBrukt(
             message = response,
         )
     }
+*/
 
+// Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
+@InternalAPI
+fun Route.hentCPAListe(
+    meldingService: MessageQueryService,
+    httpClient: HttpClient,
+): Route =
+    get("/hentcpaliste") {
+        log.info("Kjører dabasespørring for å hente liste over CPA'er...")
+        val page = getURLEncodedQueryParameter("page")
+        val size = getURLEncodedQueryParameter("size")
+        val sort = getURLEncodedQueryParameter("sort")
+        val searchColmn = getURLEncodedQueryParameter("searchColmn")
+        val pageable = getPageable(page, size, null)
+
+        if (pageable != null) {
+            // Nye emottak:
+            val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+
+            // Gamle emottak:
+            val cpaliste: Page<CpaListe> = meldingService.cpaliste(searchColmn, pageable)
+            log.info("Pageable: $pageable")
+            log.info("Total antall cpaer: ${cpaliste.totalElements}")
+            log.info("Page: ${cpaliste.page}")
+            log.info("Size: ${cpaliste.size} ")
+            log.info("content.size: ${cpaliste.content.size}")
+            log.info("partnerID: ${cpaliste.content.firstOrNull()?.partnerID}")
+            log.info("cpaId:${cpaliste.content.firstOrNull()?.cpaID}")
+            log.info("partnerCppID: ${cpaliste.content.firstOrNull()?.partnerCppID}")
+            log.info("SubjectDN: ${cpaliste.content.firstOrNull()?.partnerSubjectDN}")
+            log.info("Endpoint: ${cpaliste.content.firstOrNull()?.partnerEndpoint}")
+            log.info("LastUsed: ${cpaliste.content.firstOrNull()?.lastUsed}")
+
+            val mergedList = cpaliste.content.toMutableList()
+            if (responseEbms != null) {
+                for (cpaListe in mergedList) {
+                    if (cpaListe.lastUsed != null) {
+                        cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
+                    }
+                    if (cpaListe.cpaID == null) {
+                        continue
+                    }
+                    if (cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
+                        cpaListe.lastUsedEbms = responseEbms[cpaListe.cpaID]!!.split("T")[0]
+                    }
+                }
+            }
+            // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
+
+            call.respond(
+                status =
+                    when (responseEbms == null) {
+                        true -> HttpStatusCode.PartialContent
+                        false -> HttpStatusCode.OK
+                    },
+                message = cpaliste,
+            )
+        }
+    }
+
+/*
 private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<String, String?> {
     log.info("Henter sist brukt-timestamps fra gamle emottak")
     return meldingService.sistBrukt().also {
         log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
     }
 }
+*/
 
 @InternalAPI
 private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
