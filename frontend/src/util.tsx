@@ -27,9 +27,15 @@ function initialDate(dateParam: string | null) {
 }
 
 function initialTime(timeParam: string | null) {
-  if (timeParam) {
-    return timeParam;
-  } else {
+    if (timeParam) {
+        if (isNaN(timeParam)) {
+            return timeParam;
+        } else {
+            let date = new Date();
+            date.setMinutes(date.getMinutes() - parseInt(timeParam));
+            return date.toLocaleTimeString();
+        }
+    } else {
     return new Date().toLocaleTimeString();
   }
 }

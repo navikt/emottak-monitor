@@ -44,7 +44,7 @@ const CpaIdSokEbms = () => {
 
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
-  const [fromTime, setFromTime] = useState(initialTime(""));
+  const [fromTime, setFromTime] = useState(initialTime("10"));
   const [toTime, setToTime] = useState(initialTime(""));
 
   const [cpaId, setCpaId] = useState("");
