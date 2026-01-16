@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {isProdEnv} from "../util";
+import { isProdEnv } from "../util";
 
 type Theme = 'light' | 'dark';
 

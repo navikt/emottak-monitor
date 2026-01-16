@@ -41,6 +41,8 @@ jobs:
 
       - name: 'Set version in index.html'
         run: sed -i "s/__VERSION__/${{ steps.date.outputs.date }}/g" frontend/index.html
+      - name: 'Set environment in index.html'
+        run: sed -i "s/__ENV__/${{ inputs.environment }}/g" frontend/index.html
 
       # Choose the right env file
       - name: 'Set env for development'
