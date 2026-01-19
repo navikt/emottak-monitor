@@ -11,7 +11,7 @@
   --header-bg:        var(--navds-global-color-orange-800);
   --table-header-bg:  var(--navds-global-color-orange-900);
   --table-header-fg:  var(--navds-global-color-orange-200);
-  --table-row-bg:     var(--navds-global-color-orange-700);
+  --table-row-bg:     rgba(50, 37, 0, 1);
   --theme-button-bg:  var(--navds-global-color-orange-900);
 }
 
@@ -19,6 +19,6 @@
   --header-bg:        var(--navds-global-color-blue-800);
   --table-header-bg:  var(--navds-global-color-blue-900);
   --table-header-fg:  var(--navds-global-color-blue-300);
-  --table-row-bg:     var(--navds-global-color-blue-700);
+  --table-row-bg:     rgba(0, 24, 50, 1);
   --theme-button-bg:  var(--navds-global-color-blue-900);
 }
