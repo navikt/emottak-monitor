@@ -27,9 +27,9 @@ function initialDate(dateParam: string | null) {
 }
 
 function initialTime(timeParam: string | null) {
-    if (timeParam) {
-        return timeParam;
-    } else {
+  if (timeParam) {
+    return timeParam;
+  } else {
     return new Date().toLocaleTimeString();
   }
 }
