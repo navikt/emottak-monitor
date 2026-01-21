@@ -52,3 +52,7 @@ option,
 .react-time-picker__button__icon circle {
   stroke: var(--text-primary) !important;
 }
+
+a {
+  color: var(--link-color);
+}
