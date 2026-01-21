@@ -32,7 +32,7 @@ const CpaIdSok = () => {
 
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
-  const [fromTime, setFromTime] = useState(initialTime("10"));
+  const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 
     // using debounce to not use value until there has been no new changes

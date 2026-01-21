@@ -28,13 +28,7 @@ function initialDate(dateParam: string | null) {
 
 function initialTime(timeParam: string | null) {
     if (timeParam) {
-        if (isNaN(timeParam)) {
-            return timeParam;
-        } else {
-            let date = new Date();
-            date.setMinutes(date.getMinutes() - parseInt(timeParam));
-            return date.toLocaleTimeString();
-        }
+        return timeParam;
     } else {
     return new Date().toLocaleTimeString();
   }
