@@ -2,10 +2,14 @@
   --root-bg:          #111;
   --table-bg:         #1e1e1e;
   --text-primary:     var(--navds-global-color-gray-300);
-  --hover-bg:         var(--navds-global-color-gray-800);
+  --table-hover-bg:   var(--navds-global-color-gray-800);
   --active-bg:        var(--navds-global-color-gray-900);
   --input-bg:         var(--navds-global-color-gray-900);
   --linkcolor:        var(--navds-semantic-color-focus-inverted);
+  --pagination-color:                 rgba(200, 200, 200, 0.87);
+  --pagination-bg-color-selected:     rgba(200, 200, 200, 0.08);
+  --pagination-bg-color-hover:        rgba(200, 200, 200, 0.04);
+  --pagination-arrow-disabled-color:  rgba(200, 200, 200, 0.43);
 }
 
 [data-theme="dark"][data-scheme="dev"] {
