@@ -54,7 +54,7 @@ option,
 }
 
 a {
-  color: var(--link-color);
+  color: var(--linkcolor);
 }
 
 .navds-modal {
