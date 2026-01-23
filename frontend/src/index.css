@@ -53,8 +53,8 @@ option,
   stroke: var(--text-primary) !important;
 }
 
-a {
-  color: var(--linkcolor) !important;
+table a {
+  color: var(--linkcolor);
 }
 
 .navds-modal {
