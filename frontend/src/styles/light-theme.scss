@@ -1,0 +1,29 @@
+:root[data-theme="light"] {
+  --root-bg:          #fff;
+  --table-bg:         #fff;
+  --text-primary:     var(--navds-semantic-color-text);
+  --table-hover-bg:   var(--navds-global-color-gray-200);
+  --active-bg:        var(--navds-global-color-gray-100);
+  --input-bg:         rgba(253, 253, 253, 1);
+  --linkcolor:        var(--navds-semantic-color-link);
+  --pagination-color:                 rgba(0, 0, 0, 0.87);
+  --pagination-bg-color-selected:     rgba(0, 0, 0, 0.08);
+  --pagination-bg-color-hover:        rgba(0, 0, 0, 0.04);
+  --pagination-arrow-disabled-color:  rgba(0, 0, 0, 0.43);
+}
+
+[data-scheme="dev"] {
+  --header-bg:        var(--navds-global-color-orange-300);
+  --table-header-bg:  var(--navds-global-color-orange-200);
+  --table-header-fg:  var(--navds-semantic-color-text);
+  --table-row-bg:     var(--navds-global-color-orange-50);
+  --theme-button-bg:  var(--navds-global-color-orange-100);
+}
+
+[data-scheme="prod"] {
+  --header-bg:        var(--navds-global-color-blue-300);
+  --table-header-bg:  var(--navds-global-color-blue-200);
+  --table-header-fg:  var(--navds-semantic-color-text);
+  --table-row-bg:     var(--navds-global-color-blue-50);
+  --theme-button-bg:  var(--navds-global-color-blue-100);
+}
