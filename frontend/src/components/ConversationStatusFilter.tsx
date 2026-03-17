@@ -109,13 +109,13 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
                     ))}
                 </fieldset>
                 <fieldset>
-                    <legend>Filter-felter:</legend>
+                    <legend>Filter:</legend>
                     <Input
                         id="cpaId-input"
                         style={{
                             gridArea: "rolle",
                         }}
-                        label="CPA-id "
+                        label="CPA-id:  "
                         bredde={"L"}
                         inputClassName={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
                         onChange={(event) => onCpaIdChange(event.target.value)}
@@ -127,7 +127,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
                     />
                 </fieldset>
                 <fieldset>
-                    <legend>Dato-felter:</legend>
+                    <legend>Dato:</legend>
                     <SelectableDateTimeSelector
                         showFromField={showFromField}
                         showToField={showToField}
