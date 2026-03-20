@@ -7,7 +7,7 @@ import RowWithContent from "../components/RowWithContent";
 import tableStyles from "../styles/Table.module.scss";
 import clsx from "clsx";
 import {
-    ConversationStatusInfo,
+    ConversationStatusDto,
     ConversationStatusSearchParams,
     useConversationStatusSearch
 } from "../hooks/useConversationStatusSearch";
@@ -33,11 +33,11 @@ const ConversationStatusTable = () => {
         triggerSearch(newParams);
     };
 
-    const headers: { key: keyof ConversationStatusInfo; name: string }[] = [
+    const headers: { key: keyof ConversationStatusDto; name: string }[] = [
         { key: "createdAt", name: "Mottatt" },
         { key: "readableIdList", name: "Mottak-id" },
-        { key: "cpaId", name: "CPA-id" },
         { key: "service", name: "Service" },
+        { key: "cpaId", name: "CPA-id" },
         { key: "statusAt", name: "Statusdato" },
         { key: "latestStatus", name: "Status" },
     ];

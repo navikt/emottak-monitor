@@ -14,7 +14,7 @@ export interface ConversationStatusSearchParams {
     sortOrder: string; // "ASC" | "DESC"
 }
 
-export interface ConversationStatusInfo {
+export interface ConversationStatusDto {
     createdAt: string;
     readableIdList: string;
     service: string;
@@ -23,12 +23,12 @@ export interface ConversationStatusInfo {
     latestStatus: string;
 }
 
-export interface Page {
+export interface PageDto {
     page: number;
     size: number;
     totalElements: number;
     totalPages: number;
-    content: ConversationStatusInfo[];
+    content: ConversationStatusDto[];
 }
 
 const buildUrl = (params: ConversationStatusSearchParams): string => {
@@ -48,7 +48,7 @@ const buildUrl = (params: ConversationStatusSearchParams): string => {
 export function useConversationStatusSearch(searchParams: ConversationStatusSearchParams) {
     const [params, setParams] = useState<ConversationStatusSearchParams>(searchParams);
     const requestUrl = buildUrl(searchParams);
-    const { fetchState, callRequest } = useFetch<Page>(requestUrl);
+    const { fetchState, callRequest } = useFetch<PageDto>(requestUrl);
     useEffect(() => {
         callRequest();
     }, []);
