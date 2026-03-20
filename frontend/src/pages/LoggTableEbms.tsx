@@ -6,7 +6,7 @@ import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 
-type LogDetails = {
+type MessageLogDto = {
   eventDate: string;
   eventDescription: string;
   eventId: string;
@@ -20,7 +20,7 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
   const params = useParams();
   const readableId = props.readableId ?? params.readableId;
 
-  const { fetchState, callRequest } = useFetch<LogDetails[]>(
+  const { fetchState, callRequest } = useFetch<MessageLogDto[]>(
     `/v1/hentloggebms?readableId=${readableId}`
   );
 
@@ -37,7 +37,7 @@ const LoggTableEbms = (props: LoggTableEbmsProps) => {
     return <div>Ingen gyldig mottak-id</div>;
   }
 
-  const headers: { key: keyof LogDetails; name: string }[] = [
+  const headers: { key: keyof MessageLogDto; name: string }[] = [
     { key: "eventDate", name: "Dato" },
     { key: "eventDescription", name: "Beskrivelse" },
     { key: "eventId", name: "ID" },
