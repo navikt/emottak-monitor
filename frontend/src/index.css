@@ -21,7 +21,7 @@ code {
   color: var(--text-primary);
 }
 
-input,
+input:not([name="hour24"]):not([name="minute"]),
 select,
 option,
 button,
@@ -33,6 +33,11 @@ button,
 .react-time-picker__clock {
   color: var(--text-primary) !important;
   background-color: var(--input-bg) !important;
+}
+
+input[name="hour24"],
+input[name="minute"] {
+  color: var(--text-primary) !important;
 }
 
 .navds-select__chevron {
