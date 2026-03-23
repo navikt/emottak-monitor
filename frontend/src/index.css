@@ -24,11 +24,13 @@ code {
 input,
 select,
 option,
+button,
 .react-time-picker__inputGroup,
 .react-time-picker__button,
 .DayPicker,
 .nav-datovelger__navbar__knapp,
-.DayPicker-Weekday {
+.DayPicker-Weekday,
+.react-time-picker__clock {
   color: var(--text-primary) !important;
   background-color: var(--input-bg) !important;
 }
@@ -58,6 +60,16 @@ table a {
 }
 
 .navds-modal {
-  background-color: var(--root-bg);
-  color: var(--text-primary);
+  background-color: var(--root-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+fieldset,
+.react-clock__face {
+  border: 1px solid var(--text-primary) !important;
+}
+
+.react-clock__mark__body,
+.react-clock__hand__body {
+  background-color: var(--text-primary) !important;
 }
