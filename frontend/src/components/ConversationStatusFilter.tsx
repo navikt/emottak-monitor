@@ -95,7 +95,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerWidths)}>
+            <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerFieldsetFilters)}>
                 <fieldset>
                     <legend>Status:</legend>
                     {STATUS_OPTIONS.map((opt) => (

@@ -13,14 +13,23 @@ import LoggTable from "./pages/LoggTable";
 import LoggTableEbms from "./pages/LoggTableEbms";
 import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
 import CpaTableModal from "./components/CpaTableModal";
+import { useTheme } from './hooks/useTheme';
+import './styles/light-theme.scss';
+import './styles/dark-theme.scss';
 
 export default function App() {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const state = location.state as { backgroundLocation?: Location };
 
   return (
     <div>
+      <div style={{ position: "absolute", top: 0, right: 0 }}>
+        <button onClick={toggleTheme} className={"theme-button"}>
+          {theme === 'light' ? '🌙 Mørkt' : '☀️ Lyst'} tema
+        </button>{' '}
+      </div>
       <Routes location={state?.backgroundLocation || location}>
         <Route element={<Layout />}>
           {pages.map((page) => (

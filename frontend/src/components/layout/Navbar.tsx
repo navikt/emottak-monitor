@@ -17,6 +17,7 @@ import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
 import LastUsedTable from "../../pages/LastUsedTable";
 import ConversationStatusTable from "../../pages/ConversationStatusTable";
+import { isProdEnv } from "../../util";
 
 
 type Page = {
@@ -91,6 +92,10 @@ const Navbar: React.FC<NavbarProps> = ({ isNavbarOpen, setIsNavbarOpen }) => {
             style={{ maxWidth: "70px" }}
           />
           <span>eMottak Monitor</span>
+          <span style={{ position: "relative", top: "-30px", left: "-178px", fontSize: "1rem" }}
+          >
+            { isProdEnv ? "Prod" : "Dev" }
+          </span>
         </Heading>
         <nav
           style={{ display: "flex", flexDirection: "column", width: "100%" }}
