@@ -1,6 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
 import { Input } from "nav-frontend-skjema";
-import Lenke from "nav-frontend-lenker";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
@@ -14,6 +13,7 @@ import useDebounce from "../hooks/useDebounce";
 import {initialDate, initialTime} from "../util";
 import Filter from "../components/Filter";
 import tableStyles from "../styles/Table.module.scss";
+import {Link, useLocation} from "react-router-dom";
 
 type CpaIdInfo = {
   action: string;
@@ -28,6 +28,8 @@ type CpaIdInfo = {
   status: string;
 };
 const CpaIdSok = () => {
+  const location = useLocation();
+
   const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
@@ -140,9 +142,11 @@ const CpaIdSok = () => {
                       {detail.datomottat.substring(0, 23)}
                     </Table.DataCell>
                     <Table.DataCell>
-                        <Lenke href={`/logg/${detail.mottakid}`}>
-                            {detail.mottakid}{" "}
-                        </Lenke>
+                      <Link
+                        key={detail.mottakid}
+                        to={`/loggebms/${detail.mottakid}`}
+                        state={{backgroundLocation: location}}
+                      >{detail.mottakid}{" "}</Link>
                     </Table.DataCell>
                     <Table.DataCell>{detail.role}</Table.DataCell>
                     <Table.DataCell>{detail.service}</Table.DataCell>
