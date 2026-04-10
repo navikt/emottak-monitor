@@ -1,7 +1,6 @@
 ingresses:
   - "https://emottak-monitor-frontend.intern.nav.no"
   - "https://emottak-monitor.ansatt.nav.no"
-
 backend:
   host: "emottak-monitor.prod-fss-pub.nais.io"
   cluster: prod-fss
