@@ -247,7 +247,7 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-/* Henting av sist brukt-datoer fra gamle og nye emottak (/lastused)
+// Henting av sist brukt-datoer fra gamle og nye emottak (frontend: /lastused)
 @InternalAPI
 fun Route.hentSistBrukt(
     meldingService: MessageQueryService,
@@ -282,7 +282,6 @@ fun Route.hentSistBrukt(
             message = response,
         )
     }
-*/
 
 // Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
 @InternalAPI
@@ -343,14 +342,40 @@ fun Route.hentCPAListe(
         }
     }
 
-/*
+// Conversation-status (frontend: /conversationstatusebms)
+@InternalAPI
+fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
+    get("/hentconversationstatusebms") {
+        val page = getURLEncodedQueryParameter("page")
+        val size = getURLEncodedQueryParameter("size")
+        val sort = getURLEncodedQueryParameter("sort")
+        val fromDate = getLocalDateTime("fromDate")
+        val fom = "fromDate=${fromDate ?: ""}"
+        val toDate = getLocalDateTime("toDate")
+        val tom = "toDate=${toDate ?: ""}"
+        val cpaId = getURLEncodedQueryParameter("cpaId")
+        val service = getURLEncodedQueryParameter("service")
+        val statuses = getURLEncodedQueryParameter("statuses")
+        val pageable = getPageable(page, size, sort) // just for validation
+        if (pageable != null) {
+            log.info(
+                "fromDate : $fromDate, toDate : $toDate, cpaId : $cpaId, service : $service, " +
+                    "statuses : $statuses, page : $page, size : $size, sort : $sort",
+            )
+            val url =
+                "$eventManagerUrl/conversation-status?$fom&$tom&cpaId=$cpaId" +
+                    "&service=$service&statuses=$statuses&page=$page&size=$size&sort=$sort"
+            log.info("Henter conversation-statuses for ebms ($url)")
+            executeREST(httpClient, url)
+        }
+    }
+
 private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<String, String?> {
     log.info("Henter sist brukt-timestamps fra gamle emottak")
     return meldingService.sistBrukt().also {
         log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
     }
 }
-*/
 
 @InternalAPI
 private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
@@ -442,19 +467,26 @@ private suspend fun RoutingContext.hentMeldingerEbms(
 
 @InternalAPI
 private suspend fun RoutingContext.localDateTimeLocalDateTimePair(): Pair<LocalDateTime, LocalDateTime>? {
-    val fromDate = call.request.queryParameters["fromDate"]
-    val toDate = call.request.queryParameters["toDate"]
-    if (fromDate.isNullOrEmpty()) {
+    val fromDate = getLocalDateTime("fromDate")
+    val toDate = getLocalDateTime("toDate")
+    if (fromDate == null) {
         returnBadRequest("Mangler parameter: fromDate")
         return null
     }
-    val fom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fromDate).toLocalDateTime()
-    if (toDate.isNullOrEmpty()) {
+    if (toDate == null) {
         returnBadRequest("Mangler parameter: toDate")
         return null
     }
-    val tom = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(toDate).toLocalDateTime()
-    return Pair(fom, tom)
+    return Pair(fromDate, toDate)
+}
+
+@InternalAPI
+private fun RoutingContext.getLocalDateTime(param: String): LocalDateTime? {
+    val date = call.request.queryParameters[param]
+    if (!date.isNullOrEmpty()) {
+        return SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date).toLocalDateTime()
+    }
+    return null
 }
 
 private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): String =

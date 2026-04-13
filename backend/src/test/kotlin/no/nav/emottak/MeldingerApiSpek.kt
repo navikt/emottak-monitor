@@ -28,6 +28,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
+import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentCpa
 import no.nav.emottak.application.api.hentCpaIdInfo
@@ -126,6 +127,18 @@ class MeldingerApiSpek :
                                             |"nav:qass:25696":"2025-11-24T07:30:48Z",
                                             |"nav:qass:30358":"2025-11-21T07:57:20Z",
                                             |"nav:autotest:1160":null}
+                                            """.trimMargin(),
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                contains("conversation-status") ->
+                                    respond(
+                                        content =
+                                            """{"page":1,"size":3,"sort":"ASC","totalElements":3,"content":[
+                                                |{"createdAt":"2025-04-30T12:59:49+02:00[Europe/Oslo]","readableIdList":"IN.2504301259.UNKN.4947c3","service":"another-service","cpaId":"test-cpa-id","statusAt":"2025-04-30T12:59:50+02:00[Europe/Oslo]","latestStatus":"Ferdigbehandlet"},
+                                                |{"createdAt":"2025-04-30T12:56:47+02:00[Europe/Oslo]","readableIdList":"OUT.2504301256.NAVM.23532f","service":"test-service","cpaId":"another-cpa-id","statusAt":"2025-04-30T12:56:47+02:00[Europe/Oslo]","latestStatus":"Informasjon"},
+                                                |{"createdAt":"2025-04-30T12:52:45+02:00[Europe/Oslo]","readableIdList":"IN.2504301252.UNKN.c885f9,IN.2504301254.UNKN.13b2cd,OUT.2504301258.NAVM.ec27e9","service":"test-service","cpaId":"test-cpa-id","statusAt":"2025-04-30T12:58:49+02:00[Europe/Oslo]","latestStatus":"Feil"}]
+                                                |,"totalPages":1}
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
@@ -375,6 +388,16 @@ class MeldingerApiSpek :
                          */
                     }
                 }
+
+                it("Should return 200 OK (hentconversationstatusebms)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentconversationstatusebms") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
             }
 
             describe("Pagination tests") {
@@ -516,6 +539,8 @@ private fun <T> withTestApplicationForApi(
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)
+                    hentSistBrukt(messageQueryService, mockHttpClient)
+                    hentConversationStatusEbms(mockHttpClient)
                 }
             }
         }

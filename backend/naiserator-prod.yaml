@@ -57,6 +57,14 @@ spec:
         - application: emottak-monitor-frontend
           namespace: team-emottak
           cluster: prod-gcp
+    outbound:
+      rules:
+        - application: emottak-event-manager
+          namespace: team-emottak
+          cluster: prod-fss
+        - application: cpa-repo
+          namespace: team-emottak
+          cluster: prod-fss
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
@@ -77,3 +85,5 @@ spec:
       value: 118dd8c9-8030-415c-b4e7-0e7a654b1c4e
     - name: EVENT_MANAGER_URL
       value: https://emottak-event-manager.intern.nav.no
+    - name: CPA_REPO_URL
+      value: https://cpa-repo-fss.intern.nav.no

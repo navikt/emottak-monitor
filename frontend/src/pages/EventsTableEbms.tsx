@@ -14,7 +14,7 @@ import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
-type EventInfo = {
+type EventDto = {
   action: string;
   senderName: string | null;
   eventDate: string;
@@ -26,12 +26,12 @@ type EventInfo = {
   eventData: string | null;
 };
 
-type Page = {
+type PageDto = {
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
-  content: EventInfo[];
+  content: EventDto[];
 };
 
 const EventsTable = () => {
@@ -59,7 +59,7 @@ const EventsTable = () => {
   const [pageSize, setPageSize] = useState(10);
   const [sortOrder, setSortOrder] = useState("DESC");
 
-  const { fetchState, callRequest } = useFetch<Page>(
+  const { fetchState, callRequest } = useFetch<PageDto>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&role=${role}&service=${service}&action=${action}` +
@@ -103,7 +103,7 @@ const EventsTable = () => {
     sortConfig,
   } = useTableSorting(filteredEvents);
 
-  const getClassNamesFor = (name: keyof EventInfo) => {
+  const getClassNamesFor = (name: keyof EventDto) => {
     if (!sortConfig) {
       return;
     }
@@ -126,7 +126,7 @@ const EventsTable = () => {
     }
   };
 
-  const headers: { key: keyof EventInfo; name: string }[] = [
+  const headers: { key: keyof EventDto; name: string }[] = [
     { key: "eventDate", name: "Mottatt" },
     { key: "description", name: "Hendelse" },
     { key: "readableId", name: "Mottak-id" },

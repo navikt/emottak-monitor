@@ -15,9 +15,11 @@ import FeilStatistikk from "../../pages/FeilStatistikk";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
-// import LastUsedTable from "../../pages/LastUsedTable";
-import CpaIdTable from "../../pages/CpaIdTable";
+// import CpaIdTable from "../../pages/CpaIdTable";
 import CpaTable from "../../pages/CpaTable";
+import LastUsedTable from "../../pages/LastUsedTable";
+import ConversationStatusTable from "../../pages/ConversationStatusTable";
+import { isProdEnv } from "../../util";
 
 
 type Page = {
@@ -31,6 +33,7 @@ export const pages: Page[] = [
   { title: "Meldinger ebms", path: "/meldingerebms", element: <MessagesTableEbms /> },
   { title: "Hendelser", path: "/hendelser", element: <EventsTable /> },
   { title: "Hendelser ebms", path: "/hendelserebms", element: <EventsTableEbms /> },
+  { title: "Conversation-status ebms", path: "/hentconversationstatusebms", element: <ConversationStatusTable /> },
   { title: "Mottak-id søk", path: "/mottakidsok", element: <MottakIdSok /> },
   { title: "Mottak-id søk ebms", path: "/readableidsokebms", element: <ReadableIdSokEbms /> },
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
@@ -92,6 +95,10 @@ const Navbar: React.FC<NavbarProps> = ({ isNavbarOpen, setIsNavbarOpen }) => {
             style={{ maxWidth: "70px" }}
           />
           <span>eMottak Monitor</span>
+          <span style={{ position: "relative", top: "-30px", left: "-178px", fontSize: "1rem" }}
+          >
+            { isProdEnv ? "Prod" : "Dev" }
+          </span>
         </Heading>
         <nav
           style={{ display: "flex", flexDirection: "column", width: "100%" }}

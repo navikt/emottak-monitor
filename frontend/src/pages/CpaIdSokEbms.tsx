@@ -15,7 +15,7 @@ import filterStyles from "../components/Filter.module.scss";
 import { Input } from "nav-frontend-skjema";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
-type MessageInfo = {
+type MessageDto = {
   action: string;
   count: number;
   senderName: string;
@@ -28,12 +28,12 @@ type MessageInfo = {
   status: string;
 };
 
-type Page = {
+type PageDto = {
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
-  content: MessageInfo[];
+  content: MessageDto[];
 };
 
 const CpaIdSokEbms = () => {
@@ -68,7 +68,7 @@ const CpaIdSokEbms = () => {
       `&role=${role}&service=${service}&action=${action}` +
       `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`;
 
-  const { fetchState, callRequest } = useFetch<Page>(url);
+  const { fetchState, callRequest } = useFetch<PageDto>(url);
 
   const onFromDateChange  = (value: string) => { setCurrentPage(1); setFromDate(value); };
   const onToDateChange    = (value: string) => { setCurrentPage(1); setToDate(value); };
@@ -108,7 +108,7 @@ const CpaIdSokEbms = () => {
     sortConfig,
   } = useTableSorting(filteredCpaIdInfo);
 
-  const getClassNamesFor = (name: keyof MessageInfo) => {
+  const getClassNamesFor = (name: keyof MessageDto) => {
     if (!sortConfig) {
       return;
     }
@@ -131,7 +131,7 @@ const CpaIdSokEbms = () => {
     }
   };
 
-  const headers: { key: keyof MessageInfo; name: string }[] = [
+  const headers: { key: keyof MessageDto; name: string }[] = [
     { key: "receivedDate", name: "Mottatt" },
     { key: "readableIdList", name: "Mottak-id" },
     { key: "role", name: "Role" },

@@ -10,9 +10,8 @@ import useFilter from "../hooks/useFilter";
 import clsx from "clsx";
 import RowWithContent from "../components/RowWithContent";
 
-type ReadableIdInfo = {
+type ReadableIdDto = {
   action: string;
-  //count: number; // Ikke i bruk?
   senderName: string;
   cpaId: string;
   receivedDate: string;
@@ -22,10 +21,11 @@ type ReadableIdInfo = {
   service: string;
   status: string;
 };
+
 const ReadableIdSokEbms = () => {
   const [messageId, setMessageId] = useState("");
 
- const { fetchState, callRequest } = useFetch<ReadableIdInfo[]>(
+ const { fetchState, callRequest } = useFetch<ReadableIdDto[]>(
     `/v1/hentmessageinfoebms?readableId=${messageId}`
   );
 
@@ -46,14 +46,14 @@ const ReadableIdSokEbms = () => {
   } = useTableSorting(filteredMessageInfo);
 
 
-  const getClassNamesFor = (name: keyof ReadableIdInfo) => {
+  const getClassNamesFor = (name: keyof ReadableIdDto) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const headers: { key: keyof ReadableIdInfo; name: string }[] = [
+  const headers: { key: keyof ReadableIdDto; name: string }[] = [
     { key: "receivedDate", name: "Mottatt" },
     { key: "readableId", name: "Mottak-id" },
     { key: "role", name: "Role" },

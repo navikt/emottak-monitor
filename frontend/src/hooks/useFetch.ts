@@ -39,7 +39,8 @@ const useFetch = <T>(url: string) => {
     Reducer<FetchState<T>, FetchAction<T>>
   >(reducer, createInitialState());
 
-  const callRequest = useCallback(async () => {
+  const callRequest = useCallback(async (overrideUrl?: string) => {
+    url = overrideUrl ?? url;
     try {
       dispatch({ type: "reqStart" });
       const res = await axios.get<T>(url);
