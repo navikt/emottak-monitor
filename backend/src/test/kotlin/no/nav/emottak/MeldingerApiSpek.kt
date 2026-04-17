@@ -43,7 +43,6 @@ import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
-import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.model.CpaListe
@@ -67,7 +66,6 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
-                io.mockk.coEvery { messageQueryService.partnerid(any()) } returns getPartnerIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
@@ -260,16 +258,6 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentpartneridinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentpartneridinfo?partnerId=18736") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -535,7 +523,6 @@ private fun <T> withTestApplicationForApi(
                     hentCpaIdInfo(messageQueryService)
                     hentCpaIdInfoEbms(mockHttpClient)
                     hentEbMessageIdInfo(messageQueryService)
-                    hentPartnerIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)

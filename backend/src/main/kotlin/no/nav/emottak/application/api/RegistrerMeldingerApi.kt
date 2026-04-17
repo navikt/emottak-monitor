@@ -212,21 +212,6 @@ fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
         call.respond(ebMessageIdIdInfo)
     }
 
-// Partner-id søk (frontend: /partnersok)
-@InternalAPI
-fun Route.hentPartnerIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentpartneridinfo") {
-        val partnerid = call.request.queryParameters["partnerId"]
-        if (partnerid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: partnerId")
-            return@get
-        }
-        log.info("Henter info for partnerid : $partnerid")
-        val partnerIdInfo = meldingService.partnerid(partnerid)
-        log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
-        call.respond(partnerIdInfo)
-    }
-
 // Feilstatistikk (frontend: /feilstatistikk)
 @InternalAPI
 fun Route.hentFeilstatistikk(meldingService: MessageQueryService): Route =
@@ -257,7 +242,6 @@ fun Route.hentCPAListe(
         log.info("Kjører dabasespørring for å hente liste over CPA'er...")
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
-        // val sort = getURLEncodedQueryParameter("sort")
         val searchColmn = getURLEncodedQueryParameter("searchColmn")
         val pageable = getPageable(page, size, null)
 

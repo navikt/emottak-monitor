@@ -41,7 +41,6 @@ import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
-import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.services.MessageQueryService
@@ -118,7 +117,6 @@ private fun Application.serverSetup(
                 hentCpaIdInfo(meldingService)
                 hentCpaIdInfoEbms(scopedAuthHttpClient)
                 hentEbMessageIdInfo(meldingService)
-                hentPartnerIdInfo(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)
                 hentCPAListe(meldingService, scopedAuthHttpClient)
