@@ -247,42 +247,6 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// Henting av sist brukt-datoer fra gamle og nye emottak (frontend: /lastused)
-@InternalAPI
-fun Route.hentSistBrukt(
-    meldingService: MessageQueryService,
-    httpClient: HttpClient,
-): Route =
-    get("/hentsistbrukt") {
-        log.info("Henter sist brukt-timestamps")
-
-        // Gamle emottak:
-        val responseEmottak: Map<String, String?> = hentSistBruktGamleEmottak(meldingService)
-
-        // Nye emottak:
-        val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
-
-        val cpaIds: Set<String> = responseEmottak.keys + (responseEbms?.keys ?: emptySet())
-
-        val response: List<CpaListe> =
-            cpaIds.map { cpaId ->
-                CpaListe(
-                    cpaId,
-                    responseEmottak[cpaId]?.split(" ")[0],
-                    responseEbms?.get(cpaId)?.split("T")[0],
-                )
-            }
-
-        call.respond(
-            status =
-                when (responseEbms == null) {
-                    true -> HttpStatusCode.PartialContent
-                    false -> HttpStatusCode.OK
-                },
-            message = response,
-        )
-    }
-
 // Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
 @InternalAPI
 fun Route.hentCPAListe(
@@ -293,7 +257,7 @@ fun Route.hentCPAListe(
         log.info("Kjører dabasespørring for å hente liste over CPA'er...")
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
-        val sort = getURLEncodedQueryParameter("sort")
+        // val sort = getURLEncodedQueryParameter("sort")
         val searchColmn = getURLEncodedQueryParameter("searchColmn")
         val pageable = getPageable(page, size, null)
 
@@ -342,6 +306,22 @@ fun Route.hentCPAListe(
         }
     }
 
+@InternalAPI
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
+    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
+    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
+    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
+    if (responseCode != HttpStatusCode.OK) {
+        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
+        return null
+    }
+    return Json
+        .decodeFromString<Map<String, String?>>(responseBody)
+        .also {
+            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
+        }
+}
+
 // Conversation-status (frontend: /conversationstatusebms)
 @InternalAPI
 fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
@@ -369,29 +349,6 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
             executeREST(httpClient, url)
         }
     }
-
-private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<String, String?> {
-    log.info("Henter sist brukt-timestamps fra gamle emottak")
-    return meldingService.sistBrukt().also {
-        log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
-    }
-}
-
-@InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
-    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
-    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
-    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
-    if (responseCode != HttpStatusCode.OK) {
-        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
-        return null
-    }
-    return Json
-        .decodeFromString<Map<String, String?>>(responseBody)
-        .also {
-            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
-        }
-}
 
 const val MAX_PAGE_SIZE = 1000
 

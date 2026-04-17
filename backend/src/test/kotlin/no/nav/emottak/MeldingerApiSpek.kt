@@ -28,8 +28,8 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
-import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCPAListe
+import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
 import no.nav.emottak.application.api.hentCpaIdInfo
 import no.nav.emottak.application.api.hentCpaIdInfoEbms
@@ -539,7 +539,6 @@ private fun <T> withTestApplicationForApi(
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)
-                    hentSistBrukt(messageQueryService, mockHttpClient)
                     hentConversationStatusEbms(mockHttpClient)
                 }
             }
