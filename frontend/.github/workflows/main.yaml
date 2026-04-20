@@ -41,7 +41,6 @@ jobs:
       - name: "Deploy to DEV"
         uses: "nais/deploy/actions/deploy@v1"
         env:
-          "APIKEY": "${{ secrets.NAIS_DEPLOY_APIKEY }}"
           "CLUSTER": "dev-gcp"
           "RESOURCE": ".nais/nais.yaml"
           "VARS": ".nais/dev.yaml"
@@ -54,7 +53,6 @@ jobs:
 #    - name: "Deploy to PROD"
 #      uses: "nais/deploy/actions/deploy@v1"
 #      env:
-#        "APIKEY": "${{ secrets.NAIS_DEPLOY_APIKEY }}"
 #        "CLUSTER": "prod-gcp"
 #        "RESOURCE": ".nais/nais.yaml"
 #        "VARS": ".nais/prod.yaml"
