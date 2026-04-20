@@ -7,15 +7,15 @@ import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
 import MottakIdSok from "../../pages/MottakIdSok";
-import CpaIdSok from "../../pages/CpaIdSok";
-import CpaIdSokEbms from "../../pages/CpaIdSokEbms";
+// import CpaIdSok from "../../pages/CpaIdSok";
+// import CpaIdSokEbms from "../../pages/CpaIdSokEbms";
 import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
-import PartnerIdSok from "../../pages/PartnerIdSok";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
-import LastUsedTable from "../../pages/LastUsedTable";
+// import CpaIdTable from "../../pages/CpaIdTable";
+import CpaTable from "../../pages/CpaTable";
 import ConversationStatusTable from "../../pages/ConversationStatusTable";
 import { isProdEnv } from "../../util";
 
@@ -35,11 +35,8 @@ export const pages: Page[] = [
   { title: "Mottak-id søk", path: "/mottakidsok", element: <MottakIdSok /> },
   { title: "Mottak-id søk ebms", path: "/readableidsokebms", element: <ReadableIdSokEbms /> },
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
-  { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
-  { title: "CPA-id søk ebms", path: "/cpaidsokebms", element: <CpaIdSokEbms /> },
-  { title: "Partner-id søk", path: "/partnersok", element: <PartnerIdSok /> },
+  { title: "CPA-liste", path: "/cpaliste", element: <CpaTable /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
-  { title: "CPA sist brukt", path: "/hentsistbrukt", element: <LastUsedTable /> },
 ];
 
 type NavbarProps = {

@@ -15,7 +15,8 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaLastUsed
+import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
@@ -167,35 +168,6 @@ fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// CPA-id søk (frontend: /cpaidsok)
-@InternalAPI
-fun Route.hentCpaIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentcpaidinfo") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        log.info("Henter info for $cpaid")
-        val cpaIdInfo = meldingService.cpaid(cpaid, fom, tom)
-        log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
-        call.respond(cpaIdInfo)
-    }
-
-// CPA-id søk ebms (frontend: /cpaidsokebms)
-@InternalAPI
-fun Route.hentCpaIdInfoEbms(httpClient: HttpClient): Route =
-    get("/hentcpaidinfoebms") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(httpClient, fom, tom)
-    }
-
 // EBMessage-id søk (frontend: /ebmessageidsok)
 @InternalAPI
 fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
@@ -209,21 +181,6 @@ fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
         val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
         log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
         call.respond(ebMessageIdIdInfo)
-    }
-
-// Partner-id søk (frontend: /partnersok)
-@InternalAPI
-fun Route.hentPartnerIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentpartneridinfo") {
-        val partnerid = call.request.queryParameters["partnerId"]
-        if (partnerid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: partnerId")
-            return@get
-        }
-        log.info("Henter info for partnerid : $partnerid")
-        val partnerIdInfo = meldingService.partnerid(partnerid)
-        log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
-        call.respond(partnerIdInfo)
     }
 
 // Feilstatistikk (frontend: /feilstatistikk)
@@ -246,41 +203,79 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// Henting av sist brukt-datoer fra gamle og nye emottak (frontend: /lastused)
+// Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
 @InternalAPI
-fun Route.hentSistBrukt(
+fun Route.hentCPAListe(
     meldingService: MessageQueryService,
     httpClient: HttpClient,
 ): Route =
-    get("/hentsistbrukt") {
-        log.info("Henter sist brukt-timestamps")
+    get("/hentcpaliste") {
+        log.info("Kjører dabasespørring for å hente liste over CPA'er...")
+        val page = getURLEncodedQueryParameter("page")
+        val size = getURLEncodedQueryParameter("size")
+        val searchColmn = getURLEncodedQueryParameter("searchColmn")
+        val pageable = getPageable(page, size, null)
 
-        // Gamle emottak:
-        val responseEmottak: Map<String, String?> = hentSistBruktGamleEmottak(meldingService)
+        if (pageable != null) {
+            // Nye emottak:
+            val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
-        // Nye emottak:
-        val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+            // Gamle emottak:
+            val cpaliste: Page<CpaListe> = meldingService.cpaliste(searchColmn, pageable)
+            log.info("Pageable: $pageable")
+            log.info("Total antall cpaer: ${cpaliste.totalElements}")
+            log.info("Page: ${cpaliste.page}")
+            log.info("Size: ${cpaliste.size} ")
+            log.info("content.size: ${cpaliste.content.size}")
+            log.info("partnerID: ${cpaliste.content.firstOrNull()?.partnerID}")
+            log.info("cpaId:${cpaliste.content.firstOrNull()?.cpaID}")
+            log.info("partnerCppID: ${cpaliste.content.firstOrNull()?.partnerCppID}")
+            log.info("SubjectDN: ${cpaliste.content.firstOrNull()?.partnerSubjectDN}")
+            log.info("Endpoint: ${cpaliste.content.firstOrNull()?.partnerEndpoint}")
+            log.info("LastUsed: ${cpaliste.content.firstOrNull()?.lastUsed}")
 
-        val cpaIds: Set<String> = responseEmottak.keys + (responseEbms?.keys ?: emptySet())
-
-        val response: List<CpaLastUsed> =
-            cpaIds.map { cpaId ->
-                CpaLastUsed(
-                    cpaId,
-                    responseEmottak[cpaId]?.split(" ")[0],
-                    responseEbms?.get(cpaId)?.split("T")[0],
-                )
+            val mergedList = cpaliste.content.toMutableList()
+            if (responseEbms != null) {
+                for (cpaListe in mergedList) {
+                    if (cpaListe.lastUsed != null) {
+                        cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
+                    }
+                    if (cpaListe.cpaID == null) {
+                        continue
+                    }
+                    if (cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
+                        cpaListe.lastUsedEbms = responseEbms[cpaListe.cpaID]!!.split("T")[0]
+                    }
+                }
             }
+            // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
 
-        call.respond(
-            status =
-                when (responseEbms == null) {
-                    true -> HttpStatusCode.PartialContent
-                    false -> HttpStatusCode.OK
-                },
-            message = response,
-        )
+            call.respond(
+                status =
+                    when (responseEbms == null) {
+                        true -> HttpStatusCode.PartialContent
+                        false -> HttpStatusCode.OK
+                    },
+                message = cpaliste,
+            )
+        }
     }
+
+@InternalAPI
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
+    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
+    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
+    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
+    if (responseCode != HttpStatusCode.OK) {
+        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
+        return null
+    }
+    return Json
+        .decodeFromString<Map<String, String?>>(responseBody)
+        .also {
+            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
+        }
+}
 
 // Conversation-status (frontend: /conversationstatusebms)
 @InternalAPI
@@ -309,29 +304,6 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
             executeREST(httpClient, url)
         }
     }
-
-private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<String, String?> {
-    log.info("Henter sist brukt-timestamps fra gamle emottak")
-    return meldingService.sistBrukt().also {
-        log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
-    }
-}
-
-@InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
-    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
-    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
-    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
-    if (responseCode != HttpStatusCode.OK) {
-        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
-        return null
-    }
-    return Json
-        .decodeFromString<Map<String, String?>>(responseBody)
-        .also {
-            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
-        }
-}
 
 const val MAX_PAGE_SIZE = 1000
 
