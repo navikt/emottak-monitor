@@ -31,8 +31,6 @@ import no.nav.emottak.application.api.LENIENT_JSON_PARSER
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentCpaIdInfo
-import no.nav.emottak.application.api.hentCpaIdInfoEbms
 import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
@@ -67,7 +65,6 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
-                io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
                 io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
 
@@ -520,8 +517,6 @@ private fun <T> withTestApplicationForApi(
                     hentCpa(messageQueryService)
                     hentMessageInfo(messageQueryService)
                     hentMessageInfoEbms(mockHttpClient)
-                    hentCpaIdInfo(messageQueryService)
-                    hentCpaIdInfoEbms(mockHttpClient)
                     hentEbMessageIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)

@@ -168,35 +168,6 @@ fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// CPA-id søk (frontend: /cpaidsok)
-@InternalAPI
-fun Route.hentCpaIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentcpaidinfo") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        log.info("Henter info for $cpaid")
-        val cpaIdInfo = meldingService.cpaid(cpaid, fom, tom)
-        log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
-        call.respond(cpaIdInfo)
-    }
-
-// CPA-id søk ebms (frontend: /cpaidsokebms)
-@InternalAPI
-fun Route.hentCpaIdInfoEbms(httpClient: HttpClient): Route =
-    get("/hentcpaidinfoebms") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(httpClient, fom, tom)
-    }
-
 // EBMessage-id søk (frontend: /ebmessageidsok)
 @InternalAPI
 fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =

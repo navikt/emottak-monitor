@@ -35,8 +35,6 @@ export const pages: Page[] = [
   { title: "Mottak-id søk", path: "/mottakidsok", element: <MottakIdSok /> },
   { title: "Mottak-id søk ebms", path: "/readableidsokebms", element: <ReadableIdSokEbms /> },
   { title: "EBMessage-id søk", path: "/ebmessageidsok", element: <EBEMessageIdInfoSok /> },
-//  { title: "CPA-id søk", path: "/cpaidsok", element: <CpaIdSok /> },
-//  { title: "CPA-id søk ebms", path: "/cpaidsokebms", element: <CpaIdSokEbms /> },
   { title: "CPA-liste", path: "/cpaliste", element: <CpaTable /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", element: <FeilStatistikk /> },
 ];

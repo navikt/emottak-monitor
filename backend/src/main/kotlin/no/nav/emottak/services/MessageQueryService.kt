@@ -2,7 +2,6 @@ package no.nav.emottak.services
 
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
-import no.nav.emottak.aksessering.db.hentCpaIdInfo
 import no.nav.emottak.aksessering.db.hentCpaliste
 import no.nav.emottak.aksessering.db.hentEBMessageIdInfo
 import no.nav.emottak.aksessering.db.hentFeilStatistikk
@@ -10,7 +9,6 @@ import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.db.DatabaseInterface
-import no.nav.emottak.model.CpaIdInfo
 import no.nav.emottak.model.CpaListe
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
@@ -50,18 +48,10 @@ class MessageQueryService(
 
     fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, ebmessageid)
 
-    fun cpaid(
-        cpaid: String?,
-        fom: LocalDateTime,
-        tom: LocalDateTime,
-    ): List<CpaIdInfo> = databaseInterface.hentCpaIdInfo(databasePrefix, cpaid, fom, tom)
-
     fun feilstatistikk(
         fom: LocalDateTime,
         tom: LocalDateTime,
     ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
-
-    // fun sistBrukt(): Map<String, String?> = databaseInterface.hentSistBrukt(databasePrefix)
 
     fun cpaliste(
         searchColmn: String?,

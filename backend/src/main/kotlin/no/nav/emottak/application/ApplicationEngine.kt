@@ -29,8 +29,6 @@ import no.nav.emottak.Environment
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentCpaIdInfo
-import no.nav.emottak.application.api.hentCpaIdInfoEbms
 import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
@@ -114,8 +112,6 @@ private fun Application.serverSetup(
                 hentCpa(meldingService)
                 hentMessageInfo(meldingService)
                 hentMessageInfoEbms(scopedAuthHttpClient)
-                hentCpaIdInfo(meldingService)
-                hentCpaIdInfoEbms(scopedAuthHttpClient)
                 hentEbMessageIdInfo(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)
