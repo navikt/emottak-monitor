@@ -8,14 +8,6 @@ import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import kotlin.collections.toList
-import kotlin.plus
-import kotlin.sequences.first
-import kotlin.sequences.last
-import kotlin.text.contains
-import kotlin.text.equals
-import kotlin.text.splitToSequence
-import kotlin.use
 
 fun DatabaseInterface.hentCpaliste(
     databasePrefix: String,
@@ -24,16 +16,15 @@ fun DatabaseInterface.hentCpaliste(
 ): Page<CpaListe> =
     connection.use { connection ->
 
-        var sequence = columnSearch?.splitToSequence(";")
-        var isSearchEmpty: Boolean = sequence?.first().equals("")
-        var isSearchColnEmpty: Boolean = sequence?.last().equals("") || sequence?.last().equals("TOMT")
-        var sqlColmSearch: String? = ""
+        val sequence = columnSearch?.splitToSequence(";")
+        val isSearchEmpty: Boolean = sequence?.first().equals("")
+        val isSearchColnEmpty: Boolean = sequence?.last().equals("") || sequence?.last().equals("TOMT")
         val isEqual: Boolean = columnSearch!!.contains("er lik")
         val isStart: Boolean = columnSearch!!.contains("starter med")
         val isContain: Boolean = columnSearch!!.contains("inneholder")
         var sok: String? = ""
-        var statColmSearch: PreparedStatement? = null
-        var listColmSearch: List<CpaListe>? = null
+        var statColmSearch: PreparedStatement?
+        var listColmSearch: List<CpaListe>?
 
         if (isStart) {
             sok = sequence?.first() + "%"
@@ -61,7 +52,7 @@ fun DatabaseInterface.hentCpaliste(
                 rs.next()
                 rs.getLong(1)
             }
-        sqlColmSearch = """
+        var sqlColmSearch = """
                     SELECT PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID,  
                     PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED
                    FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
@@ -148,7 +139,7 @@ fun DatabaseInterface.hentCpaliste(
                 log.info("Error: ($e)")
                 throw e
             } finally {
-                connection?.close()
+                connection.close()
             }
         } else {
             sqlColmSearch += " ORDER BY PARTNER.PARTNER_ID DESC "
@@ -165,7 +156,6 @@ fun DatabaseInterface.hentCpaliste(
                         it.executeQuery().toList { toCpaliste() }
                     }.toList()
         }
-        // TODO: Fiks pagable slik at spørringen ikke returnerer alle CPA'er
         var returnPageable = pageable
         if (returnPageable == null) {
             returnPageable = Pageable(1, listColmSearch.size)

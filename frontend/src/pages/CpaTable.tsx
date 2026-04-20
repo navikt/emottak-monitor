@@ -16,6 +16,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import search from "../images/search.gif";
 // @ts-ignore
 import erase from "../images/erase.gif";
+import filterStyles from "../components/Filter.module.scss";
 
 type CpaDetails = {
     partnerSubjectDN: string;
@@ -42,8 +43,12 @@ type Page = {
 const CpaTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
     const [selectedCEqualValue, SetSelectedCEqualValue] = useState('er lik');
-    const [innValue, SetInnValue] = useState('');
+    const [innValue, setInnValue] = useState('');
     const [searchColmn, setSearchColmn] = useState('');
+
+    const [months, setMonths] = useState(0);
+    const [thresholdDate, setThresholdDate] = useState(new Date());
+
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
@@ -52,7 +57,6 @@ const CpaTable = () => {
 
     const { loading, error, data } = fetchState;
     const cpaInfo = data?.content ?? [];
-    const totalCount = data?.totalElements ?? 0;
 
     useEffect(() => {
     callRequest();
@@ -74,14 +78,26 @@ const CpaTable = () => {
 
   const { filteredItems: filteredCpaInfo, handleFilterChange } = useFilter(
       cpaInfo ?? [],
-      ["partnerSubjectDN", "partnerID", "herID", "orgNummer", "cpaID", "navCppID", "partnerCppID", "partnerEndpoint", "komSystem", "lastUsed"]
+      ["partnerSubjectDN", "partnerID", "herID", "orgNummer", "cpaID", "navCppID", "partnerCppID", "partnerEndpoint", "komSystem", "lastUsed", "lastUsedEbms"]
   );
+
+  const filteredMessages = filteredCpaInfo.filter(
+    e => {
+      if (e.lastUsed == null && e.lastUsedEbms == null) return true;
+      let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
+      let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
+      if (lastUsed != null && lastUsed > thresholdDate) return false;
+      if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
+      return true;
+    }
+  )
+  const totalCount = filteredMessages.length;
 
   const {
     items: filteredAndSortedCpas,
     requestSort,
     sortConfig,
-  } = useTableSorting(filteredCpaInfo);
+  } = useTableSorting(filteredMessages);
 
   const getClassNamesFor = (name: keyof CpaDetails) => {
     if (!sortConfig) {
@@ -101,7 +117,7 @@ const CpaTable = () => {
 
 
   const handleInputChange = (event: React.FormEvent<HTMLFormElement>) => {
-    SetInnValue(event.currentTarget.value)
+    setInnValue(event.currentTarget.value)
   };
   const onSelectColn = (event: React.FormEvent<HTMLFormElement>) => {
     setSelectedColnValue(event.currentTarget.value);
@@ -113,7 +129,7 @@ const CpaTable = () => {
       event.preventDefault();
       setErrorMessage('')
       setSearchColmn('')
-      SetInnValue('')
+      setInnValue('')
       setSelectedColnValue("")
       SetSelectedCEqualValue("er lik") //TODO: First option
   };
@@ -137,6 +153,16 @@ const CpaTable = () => {
             setSearchColmn(result)
   };
 
+  const onMonthsChange = (value: string) => {
+    setCurrentPage(1);
+    let m = value.replace(/[^0-9]/ig, '');
+    if (m == "") m = "0";
+    setMonths(parseInt(m));
+    let d = new Date();
+    d.setMonth(d.getMonth() - parseInt(m));
+    setThresholdDate(d);
+  };
+
   const headers: { key: keyof CpaDetails; name: string }[] = [
       { key: "partnerSubjectDN", name: "Navn" },
       { key: "partnerID", name: "PartnerID" },
@@ -147,7 +173,8 @@ const CpaTable = () => {
       { key: "partnerCppID", name: "AdminID" },
       { key: "partnerEndpoint", name: "Endpoint" },
       { key: "komSystem", name: "KomSystem" },
-      { key: "lastUsed", name: "Sist brukt" },
+      { key: "lastUsed", name: "Sist brukt i gammel" },
+      { key: "lastUsedEbms", name: "Sist brukt i nye" },
   ];
 
   const showSpinner = loading;
@@ -205,8 +232,19 @@ const CpaTable = () => {
               <button  className={buttonStyles.button} type="submit" onClick={handleBtnNullstil}>
                   <img  src={erase} />Nullstil
               </button>
-
             </form>
+
+              <div className="navds-form-field--small">
+                  Ikke vis CPA'er som har vært i bruk siste <input
+                  id="months-input"
+                  type="number"
+                  size={1}
+                  className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                  onChange={(event) => onMonthsChange(event.target.value)}
+                  value={months}
+              /> måneder
+              </div>
+
           </div>
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
@@ -273,6 +311,7 @@ const CpaTable = () => {
                           <Table.DataCell>{message.partnerEndpoint}</Table.DataCell>
                           <Table.DataCell>{message.komSystem}</Table.DataCell>
                           <Table.DataCell>{message.lastUsed}</Table.DataCell>
+                          <Table.DataCell>{message.lastUsedEbms}</Table.DataCell>
                       </Table.Row>
                   );
                 })}
