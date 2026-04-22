@@ -138,7 +138,7 @@ const CpaTable = () => {
   const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setErrorMessage('')
-      const result: string = innValue + ";" + selectedCEqualValue + ";" +  selectedColnValue
+      const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue
       if (result.endsWith("PARTNER_ID")) {
           if (innValue === '' || Number.isInteger(Number(innValue))) {
               setErrorMessage("")

@@ -18,7 +18,7 @@ fun DatabaseInterface.hentCpaliste(
     connection.use { connection ->
         val columnSearch = columnSearchEncoded?.decodeURLQueryComponent()
         log.debug("columnSearch: '$columnSearch'")
-        val sequence = columnSearch?.splitToSequence(";")
+        val sequence = columnSearch?.splitToSequence("¤")
         log.debug("Sequence: {}", sequence?.toList())
 
         val isSearchEmpty: Boolean = sequence?.first().equals("")
