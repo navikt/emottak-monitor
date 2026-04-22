@@ -1,5 +1,6 @@
 package no.nav.emottak.aksessering.db
 
+import io.ktor.http.decodeURLQueryComponent
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
 import no.nav.emottak.log
@@ -11,12 +12,15 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.hentCpaliste(
     databasePrefix: String,
-    columnSearch: String? = "",
+    columnSearchEncoded: String? = "",
     pageable: Pageable? = null,
 ): Page<CpaListe> =
     connection.use { connection ->
-
+        val columnSearch = columnSearchEncoded?.decodeURLQueryComponent()
+        log.debug("columnSearch: ${columnSearch}")
         val sequence = columnSearch?.splitToSequence(";")
+        log.debug("Sequence: ${sequence?.toList()}")
+
         val isSearchEmpty: Boolean = sequence?.first().equals("")
         val isSearchColnEmpty: Boolean = sequence?.last().equals("") || sequence?.last().equals("TOMT")
         val isEqual: Boolean = columnSearch!!.contains("er lik")
@@ -37,6 +41,7 @@ fun DatabaseInterface.hentCpaliste(
         if (sequence!!.first().contains("999999")) {
             sok = "999999"
         }
+        log.info("Sok: '$sok'")
         /** Liste over cpaer */
         val countStatement =
             connection.prepareStatement(
@@ -129,10 +134,10 @@ fun DatabaseInterface.hentCpaliste(
             }
             sqlColmSearch += " ORDER BY PARTNER.PARTNER_ID DESC "
             try {
+                log.info("sqlColmSearch: '$sqlColmSearch'")
                 statColmSearch = connection.prepareStatement(sqlColmSearch)
 
                 statColmSearch.setObject(1, sok)
-
                 listColmSearch = statColmSearch.use { it.executeQuery().toList { toCpaliste() } }.toList()
             } catch (e: Exception) {
                 connection.rollback()
