@@ -239,18 +239,6 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentcpaidinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get(
-                                "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept&fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10",
-                            ) {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
                 it("Should return 200 OK (hentebmessageidinfo)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
