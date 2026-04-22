@@ -89,9 +89,12 @@ fun generateSQLQuery(
 ): String {
     var sqlColmSearch =
         if (generateCountQuery) {
-            "SELECT count(PARTNER_CPA.CPA_ID) AS FILTER_ANTALL"
+            "SELECT count(PARTNER_CPA.CPA_ID) AS FILTER_ANTALL "
         } else {
-            "SELECT PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID, PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED"
+            """
+            SELECT PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, 
+            PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID, PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED 
+            """
         }
     sqlColmSearch += """
                    FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
@@ -191,7 +194,7 @@ fun Connection.exeuteCpaListeQuery(
 ): List<CpaListe> {
     try {
         val preparedStatement = this.prepareStatement(query)
-        if (sok != null) {
+        if (!sok.isNullOrBlank()) {
             preparedStatement.setObject(1, sok)
         }
         return preparedStatement.use { it.executeQuery().toList { toCpaliste() } }.toList()
