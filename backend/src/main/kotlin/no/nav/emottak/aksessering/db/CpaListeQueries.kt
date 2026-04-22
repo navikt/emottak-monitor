@@ -17,9 +17,9 @@ fun DatabaseInterface.hentCpaliste(
 ): Page<CpaListe> =
     connection.use { connection ->
         val columnSearch = columnSearchEncoded?.decodeURLQueryComponent()
-        log.debug("columnSearch: ${columnSearch}")
+        log.debug("columnSearch: '$columnSearch'")
         val sequence = columnSearch?.splitToSequence(";")
-        log.debug("Sequence: ${sequence?.toList()}")
+        log.debug("Sequence: {}", sequence?.toList())
 
         val isSearchEmpty: Boolean = sequence?.first().equals("")
         val isSearchColnEmpty: Boolean = sequence?.last().equals("") || sequence?.last().equals("TOMT")
