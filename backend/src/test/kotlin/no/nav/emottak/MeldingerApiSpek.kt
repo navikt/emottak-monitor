@@ -273,7 +273,7 @@ class MeldingerApiSpek :
                 it("Should return 200 OK (hentcpaliste)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
-                            client.get("/v1/hentcpaliste") {
+                            client.get("/v1/hentcpaliste?searchColmn=&page=1&size=25") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK

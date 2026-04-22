@@ -33,7 +33,7 @@ type CpaDetails = {
 };
 
 type Page = {
-  pageNr: number;
+  page: number;
   size: number;
   totalElements: number;
   totalPages: number;
@@ -73,7 +73,7 @@ const CpaTable = () => {
     }
     if (!data) return;
     console.log('useEffect:currentPage:', currentPage, " data.page:", data.page, " pageSize:", pageSize, " data.size:", data.page.size, " : ", searchColmn );
-    if (data.page.pageNr !== currentPage) setCurrentPage(data.page.pageNr);
+    if (data.page.page !== currentPage) setCurrentPage(data.page.page);
     if (data.page.size !== pageSize) setPageSize(data.page.size);
   }, [data]);
 
