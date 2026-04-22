@@ -15,8 +15,7 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaListe
-import no.nav.emottak.model.Page
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
@@ -221,11 +220,13 @@ fun Route.hentCPAListe(
             val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
             // Gamle emottak:
-            val cpaliste: Page<CpaListe> = meldingService.cpaliste(searchColmn, pageable)
+            val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, pageable)
+            val cpaliste = cpalisteData.page
             log.info("Pageable: $pageable")
-            log.info("Total antall cpaer: ${cpaliste.totalElements}")
-            log.info("Page: ${cpaliste.page}")
-            log.info("Size: ${cpaliste.size} ")
+            log.info("Totalt antall CPA'er: ${cpalisteData.totalNumberOfCPAs}")
+            log.info("Antall som matcher filteret: ${cpaliste.totalElements}")
+            log.info("cpaliste.page: ${cpaliste.page}")
+            log.info("cpaliste.size: ${cpaliste.size}")
             log.info("content.size: ${cpaliste.content.size}")
             log.info("partnerID: ${cpaliste.content.firstOrNull()?.partnerID}")
             log.info("cpaId:${cpaliste.content.firstOrNull()?.cpaID}")
@@ -256,7 +257,7 @@ fun Route.hentCPAListe(
                         true -> HttpStatusCode.PartialContent
                         false -> HttpStatusCode.OK
                     },
-                message = cpaliste,
+                message = cpalisteData,
             )
         }
     }

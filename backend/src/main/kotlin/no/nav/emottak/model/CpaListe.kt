@@ -15,3 +15,9 @@ data class CpaListe(
     var lastUsed: String? = null,
     var lastUsedEbms: String? = null,
 )
+
+@Serializable
+data class CpaListeData(
+    val page: Page<CpaListe>,
+    val totalNumberOfCPAs: Long,
+)

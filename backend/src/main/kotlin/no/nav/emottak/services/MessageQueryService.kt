@@ -9,7 +9,7 @@ import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.db.DatabaseInterface
-import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
@@ -56,5 +56,5 @@ class MessageQueryService(
     fun cpaliste(
         searchColmn: String?,
         pageable: Pageable? = null,
-    ): Page<CpaListe> = databaseInterface.hentCpaliste(databasePrefix, searchColmn.toString(), pageable)
+    ): CpaListeData = databaseInterface.hentCpaliste(databasePrefix, searchColmn.toString(), pageable)
 }

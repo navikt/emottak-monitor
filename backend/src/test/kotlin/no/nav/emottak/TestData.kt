@@ -1,6 +1,7 @@
 package no.nav.emottak
 
 import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -21,38 +22,41 @@ fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
 
-fun getCPAListe(): Page<CpaListe> =
-    Page(
-        page = 0,
-        size = 25,
-        totalElements = 2,
-        content =
-            listOf(
-                CpaListe(
-                    "partner1",
-                    "partnerId1",
-                    "herId1",
-                    "orgNr1",
-                    "nav:qass:25695",
-                    "navCppId1",
-                    "adminbruker",
-                    "partnerEndpoint1",
-                    "komSystem1",
-                    "2025-11-25 07:30:48",
-                    null,
+fun getCPAListe(): CpaListeData =
+    CpaListeData(
+        Page(
+            page = 0,
+            size = 25,
+            totalElements = 2,
+            content =
+                listOf(
+                    CpaListe(
+                        partnerSubjectDN = "partner1",
+                        partnerID = "partnerId1",
+                        herID = "herId1",
+                        orgNummer = "orgNr1",
+                        cpaID = "nav:qass:25695",
+                        navCppID = "navCppId1",
+                        partnerCppID = "adminbruker",
+                        partnerEndpoint = "partnerEndpoint1",
+                        komSystem = "komSystem1",
+                        lastUsed = "2025-11-25 07:30:48",
+                        lastUsedEbms = null,
+                    ),
+                    CpaListe(
+                        partnerSubjectDN = "partner2",
+                        partnerID = "partnerId2",
+                        herID = "herId2",
+                        orgNummer = "orgNr2",
+                        cpaID = "nav:qass:30358",
+                        navCppID = "navCppId2",
+                        partnerCppID = "adminbruker",
+                        partnerEndpoint = "partnerEndpoint2",
+                        komSystem = "komSystem2",
+                        lastUsed = "2025-11-22 08:57:20",
+                        lastUsedEbms = null,
+                    ),
                 ),
-                CpaListe(
-                    "partner2",
-                    "partnerId2",
-                    "herId2",
-                    "orgNr2",
-                    "nav:qass:30358",
-                    "navCppId2",
-                    "adminbruker",
-                    "partnerEndpoint2",
-                    "komSystem2",
-                    "2025-11-22 07:57:20",
-                    null,
-                ),
-            ),
+        ),
+        totalNumberOfCPAs = 432,
     )

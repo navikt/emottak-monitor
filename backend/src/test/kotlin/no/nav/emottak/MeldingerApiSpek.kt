@@ -44,6 +44,7 @@ import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Page
 import no.nav.emottak.services.MessageQueryService
 import java.nio.file.Paths
@@ -277,8 +278,9 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.OK
                         println(response.bodyAsText())
-                        val cpaListe = LENIENT_JSON_PARSER.decodeFromString<Page<CpaListe>>(response.bodyAsText())
-                        cpaListe.content shouldContain
+                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
+                        cpaListeData.totalNumberOfCPAs shouldBe 432
+                        cpaListeData.page.content shouldContain
                             CpaListe(
                                 "partner1",
                                 "partnerId1",
@@ -292,8 +294,7 @@ class MeldingerApiSpek :
                                 "2025-11-25",
                                 null,
                             )
-                        // cpaListe.content shouldContain CpaListe(null, null, null, null, "nav:qass:25696", null, null, null, null, null, "2025-11-24") // TODO: Test hvor nye eMottak returnerer en CPA-id som gamle eMottak ikke returnerer
-                        cpaListe.content shouldContain
+                        cpaListeData.page.content shouldContain
                             CpaListe(
                                 "partner2",
                                 "partnerId2",
@@ -328,37 +329,37 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.PartialContent
                         println(response.bodyAsText())
-                        val cpaListe = LENIENT_JSON_PARSER.decodeFromString<Page<CpaListe>>(response.bodyAsText())
-                        cpaListe.content shouldContain
+                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
+                        cpaListeData.totalNumberOfCPAs shouldBe 432
+                        cpaListeData.page.content shouldContain
                             CpaListe(
-                                "partner1",
-                                "partnerId1",
-                                "herId1",
-                                "orgNr1",
-                                "nav:qass:25695",
-                                "navCppId1",
-                                "adminbruker",
-                                "partnerEndpoint1",
-                                "komSystem1",
-                                "2025-11-25",
-                                null,
+                                partnerSubjectDN = "partner1",
+                                partnerID = "partnerId1",
+                                herID = "herId1",
+                                orgNummer = "orgNr1",
+                                cpaID = "nav:qass:25695",
+                                navCppID = "navCppId1",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint1",
+                                komSystem = "komSystem1",
+                                lastUsed = "2025-11-25",
+                                lastUsedEbms = null,
                             )
                         /* TODO: Fiks feil hvor lastUsedEbms blir satt til 2025-11-21
-                        cpaListe.content shouldContain
+                        cpaListeData.page.content shouldContain
                             CpaListe(
-                                "partner2",
-                                "partnerId2",
-                                "herId2",
-                                "orgNr2",
-                                "nav:qass:30358",
-                                "navCppId2",
-                                "adminbruker",
-                                "partnerEndpoint2",
-                                "komSystem2",
-                                "2025-11-22",
-                                null,
-                            )
-                         */
+                                partnerSubjectDN = "partner2",
+                                partnerID = "partnerId2",
+                                herID = "herId2",
+                                orgNummer = "orgNr2",
+                                cpaID = "nav:qass:30358",
+                                navCppID = "navCppId2",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint2",
+                                komSystem = "komSystem2",
+                                lastUsed = "2025-11-22",
+                                lastUsedEbms = null,
+                            ) */
                     }
                 }
 

@@ -33,12 +33,17 @@ type CpaDetails = {
 };
 
 type Page = {
-  page: number;
+  pageNr: number;
   size: number;
   totalElements: number;
   totalPages: number;
   content: CpaDetails[];
 };
+
+type CpaListeData = {
+    page: Page,
+    totalNrOfCpas: number
+}
 
 const CpaTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
@@ -53,10 +58,10 @@ const CpaTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
     const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
-    const { fetchState, callRequest } = useFetch<Page>(url);
+    const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
-    const cpaInfo = data?.content ?? [];
+    const cpaInfo = data?.page.content ?? [];
 
     useEffect(() => {
     callRequest();
@@ -67,9 +72,9 @@ const CpaTable = () => {
       console.error('Fetch error:', error.message);
     }
     if (!data) return;
-    console.log('useEffect:currentPage:', currentPage, " data.page:", data.page, " pageSize:", pageSize, " data.size:", data.size, " : ", searchColmn );
-    if (data.page !== currentPage) setCurrentPage(data.page);
-    if (data.size !== pageSize) setPageSize(data.size);
+    console.log('useEffect:currentPage:', currentPage, " data.page:", data.page, " pageSize:", pageSize, " data.size:", data.page.size, " : ", searchColmn );
+    if (data.page.pageNr !== currentPage) setCurrentPage(data.page.pageNr);
+    if (data.page.size !== pageSize) setPageSize(data.page.size);
   }, [data]);
 
   useEffect(() => {
@@ -91,7 +96,7 @@ const CpaTable = () => {
       return true;
     }
   )
-  const totalCount = filteredMessages.length;
+  const totalFilterCount = filteredMessages.length;
 
   const {
     items: filteredAndSortedCpas,
@@ -183,6 +188,10 @@ const CpaTable = () => {
       !loading && !error?.message && cpaInfo?.length === 0;
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
+  const totalCount = data?.totalNrOfCpas ?? 0;
+  const showTo = pageSize * currentPage;
+  const showFrom = showTo - (pageSize-1);
+
   // @ts-ignore
     return (
       <>
@@ -260,13 +269,13 @@ const CpaTable = () => {
             </label>
           </div>
           <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-            Totalt antall {totalCount} CPA'er
+            Viser {showFrom} til {showTo} av {totalFilterCount} (filtrert fra totalt {totalCount} CPA'er)
           </span>
         </div>
           {/* Form fields */}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           <Pagination
-              totalCount={totalCount}
+              totalCount={totalFilterCount}
               pageSize={pageSize}
               siblingCount={1}
               currentPage={currentPage}
