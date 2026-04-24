@@ -10,11 +10,14 @@ import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import java.sql.Connection
 import java.sql.ResultSet
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.use
 
 fun DatabaseInterface.hentCpaliste(
     databasePrefix: String,
     columnSearchEncoded: String? = "",
+    hideUsedCpaMonths: Long = 0,
     pageable: Pageable? = null,
 ): CpaListeData =
     connection.use { connection ->
@@ -57,6 +60,7 @@ fun DatabaseInterface.hentCpaliste(
                 isEqual,
                 isContain,
                 isStart,
+                hideUsedCpaMonths,
                 pageable,
                 generateCountQuery = true,
             )
@@ -64,7 +68,17 @@ fun DatabaseInterface.hentCpaliste(
         val filterAntall = connection.executeCountQuery(sqlColmSearchCountQuery, sok)
 
         val sqlColmSearchResultQuery =
-            generateSQLQuery(databasePrefix, sequence, isSearchEmpty, isSearchColnEmpty, isEqual, isContain, isStart, pageable)
+            generateSQLQuery(
+                databasePrefix,
+                sequence,
+                isSearchEmpty,
+                isSearchColnEmpty,
+                isEqual,
+                isContain,
+                isStart,
+                hideUsedCpaMonths,
+                pageable,
+            )
         log.debug("SQL FOR CPA-DETALJER: '{}'", sqlColmSearchCountQuery)
         val listColmSearch = connection.exeuteCpaListeQuery(sqlColmSearchResultQuery, sok)
 
@@ -88,6 +102,7 @@ fun generateSQLQuery(
     isEqual: Boolean,
     isContain: Boolean,
     isStart: Boolean,
+    hideUsedCpaMonths: Long,
     pageable: Pageable? = null,
     generateCountQuery: Boolean = false,
 ): String {
@@ -104,6 +119,14 @@ fun generateSQLQuery(
                    FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
                    WHERE PARTNER_CPA.PARTNER_ID = PARTNER.PARTNER_ID AND PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID
                    """
+
+    // Filtrere vekk CPAer som ikke har vært i bruk siste X antall måneder?
+    if (hideUsedCpaMonths > 0) {
+        val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
+        val thresholdDateString = thresholdDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        sqlColmSearch += " AND PARTNER_CPA.LASTUSED <= TO_DATE('$thresholdDateString', 'DD.MM.YYYY') "
+    }
+
     // Search Not Empty
     if (!isSearchEmpty) {
         // Colmn Empty

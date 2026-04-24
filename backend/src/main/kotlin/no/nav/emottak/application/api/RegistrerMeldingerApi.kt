@@ -213,6 +213,7 @@ fun Route.hentCPAListe(
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val searchColmn = getURLEncodedQueryParameter("searchColmn")
+        val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toLong(0)
         val pageable = getPageable(page, size, null)
 
         if (pageable != null) {
@@ -220,9 +221,10 @@ fun Route.hentCPAListe(
             val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
             // Gamle emottak:
-            val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, pageable)
+            val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths, pageable)
             val cpaliste = cpalisteData.page
             log.info("Pageable: $pageable")
+            log.info("hideUsedCpaMonths: $hideUsedCpaMonths")
             log.info("Totalt antall CPA'er: ${cpalisteData.totalNumberOfCPAs}")
             log.info("Antall som matcher filteret: ${cpaliste.totalElements}")
             log.info("cpaliste.page: ${cpaliste.page}")
@@ -439,4 +441,12 @@ private suspend fun RoutingContext.executeREST(
 private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
     log.error(errorMessage)
     call.respond(HttpStatusCode.BadRequest, errorMessage)
+}
+
+private fun String.toLong(default: Long): Long {
+    return try {
+        this.toLong()
+    } catch (e: NumberFormatException) {
+        default
+    }
 }

@@ -67,7 +67,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
-                io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.cpaliste(any(), any(), any()) } returns getCPAListe()
 
                 val restBackendMock =
                     MockEngine { request ->

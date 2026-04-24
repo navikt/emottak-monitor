@@ -47,17 +47,19 @@ type CpaListeData = {
 
 const CpaTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
-    const [selectedCEqualValue, SetSelectedCEqualValue] = useState('er lik');
+    const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
     const [searchColmn, setSearchColmn] = useState('');
 
     const [months, setMonths] = useState(0);
-    const [thresholdDate, setThresholdDate] = useState(new Date());
+    // const [thresholdDate, setThresholdDate] = useState(new Date());
+    const [hideUsedCpaMonths, setHideUsedCpaMonths] = useState(0);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
-    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
+
+    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}&hideUsedCpaMonths=${hideUsedCpaMonths}`;
     const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
@@ -86,22 +88,11 @@ const CpaTable = () => {
       ["partnerSubjectDN", "partnerID", "herID", "orgNummer", "cpaID", "navCppID", "partnerCppID", "partnerEndpoint", "komSystem", "lastUsed", "lastUsedEbms"]
   );
 
-  const filteredMessages = filteredCpaInfo.filter(
-    e => {
-      if (e.lastUsed == null && e.lastUsedEbms == null) return true;
-      let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
-      let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
-      if (lastUsed != null && lastUsed > thresholdDate) return false;
-      if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
-      return true;
-    }
-  )
-
     const {
     items: filteredAndSortedCpas,
     requestSort,
     sortConfig,
-  } = useTableSorting(filteredMessages);
+  } = useTableSorting(filteredCpaInfo);
 
   const getClassNamesFor = (name: keyof CpaDetails) => {
     if (!sortConfig) {
@@ -127,7 +118,7 @@ const CpaTable = () => {
     setSelectedColnValue(event.currentTarget.value);
   };
   const onSelectEqual = (event: React.FormEvent<HTMLFormElement>) => {
-    SetSelectedCEqualValue(event.currentTarget.value);
+    setSelectedCEqualValue(event.currentTarget.value);
   };
   const handleBtnNullstil = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -135,36 +126,33 @@ const CpaTable = () => {
       setSearchColmn('')
       setInnValue('')
       setSelectedColnValue("")
-      SetSelectedCEqualValue("er lik") //TODO: First option
+      setSelectedCEqualValue("er lik") //TODO: First option
   };
 
 
   const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setErrorMessage('')
-      const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue
+      setErrorMessage('');
+      setHideUsedCpaMonths(months);
+      const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
       if (result.endsWith("PARTNER_ID")) {
           if (innValue === '' || Number.isInteger(Number(innValue))) {
-              setErrorMessage("")
-              setSearchColmn(result)
+              setErrorMessage("");
+              setSearchColmn(result);
           } else {
               // If not an integer, set an error message
               setErrorMessage("Partner_id skal være nummer!");
-              setSearchColmn(999999 + result)
+              setSearchColmn(999999 + result);
               return
           }
       }  else
-            setSearchColmn(result)
+            setSearchColmn(result);
   };
 
   const onMonthsChange = (value: string) => {
-    setCurrentPage(1);
     let m = value.replace(/[^0-9]/ig, '');
     if (m == "") m = "0";
     setMonths(parseInt(m));
-    let d = new Date();
-    d.setMonth(d.getMonth() - parseInt(m));
-    setThresholdDate(d);
   };
 
   const headers: { key: keyof CpaDetails; name: string }[] = [
