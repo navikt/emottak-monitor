@@ -42,7 +42,7 @@ type Page = {
 
 type CpaListeData = {
     page: Page,
-    totalNrOfCpas: number
+    totalNumberOfCPAs: number
 }
 
 const CpaTable = () => {
@@ -73,8 +73,8 @@ const CpaTable = () => {
     }
     if (!data) return;
     console.log('useEffect:currentPage:', currentPage, " data.page:", data.page, " pageSize:", pageSize, " data.size:", data.page.size, " : ", searchColmn );
-    if (data.page.page !== currentPage) setCurrentPage(data.page.page);
-    if (data.page.size !== pageSize) setPageSize(data.page.size);
+    if (data.page.page != null && data.page.page !== currentPage) setCurrentPage(data.page.page);
+    if (data.page.size != null && data.page.size !== pageSize) setPageSize(data.page.size);
   }, [data]);
 
   useEffect(() => {
@@ -96,9 +96,8 @@ const CpaTable = () => {
       return true;
     }
   )
-  const totalFilterCount = filteredMessages.length;
 
-  const {
+    const {
     items: filteredAndSortedCpas,
     requestSort,
     sortConfig,
@@ -188,9 +187,13 @@ const CpaTable = () => {
       !loading && !error?.message && cpaInfo?.length === 0;
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
-  const totalCount = data?.totalNrOfCpas ?? 0;
-  const showTo = pageSize * currentPage;
+  //const totalFilterCount = filteredMessages.length;
+  const totalFilterCount = data?.page.totalElements ?? 0;
+  const totalCPAs = data?.totalNumberOfCPAs;
+  var showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
+  if (showTo > totalFilterCount) showTo = totalFilterCount;
+  var pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount} (filtrert fra totalt ${totalCPAs} CPA'er)`;
 
   // @ts-ignore
     return (
@@ -253,7 +256,6 @@ const CpaTable = () => {
                   value={months}
               /> måneder
               </div>
-
           </div>
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
@@ -267,20 +269,18 @@ const CpaTable = () => {
                 <option value={1000}>1000</option>
               </select>
             </label>
+              <Pagination
+                  totalCount={totalFilterCount}
+                  pageSize={pageSize}
+                  siblingCount={1}
+                  currentPage={currentPage}
+                  onPageChange={setCurrentPage}
+              />
           </div>
-          <span style={{ position: "relative", float: "left", margin: "20px 0" }}>
-            Viser {showFrom} til {showTo} av {totalFilterCount} (filtrert fra totalt {totalCount} CPA'er)
-          </span>
+          <span style={{ position: "relative", float: "left", margin: "20px 0" }}>{pageLabel}</span>
         </div>
           {/* Form fields */}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-          <Pagination
-              totalCount={totalFilterCount}
-              pageSize={pageSize}
-              siblingCount={1}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-          />
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
             <Table.Row>
