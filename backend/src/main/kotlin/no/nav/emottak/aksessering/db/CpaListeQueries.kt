@@ -44,7 +44,9 @@ fun DatabaseInterface.hentCpaliste(
         log.info("Sok: '$sok'")
 
         // Totalt antall CPA'er:
-        val totalCount = connection.executeCountQuery("SELECT count(*) FROM $databasePrefix.PARTNER_CPA")
+        val sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER_CPA"
+        log.debug("SQL FOR ANTALL TOTALT: '{}'", sqlTotaltAntall)
+        val totalCount = connection.executeCountQuery(sqlTotaltAntall, null)
 
         val sqlColmSearchCountQuery =
             generateSQLQuery(
@@ -58,10 +60,12 @@ fun DatabaseInterface.hentCpaliste(
                 pageable,
                 generateCountQuery = true,
             )
-        val filterAntall = connection.executeCountQuery(sqlColmSearchCountQuery)
+        log.debug("SQL FOR ANTALL I FILTER: '{}'", sqlColmSearchCountQuery)
+        val filterAntall = connection.executeCountQuery(sqlColmSearchCountQuery, sok)
 
         val sqlColmSearchResultQuery =
             generateSQLQuery(databasePrefix, sequence, isSearchEmpty, isSearchColnEmpty, isEqual, isContain, isStart, pageable)
+        log.debug("SQL FOR CPA-DETALJER: '{}'", sqlColmSearchCountQuery)
         val listColmSearch = connection.exeuteCpaListeQuery(sqlColmSearchResultQuery, sok)
 
         var returnPageable = pageable
@@ -178,10 +182,16 @@ fun generateSQLQuery(
     return sqlColmSearch
 }
 
-fun Connection.executeCountQuery(sqlQuery: String): Long {
-    val countStatement =
-        this.prepareStatement(sqlQuery)
-    return countStatement.use {
+fun Connection.executeCountQuery(
+    sqlQuery: String,
+    sok: String?,
+): Long {
+    val preparedStatement = this.prepareStatement(sqlQuery)
+    if (!sok.isNullOrBlank()) {
+        log.debug("Legger inn søk: '" + sok + "'")
+        preparedStatement.setObject(1, sok)
+    }
+    return preparedStatement.use {
         val rs = it.executeQuery()
         rs.next()
         rs.getLong(1)
@@ -200,7 +210,7 @@ fun Connection.exeuteCpaListeQuery(
         return preparedStatement.use { it.executeQuery().toList { toCpaliste() } }.toList()
     } catch (e: Exception) {
         this.rollback()
-        log.info("Error: ($e)")
+        log.error("Error: ($e)")
         throw e
     } finally {
         this.close()
