@@ -19,6 +19,7 @@ import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -275,7 +276,7 @@ private fun mergeCpaListeData(
 ): CpaListeData {
     val cpaliste = cpalisteData.page
     val mergedList = cpaliste.content.toMutableList()
-    val thresholdDate = LocalDateTime.now().minusMonths(hideUsedCpaMonths)
+    val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
     var numberOfDeletedEntries = 0
     var i = 0
     while (i < mergedList.size) {
@@ -292,7 +293,7 @@ private fun mergeCpaListeData(
             val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
             if (hideUsedCpaMonths > 0) {
                 log.debug("Vi skal skjule de som har vært i bruk siste $hideUsedCpaMonths måneder.")
-                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDateTime("yyyy-MM-dd")
+                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate("yyyy-MM-dd")
                 log.debug("CPA-ID ${cpaListe.cpaID} var sist brukt: $lastUsedDateEbms (String-verdi: $lastUsedEbmsStr)")
                 if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
                     log.debug("CPA-ID ${cpaListe.cpaID} fjernes fra resultatlista!")
@@ -489,9 +490,10 @@ private fun String.toPositiveLong(default: Long): Long {
     return default
 }
 
-private fun String.toLocalDateTime(pattern: String): LocalDateTime? =
+fun String.toLocalDate(pattern: String): LocalDate? =
     try {
-        LocalDateTime.parse(this, DateTimeFormatter.ofPattern(pattern))
+        LocalDate.parse(this, DateTimeFormatter.ofPattern(pattern))
     } catch (e: DateTimeParseException) {
+        log.warn("Failed to parse the string '$this' to date: ${e.message}")
         null
     }
