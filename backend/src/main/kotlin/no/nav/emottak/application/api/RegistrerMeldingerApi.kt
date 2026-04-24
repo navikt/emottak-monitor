@@ -16,7 +16,6 @@ import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListeData
-import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
@@ -242,7 +241,6 @@ fun Route.hentCPAListe(
 
             // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
 
-
             call.respond(
                 status =
                     when (responseEbms == null) {
@@ -273,7 +271,7 @@ private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClien
 private fun mergeCpaListeData(
     responseEbms: Map<String, String?>?,
     cpalisteData: CpaListeData,
-    hideUsedCpaMonths: Long
+    hideUsedCpaMonths: Long,
 ): CpaListeData {
     val cpaliste = cpalisteData.page
     val mergedList = cpaliste.content.toMutableList()
@@ -303,12 +301,14 @@ private fun mergeCpaListeData(
         }
         i++
     }
-    val mergedCpalisteData = cpalisteData.copy(
-        page = cpalisteData.page.copy(
-            totalElements = cpalisteData.page.totalElements - numberOfDeletedEntries,
-            content = mergedList.toList()
+    val mergedCpalisteData =
+        cpalisteData.copy(
+            page =
+                cpalisteData.page.copy(
+                    totalElements = cpalisteData.page.totalElements - numberOfDeletedEntries,
+                    content = mergedList.toList(),
+                ),
         )
-    )
     return mergedCpalisteData
 }
 
