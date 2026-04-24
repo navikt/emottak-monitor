@@ -16,10 +16,13 @@ import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListeData
+import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
@@ -213,7 +216,7 @@ fun Route.hentCPAListe(
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val searchColmn = getURLEncodedQueryParameter("searchColmn")
-        val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toLong(0)
+        val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toPositiveLong(0)
         val pageable = getPageable(page, size, null)
 
         if (pageable != null) {
@@ -237,21 +240,8 @@ fun Route.hentCPAListe(
             log.info("Endpoint: ${cpaliste.content.firstOrNull()?.partnerEndpoint}")
             log.info("LastUsed: ${cpaliste.content.firstOrNull()?.lastUsed}")
 
-            val mergedList = cpaliste.content.toMutableList()
-            if (responseEbms != null) {
-                for (cpaListe in mergedList) {
-                    if (cpaListe.lastUsed != null) {
-                        cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
-                    }
-                    if (cpaListe.cpaID == null) {
-                        continue
-                    }
-                    if (cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
-                        cpaListe.lastUsedEbms = responseEbms[cpaListe.cpaID]!!.split("T")[0]
-                    }
-                }
-            }
-            // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
+            // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
+
 
             call.respond(
                 status =
@@ -259,7 +249,7 @@ fun Route.hentCPAListe(
                         true -> HttpStatusCode.PartialContent
                         false -> HttpStatusCode.OK
                     },
-                message = cpalisteData,
+                message = mergeCpaListeData(responseEbms, cpalisteData, hideUsedCpaMonths),
             )
         }
     }
@@ -278,6 +268,48 @@ private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClien
         .also {
             log.info("Antall CPA sist brukt nye emottak: ${it.size}")
         }
+}
+
+private fun mergeCpaListeData(
+    responseEbms: Map<String, String?>?,
+    cpalisteData: CpaListeData,
+    hideUsedCpaMonths: Long
+): CpaListeData {
+    val cpaliste = cpalisteData.page
+    val mergedList = cpaliste.content.toMutableList()
+    val thresholdDate = LocalDateTime.now().minusMonths(hideUsedCpaMonths)
+    var numberOfDeletedEntries = 0
+    var i = 0
+    while (i < mergedList.size) {
+        val cpaListe = mergedList[i]
+        if (cpaListe.lastUsed != null) {
+            cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
+        }
+        if (cpaListe.cpaID == null) {
+            continue
+        }
+        // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
+        if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
+            val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
+            if (hideUsedCpaMonths > 0) {
+                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDateTime("yyyy-MM-dd")
+                if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
+                    mergedList.remove(cpaListe)
+                    numberOfDeletedEntries++
+                    continue
+                }
+            }
+            cpaListe.lastUsedEbms = lastUsedEbmsStr
+        }
+        i++
+    }
+    val mergedCpalisteData = cpalisteData.copy(
+        page = cpalisteData.page.copy(
+            totalElements = cpalisteData.page.totalElements - numberOfDeletedEntries,
+            content = mergedList.toList()
+        )
+    )
+    return mergedCpalisteData
 }
 
 // Conversation-status (frontend: /conversationstatusebms)
@@ -443,10 +475,19 @@ private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
     call.respond(HttpStatusCode.BadRequest, errorMessage)
 }
 
-private fun String.toLong(default: Long): Long {
-    return try {
-        this.toLong()
+private fun String.toPositiveLong(default: Long): Long {
+    try {
+        val l = this.toLong()
+        if (l >= 0) return l
     } catch (e: NumberFormatException) {
-        default
+        return default
     }
+    return default
 }
+
+private fun String.toLocalDateTime(pattern: String): LocalDateTime? =
+    try {
+        LocalDateTime.parse(this, DateTimeFormatter.ofPattern(pattern))
+    } catch (e: DateTimeParseException) {
+        null
+    }
