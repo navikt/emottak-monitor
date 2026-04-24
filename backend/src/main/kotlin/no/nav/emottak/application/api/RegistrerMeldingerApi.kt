@@ -288,10 +288,14 @@ private fun mergeCpaListeData(
         }
         // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
         if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
+            log.debug("LastUsed finnes for CPA-ID ${cpaListe.cpaID} i nye emottak...")
             val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
             if (hideUsedCpaMonths > 0) {
+                log.debug("Vi skal skjule de som har vært i bruk siste $hideUsedCpaMonths måneder.")
                 val lastUsedDateEbms = lastUsedEbmsStr.toLocalDateTime("yyyy-MM-dd")
+                log.debug("CPA-ID ${cpaListe.cpaID} var sist brukt: $lastUsedDateEbms (String-verdi: $lastUsedEbmsStr)")
                 if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
+                    log.debug("CPA-ID ${cpaListe.cpaID} fjernes fra resultatlista!")
                     mergedList.remove(cpaListe)
                     numberOfDeletedEntries++
                     continue
