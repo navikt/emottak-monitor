@@ -181,7 +181,8 @@ const CpaTable = () => {
   var showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;
-  var pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount} (filtrert fra totalt ${totalCPAs} CPA'er)`;
+  var pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
+  if (totalCPAs != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalCPAs} CPA'er)`;
 
   // @ts-ignore
     return (
