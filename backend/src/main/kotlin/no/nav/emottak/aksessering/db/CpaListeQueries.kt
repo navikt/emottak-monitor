@@ -33,12 +33,14 @@ fun DatabaseInterface.hentCpaliste(
         val isContain: Boolean = columnSearch!!.contains("inneholder")
         var sok: String? = ""
 
-        if (isStart) {
-            sok = sequence?.first() + "%"
-        } else if (isContain) {
-            sok = "%" + sequence?.first() + "%"
-        } else if (isEqual) {
-            sok = sequence?.first()
+        if (!isSearchEmpty) {
+            if (isStart) {
+                sok = sequence?.first() + "%"
+            } else if (isContain) {
+                sok = "%" + sequence?.first() + "%"
+            } else if (isEqual) {
+                sok = sequence?.first()
+            }
         }
 
         if (sequence!!.first().contains("999999")) {
