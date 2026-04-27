@@ -15,11 +15,14 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaLastUsed
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
@@ -167,35 +170,6 @@ fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// CPA-id søk (frontend: /cpaidsok)
-@InternalAPI
-fun Route.hentCpaIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentcpaidinfo") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        log.info("Henter info for $cpaid")
-        val cpaIdInfo = meldingService.cpaid(cpaid, fom, tom)
-        log.info("Cpa id info for $cpaid: ${cpaIdInfo.size}")
-        call.respond(cpaIdInfo)
-    }
-
-// CPA-id søk ebms (frontend: /cpaidsokebms)
-@InternalAPI
-fun Route.hentCpaIdInfoEbms(httpClient: HttpClient): Route =
-    get("/hentcpaidinfoebms") {
-        val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaId")
-            return@get
-        }
-        val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(httpClient, fom, tom)
-    }
-
 // EBMessage-id søk (frontend: /ebmessageidsok)
 @InternalAPI
 fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
@@ -209,21 +183,6 @@ fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
         val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
         log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
         call.respond(ebMessageIdIdInfo)
-    }
-
-// Partner-id søk (frontend: /partnersok)
-@InternalAPI
-fun Route.hentPartnerIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentpartneridinfo") {
-        val partnerid = call.request.queryParameters["partnerId"]
-        if (partnerid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: partnerId")
-            return@get
-        }
-        log.info("Henter info for partnerid : $partnerid")
-        val partnerIdInfo = meldingService.partnerid(partnerid)
-        log.info("Partner info for $partnerid: ${partnerIdInfo.size}")
-        call.respond(partnerIdInfo)
     }
 
 // Feilstatistikk (frontend: /feilstatistikk)
@@ -246,31 +205,32 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// Henting av sist brukt-datoer fra gamle og nye emottak (frontend: /lastused)
+// Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
 @InternalAPI
-fun Route.hentSistBrukt(
+fun Route.hentCPAListe(
     meldingService: MessageQueryService,
     httpClient: HttpClient,
 ): Route =
-    get("/hentsistbrukt") {
-        log.info("Henter sist brukt-timestamps")
-
-        // Gamle emottak:
-        val responseEmottak: Map<String, String?> = hentSistBruktGamleEmottak(meldingService)
+    get("/hentcpaliste") {
+        log.info("Kjører dabasespørring for å hente liste over CPA'er...")
+        val searchColmn = getURLEncodedQueryParameter("searchColmn")
+        val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toPositiveLong(0)
 
         // Nye emottak:
         val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
-        val cpaIds: Set<String> = responseEmottak.keys + (responseEbms?.keys ?: emptySet())
-
-        val response: List<CpaLastUsed> =
-            cpaIds.map { cpaId ->
-                CpaLastUsed(
-                    cpaId,
-                    responseEmottak[cpaId]?.split(" ")[0],
-                    responseEbms?.get(cpaId)?.split("T")[0],
-                )
-            }
+        // Gamle emottak:
+        val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths)
+        val cpaliste = cpalisteData.cpaListe
+        log.info("Totalt antall CPA'er: {}", cpalisteData.totalNumberOfCPAs)
+        log.info("Antall som matcher filteret: {}", cpaliste.size)
+        log.debug("hideUsedCpaMonths: {}", hideUsedCpaMonths)
+        log.debug("partnerID: {}", cpaliste.firstOrNull()?.partnerID)
+        log.debug("cpaId: {}", cpaliste.firstOrNull()?.cpaID)
+        log.debug("partnerCppID: {}", cpaliste.firstOrNull()?.partnerCppID)
+        log.debug("SubjectDN: {}", cpaliste.firstOrNull()?.partnerSubjectDN)
+        log.debug("Endpoint: {}", cpaliste.firstOrNull()?.partnerEndpoint)
+        log.debug("LastUsed: {}", cpaliste.firstOrNull()?.lastUsed)
 
         call.respond(
             status =
@@ -278,9 +238,66 @@ fun Route.hentSistBrukt(
                     true -> HttpStatusCode.PartialContent
                     false -> HttpStatusCode.OK
                 },
-            message = response,
+            // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
+            message = mergeCpaListeData(responseEbms, cpalisteData, hideUsedCpaMonths),
         )
     }
+
+@InternalAPI
+private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
+    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
+    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
+    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
+    if (responseCode != HttpStatusCode.OK) {
+        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
+        return null
+    }
+    return Json
+        .decodeFromString<Map<String, String?>>(responseBody)
+        .also {
+            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
+        }
+}
+
+private fun mergeCpaListeData(
+    responseEbms: Map<String, String?>?,
+    cpalisteData: CpaListeData,
+    hideUsedCpaMonths: Long,
+): CpaListeData {
+    val cpaliste = cpalisteData.cpaListe
+    val mergedList = cpaliste.toMutableList()
+    val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
+    var numberOfDeletedEntries = 0
+    var i = 0
+    while (i < mergedList.size) {
+        val cpaListe = mergedList[i]
+        if (cpaListe.lastUsed != null) {
+            cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
+        }
+        if (cpaListe.cpaID == null) {
+            continue
+        }
+        // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
+        if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
+            val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
+            if (hideUsedCpaMonths > 0) {
+                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate()
+                if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
+                    mergedList.remove(cpaListe)
+                    numberOfDeletedEntries++
+                    continue
+                }
+            }
+            cpaListe.lastUsedEbms = lastUsedEbmsStr
+        }
+        i++
+    }
+    val mergedCpalisteData =
+        cpalisteData.copy(
+            cpaListe = mergedList,
+        )
+    return mergedCpalisteData
+}
 
 // Conversation-status (frontend: /conversationstatusebms)
 @InternalAPI
@@ -309,29 +326,6 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
             executeREST(httpClient, url)
         }
     }
-
-private fun hentSistBruktGamleEmottak(meldingService: MessageQueryService): Map<String, String?> {
-    log.info("Henter sist brukt-timestamps fra gamle emottak")
-    return meldingService.sistBrukt().also {
-        log.info("Antall CPA sist brukt gamle emottak: ${it.size}")
-    }
-}
-
-@InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
-    val url = "$cpaRepoUrl/cpa/timestamps/last_used"
-    log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
-    val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
-    if (responseCode != HttpStatusCode.OK) {
-        log.error("Hente sist brukt fra nye emottak feilet (HTTP $responseCode): $responseBody")
-        return null
-    }
-    return Json
-        .decodeFromString<Map<String, String?>>(responseBody)
-        .also {
-            log.info("Antall CPA sist brukt nye emottak: ${it.size}")
-        }
-}
 
 const val MAX_PAGE_SIZE = 1000
 
@@ -467,3 +461,21 @@ private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
     log.error(errorMessage)
     call.respond(HttpStatusCode.BadRequest, errorMessage)
 }
+
+private fun String.toPositiveLong(default: Long): Long {
+    try {
+        val l = this.toLong()
+        if (l >= 0) return l
+    } catch (e: NumberFormatException) {
+        return default
+    }
+    return default
+}
+
+fun String.toLocalDate(pattern: String = "yyyy-MM-dd"): LocalDate? =
+    try {
+        LocalDate.parse(this, DateTimeFormatter.ofPattern(pattern))
+    } catch (e: DateTimeParseException) {
+        log.warn("Failed to parse the string '$this' to date: ${e.message}")
+        null
+    }

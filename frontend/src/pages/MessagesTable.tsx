@@ -41,8 +41,8 @@ const MessagesTable = () => {
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-
   const [fromDate, setFromDate] = useState(initialDate(""));
+
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));

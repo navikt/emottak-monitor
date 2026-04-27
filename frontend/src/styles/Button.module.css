@@ -1,0 +1,17 @@
+.button {
+  position: relative;
+  outline: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 50px;
+  background-color: #e1dfb4;
+  border: 1px solid black;
+  //background-image: url('../images/search.gif');
+  color: black;
+  padding: 1px 42px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-flex;
+  font-size: 16px;
+  cursor: pointer;
+}
