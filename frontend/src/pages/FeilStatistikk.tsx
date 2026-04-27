@@ -23,15 +23,7 @@ type MappedStatistikkInfo = {
 };
 
 const FeilStatistikk = () => {
-    const [fromDate, setFromDate] = useState(() => {
-        const date = new Date();
-        date.setDate(date.getDate() - 1);
-        return date.toLocaleDateString('nb-NO', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    });
+  const [fromDate, setFromDate] = useState(initialDate(""));
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));

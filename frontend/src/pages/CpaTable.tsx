@@ -175,7 +175,6 @@ const CpaTable = () => {
       !loading && !error?.message && cpaInfo?.length === 0;
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
-  //const totalFilterCount = filteredMessages.length;
   const totalFilterCount = data?.page.totalElements ?? 0;
   const totalCPAs = data?.totalNumberOfCPAs;
   var showTo = pageSize * currentPage;
