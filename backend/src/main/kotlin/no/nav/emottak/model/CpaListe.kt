@@ -18,6 +18,6 @@ data class CpaListe(
 
 @Serializable
 data class CpaListeData(
-    val page: Page<CpaListe>,
+    val cpaListe: List<CpaListe>,
     val totalNumberOfCPAs: Long,
 )

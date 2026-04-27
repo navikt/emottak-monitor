@@ -213,44 +213,34 @@ fun Route.hentCPAListe(
 ): Route =
     get("/hentcpaliste") {
         log.info("Kjører dabasespørring for å hente liste over CPA'er...")
-        val page = getURLEncodedQueryParameter("page")
-        val size = getURLEncodedQueryParameter("size")
         val searchColmn = getURLEncodedQueryParameter("searchColmn")
         val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toPositiveLong(0)
-        val pageable = getPageable(page, size, null)
 
-        if (pageable != null) {
-            // Nye emottak:
-            val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+        // Nye emottak:
+        val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
 
-            // Gamle emottak:
-            val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths, pageable)
-            val cpaliste = cpalisteData.page
-            log.info("Totalt antall CPA'er: {}", cpalisteData.totalNumberOfCPAs)
-            log.info("Antall som matcher filteret: {}", cpaliste.totalElements)
-            log.info("cpaliste.page: {}", cpaliste.page)
-            log.info("cpaliste.size: {}", cpaliste.size)
-            log.info("content.size: {}", cpaliste.content.size)
-            log.debug("Pageable: {}", pageable)
-            log.debug("hideUsedCpaMonths: {}", hideUsedCpaMonths)
-            log.debug("partnerID: {}", cpaliste.content.firstOrNull()?.partnerID)
-            log.debug("cpaId: {}", cpaliste.content.firstOrNull()?.cpaID)
-            log.debug("partnerCppID: {}", cpaliste.content.firstOrNull()?.partnerCppID)
-            log.debug("SubjectDN: {}", cpaliste.content.firstOrNull()?.partnerSubjectDN)
-            log.debug("Endpoint: {}", cpaliste.content.firstOrNull()?.partnerEndpoint)
-            log.debug("LastUsed: {}", cpaliste.content.firstOrNull()?.lastUsed)
+        // Gamle emottak:
+        val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths)
+        val cpaliste = cpalisteData.cpaListe
+        log.info("Totalt antall CPA'er: {}", cpalisteData.totalNumberOfCPAs)
+        log.info("Antall som matcher filteret: {}", cpaliste.size)
+        log.debug("hideUsedCpaMonths: {}", hideUsedCpaMonths)
+        log.debug("partnerID: {}", cpaliste.firstOrNull()?.partnerID)
+        log.debug("cpaId: {}", cpaliste.firstOrNull()?.cpaID)
+        log.debug("partnerCppID: {}", cpaliste.firstOrNull()?.partnerCppID)
+        log.debug("SubjectDN: {}", cpaliste.firstOrNull()?.partnerSubjectDN)
+        log.debug("Endpoint: {}", cpaliste.firstOrNull()?.partnerEndpoint)
+        log.debug("LastUsed: {}", cpaliste.firstOrNull()?.lastUsed)
 
+        call.respond(
+            status =
+                when (responseEbms == null) {
+                    true -> HttpStatusCode.PartialContent
+                    false -> HttpStatusCode.OK
+                },
             // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
-
-            call.respond(
-                status =
-                    when (responseEbms == null) {
-                        true -> HttpStatusCode.PartialContent
-                        false -> HttpStatusCode.OK
-                    },
-                message = mergeCpaListeData(responseEbms, cpalisteData, hideUsedCpaMonths),
-            )
-        }
+            message = mergeCpaListeData(responseEbms, cpalisteData, hideUsedCpaMonths),
+        )
     }
 
 @InternalAPI
@@ -274,8 +264,8 @@ private fun mergeCpaListeData(
     cpalisteData: CpaListeData,
     hideUsedCpaMonths: Long,
 ): CpaListeData {
-    val cpaliste = cpalisteData.page
-    val mergedList = cpaliste.content.toMutableList()
+    val cpaliste = cpalisteData.cpaListe
+    val mergedList = cpaliste.toMutableList()
     val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
     var numberOfDeletedEntries = 0
     var i = 0
@@ -304,11 +294,7 @@ private fun mergeCpaListeData(
     }
     val mergedCpalisteData =
         cpalisteData.copy(
-            page =
-                cpalisteData.page.copy(
-                    totalElements = cpalisteData.page.totalElements - numberOfDeletedEntries,
-                    content = mergedList.toList(),
-                ),
+            cpaListe = mergedList,
         )
     return mergedCpalisteData
 }

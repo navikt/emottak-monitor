@@ -56,6 +56,5 @@ class MessageQueryService(
     fun cpaliste(
         searchColmn: String?,
         hideUsedCpaMonths: Long = 0,
-        pageable: Pageable? = null,
-    ): CpaListeData = databaseInterface.hentCpaliste(databasePrefix, searchColmn.toString(), hideUsedCpaMonths, pageable)
+    ): CpaListeData = databaseInterface.hentCpaliste(databasePrefix, searchColmn.toString(), hideUsedCpaMonths)
 }

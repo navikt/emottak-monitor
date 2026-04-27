@@ -67,7 +67,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
-                io.mockk.coEvery { messageQueryService.cpaliste(any(), any(), any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -270,47 +270,6 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentcpaliste)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentcpaliste?searchColmn=&page=1&size=25") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                        println(response.bodyAsText())
-                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
-                        cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.page.content shouldContain
-                            CpaListe(
-                                "partner1",
-                                "partnerId1",
-                                "herId1",
-                                "orgNr1",
-                                "nav:qass:25695",
-                                "navCppId1",
-                                "adminbruker",
-                                "partnerEndpoint1",
-                                "komSystem1",
-                                "2025-11-25",
-                                null,
-                            )
-                        cpaListeData.page.content shouldContain
-                            CpaListe(
-                                "partner2",
-                                "partnerId2",
-                                "herId2",
-                                "orgNr2",
-                                "nav:qass:30358",
-                                "navCppId2",
-                                "adminbruker",
-                                "partnerEndpoint2",
-                                "komSystem2",
-                                "2025-11-22",
-                                "2025-11-21",
-                            )
-                    }
-                }
-
                 it("Should return 206 Partial Content (hentcpaliste) when ebms fails to deliver lastused-timestamps") {
                     val newRestBackendMock =
                         MockEngine { _ ->
@@ -319,7 +278,9 @@ class MeldingerApiSpek :
                                     """{"error": "Something went wrong"}""",
                                 status = HttpStatusCode.InternalServerError,
                                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
-                            )
+                            ).also {
+                                log.info("Simulerte feil fra CPA-INFO: 'cpa/timestamps/last_used'")
+                            }
                         }
                     val anotherMockHttpClient = HttpClient(newRestBackendMock) {}
                     withTestApplicationForApi(messageQueryService, anotherMockHttpClient) {
@@ -331,7 +292,7 @@ class MeldingerApiSpek :
                         println(response.bodyAsText())
                         val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
                         cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.page.content shouldContain
+                        cpaListeData.cpaListe shouldContain
                             CpaListe(
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
@@ -345,8 +306,7 @@ class MeldingerApiSpek :
                                 lastUsed = "2025-11-25",
                                 lastUsedEbms = null,
                             )
-                        /* TODO: Fiks feil hvor lastUsedEbms blir satt til 2025-11-21
-                        cpaListeData.page.content shouldContain
+                        cpaListeData.cpaListe shouldContain
                             CpaListe(
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",
@@ -359,7 +319,48 @@ class MeldingerApiSpek :
                                 komSystem = "komSystem2",
                                 lastUsed = "2025-11-22",
                                 lastUsedEbms = null,
-                            ) */
+                            )
+                    }
+                }
+
+                it("Should return 200 OK (hentcpaliste)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentcpaliste?searchColmn=&page=1&size=25") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        println(response.bodyAsText())
+                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
+                        cpaListeData.totalNumberOfCPAs shouldBe 432
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                "partner1",
+                                "partnerId1",
+                                "herId1",
+                                "orgNr1",
+                                "nav:qass:25695",
+                                "navCppId1",
+                                "adminbruker",
+                                "partnerEndpoint1",
+                                "komSystem1",
+                                "2025-11-25",
+                                null,
+                            )
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                "partner2",
+                                "partnerId2",
+                                "herId2",
+                                "orgNr2",
+                                "nav:qass:30358",
+                                "navCppId2",
+                                "adminbruker",
+                                "partnerEndpoint2",
+                                "komSystem2",
+                                "2025-11-22",
+                                "2025-11-21",
+                            )
                     }
                 }
 

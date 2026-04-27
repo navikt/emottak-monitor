@@ -6,7 +6,6 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListe
 import no.nav.emottak.model.CpaListeData
-import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
 import java.sql.Connection
 import java.sql.ResultSet
@@ -18,7 +17,6 @@ fun DatabaseInterface.hentCpaliste(
     databasePrefix: String,
     columnSearchEncoded: String? = "",
     hideUsedCpaMonths: Long = 0,
-    pageable: Pageable? = null,
 ): CpaListeData =
     connection.use { connection ->
         val columnSearch = columnSearchEncoded?.decodeURLQueryComponent()
@@ -63,7 +61,6 @@ fun DatabaseInterface.hentCpaliste(
                 isContain,
                 isStart,
                 hideUsedCpaMonths,
-                pageable,
                 generateCountQuery = true,
             )
         log.debug("SQL FOR ANTALL I FILTER: '{}'", sqlColmSearchCountQuery)
@@ -79,19 +76,12 @@ fun DatabaseInterface.hentCpaliste(
                 isContain,
                 isStart,
                 hideUsedCpaMonths,
-                pageable,
             )
         log.debug("SQL FOR CPA-DETALJER: '{}'", sqlColmSearchCountQuery)
         val listColmSearch = connection.exeuteCpaListeQuery(sqlColmSearchResultQuery, sok)
 
-        var returnPageable = pageable
-        if (returnPageable == null) {
-            returnPageable = Pageable(1, listColmSearch.size)
-        }
-
-        // Page(returnPageable.pageNumber, returnPageable.pageSize, null, totalCount, listColmSearch)
         CpaListeData(
-            Page(returnPageable.pageNumber, returnPageable.pageSize, null, filterAntall, listColmSearch),
+            listColmSearch,
             totalCount,
         )
     }
@@ -197,9 +187,9 @@ fun generateSQLQuery(
                 }
             }
         }
-        sqlColmSearch += " ORDER BY PARTNER.PARTNER_ID DESC "
+        sqlColmSearch += " ORDER BY PARTNER_CPA.CPA_ID DESC "
     } else {
-        sqlColmSearch += " ORDER BY PARTNER.PARTNER_ID DESC "
+        sqlColmSearch += " ORDER BY PARTNER_CPA.CPA_ID DESC "
     }
     if (pageable != null && !generateCountQuery) {
         sqlColmSearch += " OFFSET " + pageable.offset + " ROWS FETCH NEXT " + pageable.pageSize + " ROWS ONLY "

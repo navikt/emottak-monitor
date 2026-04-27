@@ -1,6 +1,6 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
@@ -32,16 +32,8 @@ type CpaDetails = {
     lastUsedEbms: string;
 };
 
-type Page = {
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  content: CpaDetails[];
-};
-
 type CpaListeData = {
-    page: Page,
+    cpaListe: CpaDetails[],
     totalNumberOfCPAs: number
 }
 
@@ -52,7 +44,7 @@ const CpaTable = () => {
     const [searchColmn, setSearchColmn] = useState('');
 
     const [months, setMonths] = useState(0);
-    // const [thresholdDate, setThresholdDate] = useState(new Date());
+    const [thresholdDate, setThresholdDate] = useState(new Date());
     const [hideUsedCpaMonths, setHideUsedCpaMonths] = useState(0);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -63,20 +55,11 @@ const CpaTable = () => {
     const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
-    const cpaInfo = data?.page.content ?? [];
+    const cpaInfo = data?.cpaListe ?? [];
 
     useEffect(() => {
     callRequest();
   }, [callRequest]);
-
-  useEffect(() => {
-    if (error) {
-      console.error('Fetch error: ', error.message);
-    }
-    if (!data) return;
-    if (data.page.page != null && data.page.page !== currentPage) setCurrentPage(data.page.page);
-    if (data.page.size != null && data.page.size !== pageSize) setPageSize(data.page.size);
-  }, [data]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -87,7 +70,7 @@ const CpaTable = () => {
       ["partnerSubjectDN", "partnerID", "herID", "orgNummer", "cpaID", "navCppID", "partnerCppID", "partnerEndpoint", "komSystem", "lastUsed", "lastUsedEbms"]
   );
 
-    const {
+  const {
     items: filteredAndSortedCpas,
     requestSort,
     sortConfig,
@@ -102,13 +85,11 @@ const CpaTable = () => {
 
   const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSize = parseInt(e.target.value, 10);
-    console.log(newSize, ' !== ', pageSize,' -> ', currentPage);
     if (newSize !== pageSize) {
       setCurrentPage(1);
       setPageSize(newSize);
     }
   };
-
 
   const handleInputChange = (event: React.FormEvent<HTMLFormElement>) => {
     setInnValue(event.currentTarget.value)
@@ -127,7 +108,6 @@ const CpaTable = () => {
       setSelectedColnValue("")
       setSelectedCEqualValue("er lik") //TODO: First option
   };
-
 
   const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -154,6 +134,12 @@ const CpaTable = () => {
     setMonths(parseInt(m));
   };
 
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return filteredAndSortedCpas.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedCpas]);
+
   const headers: { key: keyof CpaDetails; name: string }[] = [
       { key: "partnerSubjectDN", name: "Navn" },
       { key: "partnerID", name: "PartnerID" },
@@ -174,12 +160,12 @@ const CpaTable = () => {
       !loading && !error?.message && cpaInfo?.length === 0;
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
-  const totalFilterCount = data?.page.totalElements ?? 0;
+  const totalFilterCount = filteredAndSortedCpas.length ?? 0;
   const totalCPAs = data?.totalNumberOfCPAs;
-  var showTo = pageSize * currentPage;
+  let showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;
-  var pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
+  let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
   if (totalCPAs != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalCPAs} CPA'er)`;
 
   // @ts-ignore
@@ -234,7 +220,7 @@ const CpaTable = () => {
             </form>
 
               <div className="navds-form-field--small">
-                  Ikke vis CPA'er som har vært i bruk siste <input
+                  Skjul brukte siste <input
                   id="months-input"
                   type="number"
                   size={1}
@@ -291,7 +277,7 @@ const CpaTable = () => {
             {showErrorMessage && <RowWithContent>{error}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
             {showData &&
-                filteredAndSortedCpas.map((message, index) => {
+                currentTableData.map((message, index) => {
                   return (
                       <Table.Row
                           key={message.cpaID + index}
