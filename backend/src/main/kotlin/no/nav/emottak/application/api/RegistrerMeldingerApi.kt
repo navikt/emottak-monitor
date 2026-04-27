@@ -293,7 +293,7 @@ private fun mergeCpaListeData(
             val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
             if (hideUsedCpaMonths > 0) {
                 log.debug("Vi skal skjule de som har vært i bruk siste $hideUsedCpaMonths måneder.")
-                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate("yyyy-MM-dd")
+                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate()
                 log.debug("CPA-ID ${cpaListe.cpaID} var sist brukt: $lastUsedDateEbms (String-verdi: $lastUsedEbmsStr)")
                 if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
                     log.debug("CPA-ID ${cpaListe.cpaID} fjernes fra resultatlista!")
@@ -490,7 +490,7 @@ private fun String.toPositiveLong(default: Long): Long {
     return default
 }
 
-fun String.toLocalDate(pattern: String): LocalDate? =
+fun String.toLocalDate(pattern: String = "yyyy-MM-dd"): LocalDate? =
     try {
         LocalDate.parse(this, DateTimeFormatter.ofPattern(pattern))
     } catch (e: DateTimeParseException) {

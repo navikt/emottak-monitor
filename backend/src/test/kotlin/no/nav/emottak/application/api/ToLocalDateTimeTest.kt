@@ -9,7 +9,7 @@ class ToLocalDateTimeTest {
     @Test
     fun shouldParseStringToLocalDate() {
         val dateString = "2026-04-03"
-        val localDateTime = dateString.toLocalDate(dateString)
+        val localDateTime = dateString.toLocalDate()
         localDateTime shouldNotBe null
         localDateTime!!.dayOfMonth shouldBe 3
         localDateTime.month shouldBe Month.APRIL
