@@ -71,10 +71,9 @@ const CpaTable = () => {
 
   useEffect(() => {
     if (error) {
-      console.error('Fetch error:', error.message);
+      console.error('Fetch error: ', error.message);
     }
     if (!data) return;
-    console.log('useEffect:currentPage:', currentPage, " data.page:", data.page, " pageSize:", pageSize, " data.size:", data.page.size, " : ", searchColmn );
     if (data.page.page != null && data.page.page !== currentPage) setCurrentPage(data.page.page);
     if (data.page.size != null && data.page.size !== pageSize) setPageSize(data.page.size);
   }, [data]);

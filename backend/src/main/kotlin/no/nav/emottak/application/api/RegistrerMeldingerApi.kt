@@ -226,19 +226,19 @@ fun Route.hentCPAListe(
             // Gamle emottak:
             val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths, pageable)
             val cpaliste = cpalisteData.page
-            log.info("Pageable: $pageable")
-            log.info("hideUsedCpaMonths: $hideUsedCpaMonths")
-            log.info("Totalt antall CPA'er: ${cpalisteData.totalNumberOfCPAs}")
-            log.info("Antall som matcher filteret: ${cpaliste.totalElements}")
-            log.info("cpaliste.page: ${cpaliste.page}")
-            log.info("cpaliste.size: ${cpaliste.size}")
-            log.info("content.size: ${cpaliste.content.size}")
-            log.info("partnerID: ${cpaliste.content.firstOrNull()?.partnerID}")
-            log.info("cpaId:${cpaliste.content.firstOrNull()?.cpaID}")
-            log.info("partnerCppID: ${cpaliste.content.firstOrNull()?.partnerCppID}")
-            log.info("SubjectDN: ${cpaliste.content.firstOrNull()?.partnerSubjectDN}")
-            log.info("Endpoint: ${cpaliste.content.firstOrNull()?.partnerEndpoint}")
-            log.info("LastUsed: ${cpaliste.content.firstOrNull()?.lastUsed}")
+            log.info("Totalt antall CPA'er: {}", cpalisteData.totalNumberOfCPAs)
+            log.info("Antall som matcher filteret: {}", cpaliste.totalElements)
+            log.info("cpaliste.page: {}", cpaliste.page)
+            log.info("cpaliste.size: {}", cpaliste.size)
+            log.info("content.size: {}", cpaliste.content.size)
+            log.debug("Pageable: {}", pageable)
+            log.debug("hideUsedCpaMonths: {}", hideUsedCpaMonths)
+            log.debug("partnerID: {}", cpaliste.content.firstOrNull()?.partnerID)
+            log.debug("cpaId: {}", cpaliste.content.firstOrNull()?.cpaID)
+            log.debug("partnerCppID: {}", cpaliste.content.firstOrNull()?.partnerCppID)
+            log.debug("SubjectDN: {}", cpaliste.content.firstOrNull()?.partnerSubjectDN)
+            log.debug("Endpoint: {}", cpaliste.content.firstOrNull()?.partnerEndpoint)
+            log.debug("LastUsed: {}", cpaliste.content.firstOrNull()?.lastUsed)
 
             // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
 
@@ -289,14 +289,10 @@ private fun mergeCpaListeData(
         }
         // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
         if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
-            log.debug("LastUsed finnes for CPA-ID ${cpaListe.cpaID} i nye emottak...")
             val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
             if (hideUsedCpaMonths > 0) {
-                log.debug("Vi skal skjule de som har vært i bruk siste $hideUsedCpaMonths måneder.")
                 val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate()
-                log.debug("CPA-ID ${cpaListe.cpaID} var sist brukt: $lastUsedDateEbms (String-verdi: $lastUsedEbmsStr)")
                 if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
-                    log.debug("CPA-ID ${cpaListe.cpaID} fjernes fra resultatlista!")
                     mergedList.remove(cpaListe)
                     numberOfDeletedEntries++
                     continue
