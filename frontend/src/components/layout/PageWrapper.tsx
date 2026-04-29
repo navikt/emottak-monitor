@@ -10,20 +10,22 @@ const PageWrapper: React.FC<PageWrapperProps> = (props: PageWrapperProps) => {
   const { children } = props;
   const location = useLocation();
 
-  const title = pages.find((page) => location.pathname === page.path)?.title;
+    const title = pages.find((page) => location.pathname === page.path)?.title;
+    const enableHeader = pages.find((page) => location.pathname === page.path)?.enableHeader;
 
   return (
     <div className={styles.pageWrapper}>
-      <Heading
-        style={{
-          display: "flex",
-          alignItems: "center",
-          height: "90px",
-        }}
-        size="xlarge"
-      >
-        {title}
-      </Heading>
+        {enableHeader &&
+            <Heading
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    height: "90px",
+                }}
+                size="xlarge"
+            >
+                {title}
+            </Heading>}
       {children}
     </div>
   );

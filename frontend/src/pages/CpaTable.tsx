@@ -45,13 +45,12 @@ const CpaTable = () => {
 
     const [months, setMonths] = useState(0);
     const [thresholdDate, setThresholdDate] = useState(new Date());
-    const [hideUsedCpaMonths, setHideUsedCpaMonths] = useState(0);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
 
-    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}&hideUsedCpaMonths=${hideUsedCpaMonths}`;
+    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
     const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
@@ -65,9 +64,16 @@ const CpaTable = () => {
     setCurrentPage(1);
   }, [searchColmn]);
 
-  const { filteredItems: filteredCpaInfo, handleFilterChange } = useFilter(
-      cpaInfo ?? [],
-      ["partnerSubjectDN", "partnerID", "herID", "orgNummer", "cpaID", "navCppID", "partnerCppID", "partnerEndpoint", "komSystem", "lastUsed", "lastUsedEbms"]
+  // Filtrer ut CPA'er som har vært i bruk siste X antall måneder:
+  const filteredCpaInfo = (cpaInfo ?? []).filter(
+      e => {
+          if (e.lastUsed == null && e.lastUsedEbms == null) return true;
+          let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
+          let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
+          if (lastUsed != null && lastUsed > thresholdDate) return false;
+          if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
+          return true;
+      }
   );
 
   const {
@@ -112,7 +118,6 @@ const CpaTable = () => {
   const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       setErrorMessage('');
-      setHideUsedCpaMonths(months);
       const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
       if (result.endsWith("PARTNER_ID")) {
           if (innValue === '' || Number.isInteger(Number(innValue))) {
@@ -129,9 +134,13 @@ const CpaTable = () => {
   };
 
   const onMonthsChange = (value: string) => {
-    let m = value.replace(/[^0-9]/ig, '');
-    if (m == "") m = "0";
-    setMonths(parseInt(m));
+      setCurrentPage(1);
+      let m = value.replace(/[^0-9]/ig, '');
+      if (m == "") m = "0";
+      setMonths(parseInt(m));
+      let d = new Date();
+      d.setMonth(d.getMonth() - parseInt(m));
+      setThresholdDate(d);
   };
 
   const currentTableData = useMemo(() => {
@@ -209,6 +218,15 @@ const CpaTable = () => {
               </select>
             </label>
                 &nbsp;&nbsp;&nbsp;
+                Skjul brukte siste <input
+                id="months-input"
+                type="number"
+                size={1}
+                className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                onChange={(event) => onMonthsChange(event.target.value)}
+                value={months}
+            /> måneder
+            <div className="navds-form-field--small" style={{display: "flex"}}>
               <button className={buttonStyles.button} type="submit" onClick={handleBtnSearch}>
                   <img src={search}/>
                   <span style={{display:"center"}}>Søk</span>
@@ -217,31 +235,23 @@ const CpaTable = () => {
               <button  className={buttonStyles.button} type="submit" onClick={handleBtnNullstil}>
                   <img  src={erase} />Nullstil
               </button>
+            </div>
             </form>
-
-              <div className="navds-form-field--small">
-                  Skjul brukte siste <input
-                  id="months-input"
-                  type="number"
-                  size={1}
-                  className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
-                  onChange={(event) => onMonthsChange(event.target.value)}
-                  value={months}
-              /> måneder
-              </div>
           </div>
+        </div>
+
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
-            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-              <span>Rader per side</span>
-              <select value={pageSize} onChange={onPageSizeChange}>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={250}>250</option>
-                <option value={500}>500</option>
-                <option value={1000}>1000</option>
-              </select>
-            </label>
+              <label style={{display: "inline-flex", alignItems: "right", gap: 8}}>
+                  <span>Rader per side</span>
+                  <select value={pageSize} onChange={onPageSizeChange}>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                      <option value={250}>250</option>
+                      <option value={500}>500</option>
+                      <option value={1000}>1000</option>
+                  </select>
+              </label>
               <Pagination
                   totalCount={totalFilterCount}
                   pageSize={pageSize}
@@ -249,13 +259,15 @@ const CpaTable = () => {
                   currentPage={currentPage}
                   onPageChange={setCurrentPage}
               />
+              <span style={{ position: "relative", right: "2px", left: "auto", margin: "20px 0" }}>{pageLabel}</span>
           </div>
-          <span style={{ position: "relative", float: "left", margin: "20px 0" }}>{pageLabel}</span>
-        </div>
           {/* Form fields */}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
+              <Table.Row>
+                  <Table.HeaderCell colSpan={11} style={{textAlign:"center"}}>CPA-LISTE</Table.HeaderCell>
+              </Table.Row>
             <Table.Row>
               {headers.map(({ key, name }) => (
                   <Table.HeaderCell
