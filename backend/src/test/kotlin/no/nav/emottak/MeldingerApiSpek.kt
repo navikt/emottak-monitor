@@ -28,10 +28,9 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
+import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentCpaIdInfo
-import no.nav.emottak.application.api.hentCpaIdInfoEbms
 import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
@@ -42,11 +41,10 @@ import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
-import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
-import no.nav.emottak.application.api.hentSistBrukt
 import no.nav.emottak.application.setupAuth
-import no.nav.emottak.model.CpaLastUsed
+import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Page
 import no.nav.emottak.services.MessageQueryService
 import java.nio.file.Paths
@@ -67,11 +65,9 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
-                io.mockk.coEvery { messageQueryService.partnerid(any()) } returns getPartnerIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
-                io.mockk.coEvery { messageQueryService.cpaid(any(), any(), any()) } returns getCpaIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
-                io.mockk.coEvery { messageQueryService.sistBrukt() } returns getLastUsed()
+                io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -244,32 +240,10 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentcpaidinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get(
-                                "/v1/hentcpaidinfo?cpaId=985033633_889640782_eResept&fromDate=28-04-2022 09:10:10&toDate=28-04-2022 10:00:10",
-                            ) {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
                 it("Should return 200 OK (hentebmessageidinfo)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentpartneridinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentpartneridinfo?partnerId=18736") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -296,21 +270,7 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentsistbrukt)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentsistbrukt") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                        val lastUsedList = LENIENT_JSON_PARSER.decodeFromString<List<CpaLastUsed>>(response.bodyAsText())
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", "2025-11-25", null)
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:25696", null, "2025-11-24")
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:30358", "2025-11-22", "2025-11-21")
-                    }
-                }
-
-                it("Should return 206 Partial Content (hentsistbrukt) when ebms fails to deliver lastused-timestamps") {
+                it("Should return 206 Partial Content (hentcpaliste) when ebms fails to deliver lastused-timestamps") {
                     val newRestBackendMock =
                         MockEngine { _ ->
                             respond(
@@ -318,18 +278,89 @@ class MeldingerApiSpek :
                                     """{"error": "Something went wrong"}""",
                                 status = HttpStatusCode.InternalServerError,
                                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
-                            )
+                            ).also {
+                                log.info("Simulerte feil fra CPA-INFO: 'cpa/timestamps/last_used'")
+                            }
                         }
                     val anotherMockHttpClient = HttpClient(newRestBackendMock) {}
                     withTestApplicationForApi(messageQueryService, anotherMockHttpClient) {
                         val response =
-                            client.get("/v1/hentsistbrukt") {
+                            client.get("/v1/hentcpaliste") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.PartialContent
-                        val lastUsedList = LENIENT_JSON_PARSER.decodeFromString<List<CpaLastUsed>>(response.bodyAsText())
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:25695", "2025-11-25", null)
-                        lastUsedList shouldContain CpaLastUsed("nav:qass:30358", "2025-11-22", null)
+                        println(response.bodyAsText())
+                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
+                        cpaListeData.totalNumberOfCPAs shouldBe 432
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                partnerSubjectDN = "partner1",
+                                partnerID = "partnerId1",
+                                herID = "herId1",
+                                orgNummer = "orgNr1",
+                                cpaID = "nav:qass:25695",
+                                navCppID = "navCppId1",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint1",
+                                komSystem = "komSystem1",
+                                lastUsed = "2025-11-25",
+                                lastUsedEbms = null,
+                            )
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                partnerSubjectDN = "partner2",
+                                partnerID = "partnerId2",
+                                herID = "herId2",
+                                orgNummer = "orgNr2",
+                                cpaID = "nav:qass:30358",
+                                navCppID = "navCppId2",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint2",
+                                komSystem = "komSystem2",
+                                lastUsed = "2025-11-22",
+                                lastUsedEbms = null,
+                            )
+                    }
+                }
+
+                it("Should return 200 OK (hentcpaliste)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentcpaliste?searchColmn=&page=1&size=25") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        println(response.bodyAsText())
+                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
+                        cpaListeData.totalNumberOfCPAs shouldBe 432
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                "partner1",
+                                "partnerId1",
+                                "herId1",
+                                "orgNr1",
+                                "nav:qass:25695",
+                                "navCppId1",
+                                "adminbruker",
+                                "partnerEndpoint1",
+                                "komSystem1",
+                                "2025-11-25",
+                                null,
+                            )
+                        cpaListeData.cpaListe shouldContain
+                            CpaListe(
+                                "partner2",
+                                "partnerId2",
+                                "herId2",
+                                "orgNr2",
+                                "nav:qass:30358",
+                                "navCppId2",
+                                "adminbruker",
+                                "partnerEndpoint2",
+                                "komSystem2",
+                                "2025-11-22",
+                                "2025-11-21",
+                            )
                     }
                 }
 
@@ -476,13 +507,10 @@ private fun <T> withTestApplicationForApi(
                     hentCpa(messageQueryService)
                     hentMessageInfo(messageQueryService)
                     hentMessageInfoEbms(mockHttpClient)
-                    hentCpaIdInfo(messageQueryService)
-                    hentCpaIdInfoEbms(mockHttpClient)
                     hentEbMessageIdInfo(messageQueryService)
-                    hentPartnerIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
-                    hentSistBrukt(messageQueryService, mockHttpClient)
+                    hentCPAListe(messageQueryService, mockHttpClient)
                     hentConversationStatusEbms(mockHttpClient)
                 }
             }

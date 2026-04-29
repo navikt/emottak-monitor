@@ -1,64 +1,326 @@
 import { Table } from "@navikt/ds-react";
-import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import clsx from "clsx";
+import React, {useEffect, useMemo, useState} from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
+// @ts-ignore
 import tableStyles from "../styles/Table.module.scss";
+import {Input} from "nav-frontend-skjema";
+import Pagination from "../components/Pagination";
+import RowWithContent from "../components/RowWithContent";
+import NavFrontendSpinner from "nav-frontend-spinner";
+// @ts-ignore
+import search from "../images/search.gif";
+// @ts-ignore
+import erase from "../images/erase.gif";
+import filterStyles from "../components/Filter.module.scss";
+// @ts-ignore
+import buttonStyles from "../styles/Button.module.scss";
+import inputStyles from "../styles/Input.module.scss";
 
 type CpaDetails = {
-  partnerid: string;
-  navn: string;
-  partnerherid: string;
-  partnerorgnummer: string;
+    partnerSubjectDN: string;
+    partnerID: string;
+    herID: string;
+    orgNummer: string;
+    cpaID: string;
+    navCppID: string;
+    partnerCppID: string;
+    partnerEndpoint: string;
+    komSystem: string;
+    lastUsed: string;
+    lastUsedEbms: string;
 };
 
+type CpaListeData = {
+    cpaListe: CpaDetails[],
+    totalNumberOfCPAs: number
+}
+
 const CpaTable = () => {
-  const { cpaid } = useParams();
+    const [selectedColnValue, setSelectedColnValue] = useState('');
+    const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
+    const [innValue, setInnValue] = useState('');
+    const [searchColmn, setSearchColmn] = useState('');
 
-  const { fetchState, callRequest } = useFetch<CpaDetails[]>(
-    `/v1/hentcpa?cpaId=${cpaid}`
-  );
+    const [months, setMonths] = useState(0);
+    const [thresholdDate, setThresholdDate] = useState(new Date());
 
-  const { loading, error, data: cpaInfo } = fetchState;
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(25);
 
-  useEffect(() => {
+    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
+    const { fetchState, callRequest } = useFetch<CpaListeData>(url);
+
+    const { loading, error, data } = fetchState;
+    const cpaInfo = data?.cpaListe ?? [];
+
+    useEffect(() => {
     callRequest();
   }, [callRequest]);
 
-  const { items } = useTableSorting(cpaInfo ?? []);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchColmn]);
 
-  return (
-    <div>
-      <h1>CPA info for cpa-id : {cpaid}</h1>
-      <Table className={tableStyles.table}>
-        <Table.Header className={tableStyles.tableHeader}>
-          <Table.Row>
-            <Table.HeaderCell>Partner-ID</Table.HeaderCell>
-            <Table.HeaderCell>Navn</Table.HeaderCell>
-            <Table.HeaderCell>HER-ID</Table.HeaderCell>
-            <Table.HeaderCell>Organisajonsnummer</Table.HeaderCell>
-          </Table.Row>
+  // Filtrer ut CPA'er som har vært i bruk siste X antall måneder:
+  const filteredCpaInfo = (cpaInfo ?? []).filter(
+      e => {
+          if (e.lastUsed == null && e.lastUsedEbms == null) return true;
+          let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
+          let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
+          if (lastUsed != null && lastUsed > thresholdDate) return false;
+          if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
+          return true;
+      }
+  );
+
+  const {
+    items: filteredAndSortedCpas,
+    requestSort,
+    sortConfig,
+  } = useTableSorting(filteredCpaInfo);
+
+  const getClassNamesFor = (name: keyof CpaDetails) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value, 10);
+    if (newSize !== pageSize) {
+      setCurrentPage(1);
+      setPageSize(newSize);
+    }
+  };
+
+  const handleInputChange = (event: React.FormEvent<HTMLFormElement>) => {
+    setInnValue(event.currentTarget.value)
+  };
+  const onSelectColn = (event: React.FormEvent<HTMLFormElement>) => {
+    setSelectedColnValue(event.currentTarget.value);
+  };
+  const onSelectEqual = (event: React.FormEvent<HTMLFormElement>) => {
+    setSelectedCEqualValue(event.currentTarget.value);
+  };
+  const handleBtnNullstil = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setErrorMessage('')
+      setSearchColmn('')
+      setInnValue('')
+      setSelectedColnValue("")
+      setSelectedCEqualValue("er lik") //TODO: First option
+  };
+
+  const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setErrorMessage('');
+      const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
+      if (result.endsWith("PARTNER_ID")) {
+          if (innValue === '' || Number.isInteger(Number(innValue))) {
+              setErrorMessage("");
+              setSearchColmn(result);
+          } else {
+              // If not an integer, set an error message
+              setErrorMessage("Partner_id skal være nummer!");
+              setSearchColmn(999999 + result);
+              return
+          }
+      }  else
+            setSearchColmn(result);
+  };
+
+  const onMonthsChange = (value: string) => {
+      setCurrentPage(1);
+      let m = value.replace(/[^0-9]/ig, '');
+      if (m == "") m = "0";
+      setMonths(parseInt(m));
+      let d = new Date();
+      d.setMonth(d.getMonth() - parseInt(m));
+      setThresholdDate(d);
+  };
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return filteredAndSortedCpas.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedCpas]);
+
+  const headers: { key: keyof CpaDetails; name: string }[] = [
+      { key: "partnerSubjectDN", name: "Navn" },
+      { key: "partnerID", name: "PartnerID" },
+      { key: "herID", name: "HerID" },
+      { key: "orgNummer", name: "Org.Nummer" },
+      { key: "cpaID", name: "CpaID" },
+      { key: "navCppID", name: "NavCpp" },
+      { key: "partnerCppID", name: "AdminID" },
+      { key: "partnerEndpoint", name: "Endpoint" },
+      { key: "komSystem", name: "KomSystem" },
+      { key: "lastUsed", name: "Sist brukt i gammel" },
+      { key: "lastUsedEbms", name: "Sist brukt i nye" },
+  ];
+
+  const showSpinner = loading;
+  const showErrorMessage = !loading && error?.message;
+  const showNoDataMessage =
+      !loading && !error?.message && cpaInfo?.length === 0;
+  const showData = !loading && !error?.message && !!cpaInfo?.length;
+
+  const totalFilterCount = filteredAndSortedCpas.length ?? 0;
+  const totalCPAs = data?.totalNumberOfCPAs;
+  let showTo = pageSize * currentPage;
+  const showFrom = showTo - (pageSize-1);
+  if (showTo > totalFilterCount) showTo = totalFilterCount;
+  let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
+  if (totalCPAs != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalCPAs} CPA'er)`;
+
+  // @ts-ignore
+    return (
+      <>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px" }}>
+            <legend>Søk:</legend>
+            <form>
+              <div className="navds-form-field--small" style={{padding: "5px", position: "relative", textAlign: "right"}}>
+                  <label style={{display: "inline-flex", alignItems: "center", gap: 16}}>
+                      <span>Søk: </span>
+                      <Input
+                          //defaultValue="test" {...register("partnerID")}
+                          name="innValue"
+                          value={innValue}
+                          className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                          bredde={"L"}
+                          onChange={handleInputChange}
+                      />
+                  </label>
+                  &nbsp;&nbsp;&nbsp;
+                  <span> Som </span>
+                  <label style={{display: "inline-flex", alignItems: "right", gap: 20}}>
+                      <select className={inputStyles.input} value={selectedCEqualValue}  onChange={onSelectEqual}>
+                          <option id={"er lik"} value={"er lik"}>er lik</option>
+                          <option id={"starter med"} value={"starter med"}>starter med</option>
+                          <option id={"inneholder"} value={"inneholder"}>inneholder</option>
+                      </select>
+                  </label>
+                  <label htmlFor="coln-select"  style={{display: "inline-flex", alignItems: "center", gap: 20}}>
+                      &nbsp;&nbsp;&nbsp;&nbsp;i
+                      <select className={inputStyles.input} id="coln-select"  value={selectedColnValue} onChange={onSelectColn}>
+                          <option value={"TOMT"}></option>
+                          <option value={"CPA_ID"}>CPA_ID</option>
+                          <option value={"PARTNER_ID"}>PARTNER_ID</option>
+                          <option value={"OrgNr"}>OrgNr</option>
+                          <option value={"HerId"}>HerId</option>
+                          <option value={"PARTNER_ENDPOINT"}>PARTNER_ENDPOINT</option>
+                          <option value={"PARTNER_SUBJECTDN"}>PARTNER_SUBJECTDN</option>
+                          <option value={"KomSystem"}>KOMM_SYSTEM</option>
+                      </select>
+                  </label>
+                  &nbsp;&nbsp;&nbsp;
+                  Skjul brukte siste <input
+                  id="months-input"
+                  type="number"
+                  style={{width: "50px"}}
+                  className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
+                  onChange={(event) => onMonthsChange(event.target.value)}
+                  value={months}
+              /> måneder
+              </div>
+              <div className="navds-form-field--small" style={{padding: "20px 75px 5px 5px", position: "relative", textAlign: "right" }}>
+              <button className={buttonStyles.button} type="submit" onClick={handleBtnSearch}>
+                  <img src={search}/>
+                  <span style={{display:"center"}}>Søk</span>
+              </button>
+                &nbsp;&nbsp;&nbsp;
+              <button className={buttonStyles.button} type="submit" onClick={handleBtnNullstil}>
+                  <img src={erase} />Nullstil
+              </button>
+            </div>
+            </form>
+          </fieldset>
+        </div>
+        <table style={{ border: "0px", width: "100%" }}>
+            <tbody>
+              <tr>
+                <td style={{ width: "33%" }}>
+                    <span>Rader per side </span>
+                    <select value={pageSize} onChange={onPageSizeChange}>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                        <option value={250}>250</option>
+                        <option value={500}>500</option>
+                        <option value={1000}>1000</option>
+                    </select>
+                </td>
+                <td style={{  width: "33%", textAlign: "center" }}>
+                    <Pagination
+                        totalCount={totalFilterCount}
+                        pageSize={pageSize}
+                        siblingCount={1}
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
+                    />
+                </td>
+                <td style={{  width: "34%", textAlign: "right" }}>
+                    <span>{pageLabel}</span>
+                </td>
+              </tr>
+            </tbody>
+        </table>
+          {/* Form fields */}
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Table className={tableStyles.table}>
+          <Table.Header className={tableStyles.tableHeader}>
+              <Table.Row>
+                  <Table.HeaderCell colSpan={11} style={{textAlign:"center"}}>CPA-LISTE</Table.HeaderCell>
+              </Table.Row>
+            <Table.Row>
+              {headers.map(({ key, name }) => (
+                  <Table.HeaderCell
+                      key={key}
+                      onClick={() => requestSort(key)}
+                      className={getClassNamesFor(key)}
+                  >
+                    {name}
+                  </Table.HeaderCell>
+              ))}
+            </Table.Row>
           </Table.Header>
-        <Table.Body>
-          {!loading &&
-            items.map((cpaDetails) => {
-              return (
-                <Table.Row key={cpaDetails.partnerorgnummer}>
-                  <Table.DataCell className="tabell__td--sortert">
-                    {cpaDetails.partnerid}
-                  </Table.DataCell>
-                  <Table.DataCell>{cpaDetails.navn}</Table.DataCell>
-                  <Table.DataCell>{cpaDetails.partnerherid}</Table.DataCell>
-                  <Table.DataCell>{cpaDetails.partnerorgnummer}</Table.DataCell>
-                </Table.Row>
-              );
-            })}
-        </Table.Body>
-      </Table>
-      {loading && <NavFrontendSpinner />}
-      {error?.message && <p>{error.message}</p>}
-    </div>
+          <Table.Body>
+            {showSpinner && (
+                <RowWithContent>
+                  <NavFrontendSpinner />
+                </RowWithContent>
+            )}
+            {showErrorMessage && <RowWithContent>{error}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
+            {showData &&
+                currentTableData.map((message, index) => {
+                  return (
+                      <Table.Row
+                          key={message.cpaID + index}
+                          className={clsx({ [tableStyles.coloredRow]: index % 2 })}
+                      >
+                          <Table.DataCell>{message.partnerSubjectDN}</Table.DataCell>
+                          <Table.DataCell>{message.partnerID}</Table.DataCell>
+                          <Table.DataCell>{message.herID}</Table.DataCell>
+                          <Table.DataCell>{message.orgNummer}</Table.DataCell>
+                          <Table.DataCell>{message.cpaID}</Table.DataCell>
+                          <Table.DataCell>{message.navCppID}</Table.DataCell>
+                          <Table.DataCell>{message.partnerCppID}</Table.DataCell>
+                          <Table.DataCell>{message.partnerEndpoint}</Table.DataCell>
+                          <Table.DataCell>{message.komSystem}</Table.DataCell>
+                          <Table.DataCell>{message.lastUsed}</Table.DataCell>
+                          <Table.DataCell>{message.lastUsedEbms}</Table.DataCell>
+                      </Table.Row>
+                  );
+                })}
+          </Table.Body>
+        </Table>
+      </>
   );
 };
 export default CpaTable;
