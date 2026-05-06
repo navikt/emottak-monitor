@@ -235,7 +235,7 @@ const CpaTable = () => {
             </form>
           </fieldset>
         </div>
-        <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "1px" }}>
+        <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px", margin: "0px 0px 7px 0px" }}>
           <legend>Sideinformasjon:</legend>
             <table style={{ border: "0px", width: "100%" }}>
                 <tbody>
