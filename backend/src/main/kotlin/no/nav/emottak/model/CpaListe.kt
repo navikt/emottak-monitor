@@ -3,6 +3,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CpaListe(
+    val partnerName: String? = null,
     val partnerSubjectDN: String? = null,
     val partnerID: String? = null,
     val herID: String? = null,

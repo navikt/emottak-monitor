@@ -121,7 +121,7 @@ class MeldingerApiSpek :
                                         content =
                                             """{"nav:qass:25695":null,
                                             |"nav:qass:25696":"2025-11-24T07:30:48Z",
-                                            |"nav:qass:30358":"2025-11-21T07:57:20Z",
+                                            |"nav:qass:30358":"2025-11-21T23:57:20Z",
                                             |"nav:autotest:1160":null}
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
@@ -294,6 +294,7 @@ class MeldingerApiSpek :
                         cpaListeData.totalNumberOfCPAs shouldBe 432
                         cpaListeData.cpaListe shouldContain
                             CpaListe(
+                                partnerName = "partnerName1",
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
                                 herID = "herId1",
@@ -303,11 +304,12 @@ class MeldingerApiSpek :
                                 partnerCppID = "adminbruker",
                                 partnerEndpoint = "partnerEndpoint1",
                                 komSystem = "komSystem1",
-                                lastUsed = "2025-11-25",
+                                lastUsed = "2025-11-25 07:30:48",
                                 lastUsedEbms = null,
                             )
                         cpaListeData.cpaListe shouldContain
                             CpaListe(
+                                partnerName = "partnerName2",
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",
                                 herID = "herId2",
@@ -317,7 +319,7 @@ class MeldingerApiSpek :
                                 partnerCppID = "adminbruker",
                                 partnerEndpoint = "partnerEndpoint2",
                                 komSystem = "komSystem2",
-                                lastUsed = "2025-11-22",
+                                lastUsed = "2025-11-22 22:57:20",
                                 lastUsedEbms = null,
                             )
                     }
@@ -335,31 +337,33 @@ class MeldingerApiSpek :
                         cpaListeData.totalNumberOfCPAs shouldBe 432
                         cpaListeData.cpaListe shouldContain
                             CpaListe(
-                                "partner1",
-                                "partnerId1",
-                                "herId1",
-                                "orgNr1",
-                                "nav:qass:25695",
-                                "navCppId1",
-                                "adminbruker",
-                                "partnerEndpoint1",
-                                "komSystem1",
-                                "2025-11-25",
-                                null,
+                                partnerName = "partnerName1",
+                                partnerSubjectDN = "partner1",
+                                partnerID = "partnerId1",
+                                herID = "herId1",
+                                orgNummer = "orgNr1",
+                                cpaID = "nav:qass:25695",
+                                navCppID = "navCppId1",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint1",
+                                komSystem = "komSystem1",
+                                lastUsed = "2025-11-25 07:30:48",
+                                lastUsedEbms = null,
                             )
                         cpaListeData.cpaListe shouldContain
                             CpaListe(
-                                "partner2",
-                                "partnerId2",
-                                "herId2",
-                                "orgNr2",
-                                "nav:qass:30358",
-                                "navCppId2",
-                                "adminbruker",
-                                "partnerEndpoint2",
-                                "komSystem2",
-                                "2025-11-22",
-                                "2025-11-21",
+                                partnerName = "partnerName2",
+                                partnerSubjectDN = "partner2",
+                                partnerID = "partnerId2",
+                                herID = "herId2",
+                                orgNummer = "orgNr2",
+                                cpaID = "nav:qass:30358",
+                                navCppID = "navCppId2",
+                                partnerCppID = "adminbruker",
+                                partnerEndpoint = "partnerEndpoint2",
+                                komSystem = "komSystem2",
+                                lastUsed = "2025-11-22 22:57:20",
+                                lastUsedEbms = "2025-11-21 23:57:20",
                             )
                     }
                 }

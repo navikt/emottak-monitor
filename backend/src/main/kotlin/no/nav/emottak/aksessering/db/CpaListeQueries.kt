@@ -103,7 +103,7 @@ fun generateSQLQuery(
             "SELECT count(PARTNER_CPA.CPA_ID) AS FILTER_ANTALL "
         } else {
             """
-            SELECT PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, 
+            SELECT PARTNER.NAVN, PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, 
             PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID, PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED 
             """
         }
@@ -234,6 +234,7 @@ fun Connection.exeuteCpaListeQuery(
 
 fun ResultSet.toCpaliste(): CpaListe =
     CpaListe(
+        partnerName = getString("Navn"),
         partnerSubjectDN = getString("PARTNER_SUBJECTDN"),
         partnerID = getString("PARTNER_ID"),
         herID = getString("HER_ID"),

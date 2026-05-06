@@ -26,6 +26,7 @@ fun getCPAListe(): CpaListeData =
         cpaListe =
             listOf(
                 CpaListe(
+                    partnerName = "partnerName1",
                     partnerSubjectDN = "partner1",
                     partnerID = "partnerId1",
                     herID = "herId1",
@@ -39,6 +40,7 @@ fun getCPAListe(): CpaListeData =
                     lastUsedEbms = null,
                 ),
                 CpaListe(
+                    partnerName = "partnerName2",
                     partnerSubjectDN = "partner2",
                     partnerID = "partnerId2",
                     herID = "herId2",
@@ -48,7 +50,7 @@ fun getCPAListe(): CpaListeData =
                     partnerCppID = "adminbruker",
                     partnerEndpoint = "partnerEndpoint2",
                     komSystem = "komSystem2",
-                    lastUsed = "2025-11-22 08:57:20",
+                    lastUsed = "2025-11-22 22:57:20",
                     lastUsedEbms = null,
                 ),
             ),

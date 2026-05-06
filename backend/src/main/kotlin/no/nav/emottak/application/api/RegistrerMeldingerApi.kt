@@ -271,15 +271,12 @@ private fun mergeCpaListeData(
     var i = 0
     while (i < mergedList.size) {
         val cpaListe = mergedList[i]
-        if (cpaListe.lastUsed != null) {
-            cpaListe.lastUsed = cpaListe.lastUsed!!.split(" ")[0]
-        }
         if (cpaListe.cpaID == null) {
             continue
         }
         // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
         if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
-            val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.split("T")[0]
+            val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.replace("T", " ").replace("Z", "")
             if (hideUsedCpaMonths > 0) {
                 val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate()
                 if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
