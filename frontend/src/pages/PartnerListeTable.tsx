@@ -40,7 +40,7 @@ type CpaListeData = {
     totalNumberOfCPAs: number
 }
 
-const PartnerTable = () => {
+const PartnerListeTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
     const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
@@ -107,7 +107,7 @@ const PartnerTable = () => {
     }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement  >) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInnValue(event.currentTarget.value)
   };
       const onSelectColn = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -391,4 +391,4 @@ const PartnerTable = () => {
       </>
   );
 };
-export default PartnerTable;
+export default PartnerListeTable;
