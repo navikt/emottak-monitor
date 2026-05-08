@@ -43,9 +43,9 @@ import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
-import no.nav.emottak.model.CpaListe
-import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Page
+import no.nav.emottak.model.PartnerCpaListe
+import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.services.MessageQueryService
 import java.nio.file.Paths
 
@@ -67,7 +67,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
-                io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -290,10 +290,10 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.PartialContent
                         println(response.bodyAsText())
-                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
-                        cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
+                        partnerCpaListeData.totalNumberOfEntries shouldBe 432
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName1",
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
@@ -307,8 +307,8 @@ class MeldingerApiSpek :
                                 lastUsed = "2025-11-25 07:30:48",
                                 lastUsedEbms = null,
                             )
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName2",
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",
@@ -333,10 +333,10 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.OK
                         println(response.bodyAsText())
-                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
-                        cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
+                        partnerCpaListeData.totalNumberOfEntries shouldBe 432
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName1",
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
@@ -350,8 +350,8 @@ class MeldingerApiSpek :
                                 lastUsed = "2025-11-25 07:30:48",
                                 lastUsedEbms = null,
                             )
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName2",
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",

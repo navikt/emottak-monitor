@@ -15,7 +15,7 @@ import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
 
 type CpaDetails = {
-    partnerName: String,
+    partnerName: string;
     partnerSubjectDN: string;
     partnerID: string;
     herID: string;
@@ -30,8 +30,8 @@ type CpaDetails = {
 };
 
 type CpaListeData = {
-    cpaListe: CpaDetails[],
-    totalNumberOfCPAs: number
+    partnerCpaListe: CpaDetails[],
+    totalNumberOfEntries: number
 }
 
 const CpaListeTable = () => {
@@ -47,11 +47,11 @@ const CpaListeTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
 
-    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
+    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}`;
     const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
-    const cpaInfo = data?.cpaListe ?? [];
+    const cpaInfo = data?.partnerCpaListe ?? [];
 
     useEffect(() => {
     callRequest();
@@ -165,7 +165,7 @@ const CpaListeTable = () => {
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
   const totalFilterCount = filteredAndSortedCpas.length ?? 0;
-  const totalCPAs = data?.totalNumberOfCPAs;
+  const totalCPAs = data?.totalNumberOfEntries;
   let showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;

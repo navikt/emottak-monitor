@@ -20,24 +20,24 @@ import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
 import $ from 'jquery';
 
-type CpaDetails = {
-    partnerName: String,
-    partnerSubjectDN: string;
+type PartnerDetails = {
+    partnerName: string;
+    partnerSubjectDN: string | null;
     partnerID: string;
     herID: string;
     orgNummer: string;
-    cpaID: string;
-    navCppID: string;
-    partnerCppID: string;
-    partnerEndpoint: string;
-    komSystem: string;
-    lastUsed: string;
-    lastUsedEbms: string;
+    cpaID: string | null;
+    navCppID: string | null;
+    partnerCppID: string | null;
+    partnerEndpoint: string | null;
+    komSystem: string | null;
+    lastUsed: string | null;
+    lastUsedEbms: string | null;
 };
 
 type CpaListeData = {
-    cpaListe: CpaDetails[],
-    totalNumberOfCPAs: number
+    partnerCpaListe: PartnerDetails[],
+    totalNumberOfEntries: number
 }
 
 const PartnerListeTable = () => {
@@ -60,11 +60,11 @@ const PartnerListeTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
 
-    const url = `/v1/hentcpaliste?searchColmn=${searchColmn}&page=${currentPage}&size=${pageSize}`;
+    const url = `/v1/hentpartnerliste?searchColmn=${searchColmn}`;
     const { fetchState, callRequest } = useFetch<CpaListeData>(url);
 
     const { loading, error, data } = fetchState;
-    const cpaInfo = data?.cpaListe ?? [];
+    const cpaInfo = data?.partnerCpaListe ?? [];
 
     useEffect(() => {
     callRequest();
@@ -92,7 +92,7 @@ const PartnerListeTable = () => {
     sortConfig,
   } = useTableSorting(filteredCpaInfo);
 
-  const getClassNamesFor = (name: keyof CpaDetails) => {
+  const getClassNamesFor = (name: keyof PartnerDetails) => {
     if (!sortConfig) {
       return;
     }
@@ -168,7 +168,7 @@ const PartnerListeTable = () => {
         return acc;
     }, {});
 
-  const headers: { key: keyof CpaDetails; name: string }[] = [
+  const headers: { key: keyof PartnerDetails; name: string }[] = [
       { key: "partnerName", name: "Navn"},
       { key: "partnerID", name: "PartnerID" },
       { key: "herID", name: "HerID" },
@@ -185,19 +185,12 @@ const PartnerListeTable = () => {
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
   const totalFilterCount = filteredAndSortedCpas.length ?? 0;
-  const totalCPAs = data?.totalNumberOfCPAs;
+  const totalPartners = data?.totalNumberOfEntries;
   let showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;
   let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
-  if (totalCPAs != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalCPAs} partnere)`;
-
-    console.log("totalCPAs: ", totalCPAs)
-    console.log("totalFilterCount: ", totalFilterCount)
-    console.log("currentPage: ", currentPage)
-    console.log("pageSize: ", pageSize)
-    console.log("showFrom: ", showFrom)
-    console.log("showTo: ", showTo)
+  if (totalPartners != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalPartners} partnere)`;
 
     return (
       <>

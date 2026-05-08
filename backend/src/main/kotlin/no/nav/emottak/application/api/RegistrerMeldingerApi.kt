@@ -15,8 +15,8 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -213,35 +213,51 @@ fun Route.hentCPAListe(
 ): Route =
     get("/hentcpaliste") {
         log.info("Kjører dabasespørring for å hente liste over CPA'er...")
-        val searchColmn = getURLEncodedQueryParameter("searchColmn")
-        val hideUsedCpaMonths = getURLEncodedQueryParameter("hideUsedCpaMonths").toPositiveLong(0)
-
-        // Nye emottak:
-        val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
-
-        // Gamle emottak:
-        val cpalisteData: CpaListeData = meldingService.cpaliste(searchColmn, hideUsedCpaMonths)
-        val cpaliste = cpalisteData.cpaListe
-        log.info("Totalt antall CPA'er: {}", cpalisteData.totalNumberOfCPAs)
-        log.info("Antall som matcher filteret: {}", cpaliste.size)
-        log.debug("hideUsedCpaMonths: {}", hideUsedCpaMonths)
-        log.debug("partnerID: {}", cpaliste.firstOrNull()?.partnerID)
-        log.debug("cpaId: {}", cpaliste.firstOrNull()?.cpaID)
-        log.debug("partnerCppID: {}", cpaliste.firstOrNull()?.partnerCppID)
-        log.debug("SubjectDN: {}", cpaliste.firstOrNull()?.partnerSubjectDN)
-        log.debug("Endpoint: {}", cpaliste.firstOrNull()?.partnerEndpoint)
-        log.debug("LastUsed: {}", cpaliste.firstOrNull()?.lastUsed)
-
-        call.respond(
-            status =
-                when (responseEbms == null) {
-                    true -> HttpStatusCode.PartialContent
-                    false -> HttpStatusCode.OK
-                },
-            // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
-            message = mergeCpaListeData(responseEbms, cpalisteData, hideUsedCpaMonths),
-        )
+        hentPartnerCpaInformasjon(httpClient, meldingService::cpaliste)
     }
+
+// Henting av Partner-informasjon, med last used fra gamle og nye emottak (/partnerliste)
+@InternalAPI
+fun Route.hentPartnerListe(
+    meldingService: MessageQueryService,
+    httpClient: HttpClient,
+): Route =
+    get("/hentpartnerliste") {
+        log.info("Kjører dabasespørring for å hente liste over partnere...")
+        hentPartnerCpaInformasjon(httpClient, meldingService::partnerliste)
+    }
+
+@InternalAPI
+private suspend fun RoutingContext.hentPartnerCpaInformasjon(
+    httpClient: HttpClient,
+    meldingServiceFunksjon: (searchColmn: String) -> PartnerCpaListeData,
+) {
+    val searchColmn = getURLEncodedQueryParameter("searchColmn")
+
+    // Nye emottak:
+    val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+
+    // Gamle emottak:
+    val partnerlisteData: PartnerCpaListeData = meldingServiceFunksjon(searchColmn)
+    val cpaliste = partnerlisteData.partnerCpaListe
+    log.info("Totalt antall: {}", partnerlisteData.totalNumberOfEntries)
+    log.debug("partnerID: {}", cpaliste.firstOrNull()?.partnerID)
+    log.debug("cpaId: {}", cpaliste.firstOrNull()?.cpaID)
+    log.debug("partnerCppID: {}", cpaliste.firstOrNull()?.partnerCppID)
+    log.debug("SubjectDN: {}", cpaliste.firstOrNull()?.partnerSubjectDN)
+    log.debug("Endpoint: {}", cpaliste.firstOrNull()?.partnerEndpoint)
+    log.debug("LastUsed: {}", cpaliste.firstOrNull()?.lastUsed)
+
+    call.respond(
+        status =
+            when (responseEbms == null) {
+                true -> HttpStatusCode.PartialContent
+                false -> HttpStatusCode.OK
+            },
+        // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
+        message = mergeCpaListeData(responseEbms, partnerlisteData),
+    )
+}
 
 @InternalAPI
 private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
@@ -261,39 +277,25 @@ private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClien
 
 private fun mergeCpaListeData(
     responseEbms: Map<String, String?>?,
-    cpalisteData: CpaListeData,
-    hideUsedCpaMonths: Long,
-): CpaListeData {
-    val cpaliste = cpalisteData.cpaListe
-    val mergedList = cpaliste.toMutableList()
-    val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
-    var numberOfDeletedEntries = 0
-    var i = 0
-    while (i < mergedList.size) {
-        val cpaListe = mergedList[i]
-        if (cpaListe.cpaID == null) {
+    partnerCpaListeData: PartnerCpaListeData,
+): PartnerCpaListeData {
+    val partnerCpaListe = partnerCpaListeData.partnerCpaListe
+    val mergedList = partnerCpaListe.toMutableList()
+    for (element in mergedList) {
+        if (element.cpaID == null) {
             continue
         }
         // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
-        if (responseEbms != null && cpaListe.cpaID in responseEbms.keys && responseEbms[cpaListe.cpaID] != null) {
-            val lastUsedEbmsStr = responseEbms[cpaListe.cpaID]!!.replace("T", " ").replace("Z", "")
-            if (hideUsedCpaMonths > 0) {
-                val lastUsedDateEbms = lastUsedEbmsStr.toLocalDate()
-                if (lastUsedDateEbms != null && lastUsedDateEbms > thresholdDate) {
-                    mergedList.remove(cpaListe)
-                    numberOfDeletedEntries++
-                    continue
-                }
-            }
-            cpaListe.lastUsedEbms = lastUsedEbmsStr
+        if (responseEbms != null && element.cpaID in responseEbms.keys && responseEbms[element.cpaID] != null) {
+            val lastUsedEbmsStr = responseEbms[element.cpaID]!!.replace("T", " ").replace("Z", "")
+            element.lastUsedEbms = lastUsedEbmsStr
         }
-        i++
     }
-    val mergedCpalisteData =
-        cpalisteData.copy(
-            cpaListe = mergedList,
+    val mergedPartnerCpaListeData =
+        partnerCpaListeData.copy(
+            partnerCpaListe = mergedList,
         )
-    return mergedCpalisteData
+    return mergedPartnerCpaListeData
 }
 
 // Conversation-status (frontend: /conversationstatusebms)
@@ -457,16 +459,6 @@ private suspend fun RoutingContext.executeREST(
 private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
     log.error(errorMessage)
     call.respond(HttpStatusCode.BadRequest, errorMessage)
-}
-
-private fun String.toPositiveLong(default: Long): Long {
-    try {
-        val l = this.toLong()
-        if (l >= 0) return l
-    } catch (e: NumberFormatException) {
-        return default
-    }
-    return default
 }
 
 fun String.toLocalDate(pattern: String = "yyyy-MM-dd"): LocalDate? =

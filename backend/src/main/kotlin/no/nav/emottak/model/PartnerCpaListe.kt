@@ -2,7 +2,7 @@ package no.nav.emottak.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CpaListe(
+data class PartnerCpaListe(
     val partnerName: String? = null,
     val partnerSubjectDN: String? = null,
     val partnerID: String? = null,
@@ -18,7 +18,7 @@ data class CpaListe(
 )
 
 @Serializable
-data class CpaListeData(
-    val cpaListe: List<CpaListe>,
-    val totalNumberOfCPAs: Long,
+data class PartnerCpaListeData(
+    val partnerCpaListe: List<PartnerCpaListe>,
+    val totalNumberOfEntries: Long,
 )

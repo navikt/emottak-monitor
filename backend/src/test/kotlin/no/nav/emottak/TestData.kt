@@ -1,13 +1,13 @@
 package no.nav.emottak
 
-import no.nav.emottak.model.CpaListe
-import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLoggInfo
 import no.nav.emottak.model.MottakIdInfo
+import no.nav.emottak.model.PartnerCpaListe
+import no.nav.emottak.model.PartnerCpaListeData
 
 fun getMessages(): List<MessageInfo> = emptyList()
 
@@ -21,11 +21,11 @@ fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
 
-fun getCPAListe(): CpaListeData =
-    CpaListeData(
-        cpaListe =
+fun getCPAListe(): PartnerCpaListeData =
+    PartnerCpaListeData(
+        partnerCpaListe =
             listOf(
-                CpaListe(
+                PartnerCpaListe(
                     partnerName = "partnerName1",
                     partnerSubjectDN = "partner1",
                     partnerID = "partnerId1",
@@ -39,7 +39,7 @@ fun getCPAListe(): CpaListeData =
                     lastUsed = "2025-11-25 07:30:48",
                     lastUsedEbms = null,
                 ),
-                CpaListe(
+                PartnerCpaListe(
                     partnerName = "partnerName2",
                     partnerSubjectDN = "partner2",
                     partnerID = "partnerId2",
@@ -54,5 +54,5 @@ fun getCPAListe(): CpaListeData =
                     lastUsedEbms = null,
                 ),
             ),
-        totalNumberOfCPAs = 432,
+        totalNumberOfEntries = 432,
     )
