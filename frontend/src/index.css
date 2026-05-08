@@ -32,7 +32,7 @@ button,
 .DayPicker-Weekday,
 .react-time-picker__clock {
   color: var(--text-primary) !important;
-  background-color: var(--input-bg) !important;
+  background-color: var(--theme-button-bg) !important;
 }
 
 input[name="hour24"],

@@ -13,7 +13,7 @@ type CpaDetails = {
   partnerorgnummer: string;
 };
 
-const CpaTable = () => {
+const CpaIdTable = () => {
   const { cpaid } = useParams();
 
   const { fetchState, callRequest } = useFetch<CpaDetails[]>(
@@ -61,4 +61,4 @@ const CpaTable = () => {
     </div>
   );
 };
-export default CpaTable;
+export default CpaIdTable;
