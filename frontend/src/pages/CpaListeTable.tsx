@@ -94,16 +94,16 @@ const CpaListeTable = () => {
     }
   };
 
-  const handleInputChange = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInnValue(event.currentTarget.value)
   };
-  const onSelectColn = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSelectColn = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedColnValue(event.currentTarget.value);
   };
-  const onSelectEqual = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSelectEqual = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCEqualValue(event.currentTarget.value);
   };
-  const handleBtnNullstil = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       setErrorMessage('')
       setSearchColmn('')
@@ -112,7 +112,7 @@ const CpaListeTable = () => {
       setSelectedCEqualValue("er lik") //TODO: First option
   };
 
-  const handleBtnSearch = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       setErrorMessage('');
       const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
