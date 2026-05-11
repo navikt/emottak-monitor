@@ -153,20 +153,28 @@ const PartnerListeTable = () => {
       setThresholdDate(d);
   };
 
-  const currentTableData = useMemo(() => {
+  const groupedData = filteredAndSortedCpas.reduce((acc: Map<string, PartnerDetails[]>, obj) => {
+    const key = obj.partnerID;
+    if (!acc.has(key)) acc.set(key, []);
+    acc.get(key)!.push(obj);
+    return acc;
+  }, new Map<string, PartnerDetails[]>());
+
+  const currentTableMap = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
-    return filteredAndSortedCpas.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, pageSize, filteredAndSortedCpas]);
-
-    const groupedData = currentTableData.reduce((acc: any, obj) => {
-        const key = obj.partnerID;
-        if (!acc[key]) {
-            acc[key] = [];
+    let slicedMap = new Map<string, PartnerDetails[]>()
+    let index = 0;
+    // @ts-ignore
+      for (const [key, value] of groupedData) {
+        if (index >= lastPageIndex) break;
+        if (index >= firstPageIndex) {
+            slicedMap.set(key, value);
         }
-        acc[key].push(obj);
-        return acc;
-    }, {});
+        index++;
+    }
+    return slicedMap;
+  }, [currentPage, pageSize, groupedData]);
 
   const headers: { key: keyof PartnerDetails; name: string }[] = [
       { key: "partnerName", name: "Navn"},
@@ -184,8 +192,8 @@ const PartnerListeTable = () => {
       !loading && !error?.message && cpaInfo?.length === 0;
   const showData = !loading && !error?.message && !!cpaInfo?.length;
 
-  const totalFilterCount = filteredAndSortedCpas.length ?? 0;
   const totalPartners = data?.totalNumberOfEntries;
+  const totalFilterCount = groupedData.size;
   let showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;
@@ -319,16 +327,16 @@ const PartnerListeTable = () => {
             {showErrorMessage && <RowWithContent>{error}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
             {showData &&
-                Object.keys(groupedData).map((message, index) => {
-                    const messages = groupedData[message];
+                Array.from(currentTableMap.keys()).map((partnerId, index) => {
+                    const messages = currentTableMap.get(partnerId)!!;
                     const firstMessage = messages[0]; // Brukes til info i hovedraden
-                    const isExpanded = !!expandedRows[message];
+                    const isExpanded = expandedRows[partnerId];
                   return (
-                      <React.Fragment key={message}>
+                      <React.Fragment key={partnerId}>
                       <Table.Row
-                          key={message}
+                          key={partnerId}
                           className={clsx({ [tableStyles.coloredRow]: index % 2 })}
-                          title={firstMessage.partnerSubjectDN}
+                          title={firstMessage.partnerSubjectDN ?? firstMessage.partnerName}
                       >
 
                           <Table.DataCell>
@@ -360,7 +368,7 @@ const PartnerListeTable = () => {
                           <Table.DataCell>{firstMessage.navCppID}</Table.DataCell>
                           <Table.DataCell>{firstMessage.partnerCppID}</Table.DataCell>
                           <Table.DataCell>{firstMessage.komSystem}</Table.DataCell>
-                          <Table.DataCell>{groupedData[message].length}</Table.DataCell>
+                          <Table.DataCell>{currentTableMap.get(partnerId)!!.length}</Table.DataCell>
                       </Table.Row>
                           {isExpanded &&
                               messages.map((message: any, subIndex: any) => (
