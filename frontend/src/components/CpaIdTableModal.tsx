@@ -2,9 +2,9 @@ import { Button, Modal } from "@navikt/ds-react";
 import React from "react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import CpaTable from "../pages/CpaTable";
+import CpaIdTable from "../pages/CpaIdTable";
 
-const CpaTableModal = () => {
+const CpaIdTableModal = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -27,11 +27,11 @@ const CpaTableModal = () => {
                     >
                         Åpne som egen side
                     </Button>
-                    <CpaTable />
+                    <CpaIdTable />
                 </div>
             </Modal.Content>
         </Modal>
     );
 };
 
-export default CpaTableModal;
+export default CpaIdTableModal;

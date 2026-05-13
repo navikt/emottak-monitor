@@ -74,7 +74,6 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ steps.docker-push.outputs.image }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: frontend/.nais/nais.yaml
           VARS: frontend/.nais/dev.yaml
@@ -84,7 +83,6 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
            IMAGE: ${{ steps.docker-push.outputs.image }}
-           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
            CLUSTER: prod-gcp
            RESOURCE: frontend/.nais/nais.yaml
            VARS: frontend/.nais/prod.yaml
