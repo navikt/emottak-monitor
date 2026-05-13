@@ -81,7 +81,6 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ steps.docker-push.outputs.image }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: backend/naiserator-dev.yaml
 
@@ -90,6 +89,5 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
            IMAGE: ${{ steps.docker-push.outputs.image }}
-           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
            CLUSTER: prod-fss
            RESOURCE: backend/naiserator-prod.yaml

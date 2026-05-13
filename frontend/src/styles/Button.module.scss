@@ -1,0 +1,16 @@
+.button {
+  position: relative;
+  outline: none;
+  justify-content: space-between;
+  align-items: self-end;
+  gap: 5px;
+  background-color: var(--theme-button-bg) !important;
+  border: 1px solid var(--pagination-color);
+  color: black;
+  padding: 1px 42px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-flex;
+  font-size: 12px;
+  cursor: pointer;
+}

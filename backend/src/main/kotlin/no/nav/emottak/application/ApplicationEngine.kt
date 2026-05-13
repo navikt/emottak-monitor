@@ -26,10 +26,9 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.Environment
+import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentCpaIdInfo
-import no.nav.emottak.application.api.hentCpaIdInfoEbms
 import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
@@ -40,9 +39,7 @@ import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
-import no.nav.emottak.application.api.hentPartnerIdInfo
 import no.nav.emottak.application.api.hentRollerServicesAction
-import no.nav.emottak.application.api.hentSistBrukt
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.services.MessageQueryService
 import org.slf4j.event.Level
@@ -115,13 +112,10 @@ private fun Application.serverSetup(
                 hentCpa(meldingService)
                 hentMessageInfo(meldingService)
                 hentMessageInfoEbms(scopedAuthHttpClient)
-                hentCpaIdInfo(meldingService)
-                hentCpaIdInfoEbms(scopedAuthHttpClient)
                 hentEbMessageIdInfo(meldingService)
-                hentPartnerIdInfo(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)
-                hentSistBrukt(meldingService, scopedAuthHttpClient)
+                hentCPAListe(meldingService, scopedAuthHttpClient)
                 hentConversationStatusEbms(scopedAuthHttpClient)
             }
         }
