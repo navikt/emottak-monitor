@@ -18,7 +18,6 @@ import "../styles/style.scss";
 import filterStyles from "../components/Filter.module.scss";
 import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
-import $ from 'jquery';
 
 type CpaDetails = {
     partnerSubjectDN: string | null;
