@@ -41,11 +41,15 @@ import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentMessageInfo
 import no.nav.emottak.application.api.hentMessageInfoEbms
+import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.model.CpaListe
-import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Page
+import no.nav.emottak.model.PartnerCpaListe
+import no.nav.emottak.model.PartnerCpaListeData
+import no.nav.emottak.model.PartnerListe
+import no.nav.emottak.model.PartnerListeData
 import no.nav.emottak.services.MessageQueryService
 import java.nio.file.Paths
 
@@ -67,7 +71,8 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
                 io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
-                io.mockk.coEvery { messageQueryService.cpaliste(any(), any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.partnerliste(any()) } returns getCPAListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -290,10 +295,10 @@ class MeldingerApiSpek :
                             }
                         response.status shouldBe HttpStatusCode.PartialContent
                         println(response.bodyAsText())
-                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
-                        cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
+                        partnerCpaListeData.totalNumberOfEntries shouldBe 432
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName1",
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
@@ -307,8 +312,8 @@ class MeldingerApiSpek :
                                 lastUsed = "2025-11-25 07:30:48",
                                 lastUsedEbms = null,
                             )
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName2",
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",
@@ -328,15 +333,15 @@ class MeldingerApiSpek :
                 it("Should return 200 OK (hentcpaliste)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
-                            client.get("/v1/hentcpaliste?searchColmn=&page=1&size=25") {
+                            client.get("/v1/hentcpaliste?searchColmn=") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
                         println(response.bodyAsText())
-                        val cpaListeData = LENIENT_JSON_PARSER.decodeFromString<CpaListeData>(response.bodyAsText())
-                        cpaListeData.totalNumberOfCPAs shouldBe 432
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
+                        partnerCpaListeData.totalNumberOfEntries shouldBe 432
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName1",
                                 partnerSubjectDN = "partner1",
                                 partnerID = "partnerId1",
@@ -350,8 +355,8 @@ class MeldingerApiSpek :
                                 lastUsed = "2025-11-25 07:30:48",
                                 lastUsedEbms = null,
                             )
-                        cpaListeData.cpaListe shouldContain
-                            CpaListe(
+                        partnerCpaListeData.partnerCpaListe shouldContain
+                            PartnerCpaListe(
                                 partnerName = "partnerName2",
                                 partnerSubjectDN = "partner2",
                                 partnerID = "partnerId2",
@@ -364,6 +369,62 @@ class MeldingerApiSpek :
                                 komSystem = "komSystem2",
                                 lastUsed = "2025-11-22 22:57:20",
                                 lastUsedEbms = "2025-11-21 23:57:20",
+                            )
+                    }
+                }
+
+                it("Should return 200 OK (hentPartnerListe)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentpartnerliste?searchColmn=") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        println(response.bodyAsText())
+                        val partnerListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerListeData>(response.bodyAsText())
+                        partnerListeData.totalNumberOfEntries shouldBe 432
+                        partnerListeData.partnerListe.size shouldBe 2
+
+                        partnerListeData.partnerListe shouldContain
+                            PartnerListe(
+                                partnerName = "partnerName1",
+                                partnerID = "partnerId1",
+                                herID = "herId1",
+                                orgNummer = "orgNr1",
+                                komSystem = "komSystem1",
+                                cpaListe =
+                                    listOf(
+                                        CpaListe(
+                                            partnerSubjectDN = "partner1",
+                                            cpaID = "nav:qass:25695",
+                                            navCppID = "navCppId1",
+                                            partnerCppID = "adminbruker",
+                                            partnerEndpoint = "partnerEndpoint1",
+                                            lastUsed = "2025-11-25 07:30:48",
+                                            lastUsedEbms = null,
+                                        ),
+                                    ),
+                            )
+
+                        partnerListeData.partnerListe shouldContain
+                            PartnerListe(
+                                partnerName = "partnerName2",
+                                partnerID = "partnerId2",
+                                herID = "herId2",
+                                orgNummer = "orgNr2",
+                                komSystem = "komSystem2",
+                                cpaListe =
+                                    listOf(
+                                        CpaListe(
+                                            partnerSubjectDN = "partner2",
+                                            cpaID = "nav:qass:30358",
+                                            navCppID = "navCppId2",
+                                            partnerCppID = "adminbruker",
+                                            partnerEndpoint = "partnerEndpoint2",
+                                            lastUsed = "2025-11-22 22:57:20",
+                                            lastUsedEbms = "2025-11-21 23:57:20",
+                                        ),
+                                    ),
                             )
                     }
                 }
@@ -515,6 +576,7 @@ private fun <T> withTestApplicationForApi(
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)
+                    hentPartnerListe(messageQueryService, mockHttpClient)
                     hentConversationStatusEbms(mockHttpClient)
                 }
             }

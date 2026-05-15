@@ -1,4 +1,5 @@
 import React from "react";
+import $ from 'jquery';
 
 const Cog = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -6,6 +7,22 @@ const Cog = () => (
   </svg>
 );
 
+const toggleAllExpandables = (image: JQuery, selector: JQuery): void => {
+    if (image.hasClass('collapsible')) {
+        console.log("image.prev().show()")
+        image.hide();
+        image.prev().show();
+    } else {
+        console.log("image.next().show()")
+        image.hide();
+        image.next().show();
+    }
+
+    selector.each(function(this: HTMLElement) {
+        console.log("this.click()")
+        this.click();
+    });
+};
 function ISODate() {
   let date = new Date();
   let year = date.getFullYear();
@@ -44,4 +61,4 @@ function initialFilter(filterString: string | null) {
 
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
 
-export { initialDate, initialTime, initialFilter, Cog };
+export { initialDate, initialTime, initialFilter, Cog, toggleAllExpandables };

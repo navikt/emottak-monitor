@@ -4,20 +4,18 @@ import io.ktor.http.decodeURLQueryComponent
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
 import no.nav.emottak.log
-import no.nav.emottak.model.CpaListe
-import no.nav.emottak.model.CpaListeData
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.PartnerCpaListe
+import no.nav.emottak.model.PartnerCpaListeData
 import java.sql.Connection
 import java.sql.ResultSet
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import kotlin.use
 
-fun DatabaseInterface.hentCpaliste(
+fun DatabaseInterface.hentPartnerCpaListe(
     databasePrefix: String,
     columnSearchEncoded: String? = "",
-    hideUsedCpaMonths: Long = 0,
-): CpaListeData =
+    isPartner: Boolean = false,
+): PartnerCpaListeData =
     connection.use { connection ->
         val columnSearch = columnSearchEncoded?.decodeURLQueryComponent()
         log.debug("columnSearch: '$columnSearch'")
@@ -46,25 +44,11 @@ fun DatabaseInterface.hentCpaliste(
         }
         log.info("Sok: '$sok'")
 
-        // Totalt antall CPA'er:
-        val sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER_CPA"
+        // Totalt antall CPA'er eller partnere:
+        var sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER_CPA"
+        if (isPartner) sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER"
         log.debug("SQL FOR ANTALL TOTALT: '{}'", sqlTotaltAntall)
         val totalCount = connection.executeCountQuery(sqlTotaltAntall, null)
-
-        val sqlColmSearchCountQuery =
-            generateSQLQuery(
-                databasePrefix,
-                sequence,
-                isSearchEmpty,
-                isSearchColnEmpty,
-                isEqual,
-                isContain,
-                isStart,
-                hideUsedCpaMonths,
-                generateCountQuery = true,
-            )
-        log.debug("SQL FOR ANTALL I FILTER: '{}'", sqlColmSearchCountQuery)
-        val filterAntall = connection.executeCountQuery(sqlColmSearchCountQuery, sok)
 
         val sqlColmSearchResultQuery =
             generateSQLQuery(
@@ -75,18 +59,18 @@ fun DatabaseInterface.hentCpaliste(
                 isEqual,
                 isContain,
                 isStart,
-                hideUsedCpaMonths,
+                generatePartnerQuery = isPartner,
             )
-        log.debug("SQL FOR CPA-DETALJER: '{}'", sqlColmSearchCountQuery)
-        val listColmSearch = connection.exeuteCpaListeQuery(sqlColmSearchResultQuery, sok)
+        log.debug("SQL FOR DETALJER: '{}'", sqlColmSearchResultQuery)
+        val listColmSearch = connection.exeutePartnerCpaListeQuery(sqlColmSearchResultQuery, sok)
 
-        CpaListeData(
+        PartnerCpaListeData(
             listColmSearch,
             totalCount,
         )
     }
 
-fun generateSQLQuery(
+private fun generateSQLQuery(
     databasePrefix: String,
     sequence: Sequence<String>,
     isSearchEmpty: Boolean,
@@ -94,30 +78,28 @@ fun generateSQLQuery(
     isEqual: Boolean,
     isContain: Boolean,
     isStart: Boolean,
-    hideUsedCpaMonths: Long,
     pageable: Pageable? = null,
-    generateCountQuery: Boolean = false,
+    generatePartnerQuery: Boolean = false,
 ): String {
     var sqlColmSearch =
-        if (generateCountQuery) {
-            "SELECT count(PARTNER_CPA.CPA_ID) AS FILTER_ANTALL "
-        } else {
+        "SELECT PARTNER.NAVN, PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, " +
+            "PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID, PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED "
+
+    sqlColmSearch +=
+        if (generatePartnerQuery) {
+            // Spørring med LEFT JOIN for PartnerListe, slik at vi får med partnere uten CPA'er også:
             """
-            SELECT PARTNER.NAVN, PARTNER_CPA.PARTNER_SUBJECTDN, PARTNER.PARTNER_ID, PARTNER.HER_ID, PARTNER.ORGNUMMER, PARTNER_CPA.CPA_ID, 
-            PARTNER_CPA.NAV_CPP_ID, PARTNER_CPA.PARTNER_CPP_ID, PARTNER_CPA.PARTNER_ENDPOINT, KOMMUNIKASJONSSYSTEM.BESKRIVELSE, PARTNER_CPA.LASTUSED 
+               FROM $databasePrefix.PARTNER
+               LEFT JOIN $databasePrefix.PARTNER_CPA ON PARTNER.PARTNER_ID = PARTNER_CPA.PARTNER_ID 
+               LEFT JOIN $databasePrefix.KOMMUNIKASJONSSYSTEM ON PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID 
+            """
+        } else {
+            // Spørring for CPA-Liste:
+            """
+               FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
+               WHERE PARTNER_CPA.PARTNER_ID = PARTNER.PARTNER_ID AND PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID
             """
         }
-    sqlColmSearch += """
-                   FROM $databasePrefix.PARTNER_CPA, $databasePrefix.PARTNER, $databasePrefix.KOMMUNIKASJONSSYSTEM 
-                   WHERE PARTNER_CPA.PARTNER_ID = PARTNER.PARTNER_ID AND PARTNER.KOMMUNIKASJONSSYSTEM_ID = KOMMUNIKASJONSSYSTEM.KOMMUNIKASJONSSYSTEM_ID
-                   """
-
-    // Filtrere vekk CPAer som ikke har vært i bruk siste X antall måneder?
-    if (hideUsedCpaMonths > 0) {
-        val thresholdDate = LocalDate.now().minusMonths(hideUsedCpaMonths)
-        val thresholdDateString = thresholdDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-        sqlColmSearch += " AND PARTNER_CPA.LASTUSED <= TO_DATE('$thresholdDateString', 'DD.MM.YYYY') "
-    }
 
     // Search Not Empty
     if (!isSearchEmpty) {
@@ -191,19 +173,19 @@ fun generateSQLQuery(
     } else {
         sqlColmSearch += " ORDER BY PARTNER_CPA.CPA_ID DESC "
     }
-    if (pageable != null && !generateCountQuery) {
+    if (pageable != null) {
         sqlColmSearch += " OFFSET " + pageable.offset + " ROWS FETCH NEXT " + pageable.pageSize + " ROWS ONLY "
     }
     return sqlColmSearch
 }
 
-fun Connection.executeCountQuery(
+private fun Connection.executeCountQuery(
     sqlQuery: String,
     sok: String?,
 ): Long {
     val preparedStatement = this.prepareStatement(sqlQuery)
     if (!sok.isNullOrBlank()) {
-        log.debug("Legger inn søk: '" + sok + "'")
+        log.debug("Legger inn søk: '$sok'")
         preparedStatement.setObject(1, sok)
     }
     return preparedStatement.use {
@@ -213,16 +195,16 @@ fun Connection.executeCountQuery(
     }
 }
 
-fun Connection.exeuteCpaListeQuery(
+private fun Connection.exeutePartnerCpaListeQuery(
     query: String,
     sok: String?,
-): List<CpaListe> {
+): List<PartnerCpaListe> {
     try {
         val preparedStatement = this.prepareStatement(query)
         if (!sok.isNullOrBlank()) {
             preparedStatement.setObject(1, sok)
         }
-        return preparedStatement.use { it.executeQuery().toList { toCpaliste() } }.toList()
+        return preparedStatement.use { it.executeQuery().toList { toPartnerCpaListe() } }.toList()
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")
@@ -232,8 +214,8 @@ fun Connection.exeuteCpaListeQuery(
     }
 }
 
-fun ResultSet.toCpaliste(): CpaListe =
-    CpaListe(
+private fun ResultSet.toPartnerCpaListe(): PartnerCpaListe =
+    PartnerCpaListe(
         partnerName = getString("Navn"),
         partnerSubjectDN = getString("PARTNER_SUBJECTDN"),
         partnerID = getString("PARTNER_ID"),
