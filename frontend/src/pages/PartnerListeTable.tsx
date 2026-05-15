@@ -20,12 +20,8 @@ import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
 import $ from 'jquery';
 
-type PartnerDetails = {
-    partnerName: string;
+type CpaDetails = {
     partnerSubjectDN: string | null;
-    partnerID: string;
-    herID: string;
-    orgNummer: string;
     cpaID: string | null;
     navCppID: string | null;
     partnerCppID: string | null;
@@ -35,10 +31,32 @@ type PartnerDetails = {
     lastUsedEbms: string | null;
 };
 
-type CpaListeData = {
-    partnerCpaListe: PartnerDetails[],
-    totalNumberOfEntries: number
-}
+type PartnerListe = {
+    partnerName: string;
+    partnerID: string;
+    herID: string;
+    orgNummer: string;
+    cpaListe: CpaDetails[];
+};
+
+type PartnerListeData = {
+    partnerListe: PartnerListe[];
+    totalNumberOfEntries: number;
+};
+
+// Flat view of a partner used for sorting — first-CPA fields are extracted to the top level
+type PartnerDisplay = {
+    partnerName: string;
+    partnerID: string;
+    herID: string;
+    orgNummer: string;
+    partnerSubjectDN: string | null;
+    navCppID: string | null;
+    partnerCppID: string | null;
+    komSystem: string | null;
+    cpaListe: CpaDetails[];
+    antallCpa: number;
+};
 
 const PartnerListeTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
@@ -61,10 +79,10 @@ const PartnerListeTable = () => {
     const [pageSize, setPageSize] = useState(25);
 
     const url = `/v1/hentpartnerliste?searchColmn=${searchColmn}`;
-    const { fetchState, callRequest } = useFetch<CpaListeData>(url);
+    const { fetchState, callRequest } = useFetch<PartnerListeData>(url);
 
     const { loading, error, data } = fetchState;
-    const cpaInfo = data?.partnerCpaListe ?? [];
+    const partnerInfo = data?.partnerListe ?? [];
 
     useEffect(() => {
     callRequest();
@@ -74,25 +92,41 @@ const PartnerListeTable = () => {
     setCurrentPage(1);
   }, [searchColmn]);
 
-  // Filtrer ut CPA'er som har vært i bruk siste X antall måneder:
-  const filteredCpaInfo = (cpaInfo ?? []).filter(
-      e => {
-          if (e.lastUsed == null && e.lastUsedEbms == null) return true;
-          let lastUsed = (e.lastUsed != null) ? new Date(e.lastUsed) : null;
-          let lastUsedEbms = (e.lastUsedEbms != null) ? new Date(e.lastUsedEbms) : null;
+  // Filtrer ut CPA'er som har vært i bruk siste X antall måneder, og bygg flat visningsstruktur for sortering:
+  const filteredPartners = (partnerInfo ?? []).reduce<PartnerDisplay[]>((acc, partner) => {
+      const filteredCpaListe = partner.cpaListe.filter(cpa => {
+          if (cpa.lastUsed == null && cpa.lastUsedEbms == null) return true;
+          const lastUsed = cpa.lastUsed != null ? new Date(cpa.lastUsed) : null;
+          const lastUsedEbms = cpa.lastUsedEbms != null ? new Date(cpa.lastUsedEbms) : null;
           if (lastUsed != null && lastUsed > thresholdDate) return false;
           if (lastUsedEbms != null && lastUsedEbms > thresholdDate) return false;
           return true;
-      }
-  );
+      });
+      // Skjul partnere der alle CPA'er har hatt trafikk innenfor siste X antall måneder, men behold alltid partnere uten CPA'er:
+      if (partner.cpaListe.length > 0 && filteredCpaListe.length === 0) return acc;
+      const firstCpa = filteredCpaListe[0] ?? null;
+      acc.push({
+          partnerName: partner.partnerName,
+          partnerID: partner.partnerID,
+          herID: partner.herID,
+          orgNummer: partner.orgNummer,
+          partnerSubjectDN: firstCpa?.partnerSubjectDN ?? null,
+          navCppID: firstCpa?.navCppID ?? null,
+          partnerCppID: firstCpa?.partnerCppID ?? null,
+          komSystem: firstCpa?.komSystem ?? null,
+          cpaListe: filteredCpaListe,
+          antallCpa: filteredCpaListe.length,
+      });
+      return acc;
+  }, []);
 
   const {
-    items: filteredAndSortedCpas,
+    items: filteredAndSortedPartners,
     requestSort,
     sortConfig,
-  } = useTableSorting(filteredCpaInfo);
+  } = useTableSorting(filteredPartners);
 
-  const getClassNamesFor = (name: keyof PartnerDetails) => {
+  const getClassNamesFor = (name: keyof PartnerDisplay) => {
     if (!sortConfig) {
       return;
     }
@@ -153,47 +187,31 @@ const PartnerListeTable = () => {
       setThresholdDate(d);
   };
 
-  const groupedData = filteredAndSortedCpas.reduce((acc: Map<string, PartnerDetails[]>, obj) => {
-    const key = obj.partnerID;
-    if (!acc.has(key)) acc.set(key, []);
-    acc.get(key)!.push(obj);
-    return acc;
-  }, new Map<string, PartnerDetails[]>());
-
-  const currentTableMap = useMemo(() => {
+  const currentPagePartners = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
-    let slicedMap = new Map<string, PartnerDetails[]>()
-    let index = 0;
-    // @ts-ignore
-      for (const [key, value] of groupedData) {
-        if (index >= lastPageIndex) break;
-        if (index >= firstPageIndex) {
-            slicedMap.set(key, value);
-        }
-        index++;
-    }
-    return slicedMap;
-  }, [currentPage, pageSize, groupedData]);
+    return filteredAndSortedPartners.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, pageSize, filteredAndSortedPartners]);
 
-  const headers: { key: keyof PartnerDetails; name: string }[] = [
+  const headers: { key: keyof PartnerDisplay; name: string }[] = [
       { key: "partnerName", name: "Navn"},
       { key: "partnerID", name: "PartnerID" },
       { key: "herID", name: "HerID" },
       { key: "orgNummer", name: "Org.Nummer" },
       { key: "navCppID", name: "NavCpp" },
       { key: "partnerCppID", name: "AdminID" },
-      { key: "komSystem", name: "KomSystem" }
+      { key: "komSystem", name: "KomSystem" },
+      { key: "antallCpa", name: "Ant CPA" }
   ];
 
   const showSpinner = loading;
   const showErrorMessage = !loading && error?.message;
   const showNoDataMessage =
-      !loading && !error?.message && cpaInfo?.length === 0;
-  const showData = !loading && !error?.message && !!cpaInfo?.length;
+      !loading && !error?.message && partnerInfo?.length === 0;
+  const showData = !loading && !error?.message && !!partnerInfo?.length;
 
   const totalPartners = data?.totalNumberOfEntries;
-  const totalFilterCount = groupedData.size;
+  const totalFilterCount = filteredAndSortedPartners.length;
   let showTo = pageSize * currentPage;
   const showFrom = showTo - (pageSize-1);
   if (showTo > totalFilterCount) showTo = totalFilterCount;
@@ -210,7 +228,6 @@ const PartnerListeTable = () => {
                   <label style={{display: "inline-flex", alignItems: "center", gap: 16}}>
                       <span>Søk: </span>
                       <Input
-                          //defaultValue="test" {...register("partnerID")}
                           name="innValue"
                           value={innValue}
                           className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
@@ -315,7 +332,6 @@ const PartnerListeTable = () => {
                     {name}
                   </Table.HeaderCell>
               ))}
-              <Table.HeaderCell>Antall CPA</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -327,60 +343,67 @@ const PartnerListeTable = () => {
             {showErrorMessage && <RowWithContent>{error}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
             {showData &&
-                Array.from(currentTableMap.keys()).map((partnerId, index) => {
-                    const messages = currentTableMap.get(partnerId)!!;
-                    const firstMessage = messages[0]; // Brukes til info i hovedraden
-                    const isExpanded = expandedRows[partnerId];
+                currentPagePartners.map((partner, index) => {
+                    const isExpanded = expandedRows[partner.partnerID];
                   return (
-                      <React.Fragment key={partnerId}>
+                      <React.Fragment key={partner.partnerID}>
                       <Table.Row
-                          key={partnerId}
+                          key={partner.partnerID}
                           className={clsx({ [tableStyles.coloredRow]: index % 2 })}
-                          title={firstMessage.partnerSubjectDN ?? firstMessage.partnerName}
+                          title={partner.partnerSubjectDN ?? partner.partnerName}
                       >
 
                           <Table.DataCell>
                               <div style={{ display: "flex", gap: "5px"}}>
-                              <img
-                                  className="expandable collapsible"
-                                  src={isExpanded ? collapse : expand}
-                                  style={{ width: "15px", height: "15px", border: "0px none", display: isExpanded ? "none" : "inline", cursor: "pointer" }}
-                                  onClick={(e) => {
-                                      toggleRow(firstMessage.partnerID);
-                                      toggleAllExpandables($(e.currentTarget), $("#events td img.expandable:not(.collapsible)"));
-                                  }}
-                              />
-                              <img
-                                  className="collapsible"
-                                  src={collapse}
-                                  style={{ width: "15px", height: "15px", order: "0px none", display: isExpanded ? "inline" : "none", cursor: "pointer" }}
-                                  onClick={(e) => {
-                                      toggleRow(firstMessage.partnerID);
-                                      toggleAllExpandables($(e.currentTarget), $("#events td img.collapsible"));
-                                  }}
-                              />
-                              {firstMessage.partnerName}
+                                  { partner.cpaListe.length > 0 && <><img
+                                      className="expandable collapsible"
+                                      src={isExpanded ? collapse : expand}
+                                      style={{
+                                          width: "15px",
+                                          height: "15px",
+                                          border: "0px none",
+                                          display: isExpanded ? "none" : "inline",
+                                          cursor: "pointer"
+                                      }}
+                                      onClick={(e) => {
+                                          toggleRow(partner.partnerID);
+                                          toggleAllExpandables($(e.currentTarget), $("#events td img.expandable:not(.collapsible)"));
+                                      }}/><img
+                                      className="collapsible"
+                                      src={collapse}
+                                      style={{
+                                          width: "15px",
+                                          height: "15px",
+                                          order: "0px none",
+                                          display: isExpanded ? "inline" : "none",
+                                          cursor: "pointer"
+                                      }}
+                                      onClick={(e) => {
+                                          toggleRow(partner.partnerID);
+                                          toggleAllExpandables($(e.currentTarget), $("#events td img.collapsible"));
+                                      }}/></>}
+                              {partner.partnerName}
                               </div>
                           </Table.DataCell>
-                          <Table.DataCell>{firstMessage.partnerID}</Table.DataCell>
-                          <Table.DataCell>{firstMessage.herID}</Table.DataCell>
-                          <Table.DataCell>{firstMessage.orgNummer}</Table.DataCell>
-                          <Table.DataCell>{firstMessage.navCppID}</Table.DataCell>
-                          <Table.DataCell>{firstMessage.partnerCppID}</Table.DataCell>
-                          <Table.DataCell>{firstMessage.komSystem}</Table.DataCell>
-                          <Table.DataCell>{currentTableMap.get(partnerId)!!.length}</Table.DataCell>
+                          <Table.DataCell>{partner.partnerID}</Table.DataCell>
+                          <Table.DataCell>{partner.herID}</Table.DataCell>
+                          <Table.DataCell>{partner.orgNummer}</Table.DataCell>
+                          <Table.DataCell>{partner.navCppID}</Table.DataCell>
+                          <Table.DataCell>{partner.partnerCppID}</Table.DataCell>
+                          <Table.DataCell>{partner.komSystem}</Table.DataCell>
+                          <Table.DataCell>{partner.antallCpa}</Table.DataCell>
                       </Table.Row>
                           {isExpanded &&
-                              messages.map((message: any, subIndex: any) => (
+                              partner.cpaListe.map((cpa: CpaDetails, subIndex: number) => (
                           <Table.Row  key={subIndex} style={{backgroundColor: "beige"}}>
                               <Table.DataCell colSpan={1}>
-                                  {message.cpaID}
+                                  {cpa.cpaID}
                               </Table.DataCell>
                               <Table.DataCell colSpan={2}>
-                                  Sist brukt gamle emottak: {message.lastUsed}
+                                  Sist brukt gamle emottak: {cpa.lastUsed}
                               </Table.DataCell>
                               <Table.DataCell colSpan={5}>
-                                  Sist brukt nye emottak: {message.lastUsedEbms}
+                                  Sist brukt nye emottak: {cpa.lastUsedEbms}
                               </Table.DataCell>
                           </Table.Row>
                       ))}

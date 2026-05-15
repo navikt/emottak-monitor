@@ -15,8 +15,11 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
+import no.nav.emottak.model.CpaListe
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.model.PartnerCpaListeData
+import no.nav.emottak.model.PartnerListe
+import no.nav.emottak.model.PartnerListeData
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -213,7 +216,8 @@ fun Route.hentCPAListe(
 ): Route =
     get("/hentcpaliste") {
         log.info("Kjører dabasespørring for å hente liste over CPA'er...")
-        hentPartnerCpaInformasjon(httpClient, meldingService::cpaliste)
+        val (status, data) = hentPartnerCpaInformasjon(httpClient, meldingService::cpaliste)
+        call.respond(status, data)
     }
 
 // Henting av Partner-informasjon, med last used fra gamle og nye emottak (/partnerliste)
@@ -224,14 +228,15 @@ fun Route.hentPartnerListe(
 ): Route =
     get("/hentpartnerliste") {
         log.info("Kjører dabasespørring for å hente liste over partnere...")
-        hentPartnerCpaInformasjon(httpClient, meldingService::partnerliste)
+        val (status, partnerCpaListeData) = hentPartnerCpaInformasjon(httpClient, meldingService::partnerliste)
+        call.respond(status, convertToPartnerListeData(partnerCpaListeData))
     }
 
 @InternalAPI
 private suspend fun RoutingContext.hentPartnerCpaInformasjon(
     httpClient: HttpClient,
     meldingServiceFunksjon: (searchColmn: String) -> PartnerCpaListeData,
-) {
+): Pair<HttpStatusCode, PartnerCpaListeData> {
     val searchColmn = getURLEncodedQueryParameter("searchColmn")
 
     // Nye emottak:
@@ -248,14 +253,42 @@ private suspend fun RoutingContext.hentPartnerCpaInformasjon(
     log.debug("Endpoint: {}", cpaliste.firstOrNull()?.partnerEndpoint)
     log.debug("LastUsed: {}", cpaliste.firstOrNull()?.lastUsed)
 
-    call.respond(
-        status =
-            when (responseEbms == null) {
-                true -> HttpStatusCode.PartialContent
-                false -> HttpStatusCode.OK
-            },
-        // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
-        message = mergeCpaListeData(responseEbms, partnerlisteData),
+    // Merge av data fra gamle og nye eMottak (forutsetter at nye eMottak IKKE inneholder CPA'er som IKKE finnes i gamle):
+    val status = if (responseEbms == null) HttpStatusCode.PartialContent else HttpStatusCode.OK
+    return Pair(status, mergeCpaListeData(responseEbms, partnerlisteData))
+}
+
+private fun convertToPartnerListeData(partnerCpaListeData: PartnerCpaListeData): PartnerListeData {
+    val partnerListe =
+        partnerCpaListeData.partnerCpaListe
+            .groupBy { it.partnerID }
+            .map { (_, entries) ->
+                val first = entries.first()
+                PartnerListe(
+                    partnerName = first.partnerName ?: "",
+                    partnerID = first.partnerID ?: "",
+                    herID = first.herID ?: "",
+                    orgNummer = first.orgNummer ?: "",
+                    cpaListe =
+                        entries
+                            .filter { it.cpaID != null }
+                            .map { entry ->
+                                CpaListe(
+                                    partnerSubjectDN = entry.partnerSubjectDN,
+                                    cpaID = entry.cpaID,
+                                    navCppID = entry.navCppID,
+                                    partnerCppID = entry.partnerCppID,
+                                    partnerEndpoint = entry.partnerEndpoint,
+                                    komSystem = entry.komSystem,
+                                    lastUsed = entry.lastUsed,
+                                    lastUsedEbms = entry.lastUsedEbms,
+                                )
+                            },
+                )
+            }
+    return PartnerListeData(
+        partnerListe = partnerListe,
+        totalNumberOfEntries = partnerCpaListeData.totalNumberOfEntries,
     )
 }
 
