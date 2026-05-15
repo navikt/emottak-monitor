@@ -26,7 +26,6 @@ type CpaDetails = {
     navCppID: string | null;
     partnerCppID: string | null;
     partnerEndpoint: string | null;
-    komSystem: string | null;
     lastUsed: string | null;
     lastUsedEbms: string | null;
 };
@@ -36,6 +35,7 @@ type PartnerListe = {
     partnerID: string;
     herID: string;
     orgNummer: string;
+    komSystem: string | null;
     cpaListe: CpaDetails[];
 };
 
@@ -113,7 +113,7 @@ const PartnerListeTable = () => {
           partnerSubjectDN: firstCpa?.partnerSubjectDN ?? null,
           navCppID: firstCpa?.navCppID ?? null,
           partnerCppID: firstCpa?.partnerCppID ?? null,
-          komSystem: firstCpa?.komSystem ?? null,
+          komSystem: partner?.komSystem ?? null,
           cpaListe: filteredCpaListe,
           antallCpa: filteredCpaListe.length,
       });

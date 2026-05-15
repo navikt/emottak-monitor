@@ -269,6 +269,7 @@ private fun convertToPartnerListeData(partnerCpaListeData: PartnerCpaListeData):
                     partnerID = first.partnerID ?: "",
                     herID = first.herID ?: "",
                     orgNummer = first.orgNummer ?: "",
+                    komSystem = first.komSystem,
                     cpaListe =
                         entries
                             .filter { it.cpaID != null }
@@ -279,7 +280,6 @@ private fun convertToPartnerListeData(partnerCpaListeData: PartnerCpaListeData):
                                     navCppID = entry.navCppID,
                                     partnerCppID = entry.partnerCppID,
                                     partnerEndpoint = entry.partnerEndpoint,
-                                    komSystem = entry.komSystem,
                                     lastUsed = entry.lastUsed,
                                     lastUsedEbms = entry.lastUsedEbms,
                                 )

@@ -30,7 +30,6 @@ data class CpaListe(
     val navCppID: String? = null,
     val partnerCppID: String? = null,
     val partnerEndpoint: String? = null,
-    val komSystem: String? = null,
     var lastUsed: String? = null,
     var lastUsedEbms: String? = null,
 )
@@ -41,6 +40,7 @@ data class PartnerListe(
     val partnerID: String,
     val herID: String,
     val orgNummer: String,
+    val komSystem: String? = null,
     val cpaListe: List<CpaListe>,
 )
 
