@@ -14,6 +14,7 @@ import MessagesTableEbms from "../../pages/MessagesTableEbms";
 import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
 import CpaListeTable from "../../pages/CpaListeTable";
 import PartnerListeTable from "../../pages/PartnerListeTable";
+import LogsGrafana from "../../pages/LogsGrafana";
 import ConversationStatusTable from "../../pages/ConversationStatusTable";
 import { isProdEnv } from "../../util";
 
@@ -36,6 +37,7 @@ export const pages: Page[] = [
   { title: "EBMessage-id søk", path: "/ebmessageidsok", enableHeader: true, element: <EBEMessageIdInfoSok /> },
   { title: "CPA-liste", path: "/cpaliste", enableHeader: false, element: <CpaListeTable /> },
   { title: "Partnerliste", path: "/partnerliste", enableHeader: false, element: <PartnerListeTable /> },
+  { title: "Logs i Grafana", path: "/grafana", enableHeader: true, element: <LogsGrafana /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", enableHeader: true, element: <FeilStatistikk /> },
 ];
 
