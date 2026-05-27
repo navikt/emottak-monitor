@@ -1,0 +1,19 @@
+:root[data-compactness="loose"] {
+  --nav-link-height: 2.5em;
+  --nav-link-line-height: 2.5em;
+  font-size: 1rem;
+  --navds-spacing-4:  1rem;
+  --navds-spacing-3:  0.75rem;
+  --navds-spacing-2:  0.5rem;
+  --navds-spacing-1:  0.25rem;
+  --select-min-height: 32px;
+  --select-padding: 0.25rem 2rem 0.25rem 0.25rem;
+  --form-field-display: grid;
+  --form-field-gap: var(--navds-spacing-2);
+  --page-wrapper-left-margin: 50px;
+  --page-wrapper-padding: 24px;
+  --page-navbar-width: 300px;
+  --page-navbar-header-padding: 24px;
+  --page-navbar-header-height: 90px;
+  --page-navbar-open-button-left-margin: 15px;
+}

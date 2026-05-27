@@ -222,7 +222,7 @@ const CpaListeTable = () => {
                   value={months}
               /> måneder
               </div>
-              <div className="navds-form-field--small" style={{padding: "20px 75px 5px 5px", position: "relative", textAlign: "right" }}>
+              <div className="navds-form-field--small" style={{padding: "1em 4.15em 5px 5px", position: "relative", textAlign: "right" }}>
               <button className={buttonStyles.button} type="submit" onClick={handleBtnSearch}>
                   <img src={search}/>
                   <span style={{display:"center"}}>Søk</span>

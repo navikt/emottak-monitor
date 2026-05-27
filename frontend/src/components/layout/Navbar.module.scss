@@ -1,5 +1,8 @@
 @import "@navikt/ds-css/dist/index.css";
-@import "../../styles/variables.scss";
+
+:root {
+  --nav-button-diameter: calc(var(--page-navbar-header-height)/3);
+}
 
 .container {
   display: flex;
@@ -17,8 +20,8 @@
 }
 
 .header {
-  padding: $header-padding;
-  height: $header-height;
+  padding: var(--page-navbar-header-padding);
+  height: var(--page-navbar-header-height);
   width: 100%;
   background-color: var(--header-bg);
   display: flex;
@@ -29,7 +32,7 @@
 }
 
 .open {
-  width: $nav-width;
+  width: var(--page-navbar-width);
 }
 
 .closed {
@@ -39,8 +42,8 @@
 .navLink {
   list-style: none;
   text-decoration: none;
-  width: $nav-width;
-  height: 2.5em;
+  width: var(--page-navbar-width);
+  height: var(--nav-link-height);
   position: relative;
   color: var(--text-primary);
 
@@ -51,7 +54,7 @@
   .linkText {
     width: 100%;
     height: 100%;
-    line-height: 2.5;
+    line-height: var(--nav-link-line-height);
     vertical-align: middle;
     margin: 0;
     display: flex;
@@ -64,9 +67,9 @@
 
 .button {
   position: absolute;
-  top: calc(#{$header-height}/2 - #{$nav-button-diameter}/2);
-  height: $nav-button-diameter;
-  width: $nav-button-diameter;
+  top: calc(var(--page-navbar-header-height)/2 - var(--nav-button-diameter)/2);
+  height: var(--nav-button-diameter);
+  width: var(--nav-button-diameter);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,13 +86,13 @@
 
 .closeButton {
   z-index: 200;
-  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
+  left: calc(var(--page-navbar-width) - var(--nav-button-diameter)/2);
   display: flex;
   transition: left 1s;
 }
 
 .closeButtonCollapsed {
-  left: calc(-1 * #{$nav-button-diameter});
+  left: calc(-1 * var(--nav-button-diameter));
 }
 
 .closeButtonHidden {
@@ -99,10 +102,10 @@
 }
 
 .closeButtonVisible {
-  left: calc(#{$nav-width} - #{$nav-button-diameter}/2);
+  left: calc(var(--page-navbar-width) - var(--nav-button-diameter)/2);
 }
 
 .openButton {
-  left: 15px;
+  left: var(--page-navbar-open-button-left-margin);
   z-index: 0;
 }
