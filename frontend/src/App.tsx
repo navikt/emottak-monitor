@@ -14,20 +14,29 @@ import LoggTableEbms from "./pages/LoggTableEbms";
 import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
 import CpaIdTableModal from "./components/CpaIdTableModal";
 import { useTheme } from './hooks/useTheme';
-import './styles/light-theme.scss';
-import './styles/dark-theme.scss';
+import { useCompactness } from './hooks/useCompactness';
+import './styles/theme-light.scss';
+import './styles/theme-dark.scss';
+import './styles/compactness-tight.scss';
+import './styles/compactness-loose.scss';
 
 export default function App() {
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
+    const { compactness, toggleCompactness } = useCompactness();
 
   const state = location.state as { backgroundLocation?: Location };
 
   return (
     <div>
       <div style={{ position: "absolute", top: 0, right: 0 }}>
-        <button onClick={toggleTheme} className={"theme-button"}>
+        <button onClick={toggleTheme} className={"theme-button"} style={{ width: "95px" }}>
           {theme === 'light' ? '🌙 Mørkt' : '☀️ Lyst'} tema
+        </button>{' '}
+      </div>
+      <div style={{ position: "absolute", top: 0, right: 100 }}>
+        <button onClick={toggleCompactness} className={"theme-button"} style={{ width: "95px" }}>
+          {compactness === 'tight' ? '☰ Luftig' : '≡ Tett'} tema
         </button>{' '}
       </div>
       <Routes location={state?.backgroundLocation || location}>

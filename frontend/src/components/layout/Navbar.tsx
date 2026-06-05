@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ isNavbarOpen, setIsNavbarOpen }) => {
             style={{ maxWidth: "70px" }}
           />
           <span>eMottak Monitor</span>
-          <span style={{ position: "relative", top: "-30px", left: "-178px", fontSize: "1rem" }}
+          <span style={{ position: "relative", top: "-1.7em", left: "-11.2em", fontSize: "1rem" }}
           >
             { isProdEnv ? "Prod" : "Dev" }
           </span>

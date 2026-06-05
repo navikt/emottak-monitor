@@ -21,6 +21,6 @@
   background-color: var(--table-hover-bg) !important;
 }
 
-.compactTableCell {
-  padding: 2px !important;
+.expandable, .clickable {
+  cursor: pointer;
 }

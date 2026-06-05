@@ -20,7 +20,7 @@ const PageWrapper: React.FC<PageWrapperProps> = (props: PageWrapperProps) => {
                 style={{
                     display: "flex",
                     alignItems: "center",
-                    height: "90px",
+                    height: "2em",
                 }}
                 size="xlarge"
             >
