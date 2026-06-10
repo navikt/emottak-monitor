@@ -22,10 +22,9 @@ import no.nav.emottak.model.PartnerListe
 import no.nav.emottak.model.PartnerListeData
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
@@ -240,7 +239,7 @@ private suspend fun RoutingContext.hentPartnerCpaInformasjon(
     val searchColmn = getURLEncodedQueryParameter("searchColmn")
 
     // Nye emottak:
-    val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottak(httpClient)
+    val responseEbms: Map<String, String?>? = hentSistBruktNyeEmottakUTC(httpClient)
 
     // Gamle emottak:
     val partnerlisteData: PartnerCpaListeData = meldingServiceFunksjon(searchColmn)
@@ -293,7 +292,7 @@ private fun convertToPartnerListeData(partnerCpaListeData: PartnerCpaListeData):
 }
 
 @InternalAPI
-private suspend fun RoutingContext.hentSistBruktNyeEmottak(httpClient: HttpClient): Map<String, String?>? {
+private suspend fun RoutingContext.hentSistBruktNyeEmottakUTC(httpClient: HttpClient): Map<String, String?>? {
     val url = "$cpaRepoUrl/cpa/timestamps/last_used"
     log.info("Henter sist brukt-timestamps fra nye emottak ($url)")
     val (responseCode, responseBody) = executeREST(httpClient, url, useCallRespond = false)
@@ -320,7 +319,7 @@ private fun mergeCpaListeData(
         }
         // TODO: Kan vi risikere at nye eMottak returnerer en CPA-id som ikke finnes i gamle eMottak?
         if (responseEbms != null && element.cpaID in responseEbms.keys && responseEbms[element.cpaID] != null) {
-            val lastUsedEbmsStr = responseEbms[element.cpaID]!!.replace("T", " ").replace("Z", "")
+            val lastUsedEbmsStr = convertUtcToLocalString(responseEbms[element.cpaID])
             element.lastUsedEbms = lastUsedEbmsStr
         }
     }
@@ -494,10 +493,15 @@ private suspend fun RoutingContext.returnBadRequest(errorMessage: String) {
     call.respond(HttpStatusCode.BadRequest, errorMessage)
 }
 
-fun String.toLocalDate(pattern: String = "yyyy-MM-dd"): LocalDate? =
-    try {
-        LocalDate.parse(this, DateTimeFormatter.ofPattern(pattern))
-    } catch (e: DateTimeParseException) {
-        log.warn("Failed to parse the string '$this' to date: ${e.message}")
-        null
+internal fun convertUtcToLocalString(utcString: String?): String? {
+    if (utcString == null) return null
+    return try {
+        val utcDateTime = java.time.Instant.parse(utcString)
+        val zonedDateTime = utcDateTime.atZone(ZoneId.of("Europe/Oslo"))
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        zonedDateTime.format(formatter)
+    } catch (e: Exception) {
+        log.error("Failed to convert UTC-datetime '$utcString': ${e.message}'")
+        utcString
     }
+}
