@@ -125,9 +125,10 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       </div>
       {filterKeys.includes("role" as K) && (
         <Select
+          className={styles.selectFilter}
           style={{
-            textAlign: "left",
             gridArea: "role",
+            marginTop: "0.5rem",
           }}
           label="Rolle"
           size="small"
@@ -145,8 +146,10 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       )}
       {filterKeys.includes("service" as K) && (
         <Select
+          className={styles.selectFilter}
           style={{
             gridArea: "service",
+            marginTop: "0.5rem",
           }}
           label="Service"
           size="small"
@@ -203,10 +206,14 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       </div>
       {filterKeys.includes("action" as K) && (
         <Select
+          className={styles.selectFilter}
+          style={{
+            gridArea: "action",
+            marginTop: "0.5rem",
+          }}
           label="Action"
           size="small"
           onChange={(event) => onActionChange(event.target.value)}
-          style={{ gridArea: "action" }}
         >
           <option value="">Velg action</option>
           {actions.map((action) => {
@@ -220,6 +227,11 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       )}
       {filterKeys.includes("status" as K) && (
         <Select
+          className={styles.selectFilter}
+          style={{
+            gridArea: "status",
+            marginTop: "0.5rem",
+          }}
           label="Status"
           size="small"
           onChange={(event) =>
@@ -228,7 +240,6 @@ const PrepopulatedFilter = <T, K extends keyof T>({
               event.currentTarget.value as unknown as T[K]
             )
           }
-          style={{ gridArea: "status" }}
         >
           <option value="">Velg status</option>
           {uniqueFilters["status" as K].map((status) => {
@@ -242,6 +253,11 @@ const PrepopulatedFilter = <T, K extends keyof T>({
       )}
         {filterKeys.includes("hendelsedeskr" as K) && (
         <Select
+            className={styles.selectFilter}
+            style={{
+                gridArea: "hendelsedeskr",
+                marginTop: "0.5rem",
+            }}
             label="Hendelse"
             size="small"
             onChange={(event) =>
@@ -250,7 +266,6 @@ const PrepopulatedFilter = <T, K extends keyof T>({
                     event.currentTarget.value as unknown as T[K]
                 )
             }
-            style={{ gridArea: "hendelsedeskr" }}
         >
             <option value="">Velg hendelse</option>
             {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
