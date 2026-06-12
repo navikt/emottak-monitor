@@ -123,6 +123,7 @@ class MeldingerApiSpek :
                                     )
                                 contains("cpa/timestamps/last_used") ->
                                     respond(
+                                        // Returned timestamps are in UTC:
                                         content =
                                             """{"nav:qass:25695":null,
                                             |"nav:qass:25696":"2025-11-24T07:30:48Z",
@@ -368,7 +369,7 @@ class MeldingerApiSpek :
                                 partnerEndpoint = "partnerEndpoint2",
                                 komSystem = "komSystem2",
                                 lastUsed = "2025-11-22 22:57:20",
-                                lastUsedEbms = "2025-11-21 23:57:20",
+                                lastUsedEbms = "2025-11-22 00:57:20",
                             )
                     }
                 }
@@ -422,7 +423,7 @@ class MeldingerApiSpek :
                                             partnerCppID = "adminbruker",
                                             partnerEndpoint = "partnerEndpoint2",
                                             lastUsed = "2025-11-22 22:57:20",
-                                            lastUsedEbms = "2025-11-21 23:57:20",
+                                            lastUsedEbms = "2025-11-22 00:57:20",
                                         ),
                                     ),
                             )

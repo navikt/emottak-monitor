@@ -3,7 +3,6 @@ import clsx from "clsx";
 import React, {useEffect, useMemo, useState} from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
-import tableStyles from "../styles/Table.module.scss";
 import {Input} from "nav-frontend-skjema";
 import Pagination from "../components/Pagination";
 import RowWithContent from "../components/RowWithContent";
@@ -12,10 +11,10 @@ import search from "../images/search.gif";
 import erase from "../images/erase.gif";
 import collapse from "../images/collapse.gif";
 import expand from "../images/expand.gif";
-
 import { toggleAllExpandables } from "../util";
-import "../styles/style.scss";
+
 import filterStyles from "../components/Filter.module.scss";
+import tableStyles from "../styles/Table.module.scss";
 import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
 
@@ -266,7 +265,7 @@ const PartnerListeTable = () => {
                   value={months}
               /> måneder
               </div>
-              <div className="navds-form-field--small" style={{padding: "20px 75px 5px 5px", position: "relative", textAlign: "right" }}>
+              <div className="navds-form-field--small" style={{padding: "1em 4.15em 5px 5px", position: "relative", textAlign: "right" }}>
               <button className={buttonStyles.button} type="submit" onClick={handleBtnSearch}>
                   <img src={search}/>
                   <span style={{display:"center"}}>Søk</span>
