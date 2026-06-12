@@ -1,0 +1,19 @@
+:root[data-compactness="tight"] {
+  --nav-link-height: 2em;
+  --nav-link-line-height: 2em;
+  font-size: 0.85rem;
+  --navds-spacing-4:  0.35rem; // 1rem;
+  --navds-spacing-3:  0.25rem; // 0.75rem;
+  --navds-spacing-2:  0.15rem; // 0.5rem;
+  --navds-spacing-1:  0.1rem; // 0.25rem;
+  --select-min-height: 26px;
+  --select-padding: 0.15rem 1rem 0.15rem 0.15rem;
+  --form-field-display: grid;
+  --form-field-gap: var(--navds-spacing-4);
+  --page-wrapper-left-margin: 20px;
+  --page-wrapper-padding: 12px;
+  --page-navbar-width: 260px;
+  --page-navbar-header-padding: 14px;
+  --page-navbar-header-height: 70px;
+  --page-navbar-open-button-left-margin: -2px;
+}

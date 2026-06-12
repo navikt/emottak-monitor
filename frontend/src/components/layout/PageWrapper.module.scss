@@ -1,9 +1,7 @@
-@import "../../styles/variables.scss";
-
 .pageWrapper {
-  margin: 0 50px;
+  margin: 0 var(--page-wrapper-left-margin);
   transition: margin 1s;
   width: 100%;
-  padding: 24px;
+  padding: var(--page-wrapper-padding);
   flex-grow: 1;
 }
