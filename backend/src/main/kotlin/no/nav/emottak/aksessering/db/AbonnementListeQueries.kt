@@ -206,7 +206,25 @@ private fun Connection.exeuteAbonnementListeQuery(
         if (!sok.isNullOrBlank()) {
             preparedStatement.setObject(1, sok)
         }
-        return preparedStatement.use { it.executeQuery().toList { toAbonnementListe() } }.toList()
+        return preparedStatement.use { it.executeQuery().toList { toAbonnementListe() } }.toList().also { abonnementer ->
+            val alleBehandlere = abonnementer.flatMap { it.BehandlerInfo }
+            val duplikater =
+                alleBehandlere
+                    .groupBy {
+                        "${it.B_FNavn?.trim()?.lowercase()}|${it.B_FamilieNavn?.trim()?.lowercase()}|${it.B_Hpr?.trim()}|${it.B_Herid?.trim()}"
+                    }.filter { (_, forekomster) -> forekomster.size > 1 }
+            if (duplikater.isNotEmpty()) {
+                duplikater.forEach { (_, forekomster) ->
+                    val b = forekomster.first()
+                    log.warn(
+                        "Duplikat helsepersonell funnet (${forekomster.size} ganger): " +
+                            "GivenName='${b.B_FNavn}', FamilyName='${b.B_FamilieNavn}', HPR='${b.B_Hpr}', HerId='${b.B_Herid}'",
+                    )
+                }
+            } else {
+                log.info("Ingen duplikate helsepersonell funnet (totalt ${alleBehandlere.size} behandlere).")
+            }
+        }
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")

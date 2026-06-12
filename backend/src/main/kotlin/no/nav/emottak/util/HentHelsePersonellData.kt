@@ -148,30 +148,6 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): List<BehandlerInf
             resultatListe.add(BehandlerInfo(givenName, familyName, hprNr, herId))
         }
 
-        // Logging av resultater
-        resultatListe.forEachIndexed { idx, b ->
-            log.info("  [$idx] GivenName='${b.B_FNavn}', FamilyName='${b.B_FamilieNavn}', HPR='${b.B_Hpr}', HerId='${b.B_Herid}'")
-        }
-
-        // Duplikatsjekk: Krever full match på navn, etternavn, HPR og HER
-        val duplikater =
-            resultatListe
-                .groupBy { "${it.B_FNavn!!.lowercase()}|${it.B_FamilieNavn!!.lowercase()}|${it.B_Hpr}|${it.B_Herid}" }
-                .filter { (_, forekomster) -> forekomster.size > 1 }
-
-        if (duplikater.isNotEmpty()) {
-            duplikater.forEach { (_, forekomster) ->
-                val behandler = forekomster.first()
-                log.warn(
-                    "Duplikat helsepersonell funnet (${forekomster.size} ganger): " +
-                        "GivenName='${behandler.B_FNavn}', FamilyName='${behandler.B_FamilieNavn}', " +
-                        "HPR='${behandler.B_Hpr}', HerId='${behandler.B_Herid}'",
-                )
-            }
-        } else {
-            log.info("Ingen duplikater funnet i helsepersonell-listen.")
-        }
-
         resultatListe
     } catch (e: Exception) {
         log.error("Feil ved parsing av HealthcareProfessional XML: ${e.message}", e)
