@@ -207,6 +207,16 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
+// Modal: Ved klikk på CPA-id (frontend: /cpa/...)
+@InternalAPI
+fun Route.hentAbonnementListe(meldingService: MessageQueryService): Route =
+    get("/hentabonnementliste") {
+        val sok = call.request.queryParameters["sok"] ?: ""
+        log.info("Henter abonnement info for $sok")
+        val abonnementInfo = meldingService.abonnementListe(sok)
+        call.respond(abonnementInfo)
+    }
+
 // Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
 @InternalAPI
 fun Route.hentCPAListe(

@@ -17,6 +17,7 @@ import PartnerListeTable from "../../pages/PartnerListeTable";
 import LogsGrafana from "../../pages/LogsGrafana";
 import ConversationStatusTable from "../../pages/ConversationStatusTable";
 import { isProdEnv } from "../../util";
+import AbonnementTable from "../../pages/AbonnementTable";
 
 
 type Page = {
@@ -36,7 +37,8 @@ export const pages: Page[] = [
   { title: "Mottak-id søk ebms", path: "/readableidsokebms", enableHeader: true, element: <ReadableIdSokEbms /> },
   { title: "EBMessage-id søk", path: "/ebmessageidsok", enableHeader: true, element: <EBEMessageIdInfoSok /> },
   { title: "CPA-liste", path: "/cpaliste", enableHeader: false, element: <CpaListeTable /> },
-  { title: "Partnerliste", path: "/partnerliste", enableHeader: false, element: <PartnerListeTable /> },
+  { title: "Partnerliste", path: "/hentpartnerliste", enableHeader: false, element: <PartnerListeTable /> },
+  { title: "Abonnementliste", path: "/hentabonnementliste", enableHeader: false, element: <AbonnementTable /> },
   { title: "Logs i Grafana", path: "/grafana", enableHeader: true, element: <LogsGrafana /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", enableHeader: true, element: <FeilStatistikk /> },
 ];

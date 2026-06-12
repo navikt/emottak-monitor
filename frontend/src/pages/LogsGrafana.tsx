@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 const LogsGrafana: React.FC = () => {
     const [service_name, setService_name] = useState('ebms-provider');
     const [level, setLevel] = useState('ERROR');
-    const [service, setService] = useState('');
+    const [service, setService] = useState('HarBorgerFrikort');
     const [cpaId, setCpaId] = useState('');
     const [conversationId, setConversationId] = useState('');
     const [messageId, setMessageId] = useState('');
@@ -17,6 +17,7 @@ const LogsGrafana: React.FC = () => {
         d.setDate(d.getDate() - 1);
         return d.toISOString().slice(0, 10);
     });
+
     const timeZone = new Date().toLocaleTimeString('no-NO', {
         timeZone: 'Europe/Oslo',
         hour: '2-digit',
@@ -26,6 +27,14 @@ const LogsGrafana: React.FC = () => {
     const [fromTimePart, setFromTimePart] = useState(timeZone);
     const [toDatePart, setToDatePart] = useState(new Date().toISOString().slice(0, 10));
     const [toTimePart, setToTimePart] = useState(timeZone);
+
+
+    const applicationService: Record<string, string[]> = {
+        'ebms-provider': ['HarBorgerFrikort', 'HarBorgerEgenandelFritak'],
+        'ebms-async': ['Inntektsforesporsel', 'Trekkopplysning'],
+    };
+
+
     const serviceActions: Record<string, string[]> = {
         '': [''],
         Inntektsforesporsel: ['InntektInformasjon', 'Foresporsel', 'Avvisning'],
@@ -103,7 +112,6 @@ const LogsGrafana: React.FC = () => {
 
     const styles = {
         container: { maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', fontFamily: 'Arial, sans-serif' },
-        container2: { maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', fontFamily: 'Arial, sans-serif' },
         formGroup: { marginBottom: '15px', display: 'flex', flexDirection: 'column' as const },
         label: { fontWeight: 'bold' as const, marginBottom: '5px', fontSize: '14px' },
         input: { padding: '8px', borderRadius: '4px', border: '1px solid #999', fontSize: '14px' },
@@ -114,11 +122,17 @@ const LogsGrafana: React.FC = () => {
 
     return (
         <div style={styles.container}>
-            <h2>Grafana ebxl konvolutt ({import.meta.env.VITE_DEPLOY_TARGET})</h2>
+            <h2>Grafana ebxml konvolutt ({import.meta.env.VITE_DEPLOY_TARGET})</h2>
             <form>
                 <div style={styles.formGroup}>
                     <label style={styles.label}>Service_name: Sync (ebms-provider) / Async (ebms-async):</label>
-                    <select value={service_name} onChange={(e) => setService_name(e.target.value)} style={styles.input}>
+                    <select value={service_name} onChange={(e) => {
+                        const newServiceName = e.target.value;
+                        setService_name(newServiceName);
+                        const firstService = applicationService[newServiceName][0];
+                        setService(firstService);
+                        setAction(serviceActions[firstService][0]);
+                    }} style={styles.input}>
                         <option value="ebms-provider">ebms-provider</option>
                         <option value="ebms-async">ebms-async</option>
                     </select>
@@ -137,11 +151,9 @@ const LogsGrafana: React.FC = () => {
                 <div style={styles.formGroup}>
                     <label style={styles.label}>Service:</label>
                     <select value={service} onChange={handleServiceChange} style={styles.input}>
-                        <option value=""></option>
-                        <option value="Inntektsforesporsel">Inntektsforesporsel</option>
-                        <option value="Trekkopplysning">Trekkopplysning</option>
-                        <option value="HarBorgerFrikort">HarBorgerFrikort</option>
-                        <option value="HarBorgerEgenandelFritak">HarBorgerEgenandelFritak</option>
+                        {applicationService[service_name].map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
                     </select>
                 </div>
 
@@ -187,7 +199,7 @@ const LogsGrafana: React.FC = () => {
                 </div>
 
                 <div style={styles.formGroup}>
-                    <label style={styles.label}>Fra (from):</label>
+                    <label style={styles.label}>Fra:</label>
                     <div style={styles.row}>
                         <input
                             type="date"
@@ -205,7 +217,7 @@ const LogsGrafana: React.FC = () => {
                 </div>
 
                 <div style={styles.formGroup}>
-                    <label style={styles.label}>Til (to):</label>
+                    <label style={styles.label}>Til:</label>
                     <div style={styles.row}>
                         <input
                             type="date"
@@ -221,7 +233,11 @@ const LogsGrafana: React.FC = () => {
                         />
                     </div>
                 </div>
-
+                {fromDatePart > toDatePart && (
+                    <div style={{ color: '#b00', backgroundColor: '#fff0f0', border: '1px solid #b00', borderRadius: '4px', padding: '8px 12px', marginBottom: '12px', fontSize: '18px' }}>
+                        ⚠️ «Fra»-dato er etter «Til»-dato.
+                    </div>
+                )}
                 <a href={generateUrl()} target="_blank" rel="noopener noreferrer" style={styles.anchor}>
                     Åpne i Grafana 🚀
                 </a>
