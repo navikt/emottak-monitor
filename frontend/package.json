@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "vite",
+    "start": "node -e \"require('fs').copyFileSync('env.dev','.env')\" && vite",
     "postinstall": "./strip-less.sh",
     "build": "vite build",
     "prepare": "cd .. && husky install frontend/.husky"
