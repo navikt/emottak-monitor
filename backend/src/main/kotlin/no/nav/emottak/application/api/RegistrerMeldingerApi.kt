@@ -207,7 +207,7 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
         executeREST(httpClient, url)
     }
 
-// Modal: Ved klikk på CPA-id (frontend: /cpa/...)
+// Abonnementliste (frontend: /hentabonnementliste)
 @InternalAPI
 fun Route.hentAbonnementListe(meldingService: MessageQueryService): Route =
     get("/hentabonnementliste") {
@@ -217,7 +217,7 @@ fun Route.hentAbonnementListe(meldingService: MessageQueryService): Route =
         call.respond(abonnementInfo)
     }
 
-// Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (/cpaliste)
+// Henting av Partner- og CPA-informasjon, med last used fra gamle og nye emottak (frontend: /cpaliste)
 @InternalAPI
 fun Route.hentCPAListe(
     meldingService: MessageQueryService,
@@ -229,7 +229,7 @@ fun Route.hentCPAListe(
         call.respond(status, data)
     }
 
-// Henting av Partner-informasjon, med last used fra gamle og nye emottak (/partnerliste)
+// Henting av Partner-informasjon, med last used fra gamle og nye emottak (frontend: /partnerliste)
 @InternalAPI
 fun Route.hentPartnerListe(
     meldingService: MessageQueryService,

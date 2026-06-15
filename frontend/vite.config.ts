@@ -19,9 +19,7 @@ export default defineConfig({
             plugins: [lessIgnorePlugin],
         },
     },
-    // TODO Parviz: use "localhost" in local environment
-    server: {proxy:{"/v1":{target: `http://localhost:8080`,
-                // server: {proxy:{"/v1":{target: `${process.env.PROXY_URL }`,
+    server: {proxy:{"/v1":{target: `${process.env.PROXY_URL }`,
                 changeOrigin: true,
                 secure: false,}}},
     build: {outDir:"build"},
