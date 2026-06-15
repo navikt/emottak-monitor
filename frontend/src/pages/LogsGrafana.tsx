@@ -1,5 +1,5 @@
-
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
+import styles from "../styles/grafana.module.scss";
 
 const LogsGrafana: React.FC = () => {
     const [service_name, setService_name] = useState('ebms-provider');
@@ -110,37 +110,27 @@ const LogsGrafana: React.FC = () => {
         return url;
     };
 
-    const styles = {
-        container: { maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', fontFamily: 'Arial, sans-serif' },
-        formGroup: { marginBottom: '15px', display: 'flex', flexDirection: 'column' as const },
-        label: { fontWeight: 'bold' as const, marginBottom: '5px', fontSize: '14px' },
-        input: { padding: '8px', borderRadius: '4px', border: '1px solid #999', fontSize: '14px' },
-        row: { display: 'flex', gap: '10px' },
-        halfInput: { flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #999', fontSize: '14px' },
-        anchor: { display: 'inline-block', padding: '10px 15px', backgroundColor: '#0067c5', color: '#fff', borderRadius: '4px', fontWeight: 'bold' as const, fontSize: '16px', textDecoration: 'none' },
-    };
-
     return (
-        <div style={styles.container}>
+        <div className={styles.container}>
             <h2>Grafana ebxml konvolutt ({import.meta.env.VITE_DEPLOY_TARGET})</h2>
             <form>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Service_name: Sync (ebms-provider) / Async (ebms-async):</label>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Service_name: Sync (ebms-provider) / Async (ebms-async):</label>
                     <select value={service_name} onChange={(e) => {
                         const newServiceName = e.target.value;
                         setService_name(newServiceName);
                         const firstService = applicationService[newServiceName][0];
                         setService(firstService);
                         setAction(serviceActions[firstService][0]);
-                    }} style={styles.input}>
+                    }} className={styles.input}>
                         <option value="ebms-provider">ebms-provider</option>
                         <option value="ebms-async">ebms-async</option>
                     </select>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Loggnivå (level):</label>
-                    <select value={level} onChange={(e) => setLevel(e.target.value)} style={styles.input}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Loggnivå (level):</label>
+                    <select value={level} onChange={(e) => setLevel(e.target.value)} className={styles.input}>
                         <option value="ERROR">ERROR</option>
                         <option value="WARN">WARN</option>
                         <option value="INFO">INFO</option>
@@ -148,97 +138,97 @@ const LogsGrafana: React.FC = () => {
                     </select>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Service:</label>
-                    <select value={service} onChange={handleServiceChange} style={styles.input}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Service:</label>
+                    <select value={service} onChange={handleServiceChange} className={styles.input}>
                         {applicationService[service_name].map((s) => (
                             <option key={s} value={s}>{s}</option>
                         ))}
                     </select>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Action:</label>
-                    <select value={action} onChange={(e) => setAction(e.target.value)} style={styles.input}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Action:</label>
+                    <select value={action} onChange={(e) => setAction(e.target.value)} className={styles.input}>
                         {serviceActions[service].map((a) => (
                             <option key={a} value={a}>{a}</option>
                         ))}
                     </select>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>CpaId:</label>
-                    <input type="text" value={cpaId} onChange={(e) => setCpaId(e.target.value)} style={styles.input} />
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>CpaId:</label>
+                    <input type="text" value={cpaId} onChange={(e) => setCpaId(e.target.value)} className={styles.input} />
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Conversation ID:</label>
-                    <input type="text" value={conversationId} onChange={(e) => setConversationId(e.target.value)} style={styles.input} />
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Conversation ID:</label>
+                    <input type="text" value={conversationId} onChange={(e) => setConversationId(e.target.value)} className={styles.input} />
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Message ID:</label>
-                    <input type="text" value={messageId} onChange={(e) => setMessageId(e.target.value)} style={styles.input} />
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Message ID:</label>
+                    <input type="text" value={messageId} onChange={(e) => setMessageId(e.target.value)} className={styles.input} />
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Request ID:</label>
-                    <input type="text" value={requestId} onChange={(e) => setRequestId(e.target.value)} style={styles.input} />
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Request ID:</label>
+                    <input type="text" value={requestId} onChange={(e) => setRequestId(e.target.value)} className={styles.input} />
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Avsender ID:</label>
-                    <div style={styles.row}>
-                        <select value={avsenderIdType} onChange={(e) => setAvsenderIdType(e.target.value)} style={styles.halfInput}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Avsender ID:</label>
+                    <div className={styles.row}>
+                        <select value={avsenderIdType} onChange={(e) => setAvsenderIdType(e.target.value)} className={styles.halfInput}>
                             <option value="HER">HER:</option>
                             <option value="orgnummer">orgnummer:</option>
                             <option value="ENH">ENH:</option>
                         </select>
-                        <input type="text" value={avsenderId} onChange={(e) => setAvsenderId(e.target.value)} placeholder="ID" style={styles.halfInput} />
+                        <input type="text" value={avsenderId} onChange={(e) => setAvsenderId(e.target.value)} placeholder="ID" className={styles.halfInput} />
                     </div>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Fra:</label>
-                    <div style={styles.row}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Fra:</label>
+                    <div className={styles.row}>
                         <input
                             type="date"
                             value={fromDatePart}
                             onChange={(e) => setFromDatePart(e.target.value)}
-                            style={styles.halfInput}
+                            className={styles.halfInput}
                         />
                         <input
                             type="time"
                             value={fromTimePart}
                             onChange={(e) => setFromTimePart(e.target.value)}
-                            style={styles.halfInput}
+                            className={styles.halfInput}
                         />
                     </div>
                 </div>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Til:</label>
-                    <div style={styles.row}>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Til:</label>
+                    <div className={styles.row}>
                         <input
                             type="date"
                             value={toDatePart}
                             onChange={(e) => setToDatePart(e.target.value)}
-                            style={styles.halfInput}
+                            className={styles.halfInput}
                         />
                         <input
                             type="time"
                             value={toTimePart}
                             onChange={(e) => setToTimePart(e.target.value)}
-                            style={styles.halfInput}
+                            className={styles.halfInput}
                         />
                     </div>
                 </div>
                 {fromDatePart > toDatePart && (
-                    <div style={{ color: '#b00', backgroundColor: '#fff0f0', border: '1px solid #b00', borderRadius: '4px', padding: '8px 12px', marginBottom: '12px', fontSize: '18px' }}>
+                    <div className={styles.error}>
                         ⚠️ «Fra»-dato er etter «Til»-dato.
                     </div>
                 )}
-                <a href={generateUrl()} target="_blank" rel="noopener noreferrer" style={styles.anchor}>
+                <a href={generateUrl()} target="_blank" rel="noopener noreferrer" className={styles.anchor}>
                     Åpne i Grafana 🚀
                 </a>
             </form>
