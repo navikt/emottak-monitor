@@ -28,6 +28,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
+import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
@@ -73,6 +74,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
                 io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
                 io.mockk.coEvery { messageQueryService.partnerliste(any()) } returns getCPAListe()
+                io.mockk.coEvery { messageQueryService.abonnementListe(any()) } returns getAbonnementListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -338,7 +340,7 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
-                        println(response.bodyAsText())
+
                         val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
                         partnerCpaListeData.totalNumberOfEntries shouldBe 432
                         partnerCpaListeData.partnerCpaListe shouldContain
@@ -381,7 +383,7 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
-                        println(response.bodyAsText())
+
                         val partnerListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerListeData>(response.bodyAsText())
                         partnerListeData.totalNumberOfEntries shouldBe 432
                         partnerListeData.partnerListe.size shouldBe 2
@@ -434,6 +436,16 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentconversationstatusebms") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
+                it("Should return 200 OK (hentabonnementliste)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentabonnementliste") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -578,6 +590,7 @@ private fun <T> withTestApplicationForApi(
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)
                     hentPartnerListe(messageQueryService, mockHttpClient)
+                    hentAbonnementListe(messageQueryService)
                     hentConversationStatusEbms(mockHttpClient)
                 }
             }

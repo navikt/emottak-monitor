@@ -140,12 +140,12 @@ private fun Connection.exeuteAbonnementListeQuery(
 private fun ResultSet.toAbonnementListe(): Abonnement {
     val data = getColumnAsString("DATA")
     log.debug("DATA-felt fra DB: lengde=${data?.length}, erNull=${data == null}, start='${data?.take(80)}'")
+    val helsepersonellData = hentHelsePersonellData(data ?: "")
     return Abonnement(
         endret_dato = getString("endret_dato"),
         slutt_dato = getString("slutt_dato"),
         tssid = getString("key"),
-        data = data,
-        BehandlerInfo = hentHelsePersonellData(data ?: ""),
+        BehandlerInfo = helsepersonellData,
         partner_navn = getString("partner_navn"),
         partner_id = getString("partner_id"),
         partner_orgnr = getString("partner_orgnr"),

@@ -1,5 +1,8 @@
 package no.nav.emottak
 
+import no.nav.emottak.model.Abonnement
+import no.nav.emottak.model.AbonnementListeData
+import no.nav.emottak.model.BehandlerInfo
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -56,3 +59,66 @@ fun getCPAListe(): PartnerCpaListeData =
             ),
         totalNumberOfEntries = 432,
     )
+
+fun getAbonnementListe(): AbonnementListeData =
+    AbonnementListeData(
+        abonnementListe =
+            listOf(
+                Abonnement(
+                    partner_navn = "SERIALNUMBER=123456789, CN=Noe AS, O=Noe AS, C=NO",
+                    partner_orgnr = "123456789",
+                    partner_herid = "987654321",
+                    endret_dato = "2014-11-19 14:13:39",
+                    slutt_dato = null,
+                    tssid = "80000654321",
+                    BehandlerInfo = listOf(
+                        BehandlerInfo(
+                            B_FNavn = "Fornavn",
+                            B_FamilieNavn = "Etternavn",
+                            B_Hpr = "",
+                            B_Herid = ""
+                        )
+                    ),
+                    partner_id = "11111",
+                    ab_id = 100
+                ),
+                Abonnement(
+                    partner_navn = "SERIALNUMBER=123123123, CN=Noe AS, O=Noe AS, C=NO",
+                    partner_orgnr = "123123123",
+                    partner_herid = "987987987",
+                    endret_dato = "2019-01-01 15:16:17",
+                    slutt_dato = null,
+                    tssid = "80000664422",
+                    BehandlerInfo = listOf(
+                        BehandlerInfo(
+                            B_FNavn = "Mitt",
+                            B_FamilieNavn = "Navn",
+                            B_Hpr = "0101123",
+                            B_Herid = ""
+                        )
+                    ),
+                    partner_id = "22222",
+                    ab_id = 200
+                ),
+                Abonnement(
+                    partner_navn = "HELSEPLATTFORMEN AS TEST",
+                    partner_orgnr = "922922922",
+                    partner_herid = "81818181",
+                    endret_dato = "2021-01-01 15:16:17",
+                    slutt_dato = null,
+                    tssid = "80000345678",
+                    BehandlerInfo = listOf(
+                        BehandlerInfo(
+                            B_FNavn = "Ola",
+                            B_FamilieNavn = "Normann",
+                            B_Hpr = "9999999",
+                            B_Herid = "8888888"
+                        )
+                    ),
+                    partner_id = "33333",
+                    ab_id = 3000
+                ),
+            ),
+        totalNumberOfEntries = 3,
+    )
+

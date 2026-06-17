@@ -28,7 +28,6 @@ type abonnementDetail = {
     endret_dato: string;
     slutt_dato: string;
     tssid: string;
-    data: string;
     BehandlerInfo: BehandlerInfo[];
     partner_id: string;
     ab_id: string;
@@ -44,9 +43,6 @@ const AbonnementTable = () => {
     const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
     const [searchColmn, setSearchColmn] = useState('');
-
-    const [months, setMonths] = useState(0);
-    const [thresholdDate, setThresholdDate] = useState(new Date());
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -173,7 +169,6 @@ const AbonnementTable = () => {
                             <label style={{display: "inline-flex", alignItems: "center", gap: 16}}>
                                 <span>Søk: </span>
                                 <Input
-                                    //defaultValue="test" {...register("partnerID")}
                                     name="innValue"
                                     value={innValue}
                                     className={[filterStyles.inputId, "navds-label navds-label--small"].join(' ')}
@@ -206,12 +201,12 @@ const AbonnementTable = () => {
                         </div>
                         <div className="navds-form-field--small" style={{padding: "20px 75px 5px 5px", position: "relative", textAlign: "right" }}>
                             <button className={buttonStyles.button} type="submit" onClick={handleBtnSearch}>
-                                <img src={search}/>
+                                <img src={search} alt="søk" />
                                 <span style={{display:"center"}}>Søk</span>
                             </button>
                             &nbsp;&nbsp;&nbsp;
                             <button className={buttonStyles.button} type="submit" onClick={handleBtnNullstil}>
-                                <img src={erase} />Nullstil
+                                <img src={erase} alt="nullstill" />Nullstil
                             </button>
                         </div>
                     </form>
