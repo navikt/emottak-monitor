@@ -70,17 +70,16 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
     implementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
 
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-framework-datatest:$kotestVersion")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitVersion}")
-    testRuntimeOnly("com.h2database:h2:${h2Version}")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
+    testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitVersion}")
+    testRuntimeOnly("com.h2database:h2:${h2Version}")
 }
 
 

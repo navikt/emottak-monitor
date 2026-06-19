@@ -95,7 +95,7 @@ const CpaListeTable = () => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInnValue(event.currentTarget.value)
+    setInnValue(event.currentTarget.value);
   };
   const onSelectColn = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedColnValue(event.currentTarget.value);
@@ -105,11 +105,11 @@ const CpaListeTable = () => {
   };
   const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      setErrorMessage('')
-      setSearchColmn('')
-      setInnValue('')
-      setSelectedColnValue("")
-      setSelectedCEqualValue("er lik") //TODO: First option
+      setErrorMessage('');
+      setSearchColmn('');
+      setInnValue('');
+      setSelectedColnValue("");
+      setSelectedCEqualValue("er lik");
   };
 
   const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {

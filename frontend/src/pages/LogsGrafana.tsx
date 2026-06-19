@@ -76,10 +76,7 @@ const LogsGrafana: React.FC = () => {
         const columnsJson = JSON.stringify(["cpaId", "message", "service", "action", "avsenderId", "conversationId", "k8s_cluster_name", "level", "messageId"]);
         const urlColumnsJson = JSON.stringify(["Time", "cpaId", "message", "service", "action", "avsenderId", "conversationId", "k8s_cluster_name", "level", "messageId"]);
 
-        // const grafanaDsId = import.meta.env.VITE_GRAFANA_DS_ID as string;
-        // TODO: env.dev P7BE696147D279490
-        // TODO: env.prod "PD969E40991D5C4A8";
-        const grafanaDsId = "PD969E40991D5C4A8";
+        const grafanaDsId = import.meta.env.VITE_GRAFANA_DS_ID as string;
         console.log(`grafanaDsId: ${grafanaDsId}`)
         const parts = [
             p('patterns', '[]'),

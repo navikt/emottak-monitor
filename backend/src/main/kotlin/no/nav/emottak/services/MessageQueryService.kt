@@ -55,10 +55,10 @@ class MessageQueryService(
         tom: LocalDateTime,
     ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
 
-    fun cpaliste(searchColmn: String?): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn.toString())
+    fun cpaliste(searchColmn: String): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn)
 
-    fun partnerliste(searchColmn: String?): PartnerCpaListeData =
-        databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn.toString(), isPartner = true)
+    fun partnerliste(searchColmn: String): PartnerCpaListeData =
+        databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn, isPartner = true)
 
-    fun abonnementListe(sok: String?): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
+    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
 }

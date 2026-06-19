@@ -11,7 +11,7 @@ import kotlin.use
 
 fun DatabaseInterface.hentPartnerCpaListe(
     databasePrefix: String,
-    columnSearchEncoded: String? = "",
+    columnSearchEncoded: String = "",
     isPartner: Boolean = false,
 ): PartnerCpaListeData =
     connection.use { connection ->
@@ -76,9 +76,6 @@ private fun generateSQLQuery(
                     "PARTNER.HER_ID, " +
                     "LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE)) "
             } else if (columnSearch.isContain || columnSearch.isStart) {
-                if (columnSearch.sequence?.last().equals("") || columnSearch.sequence?.last().equals("TOMT")) {
-                    sqlColumnSearch += " AND LOWER(PARTNER_CPA.CPA_ID)  LIKE LOWER(?) "
-                }
                 sqlColumnSearch += likeSearch(columnSearch)
             }
         } else {

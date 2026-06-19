@@ -157,7 +157,7 @@ if (process.env.NODE_ENV === 'development') {
     });
 
     // Mocke kall til v1/hentrollerservicesaction?:
-    mock.onGet(/\/v1\/hentrollerservicesaction\?/).reply((config) => {
+    mock.onGet(/\/v1\/hentrollerservicesaction/).reply((config) => {
         console.log("Mocker hentrollerservicesaction");
         const payload = {
             roles: ["Behandler","Fastlege","Fastlegeregister","Fordringshaver","Frikortregister","INNTEKTSFORESPORSELsender","KODEVERKREQUESTsender","KontrollUtbetaler","Lege","Nav","Not applicable","POMsender","Saksbehandler","Sykmelder","Utleverer","Ytelsesutbetaler"],
@@ -844,7 +844,7 @@ if (process.env.NODE_ENV === 'development') {
                 "endret_dato": "2014-11-19 14:13:39",
                 "slutt_dato": null,
                 "tssid": "80000654321",
-                "BehandlerInfo": [
+                "behandlerInfo": [
                     {
                         "B_FNavn": "Fornavn",
                         "B_FamilieNavn": "Etternavn",
@@ -861,7 +861,7 @@ if (process.env.NODE_ENV === 'development') {
                 "endret_dato": "2021-01-01 15:16:17",
                 "slutt_dato": null,
                 "tssid": "80000345678",
-                "BehandlerInfo": [
+                "behandlerInfo": [
                     {
                         "B_FNavn": "Olaf",
                         "B_FamilieNavn": "Med A",
@@ -878,7 +878,7 @@ if (process.env.NODE_ENV === 'development') {
                 "endret_dato": "2023-05-03 12:13:14",
                 "slutt_dato": null,
                 "tssid": "80000011111",
-                "BehandlerInfo": [],
+                "behandlerInfo": [],
                 "partner_id": "22222",
                 "ab_id": 201
             }, {
@@ -888,7 +888,7 @@ if (process.env.NODE_ENV === 'development') {
                 "endret_dato": "2023-05-03 12:13:14",
                 "slutt_dato": null,
                 "tssid": "80000011111",
-                "BehandlerInfo": [
+                "behandlerInfo": [
                     {
                         "B_FNavn": "Ola",
                         "B_FamilieNavn": "Normann",
@@ -917,7 +917,7 @@ if (process.env.NODE_ENV === 'development') {
         ];
         const payload = {
             abonnementListe: abonnementliste,
-            totalNumberOfEntries: 3,
+            totalNumberOfEntries: 4,
         };
         return [200, payload];
     });

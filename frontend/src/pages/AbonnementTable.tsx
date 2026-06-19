@@ -28,7 +28,7 @@ type abonnementDetail = {
     endret_dato: string;
     slutt_dato: string;
     tssid: string;
-    BehandlerInfo: BehandlerInfo[];
+    behandlerInfo: BehandlerInfo[];
     partner_id: string;
     ab_id: string;
 };
@@ -62,20 +62,11 @@ const AbonnementTable = () => {
         setCurrentPage(1);
     }, [searchColmn]);
 
-    const filteredPartnerInfo = (abonnementInfo ?? []).filter(
-        e => {
-            if (e.partner_id == null) return true;
-            let lastUsed = (e.partner_id != null) ? e.BehandlerInfo : null;
-            // TODO
-            return true;
-        }
-    );
-
     const {
         items: filteredAndSortedAbonnements,
         requestSort,
         sortConfig,
-    } = useTableSorting(filteredPartnerInfo);
+    } = useTableSorting(abonnementInfo);
 
     const getClassNamesFor = (name: keyof abonnementDetail) => {
         if (!sortConfig) {
@@ -93,7 +84,7 @@ const AbonnementTable = () => {
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInnValue(event.currentTarget.value)
+        setInnValue(event.currentTarget.value);
     };
     const onSelectColn = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedColnValue(event.currentTarget.value);
@@ -103,11 +94,11 @@ const AbonnementTable = () => {
     };
     const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setErrorMessage('')
-        setSearchColmn('')
-        setInnValue('')
-        setSelectedColnValue("")
-        setSelectedCEqualValue("er lik") //TODO: First option
+        setErrorMessage('');
+        setSearchColmn('');
+        setInnValue('');
+        setSelectedColnValue("");
+        setSelectedCEqualValue("er lik");
     };
 
     const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -135,7 +126,7 @@ const AbonnementTable = () => {
     }, [currentPage, pageSize, filteredAndSortedAbonnements]);
 
     const headers: { key: keyof abonnementDetail; name: string }[] = [
-        { key: "partner_navn", name: "navn" },
+        { key: "partner_navn", name: "partnernavn" },
         { key: "partner_id", name: "partnerId" },
         { key: "partner_orgnr", name: "orgnr" },
         { key: "partner_herid", name: "herid" },
@@ -157,7 +148,7 @@ const AbonnementTable = () => {
     const showFrom = showTo - (pageSize-1);
     if (showTo > totalFilterCount) showTo = totalFilterCount;
     let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
-    if (totalAbonnements != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalAbonnements} abonnement'er)`;
+    if (totalAbonnements != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalAbonnements} abonnementer)`;
 
     return (
         <>
@@ -189,13 +180,13 @@ const AbonnementTable = () => {
                                 &nbsp;&nbsp;&nbsp;&nbsp;i
                                 <select className={inputStyles.input} id="coln-select"  value={selectedColnValue} onChange={onSelectColn}>
                                     <option value={"TOMT"}></option>
-                                    <option value={"PARTNER_NAVN"}>partner_navn</option>
-                                    <option value={"PARTNER_ID"}>partner_id</option>
+                                    <option value={"PARTNER_NAVN"}>partnernavn</option>
+                                    <option value={"PARTNER_ID"}>partnerId</option>
                                     <option value={"OrgNr"}>OrgNr</option>
                                     <option value={"HerId"}>HerId</option>
-                                    <option value={"BEHANDLER_NAVN"}>behandler_navn</option>
-                                    <option value={"BEHANDLER_HERID"}>behandler_herid</option>
-                                    <option value={"BEHANDLER_HPR"}>BEHANDLER_HPR</option>
+                                    <option value={"BEHANDLER_NAVN"}>Behandlers navn</option>
+                                    <option value={"BEHANDLER_HERID"}>Behandlers HerId</option>
+                                    <option value={"BEHANDLER_HPR"}>Behandlers HPR</option>
                                 </select>
                             </label>
                         </div>
@@ -293,22 +284,22 @@ const AbonnementTable = () => {
                                     <Table.DataCell>{message.tssid}</Table.DataCell>
                                     <Table.DataCell>{message.ab_id}</Table.DataCell>
                                     <Table.DataCell>
-                                        {(message.BehandlerInfo ?? []).map((b, i) => (
+                                        {(message.behandlerInfo ?? []).map((b, i) => (
                                             <div key={i}>{b.B_FNavn}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
-                                        {(message.BehandlerInfo ?? []).map((b, i) => (
+                                        {(message.behandlerInfo ?? []).map((b, i) => (
                                             <div key={i}>{b.B_FamilieNavn}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
-                                        {(message.BehandlerInfo ?? []).map((b, i) => (
+                                        {(message.behandlerInfo ?? []).map((b, i) => (
                                             <div key={i}>{b.B_Herid}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
-                                        {(message.BehandlerInfo ?? []).map((b, i) => (
+                                        {(message.behandlerInfo ?? []).map((b, i) => (
                                             <div key={i}>{b.B_Hpr}</div>
                                         ))}
                                     </Table.DataCell>
