@@ -5,7 +5,6 @@ import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
 import useFetch from "../hooks/useFetch";
 import NavFrontendSpinner from "nav-frontend-spinner";
-export type FilterKeys = "role" | "service" | "action" | "status " | "hendelsedeskr";
 
 type FilterProps<T, K extends keyof T> = {
   messages: T[];
@@ -103,8 +102,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
             onChange={onFromDateChange}
             inputProps={{
               name: "dateInput",
-              "aria-invalid":
-                fromDate !== "" && isISODateString(fromDate) === false,
+              "aria-invalid": fromDate !== "" && !isISODateString(fromDate),
             }}
             calendarSettings={{ showWeekNumbers: false }}
             showYearSelector={true}
@@ -184,8 +182,7 @@ const PrepopulatedFilter = <T, K extends keyof T>({
             onChange={onToDateChange}
             inputProps={{
               name: "dateInput",
-              "aria-invalid":
-                toDate !== "" && isISODateString(toDate) === false,
+              "aria-invalid": toDate !== "" && !isISODateString(toDate),
             }}
             calendarSettings={{ showWeekNumbers: false }}
             showYearSelector={true}
