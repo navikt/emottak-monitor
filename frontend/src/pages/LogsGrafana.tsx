@@ -8,7 +8,7 @@ const LogsGrafana: React.FC = () => {
     const [service_name, setService_name] = useState('ebms-provider');
     const [level, setLevel] = useState('ERROR');
     const [service, setService] = useState('HarBorgerFrikort');
-    const [cpaId, setCpaId] = useState('');
+    // const [cpaId, setCpaId] = useState('');
     const [conversationId, setConversationId] = useState('');
     const [messageId, setMessageId] = useState('');
     const [requestId, setRequestId] = useState('');
@@ -31,6 +31,9 @@ const LogsGrafana: React.FC = () => {
     const [fromTimePart, setFromTimePart] = useState(timeZone);
     const [toTimePart, setToTimePart] = useState(timeZone);
 
+    const fromDateTimeUtc = new Date(`${fromDatePart} ${fromTimePart}`).toISOString();
+    const toDateTimeUtc = new Date(`${toDatePart} ${toTimePart}`).toISOString();
+
     const applicationService: Record<string, string[]> = {
         'ebms-provider': ['HarBorgerFrikort', 'HarBorgerEgenandelFritak'],
         'ebms-async': ['Inntektsforesporsel', 'Trekkopplysning'],
@@ -50,10 +53,6 @@ const LogsGrafana: React.FC = () => {
         setAction(serviceActions[newService][0]);
     };
 
-    const createVarFieldString = (key: string, value: string) => {
-        return `${key}|=|${value}`;
-    };
-
     const generateUrl = (): string => {
         const baseUrl = `https://grafana.nav.cloud.nais.io/a/grafana-lokiexplore-app/explore/service/${service_name}/logs`;
 
@@ -62,12 +61,20 @@ const LogsGrafana: React.FC = () => {
 
         const p = (key: string, value: string) => `${key}=${enc(value)}`;
 
+        const createJsonFieldEquals = (key: string, value: string) => {
+            return `${key}|=|{"parser":"json"__gfc__"value":"${value}"},${value}`;
+        };
+
+        const createFieldEquals = (key: string, value: string) => {
+            return `${key}|=|${value}`;
+        };
+
         const activeFields = [
-            { key: 'service_name', value: service_name },
+            // { key: 'service_name', value: service_name },
             { key: 'level', value: level },
             { key: 'service', value: service },
             { key: 'conversationId', value: conversationId },
-            { key: 'cpaId', value: cpaId },
+            // { key: 'cpaId', value: cpaId },
             { key: 'avsenderId', value: avsenderId ? `${avsenderIdType}:${avsenderId}` : '' },
             { key: 'messageId', value: messageId },
             { key: 'action', value: action },
@@ -77,24 +84,23 @@ const LogsGrafana: React.FC = () => {
         const columnsJson = JSON.stringify(["cpaId", "message", "service", "action", "avsenderId", "conversationId", "k8s_cluster_name", "level", "messageId"]);
         const urlColumnsJson = JSON.stringify(["Time", "cpaId", "message", "service", "action", "avsenderId", "conversationId", "k8s_cluster_name", "level", "messageId"]);
 
-        const grafanaDsId = import.meta.env.VITE_GRAFANA_DS_ID as string;
-        console.log(`grafanaDsId: ${grafanaDsId}`)
+        const k8sClusterName = import.meta.env.VITE_GRAFANA_CLUSTER_NAME as string;
+        console.log(`k8s_cluster_name: ${k8sClusterName}`);
         const parts = [
             p('patterns', '[]'),
-            p('from', `${fromDatePart}T${fromTimePart}:00.000Z`),
-            p('to', `${toDatePart}T${toTimePart}:00.000Z`),
-            p('var-ds', grafanaDsId),
-            p('var-filters', `service_name|=|${service_name}`),
-            // p('var-fields','cpaId|=|cpaId'),
-            ...activeFields.map(({ key, value }) => p('var-fields', createVarFieldString(key, value))),
+            p('from', fromDateTimeUtc),
+            p('to', toDateTimeUtc),
+            p('var-filters', createFieldEquals('service_name', service_name)),
+            p('var-filters', createFieldEquals('k8s_cluster_name', k8sClusterName)),
+            ...activeFields.map(({ key, value }) => p('var-fields', createJsonFieldEquals(key, value))),
             p('displayedFields', columnsJson),
             p('urlColumns', urlColumnsJson),
             p('timezone', 'browser'),
-            ...activeFields.map(({ key, value }) => p('var-all-fields', createVarFieldString(key, value))),
+            ...activeFields.map(({ key, value }) => p('var-all-fields', createFieldEquals(key, value))),
             p('userDisplayedFields', 'false'),
             p('var-lineFormat', ''),
             p('var-levels', ''),
-            p('var-metadata', ''),
+            // p('var-metadata', ''),
             p('var-jsonFields', ''),
             p('var-patterns', ''),
             p('var-lineFilterV2', ''),
@@ -154,10 +160,10 @@ const LogsGrafana: React.FC = () => {
                     </select>
                 </div>
 
-                <div className={styles.formGroup}>
+                {/*<div className={styles.formGroup}>
                     <label className={styles.label}>CpaId:</label>
                     <input type="text" value={cpaId} onChange={(e) => setCpaId(e.target.value)} className={styles.input} />
-                </div>
+                </div>*/}
 
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Conversation ID:</label>
