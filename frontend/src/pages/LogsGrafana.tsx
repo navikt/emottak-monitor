@@ -8,7 +8,7 @@ const LogsGrafana: React.FC = () => {
     const [service_name, setService_name] = useState('ebms-provider');
     const [level, setLevel] = useState('ERROR');
     const [service, setService] = useState('HarBorgerFrikort');
-    // const [cpaId, setCpaId] = useState('');
+    const [cpaId, setCpaId] = useState('');
     const [conversationId, setConversationId] = useState('');
     const [messageId, setMessageId] = useState('');
     const [requestId, setRequestId] = useState('');
@@ -70,11 +70,10 @@ const LogsGrafana: React.FC = () => {
         };
 
         const activeFields = [
-            // { key: 'service_name', value: service_name },
             { key: 'level', value: level },
             { key: 'service', value: service },
             { key: 'conversationId', value: conversationId },
-            // { key: 'cpaId', value: cpaId },
+            { key: 'cpaId', value: cpaId },
             { key: 'avsenderId', value: avsenderId ? `${avsenderIdType}:${avsenderId}` : '' },
             { key: 'messageId', value: messageId },
             { key: 'action', value: action },
@@ -100,7 +99,7 @@ const LogsGrafana: React.FC = () => {
             p('userDisplayedFields', 'false'),
             p('var-lineFormat', ''),
             p('var-levels', ''),
-            // p('var-metadata', ''),
+            p('var-metadata', ''),
             p('var-jsonFields', ''),
             p('var-patterns', ''),
             p('var-lineFilterV2', ''),
@@ -160,10 +159,10 @@ const LogsGrafana: React.FC = () => {
                     </select>
                 </div>
 
-                {/*<div className={styles.formGroup}>
+                <div className={styles.formGroup}>
                     <label className={styles.label}>CpaId:</label>
                     <input type="text" value={cpaId} onChange={(e) => setCpaId(e.target.value)} className={styles.input} />
-                </div>*/}
+                </div>
 
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Conversation ID:</label>
