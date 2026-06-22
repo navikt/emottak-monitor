@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
+import { Datepicker, isISODateString } from "nav-datovelger";
+import TimePicker from "react-time-picker";
 import styles from "../styles/grafana.module.scss";
+import "../styles/grafana-datetime.css";
 
 const LogsGrafana: React.FC = () => {
     const [service_name, setService_name] = useState('ebms-provider');
@@ -9,14 +12,9 @@ const LogsGrafana: React.FC = () => {
     const [conversationId, setConversationId] = useState('');
     const [messageId, setMessageId] = useState('');
     const [requestId, setRequestId] = useState('');
-    const [avsenderIdType, setAvsenderIdType] = useState('HER:');
+    const [avsenderIdType, setAvsenderIdType] = useState('HER');
     const [avsenderId, setAvsenderId] = useState('');
     const [action, setAction] = useState('Foresporsel');
-    const [fromDatePart, setFromDatePart] = useState(() => {
-        const d = new Date();
-        d.setDate(d.getDate() - 1);
-        return d.toISOString().slice(0, 10);
-    });
 
     const timeZone = new Date().toLocaleTimeString('no-NO', {
         timeZone: 'Europe/Oslo',
@@ -24,16 +22,19 @@ const LogsGrafana: React.FC = () => {
         minute: '2-digit',
         hour12: false
     });
-    const [fromTimePart, setFromTimePart] = useState(timeZone);
+    const [fromDatePart, setFromDatePart] = useState(() => {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        return d.toISOString().slice(0, 10);
+    });
     const [toDatePart, setToDatePart] = useState(new Date().toISOString().slice(0, 10));
+    const [fromTimePart, setFromTimePart] = useState(timeZone);
     const [toTimePart, setToTimePart] = useState(timeZone);
-
 
     const applicationService: Record<string, string[]> = {
         'ebms-provider': ['HarBorgerFrikort', 'HarBorgerEgenandelFritak'],
         'ebms-async': ['Inntektsforesporsel', 'Trekkopplysning'],
     };
-
 
     const serviceActions: Record<string, string[]> = {
         '': [''],
@@ -188,17 +189,32 @@ const LogsGrafana: React.FC = () => {
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Fra:</label>
                     <div className={styles.row}>
-                        <input
-                            type="date"
+                        <Datepicker
+                            locale={"nb"}
+                            inputId="datepicker-input-fom"
                             value={fromDatePart}
-                            onChange={(e) => setFromDatePart(e.target.value)}
-                            className={styles.halfInput}
+                            onChange={setFromDatePart}
+                            inputProps={{
+                                name: "fromDateInput",
+                                "aria-invalid":
+                                    fromDatePart !== "" && !isISODateString(fromDatePart),
+                            }}
+                            calendarSettings={{
+                                showWeekNumbers: false,
+                                position: 'under'
+                            }}
+                            showYearSelector={true}
                         />
-                        <input
-                            type="time"
+                        <TimePicker
+                            onChange={(value) => {
+                                if (value !== null) {
+                                    typeof value === "string"
+                                        ? setFromTimePart(value)
+                                        : setFromTimePart(value.toLocaleTimeString());
+                                }
+                            }}
                             value={fromTimePart}
-                            onChange={(e) => setFromTimePart(e.target.value)}
-                            className={styles.halfInput}
+                            format="HH:mm"
                         />
                     </div>
                 </div>
@@ -206,21 +222,36 @@ const LogsGrafana: React.FC = () => {
                 <div className={styles.formGroup}>
                     <label className={styles.label}>Til:</label>
                     <div className={styles.row}>
-                        <input
-                            type="date"
+                        <Datepicker
+                            locale={"nb"}
+                            inputId="datepicker-input-tom"
                             value={toDatePart}
-                            onChange={(e) => setToDatePart(e.target.value)}
-                            className={styles.halfInput}
+                            onChange={setToDatePart}
+                            inputProps={{
+                                name: "toDateInput",
+                                "aria-invalid":
+                                    toDatePart !== "" && !isISODateString(toDatePart),
+                            }}
+                            calendarSettings={{
+                                showWeekNumbers: false,
+                                position: 'under'
+                            }}
+                            showYearSelector={true}
                         />
-                        <input
-                            type="time"
+                        <TimePicker
+                            onChange={(value) => {
+                                if (value !== null) {
+                                    typeof value === "string"
+                                        ? setToTimePart(value)
+                                        : setToTimePart(value.toLocaleTimeString());
+                                }
+                            }}
                             value={toTimePart}
-                            onChange={(e) => setToTimePart(e.target.value)}
-                            className={styles.halfInput}
+                            format="HH:mm"
                         />
                     </div>
                 </div>
-                {fromDatePart > toDatePart && (
+                {((fromDatePart > toDatePart) || (fromDatePart == toDatePart && fromTimePart > toTimePart)) && (
                     <div className={styles.error}>
                         ⚠️ «Fra»-dato er etter «Til»-dato.
                     </div>

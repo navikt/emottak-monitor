@@ -1,0 +1,25 @@
+div:has(> .nav-datovelger),
+.react-time-picker {
+  flex: 1;
+}
+.nav-datovelger__input {
+  max-height: 2.1em;
+}
+.nav-datovelger {
+  width: 100%;
+}
+.nav-datovelger__inputContainer {
+  width: 100%;
+}
+.nav-datovelger__kalenderknapp {
+  min-height: unset;
+}
+.react-time-picker__wrapper,
+.react-time-picker__inputGroup,
+.react-time-picker__button {
+  border-radius: 4px;
+}
+/* Gjør kalender-under til kalender-over: */
+.nav-datovelger__kalenderPortal--under {
+  top: -268px;
+}
