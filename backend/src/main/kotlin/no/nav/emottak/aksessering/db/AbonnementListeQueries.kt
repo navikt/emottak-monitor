@@ -79,7 +79,7 @@ private fun generateSQLQuery(
 
 private fun likeSearch(columnSearch: ColumnSearch) =
     if (columnSearch.sequence?.last().equals("PARTNER_NAVN")) {
-        " AND PARTNER.NAVN LIKE ? "
+        " AND LOWER(PARTNER.NAVN) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ID")) {
         " AND LOWER(PARTNER.PARTNER_ID) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("KEY")) {
@@ -87,7 +87,7 @@ private fun likeSearch(columnSearch: ColumnSearch) =
     } else if (columnSearch.sequence?.last().equals("OrgNr")) {
         " AND PARTNER.ORGNUMMER LIKE ? "
     } else if (columnSearch.sequence?.last().equals("HerId")) {
-        " AND PARTNER.HER_ID LIKE ? "
+        " AND LOWER(PARTNER.HER_ID) LIKE LOWER(?) "
     } else if (columnSearch.applyFilterAfterSQL()) {
         log.debug("Innsendt filter '{}' kjøres ETTER at SQL har hentet data", columnSearch.sequence?.last())
         ""
@@ -106,7 +106,7 @@ private fun equalSearch(columnSearch: ColumnSearch) =
     } else if (columnSearch.sequence?.last().equals("OrgNr")) {
         " AND PARTNER.ORGNUMMER = ? "
     } else if (columnSearch.sequence?.last().equals("HerId")) {
-        " AND PARTNER.HER_ID = ? "
+        " AND LOWER(PARTNER.HER_ID) = LOWER(?) "
     } else if (columnSearch.applyFilterAfterSQL()) {
         log.debug("Innsendt filter '{}' kjøres ETTER at SQL har hentet data", columnSearch.sequence?.last())
         ""
@@ -141,15 +141,15 @@ private fun ResultSet.toAbonnementListe(): Abonnement {
     log.debug("DATA-felt fra DB: lengde=${data?.length}, erNull=${data == null}, start='${data?.take(80)}'")
     val helsepersonellData = hentHelsePersonellData(data ?: "")
     return Abonnement(
-        endret_dato = getString("endret_dato"),
-        slutt_dato = getString("slutt_dato"),
-        tssid = getString("key"),
+        endretDato = getString("endret_dato"),
+        sluttDato = getString("slutt_dato"),
+        tssId = getString("key"),
         behandlerInfo = helsepersonellData,
-        partner_navn = getString("partner_navn"),
-        partner_id = getString("partner_id"),
-        partner_orgnr = getString("partner_orgnr"),
-        partner_herid = getString("HER_ID"),
-        ab_id = getLong("ab_id"),
+        partnerNavn = getString("partner_navn"),
+        partnerId = getString("partner_id"),
+        partnerOrgnr = getString("partner_orgnr"),
+        partnerHerId = getString("HER_ID"),
+        abId = getLong("ab_id"),
     )
 }
 
@@ -186,14 +186,14 @@ internal fun checkForDuplicates(
     val duplikater =
         alleBehandlere
             .groupBy {
-                "${it.B_FNavn?.trim()?.lowercase()}|${it.B_FamilieNavn?.trim()?.lowercase()}|${it.B_Hpr?.trim()}|${it.B_Herid?.trim()}"
+                "${it.fornavn?.trim()?.lowercase()}|${it.etternavn?.trim()?.lowercase()}|${it.hpr?.trim()}|${it.herId?.trim()}"
             }.filter { (_, forekomster) -> forekomster.size > 1 }
     if (duplikater.isNotEmpty()) {
         duplikater.forEach { (_, forekomster) ->
             val b = forekomster.first()
             logger.warn(
                 "Duplikat helsepersonell funnet (${forekomster.size} ganger): " +
-                    "GivenName='${b.B_FNavn}', FamilyName='${b.B_FamilieNavn}', HPR='${b.B_Hpr}', HerId='${b.B_Herid}'",
+                    "GivenName='${b.fornavn}', FamilyName='${b.etternavn}', HPR='${b.hpr}', HerId='${b.herId}'",
             )
         }
     } else {
@@ -217,11 +217,11 @@ internal fun List<Abonnement>.afterSQLFiltering(columnSearch: ColumnSearch): Lis
                 behandlerInfo =
                     it.behandlerInfo.filter { behandlerInfo ->
                         if (columnSearch.sequence?.last() == "BEHANDLER_NAVN") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.B_FNavn, behandlerInfo.B_FamilieNavn))
+                            columnSearch.searchMatches(listOf(behandlerInfo.fornavn, behandlerInfo.etternavn))
                         } else if (columnSearch.sequence?.last() == "BEHANDLER_HERID") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.B_Herid))
+                            columnSearch.searchMatches(listOf(behandlerInfo.herId))
                         } else if (columnSearch.sequence?.last() == "BEHANDLER_HPR") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.B_Hpr))
+                            columnSearch.searchMatches(listOf(behandlerInfo.hpr))
                         } else {
                             false
                         }

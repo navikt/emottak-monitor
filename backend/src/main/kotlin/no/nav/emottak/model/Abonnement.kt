@@ -4,23 +4,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BehandlerInfo(
-    val B_FNavn: String? = null,
-    val B_FamilieNavn: String? = null,
-    val B_Hpr: String? = null,
-    val B_Herid: String? = null,
+    val fornavn: String? = null,
+    val etternavn: String? = null,
+    val hpr: String? = null,
+    val herId: String? = null,
 )
 
 @Serializable
 data class Abonnement(
-    val partner_navn: String,
-    val partner_orgnr: String,
-    val partner_herid: String? = null,
-    val endret_dato: String? = null,
-    val slutt_dato: String? = null,
-    val tssid: String? = null,
+    val partnerNavn: String,
+    val partnerOrgnr: String,
+    val partnerHerId: String? = null,
+    val endretDato: String? = null,
+    val sluttDato: String? = null,
+    val tssId: String? = null,
     val behandlerInfo: List<BehandlerInfo>,
-    val partner_id: String? = null,
-    val ab_id: Long,
+    val partnerId: String? = null,
+    val abId: Long,
 )
 
 @Serializable

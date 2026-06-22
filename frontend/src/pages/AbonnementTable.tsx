@@ -15,22 +15,22 @@ import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
 
 type BehandlerInfo = {
-    B_FNavn: string;
-    B_FamilieNavn: string;
-    B_Hpr: string;
-    B_Herid: string;
+    fornavn: string;
+    etternavn: string;
+    hpr: string;
+    herId: string;
 };
 
 type abonnementDetail = {
-    partner_navn: string;
-    partner_orgnr: string;
-    partner_herid: string;
-    endret_dato: string;
-    slutt_dato: string;
-    tssid: string;
+    partnerNavn: string;
+    partnerOrgnr: string;
+    partnerHerId: string;
+    endretDato: string;
+    sluttDato: string;
+    tssId: string;
     behandlerInfo: BehandlerInfo[];
-    partner_id: string;
-    ab_id: string;
+    partnerId: string;
+    abId: string;
 };
 
 type AbonnementData = {
@@ -126,14 +126,14 @@ const AbonnementTable = () => {
     }, [currentPage, pageSize, filteredAndSortedAbonnements]);
 
     const headers: { key: keyof abonnementDetail; name: string }[] = [
-        { key: "partner_navn", name: "partnernavn" },
-        { key: "partner_id", name: "partnerId" },
-        { key: "partner_orgnr", name: "orgnr" },
-        { key: "partner_herid", name: "herid" },
-        { key: "endret_dato", name: "endret_dato" },
-        { key: "slutt_dato", name: "slutt_dato" },
-        { key: "tssid", name: "TssID" },
-        { key: "ab_id", name: "AB_ID" },
+        { key: "partnerNavn", name: "partnernavn" },
+        { key: "partnerId", name: "partnerId" },
+        { key: "partnerOrgnr", name: "orgnr" },
+        { key: "partnerHerId", name: "herid" },
+        { key: "endretDato", name: "endret_dato" },
+        { key: "sluttDato", name: "slutt_dato" },
+        { key: "tssId", name: "TssID" },
+        { key: "abId", name: "AB_ID" },
     ];
 
     const showSpinner = loading;
@@ -272,35 +272,35 @@ const AbonnementTable = () => {
                         currentTableData.map((message, index) => {
                             return (
                                 <Table.Row
-                                    key={message.partner_id + index}
+                                    key={message.partnerId + index}
                                     className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                                 >
-                                    <Table.DataCell>{message.partner_navn}</Table.DataCell>
-                                    <Table.DataCell>{message.partner_id}</Table.DataCell>
-                                    <Table.DataCell>{message.partner_orgnr}</Table.DataCell>
-                                    <Table.DataCell>{message.partner_herid}</Table.DataCell>
-                                    <Table.DataCell>{message.endret_dato}</Table.DataCell>
-                                    <Table.DataCell>{message.slutt_dato}</Table.DataCell>
-                                    <Table.DataCell>{message.tssid}</Table.DataCell>
-                                    <Table.DataCell>{message.ab_id}</Table.DataCell>
+                                    <Table.DataCell>{message.partnerNavn}</Table.DataCell>
+                                    <Table.DataCell>{message.partnerId}</Table.DataCell>
+                                    <Table.DataCell>{message.partnerOrgnr}</Table.DataCell>
+                                    <Table.DataCell>{message.partnerHerId}</Table.DataCell>
+                                    <Table.DataCell>{message.endretDato}</Table.DataCell>
+                                    <Table.DataCell>{message.sluttDato}</Table.DataCell>
+                                    <Table.DataCell>{message.tssId}</Table.DataCell>
+                                    <Table.DataCell>{message.abId}</Table.DataCell>
                                     <Table.DataCell>
                                         {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.B_FNavn}</div>
+                                            <div key={i}>{b.fornavn}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
                                         {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.B_FamilieNavn}</div>
+                                            <div key={i}>{b.etternavn}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
                                         {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.B_Herid}</div>
+                                            <div key={i}>{b.herId}</div>
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>
                                         {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.B_Hpr}</div>
+                                            <div key={i}>{b.hpr}</div>
                                         ))}
                                     </Table.DataCell>
                                 </Table.Row>

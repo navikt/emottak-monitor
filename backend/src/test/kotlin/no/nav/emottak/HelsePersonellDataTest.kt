@@ -36,10 +36,10 @@ class HelsePersonellDataTest {
         val resultat = hentHelsePersonellData(encodeXml(xml))
 
         resultat shouldHaveSize 1
-        resultat[0].B_FNavn shouldBe "Even Fos"
-        resultat[0].B_FamilieNavn shouldBe "Hjelmeland"
-        resultat[0].B_Hpr shouldBe "222200081"
-        resultat[0].B_Herid shouldBe "2115158"
+        resultat[0].fornavn shouldBe "Even Fos"
+        resultat[0].etternavn shouldBe "Hjelmeland"
+        resultat[0].hpr shouldBe "222200081"
+        resultat[0].herId shouldBe "2115158"
     }
 
     @Test
@@ -72,10 +72,10 @@ class HelsePersonellDataTest {
         val resultat = hentHelsePersonellData(encodeXml(xml))
 
         resultat shouldHaveSize 1
-        resultat[0].B_FNavn shouldBe ""
-        resultat[0].B_FamilieNavn shouldBe ""
-        resultat[0].B_Hpr shouldBe ""
-        resultat[0].B_Herid shouldBe ""
+        resultat[0].fornavn shouldBe ""
+        resultat[0].etternavn shouldBe ""
+        resultat[0].hpr shouldBe ""
+        resultat[0].herId shouldBe ""
     }
 
     @Test
@@ -106,10 +106,10 @@ class HelsePersonellDataTest {
         val resultat = hentHelsePersonellData(xml)
 
         resultat shouldHaveSize 1
-        resultat[0].B_FNavn shouldBe "Ola"
-        resultat[0].B_FamilieNavn shouldBe "Normann"
-        resultat[0].B_Hpr shouldBe ""
-        resultat[0].B_Herid shouldBe ""
+        resultat[0].fornavn shouldBe "Ola"
+        resultat[0].etternavn shouldBe "Normann"
+        resultat[0].hpr shouldBe ""
+        resultat[0].herId shouldBe ""
     }
 
     @Test
@@ -150,10 +150,10 @@ class HelsePersonellDataTest {
         val resultat = hentHelsePersonellData(encodeUpperHex(xml))
 
         resultat shouldHaveSize 1
-        resultat[0].B_FNavn shouldBe "Even Fos"
-        resultat[0].B_FamilieNavn shouldBe "Hjelmeland"
-        resultat[0].B_Hpr shouldBe "222200081"
-        resultat[0].B_Herid shouldBe "2115158"
+        resultat[0].fornavn shouldBe "Even Fos"
+        resultat[0].etternavn shouldBe "Hjelmeland"
+        resultat[0].hpr shouldBe "222200081"
+        resultat[0].herId shouldBe "2115158"
     }
 
     @Test

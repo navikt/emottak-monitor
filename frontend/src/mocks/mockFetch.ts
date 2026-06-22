@@ -838,81 +838,81 @@ if (process.env.NODE_ENV === 'development') {
         console.log("Mocker hentabonnementliste");
         let abonnementliste = [
             {
-                "partner_navn": "SERIALNUMBER=123456789, CN=Noe AS, O=Noe AS, C=NO",
-                "partner_orgnr": "123456789",
-                "partner_herid": "987654321",
-                "endret_dato": "2014-11-19 14:13:39",
-                "slutt_dato": null,
-                "tssid": "80000654321",
+                "partnerNavn": "SERIALNUMBER=123456789, CN=Noe AS, O=Noe AS, C=NO",
+                "partnerOrgnr": "123456789",
+                "partnerHerId": "987654321",
+                "endretDato": "2014-11-19 14:13:39",
+                "sluttDato": null,
+                "tssId": "80000654321",
                 "behandlerInfo": [
                     {
-                        "B_FNavn": "Fornavn",
-                        "B_FamilieNavn": "Etternavn",
-                        "B_Hpr": "",
-                        "B_Herid": "12345"
+                        "foravn": "Fornavn",
+                        "etteravn": "Etternavn",
+                        "hpr": "",
+                        "herId": "12345"
                     }
                 ],
-                "partner_id": "11111",
-                "ab_id": 100
+                "partnerId": "11111",
+                "abId": 100
             }, {
-                "partner_navn": "HELSEPLATTFORMEN AS TEST",
-                "partner_orgnr": "922922922",
-                "partner_herid": "81818181",
-                "endret_dato": "2021-01-01 15:16:17",
-                "slutt_dato": null,
-                "tssid": "80000345678",
+                "partnerNavn": "HELSEPLATTFORMEN AS TEST",
+                "partnerOrgnr": "922922922",
+                "partnerHerId": "81818181",
+                "endretDato": "2021-01-01 15:16:17",
+                "sluttDato": null,
+                "tssId": "80000345678",
                 "behandlerInfo": [
                     {
-                        "B_FNavn": "Olaf",
-                        "B_FamilieNavn": "Med A",
-                        "B_Hpr": "9999999",
-                        "B_Herid": "8888888"
+                        "fornavn": "Olaf",
+                        "etternavn": "Med A",
+                        "hpr": "9999999",
+                        "herId": "8888888"
                     }
                 ],
-                "partner_id": "33333",
-                "ab_id": 3000
+                "partnerId": "33333",
+                "abId": 3000
             }, {
-                "partner_navn": "Partner uten BehandlerInfo",
-                "partner_orgnr": "500000000",
-                "partner_herid": "8000000",
-                "endret_dato": "2023-05-03 12:13:14",
-                "slutt_dato": null,
-                "tssid": "80000011111",
+                "partnerNavn": "Partner uten BehandlerInfo",
+                "partnerOrgnr": "500000000",
+                "partnerHerId": "8000000",
+                "endretDato": "2023-05-03 12:13:14",
+                "sluttDato": null,
+                "tssId": "80000011111",
                 "behandlerInfo": [],
-                "partner_id": "22222",
-                "ab_id": 201
+                "partnerId": "22222",
+                "abId": 201
             }, {
-                "partner_navn": "Partner med flere BehandlerInfo",
-                "partner_orgnr": "500000000",
-                "partner_herid": "8000000",
-                "endret_dato": "2023-05-03 12:13:14",
-                "slutt_dato": null,
-                "tssid": "80000011111",
+                "partnerNavn": "Partner med flere BehandlerInfo",
+                "partnerOrgnr": "500000000",
+                "partnerHerId": "8000000",
+                "endretDato": "2023-05-03 12:13:14",
+                "sluttDato": null,
+                "tssId": "80000011111",
                 "behandlerInfo": [
                     {
-                        "B_FNavn": "Ola",
-                        "B_FamilieNavn": "Normann",
-                        "B_Hpr": "44441",
-                        "B_Herid": ""
+                        "fornavn": "Ola",
+                        "etternavn": "Normann",
+                        "hpr": "44441",
+                        "herId": ""
                     }, {
-                        "B_FNavn": "Kari",
-                        "B_FamilieNavn": "Normann",
-                        "B_Hpr": "",
-                        "B_Herid": "44442"
+                        "fornavn": "Kari",
+                        "etternavn": "Normann",
+                        "hpr": "",
+                        "herId": "44442"
                     }, {
-                        "B_FNavn": "Per",
-                        "B_FamilieNavn": "Sprellman",
-                        "B_Hpr": "",
-                        "B_Herid": ""
+                        "fornavn": "Per",
+                        "etternavn": "Sprellman",
+                        "hpr": "",
+                        "herId": ""
                     }, {
-                        "B_FNavn": "Anne",
-                        "B_FamilieNavn": "Sprellman",
-                        "B_Hpr": "777",
-                        "B_Herid": "777"
+                        "fornavn": "Anne",
+                        "etternavn": "Sprellman",
+                        "hpr": "777",
+                        "herId": "777"
                     }
                 ],
-                "partner_id": "44444",
-                "ab_id": 202
+                "partnerId": "44444",
+                "abId": 202
             }
         ];
         const payload = {

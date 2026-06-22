@@ -92,7 +92,7 @@ class AbonnementListeQueriesTest :
 
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Ola"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Ola"
             }
 
             it("should filter on both BehandlerInfo-names (contains)") {
@@ -102,12 +102,12 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 2
                 resultList[0].behandlerInfo.size shouldBe 2
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Tor"
-                resultList[0].behandlerInfo[1].B_FNavn shouldBe "Ola"
-                resultList[0].behandlerInfo[1].B_FamilieNavn shouldBe "Don Toresen"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Tor"
+                resultList[0].behandlerInfo[1].fornavn shouldBe "Ola"
+                resultList[0].behandlerInfo[1].etternavn shouldBe "Don Toresen"
                 resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].B_FNavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].B_FamilieNavn shouldBe "Toresen"
+                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
+                resultList[1].behandlerInfo[0].etternavn shouldBe "Toresen"
             }
 
             it("should filter on both BehandlerInfo-names (begins with)") {
@@ -117,10 +117,10 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 2
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Tor"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Tor"
                 resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].B_FNavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].B_FamilieNavn shouldBe "Toresen"
+                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
+                resultList[1].behandlerInfo[0].etternavn shouldBe "Toresen"
             }
 
             it("should filter on BehandlerInfo-HPR (equals)") {
@@ -131,8 +131,8 @@ class AbonnementListeQueriesTest :
 
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].B_Hpr shouldBe "011"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo[0].hpr shouldBe "011"
             }
 
             it("should filter on BehandlerInfo-HPR (contains)") {
@@ -142,10 +142,10 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 2
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].B_Hpr shouldBe "011"
-                resultList[0].behandlerInfo[1].B_FNavn shouldBe "Tor"
-                resultList[0].behandlerInfo[1].B_Hpr shouldBe "191411842"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo[0].hpr shouldBe "011"
+                resultList[0].behandlerInfo[1].fornavn shouldBe "Tor"
+                resultList[0].behandlerInfo[1].hpr shouldBe "191411842"
             }
 
             it("should filter on BehandlerInfo-HPR (begins with)") {
@@ -155,11 +155,11 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 2
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Ola"
-                resultList[0].behandlerInfo[0].B_Hpr shouldBe "98765"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Ola"
+                resultList[0].behandlerInfo[0].hpr shouldBe "98765"
                 resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].B_FNavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].B_Hpr shouldBe "98766"
+                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
+                resultList[1].behandlerInfo[0].hpr shouldBe "98766"
             }
 
             it("should filter on BehandlerInfo-HerId (equals)") {
@@ -170,7 +170,7 @@ class AbonnementListeQueriesTest :
 
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Abbas"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
             }
 
             it("should filter on BehandlerInfo-HerId (contains)") {
@@ -180,9 +180,9 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Kari"
-                resultList[0].behandlerInfo[0].B_FamilieNavn shouldBe "Toresen"
-                resultList[0].behandlerInfo[0].B_Herid shouldBe "12344"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Kari"
+                resultList[0].behandlerInfo[0].etternavn shouldBe "Toresen"
+                resultList[0].behandlerInfo[0].herId shouldBe "12344"
             }
 
             it("should filter on BehandlerInfo-HerId (begins with)") {
@@ -192,12 +192,12 @@ class AbonnementListeQueriesTest :
                     )
                 resultList.size shouldBe 1
                 resultList[0].behandlerInfo.size shouldBe 3
-                resultList[0].behandlerInfo[0].B_FNavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].B_Herid shouldBe "678"
-                resultList[0].behandlerInfo[1].B_FNavn shouldBe "Parviz"
-                resultList[0].behandlerInfo[1].B_Herid shouldBe "679"
-                resultList[0].behandlerInfo[2].B_FNavn shouldBe "Mamma"
-                resultList[0].behandlerInfo[2].B_Herid shouldBe "6781"
+                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo[0].herId shouldBe "678"
+                resultList[0].behandlerInfo[1].fornavn shouldBe "Parviz"
+                resultList[0].behandlerInfo[1].herId shouldBe "679"
+                resultList[0].behandlerInfo[2].fornavn shouldBe "Mamma"
+                resultList[0].behandlerInfo[2].herId shouldBe "6781"
             }
         }
     })
@@ -220,26 +220,26 @@ private fun createAbonnementList(nrOfDuplicates: Int): List<Abonnement> {
     val abonnementsList =
         listOf(
             Abonnement(
-                partner_navn = "partner_navn",
-                partner_orgnr = "partner_orgnr",
-                partner_herid = "partner_herid",
-                endret_dato = "endret_dato",
-                slutt_dato = null,
-                tssid = "tssid",
+                partnerNavn = "partner_navn",
+                partnerOrgnr = "partner_orgnr",
+                partnerHerId = "partner_herid",
+                endretDato = "endret_dato",
+                sluttDato = null,
+                tssId = "tssid",
                 behandlerInfo = resultatListe,
-                partner_id = "partner_id",
-                ab_id = 123,
+                partnerId = "partner_id",
+                abId = 123,
             ),
             Abonnement(
-                partner_navn = "partner_navn",
-                partner_orgnr = "partner_orgnr",
-                partner_herid = "partner_herid",
-                endret_dato = "endret_dato",
-                slutt_dato = null,
-                tssid = "tssid",
+                partnerNavn = "partner_navn",
+                partnerOrgnr = "partner_orgnr",
+                partnerHerId = "partner_herid",
+                endretDato = "endret_dato",
+                sluttDato = null,
+                tssId = "tssid",
                 behandlerInfo = listOf(BehandlerInfo("Kari", "Toresen", "98766", "12344")),
-                partner_id = "partner_id",
-                ab_id = 123,
+                partnerId = "partner_id",
+                abId = 123,
             ),
         )
     return abonnementsList
