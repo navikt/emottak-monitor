@@ -72,13 +72,11 @@ fun getAbonnementListe(): AbonnementListeData =
                     sluttDato = null,
                     tssId = "80000654321",
                     behandlerInfo =
-                        listOf(
-                            BehandlerInfo(
-                                fornavn = "Fornavn",
-                                etternavn = "Etternavn",
-                                hpr = "",
-                                herId = "",
-                            ),
+                        BehandlerInfo(
+                            fornavn = "Fornavn",
+                            etternavn = "Etternavn",
+                            hpr = "",
+                            herId = "",
                         ),
                     partnerId = "11111",
                     abId = 100,
@@ -91,13 +89,11 @@ fun getAbonnementListe(): AbonnementListeData =
                     sluttDato = null,
                     tssId = "80000664422",
                     behandlerInfo =
-                        listOf(
-                            BehandlerInfo(
-                                fornavn = "Mitt",
-                                etternavn = "Navn",
-                                hpr = "0101123",
-                                herId = "",
-                            ),
+                        BehandlerInfo(
+                            fornavn = "Mitt",
+                            etternavn = "Navn",
+                            hpr = "0101123",
+                            herId = "",
                         ),
                     partnerId = "22222",
                     abId = 200,
@@ -110,13 +106,11 @@ fun getAbonnementListe(): AbonnementListeData =
                     sluttDato = null,
                     tssId = "80000345678",
                     behandlerInfo =
-                        listOf(
-                            BehandlerInfo(
-                                fornavn = "Ola",
-                                etternavn = "Normann",
-                                hpr = "9999999",
-                                herId = "8888888",
-                            ),
+                        BehandlerInfo(
+                            fornavn = "Ola",
+                            etternavn = "Normann",
+                            hpr = "9999999",
+                            herId = "8888888",
                         ),
                     partnerId = "33333",
                     abId = 3000,

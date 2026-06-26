@@ -2,6 +2,7 @@ package no.nav.emottak.aksessering.db
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -89,10 +90,9 @@ class AbonnementListeQueriesTest :
                     createAbonnementList(0).afterSQLFiltering(
                         ColumnSearch.createInstance("Ola¤er lik¤BEHANDLER_NAVN"),
                     )
-
                 resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Ola"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Ola"
             }
 
             it("should filter on both BehandlerInfo-names (contains)") {
@@ -100,14 +100,15 @@ class AbonnementListeQueriesTest :
                     createAbonnementList(0).afterSQLFiltering(
                         ColumnSearch.createInstance("Tor¤inneholder¤BEHANDLER_NAVN"),
                     )
-                resultList.size shouldBe 2
-                resultList[0].behandlerInfo.size shouldBe 2
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Tor"
-                resultList[0].behandlerInfo[1].fornavn shouldBe "Ola"
-                resultList[0].behandlerInfo[1].etternavn shouldBe "Don Toresen"
-                resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].etternavn shouldBe "Toresen"
+                resultList.size shouldBe 3
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
+                resultList[1].behandlerInfo shouldNotBe null
+                resultList[1].behandlerInfo!!.fornavn shouldBe "Ola"
+                resultList[1].behandlerInfo!!.etternavn shouldBe "Don Toresen"
+                resultList[2].behandlerInfo shouldNotBe null
+                resultList[2].behandlerInfo!!.fornavn shouldBe "Kari"
+                resultList[2].behandlerInfo!!.etternavn shouldBe "Toresen"
             }
 
             it("should filter on both BehandlerInfo-names (begins with)") {
@@ -116,11 +117,11 @@ class AbonnementListeQueriesTest :
                         ColumnSearch.createInstance("Tor¤starter med¤BEHANDLER_NAVN"),
                     )
                 resultList.size shouldBe 2
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Tor"
-                resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].etternavn shouldBe "Toresen"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
+                resultList[1].behandlerInfo shouldNotBe null
+                resultList[1].behandlerInfo!!.fornavn shouldBe "Kari"
+                resultList[1].behandlerInfo!!.etternavn shouldBe "Toresen"
             }
 
             it("should filter on BehandlerInfo-HPR (equals)") {
@@ -128,11 +129,10 @@ class AbonnementListeQueriesTest :
                     createAbonnementList(0).afterSQLFiltering(
                         ColumnSearch.createInstance("011¤er lik¤BEHANDLER_HPR"),
                     )
-
                 resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].hpr shouldBe "011"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo!!.hpr shouldBe "011"
             }
 
             it("should filter on BehandlerInfo-HPR (contains)") {
@@ -140,12 +140,13 @@ class AbonnementListeQueriesTest :
                     createAbonnementList(0).afterSQLFiltering(
                         ColumnSearch.createInstance("11¤inneholder¤BEHANDLER_HPR"),
                     )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 2
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].hpr shouldBe "011"
-                resultList[0].behandlerInfo[1].fornavn shouldBe "Tor"
-                resultList[0].behandlerInfo[1].hpr shouldBe "191411842"
+                resultList.size shouldBe 2
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo!!.hpr shouldBe "011"
+                resultList[1].behandlerInfo shouldNotBe null
+                resultList[1].behandlerInfo!!.fornavn shouldBe "Tor"
+                resultList[1].behandlerInfo!!.hpr shouldBe "191411842"
             }
 
             it("should filter on BehandlerInfo-HPR (begins with)") {
@@ -154,12 +155,12 @@ class AbonnementListeQueriesTest :
                         ColumnSearch.createInstance("9¤starter med¤BEHANDLER_HPR"),
                     )
                 resultList.size shouldBe 2
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Ola"
-                resultList[0].behandlerInfo[0].hpr shouldBe "98765"
-                resultList[1].behandlerInfo.size shouldBe 1
-                resultList[1].behandlerInfo[0].fornavn shouldBe "Kari"
-                resultList[1].behandlerInfo[0].hpr shouldBe "98766"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Ola"
+                resultList[0].behandlerInfo!!.hpr shouldBe "98765"
+                resultList[1].behandlerInfo shouldNotBe null
+                resultList[1].behandlerInfo!!.fornavn shouldBe "Kari"
+                resultList[1].behandlerInfo!!.hpr shouldBe "98766"
             }
 
             it("should filter on BehandlerInfo-HerId (equals)") {
@@ -167,10 +168,9 @@ class AbonnementListeQueriesTest :
                     createAbonnementList(0).afterSQLFiltering(
                         ColumnSearch.createInstance("678¤er lik¤BEHANDLER_HERID"),
                     )
-
                 resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
             }
 
             it("should filter on BehandlerInfo-HerId (contains)") {
@@ -179,68 +179,68 @@ class AbonnementListeQueriesTest :
                         ColumnSearch.createInstance("44¤inneholder¤BEHANDLER_HERID"),
                     )
                 resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 1
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Kari"
-                resultList[0].behandlerInfo[0].etternavn shouldBe "Toresen"
-                resultList[0].behandlerInfo[0].herId shouldBe "12344"
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Kari"
+                resultList[0].behandlerInfo!!.etternavn shouldBe "Toresen"
+                resultList[0].behandlerInfo!!.herId shouldBe "12344"
             }
 
-            it("should filter on BehandlerInfo-HerId (begins with)") {
+            it("should filter BehandlerInfo - with duplikates") {
                 val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("6¤starter med¤BEHANDLER_HERID"),
+                    createAbonnementList(2).afterSQLFiltering(
+                        ColumnSearch.createInstance("Tor¤inneholder¤BEHANDLER_NAVN"),
                     )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo.size shouldBe 3
-                resultList[0].behandlerInfo[0].fornavn shouldBe "Abbas"
-                resultList[0].behandlerInfo[0].herId shouldBe "678"
-                resultList[0].behandlerInfo[1].fornavn shouldBe "Parviz"
-                resultList[0].behandlerInfo[1].herId shouldBe "679"
-                resultList[0].behandlerInfo[2].fornavn shouldBe "Mamma"
-                resultList[0].behandlerInfo[2].herId shouldBe "6781"
+                resultList.size shouldBe 4
+                resultList[0].behandlerInfo shouldNotBe null
+                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
+                resultList[1].behandlerInfo shouldNotBe null
+                resultList[1].behandlerInfo!!.fornavn shouldBe "Ola"
+                resultList[1].behandlerInfo!!.etternavn shouldBe "Don Toresen"
+                resultList[2].behandlerInfo shouldNotBe null
+                resultList[2].behandlerInfo!!.fornavn shouldBe "Kari"
+                resultList[2].behandlerInfo!!.etternavn shouldBe "Toresen"
+                resultList[3].behandlerInfo shouldNotBe null
+                resultList[3].behandlerInfo!!.fornavn shouldBe "Tor"
             }
         }
     })
 
 private fun createAbonnementList(nrOfDuplicates: Int): List<Abonnement> {
-    val resultatListe = mutableListOf<BehandlerInfo>()
-    resultatListe.add(BehandlerInfo("Abbas", "Abbasi", "011", "678"))
-    resultatListe.add(BehandlerInfo("Parviz", "Parvizi", "021", "679"))
-    resultatListe.add(BehandlerInfo("Mamma", "Mammai", "0521", "6781"))
-    if (nrOfDuplicates > 0) {
-        resultatListe.add(BehandlerInfo("Abbas", "Abbasi", "011", "678"))
-    }
-    resultatListe.add(BehandlerInfo("Tor", "Grøndahl", "191411842", "2159325"))
-    resultatListe.add(BehandlerInfo("Ola", "Don Toresen", "98765", "12345"))
-    resultatListe.add(BehandlerInfo("Reza", "Rezai", "0992", "32897"))
-    if (nrOfDuplicates > 1) {
-        resultatListe.add(BehandlerInfo("Tor", "Grøndahl", "191411842", "2159325"))
-        resultatListe.add(BehandlerInfo("Abbas", "Abbasi", "011", "678"))
-    }
-    val abonnementsList =
-        listOf(
-            Abonnement(
-                partnerNavn = "partner_navn",
-                partnerOrgnr = "partner_orgnr",
-                partnerHerId = "partner_herid",
-                endretDato = "endret_dato",
-                sluttDato = null,
-                tssId = "tssid",
-                behandlerInfo = resultatListe,
-                partnerId = "partner_id",
-                abId = 123,
-            ),
-            Abonnement(
-                partnerNavn = "partner_navn",
-                partnerOrgnr = "partner_orgnr",
-                partnerHerId = "partner_herid",
-                endretDato = "endret_dato",
-                sluttDato = null,
-                tssId = "tssid",
-                behandlerInfo = listOf(BehandlerInfo("Kari", "Toresen", "98766", "12344")),
-                partnerId = "partner_id",
-                abId = 123,
-            ),
+    val abbas = BehandlerInfo("Abbas", "Abbasi", "011", "678")
+    val parviz = BehandlerInfo("Parviz", "Parvizi", "021", "679")
+    val mamma = BehandlerInfo("Mamma", "Mammai", "0521", "6781")
+    val tor = BehandlerInfo("Tor", "Grøndahl", "191411842", "2159325")
+    val ola = BehandlerInfo("Ola", "Don Toresen", "98765", "12345")
+    val reza = BehandlerInfo("Reza", "Rezai", "0992", "32897")
+    val kari = BehandlerInfo("Kari", "Toresen", "98766", "12344")
+    val abonnent =
+        Abonnement(
+            partnerNavn = "partner_navn",
+            partnerOrgnr = "partner_orgnr",
+            partnerHerId = "partner_herid",
+            endretDato = "endret_dato",
+            sluttDato = null,
+            tssId = "tssid",
+            behandlerInfo = abbas,
+            partnerId = "partner_id",
+            abId = 123,
         )
+    val abonnementsList =
+        mutableListOf(
+            abonnent,
+            abonnent.copy(behandlerInfo = parviz),
+            abonnent.copy(behandlerInfo = mamma),
+            abonnent.copy(behandlerInfo = tor),
+            abonnent.copy(behandlerInfo = ola),
+            abonnent.copy(behandlerInfo = reza),
+            abonnent.copy(behandlerInfo = kari),
+        )
+    if (nrOfDuplicates > 0) {
+        abonnementsList.add(abonnent.copy(partnerId = "ny_partner1"))
+        if (nrOfDuplicates > 1) {
+            abonnementsList.add(abonnent.copy(partnerId = "ny_partner2", behandlerInfo = tor))
+            abonnementsList.add(abonnent.copy(partnerId = "ny_partner3"))
+        }
+    }
     return abonnementsList
 }

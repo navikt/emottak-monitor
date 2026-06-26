@@ -844,14 +844,12 @@ if (process.env.NODE_ENV === 'development') {
                 "endretDato": "2014-11-19 14:13:39",
                 "sluttDato": null,
                 "tssId": "80000654321",
-                "behandlerInfo": [
-                    {
-                        "foravn": "Fornavn",
-                        "etteravn": "Etternavn",
-                        "hpr": "",
-                        "herId": "12345"
-                    }
-                ],
+                "behandlerInfo": {
+                    "fornavn": "Fornavn",
+                    "etternavn": "Etternavn",
+                    "hpr": "",
+                    "herId": "12345"
+                },
                 "partnerId": "11111",
                 "abId": 100
             }, {
@@ -861,14 +859,12 @@ if (process.env.NODE_ENV === 'development') {
                 "endretDato": "2021-01-01 15:16:17",
                 "sluttDato": null,
                 "tssId": "80000345678",
-                "behandlerInfo": [
-                    {
-                        "fornavn": "Olaf",
-                        "etternavn": "Med A",
-                        "hpr": "9999999",
-                        "herId": "8888888"
-                    }
-                ],
+                "behandlerInfo": {
+                    "fornavn": "Olaf",
+                    "etternavn": "Med A",
+                    "hpr": "9999999",
+                    "herId": "8888888"
+                },
                 "partnerId": "33333",
                 "abId": 3000
             }, {
@@ -878,39 +874,22 @@ if (process.env.NODE_ENV === 'development') {
                 "endretDato": "2023-05-03 12:13:14",
                 "sluttDato": null,
                 "tssId": "80000011111",
-                "behandlerInfo": [],
+                "behandlerInfo": null,
                 "partnerId": "22222",
                 "abId": 201
             }, {
-                "partnerNavn": "Partner med flere BehandlerInfo",
+                "partnerNavn": "Partner uten fornavn, med HPR",
                 "partnerOrgnr": "500000000",
                 "partnerHerId": "8000000",
                 "endretDato": "2023-05-03 12:13:14",
                 "sluttDato": null,
                 "tssId": "80000011111",
-                "behandlerInfo": [
-                    {
-                        "fornavn": "Ola",
-                        "etternavn": "Normann",
-                        "hpr": "44441",
-                        "herId": ""
-                    }, {
-                        "fornavn": "Kari",
-                        "etternavn": "Normann",
-                        "hpr": "",
-                        "herId": "44442"
-                    }, {
-                        "fornavn": "Per",
-                        "etternavn": "Sprellman",
-                        "hpr": "",
-                        "herId": ""
-                    }, {
-                        "fornavn": "Anne",
-                        "etternavn": "Sprellman",
-                        "hpr": "777",
-                        "herId": "777"
-                    }
-                ],
+                "behandlerInfo": {
+                    "fornavn": "",
+                    "etternavn": "Sprellman",
+                    "hpr": "777",
+                    "herId": ""
+                },
                 "partnerId": "44444",
                 "abId": 202
             }

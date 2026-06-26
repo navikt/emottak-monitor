@@ -28,7 +28,7 @@ type abonnementDetail = {
     endretDato: string;
     sluttDato: string;
     tssId: string;
-    behandlerInfo: BehandlerInfo[];
+    behandlerInfo: BehandlerInfo;
     partnerId: string;
     abId: string;
 };
@@ -283,26 +283,10 @@ const AbonnementTable = () => {
                                     <Table.DataCell>{message.sluttDato}</Table.DataCell>
                                     <Table.DataCell>{message.tssId}</Table.DataCell>
                                     <Table.DataCell>{message.abId}</Table.DataCell>
-                                    <Table.DataCell>
-                                        {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.fornavn}</div>
-                                        ))}
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.etternavn}</div>
-                                        ))}
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.herId}</div>
-                                        ))}
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        {(message.behandlerInfo ?? []).map((b, i) => (
-                                            <div key={i}>{b.hpr}</div>
-                                        ))}
-                                    </Table.DataCell>
+                                    <Table.DataCell>{message.behandlerInfo?.fornavn}</Table.DataCell>
+                                    <Table.DataCell>{message.behandlerInfo?.etternavn}</Table.DataCell>
+                                    <Table.DataCell>{message.behandlerInfo?.herId}</Table.DataCell>
+                                    <Table.DataCell>{message.behandlerInfo?.hpr}</Table.DataCell>
                                 </Table.Row>
                             );
                         })}

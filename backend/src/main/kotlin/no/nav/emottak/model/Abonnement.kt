@@ -18,7 +18,7 @@ data class Abonnement(
     val endretDato: String? = null,
     val sluttDato: String? = null,
     val tssId: String? = null,
-    val behandlerInfo: List<BehandlerInfo>,
+    val behandlerInfo: BehandlerInfo?,
     val partnerId: String? = null,
     val abId: Long,
 )

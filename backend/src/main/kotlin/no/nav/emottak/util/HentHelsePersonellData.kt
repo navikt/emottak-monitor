@@ -10,9 +10,9 @@ import java.io.ByteArrayInputStream
 import java.util.Base64
 import javax.xml.parsers.DocumentBuilderFactory
 
-fun hentHelsePersonellData(data: String): List<BehandlerInfo> {
-    if (data.isBlank()) return emptyList()
-    val xmlBytes = decodeToXmlBytes(data.trim()) ?: return emptyList()
+fun hentHelsePersonellData(data: String): BehandlerInfo? {
+    if (data.isBlank()) return null
+    val xmlBytes = decodeToXmlBytes(data.trim()) ?: return null
     return parseHealthcareProfessionals(xmlBytes)
 }
 
@@ -72,7 +72,7 @@ private fun looksLikeXml(bytes: ByteArray): Boolean {
         .firstOrNull { it != ' '.code.toByte() && it != '\n'.code.toByte() && it != '\r'.code.toByte() } == '<'.code.toByte()
 }
 
-private fun parseHealthcareProfessionals(xmlBytes: ByteArray): List<BehandlerInfo> =
+private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
     try {
         val factory =
             DocumentBuilderFactory.newInstance().also {
@@ -97,7 +97,6 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): List<BehandlerInf
         if (nodeList.length == 0) {
             log.warn("Ingen HealthcareProfessional-noder funnet. Rotnode: <${doc.documentElement.tagName}>")
         }
-        val resultatListe = mutableListOf<BehandlerInfo>()
 
         for (i in 0 until nodeList.length) {
             val node = nodeList.item(i)
@@ -144,12 +143,11 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): List<BehandlerInf
                     }
                 }
             }
-
-            resultatListe.add(BehandlerInfo(givenName, familyName, hprNr, herId))
+            return BehandlerInfo(givenName, familyName, hprNr, herId)
         }
-
-        resultatListe
+        return null
     } catch (e: Exception) {
         log.error("Feil ved parsing av HealthcareProfessional XML: ${e.message}", e)
-        emptyList()
+        return null
     }
+}

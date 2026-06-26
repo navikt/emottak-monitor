@@ -1,8 +1,7 @@
 package no.nav.emottak
 
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import no.nav.emottak.util.hentHelsePersonellData
 import org.junit.jupiter.api.Test
 import java.util.Base64
@@ -13,7 +12,7 @@ class HelsePersonellDataTest {
     private fun encodeUpperHex(xml: String): String = xml.toByteArray(Charsets.UTF_8).joinToString("") { "%02X".format(it) }
 
     @Test
-    fun `hentHelsePersonellData returnerer BehandlerInfo for en HealthcareProfessional i XML`() {
+    fun `hentHelsePersonellData returns BehandlerInfo when HealthcareProfessional found in XML`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -35,15 +34,15 @@ class HelsePersonellDataTest {
 
         val resultat = hentHelsePersonellData(encodeXml(xml))
 
-        resultat shouldHaveSize 1
-        resultat[0].fornavn shouldBe "Even Fos"
-        resultat[0].etternavn shouldBe "Hjelmeland"
-        resultat[0].hpr shouldBe "222200081"
-        resultat[0].herId shouldBe "2115158"
+        resultat shouldNotBe null
+        resultat!!.fornavn shouldBe "Even Fos"
+        resultat.etternavn shouldBe "Hjelmeland"
+        resultat.hpr shouldBe "222200081"
+        resultat.herId shouldBe "2115158"
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer tom liste når XML ikke inneholder HealthcareProfessional-noder`() {
+    fun `hentHelsePersonellData returns null when XML does not contains HealthcareProfessional-nodes`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -56,11 +55,11 @@ class HelsePersonellDataTest {
 
         val resultat = hentHelsePersonellData(encodeXml(xml))
 
-        resultat.shouldBeEmpty()
+        resultat shouldBe null
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer BehandlerInfo med tomme felter når HealthcareProfessional mangler tager`() {
+    fun `hentHelsePersonellData returns BehandlerInfo with empty fields when HealthcareProfessional-node is missing tags`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -71,27 +70,27 @@ class HelsePersonellDataTest {
 
         val resultat = hentHelsePersonellData(encodeXml(xml))
 
-        resultat shouldHaveSize 1
-        resultat[0].fornavn shouldBe ""
-        resultat[0].etternavn shouldBe ""
-        resultat[0].hpr shouldBe ""
-        resultat[0].herId shouldBe ""
+        resultat shouldNotBe null
+        resultat!!.fornavn shouldBe ""
+        resultat.etternavn shouldBe ""
+        resultat.hpr shouldBe ""
+        resultat.herId shouldBe ""
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer tom liste ved ugyldig Base64`() {
+    fun `hentHelsePersonellData returns null when invalid Base64`() {
         val resultat = hentHelsePersonellData("dette er ikke gyldig base64!!!")
-        resultat.shouldBeEmpty()
+        resultat shouldBe null
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer tom liste ved tom streng`() {
+    fun `hentHelsePersonellData returns null when string is empty`() {
         val resultat = hentHelsePersonellData("")
-        resultat.shouldBeEmpty()
+        resultat shouldBe null
     }
 
     @Test
-    fun `hentHelsePersonellData støtter rå XML`() {
+    fun `hentHelsePersonellData supports raw XML as input`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -105,15 +104,15 @@ class HelsePersonellDataTest {
 
         val resultat = hentHelsePersonellData(xml)
 
-        resultat shouldHaveSize 1
-        resultat[0].fornavn shouldBe "Ola"
-        resultat[0].etternavn shouldBe "Normann"
-        resultat[0].hpr shouldBe ""
-        resultat[0].herId shouldBe ""
+        resultat shouldNotBe null
+        resultat!!.fornavn shouldBe "Ola"
+        resultat.etternavn shouldBe "Normann"
+        resultat.hpr shouldBe ""
+        resultat.herId shouldBe ""
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer tom liste ved ugyldig XML`() {
+    fun `hentHelsePersonellData returns null when invalid XML`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -123,11 +122,11 @@ class HelsePersonellDataTest {
             """.trimIndent()
 
         val resultat = hentHelsePersonellData(xml)
-        resultat.shouldBeEmpty()
+        resultat shouldBe null
     }
 
     @Test
-    fun `hentHelsePersonellData støtter UpperHex`() {
+    fun `hentHelsePersonellData supports UpperHex as input`() {
         val xml =
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -149,19 +148,19 @@ class HelsePersonellDataTest {
 
         val resultat = hentHelsePersonellData(encodeUpperHex(xml))
 
-        resultat shouldHaveSize 1
-        resultat[0].fornavn shouldBe "Even Fos"
-        resultat[0].etternavn shouldBe "Hjelmeland"
-        resultat[0].hpr shouldBe "222200081"
-        resultat[0].herId shouldBe "2115158"
+        resultat shouldNotBe null
+        resultat!!.fornavn shouldBe "Even Fos"
+        resultat.etternavn shouldBe "Hjelmeland"
+        resultat.hpr shouldBe "222200081"
+        resultat.herId shouldBe "2115158"
     }
 
     @Test
-    fun `hentHelsePersonellData returnerer tom liste ved ugyldig UpperHex`() {
+    fun `hentHelsePersonellData returns null when invalid UpperHex`() {
         val resultat =
             hentHelsePersonellData(
                 "3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D225554462D38223F3E0A3C526F6F743E0A202020203C4865616C746863617000000000000",
             )
-        resultat.shouldBeEmpty()
+        resultat shouldBe null
     }
 }

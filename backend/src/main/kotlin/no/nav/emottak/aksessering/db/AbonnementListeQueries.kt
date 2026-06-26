@@ -5,6 +5,7 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.log
 import no.nav.emottak.model.Abonnement
 import no.nav.emottak.model.AbonnementListeData
+import no.nav.emottak.model.BehandlerInfo
 import no.nav.emottak.util.hentHelsePersonellData
 import org.slf4j.Logger
 import java.sql.Connection
@@ -182,7 +183,7 @@ internal fun checkForDuplicates(
     abonnementer: List<Abonnement>,
     logger: Logger = log,
 ) {
-    val alleBehandlere = abonnementer.flatMap { it.behandlerInfo }
+    val alleBehandlere = abonnementer.filter { it.behandlerInfo != null }.map { it.behandlerInfo!! }
     val duplikater =
         alleBehandlere
             .groupBy {
@@ -212,22 +213,20 @@ internal fun checkForDuplicates(
 internal fun List<Abonnement>.afterSQLFiltering(columnSearch: ColumnSearch): List<Abonnement> {
     if (!columnSearch.applyFilterAfterSQL() || columnSearch.isSearchTextEmpty) return this
     return this
-        .map {
-            it.copy(
-                behandlerInfo =
-                    it.behandlerInfo.filter { behandlerInfo ->
-                        if (columnSearch.sequence?.last() == "BEHANDLER_NAVN") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.fornavn, behandlerInfo.etternavn))
-                        } else if (columnSearch.sequence?.last() == "BEHANDLER_HERID") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.herId))
-                        } else if (columnSearch.sequence?.last() == "BEHANDLER_HPR") {
-                            columnSearch.searchMatches(listOf(behandlerInfo.hpr))
-                        } else {
-                            false
-                        }
-                    },
-            )
-        }.filter { it.behandlerInfo.isNotEmpty() }
+        .filter {
+            it.behandlerInfo != null && it.behandlerInfo.matchesSearch(columnSearch)
+        }
+}
+
+private fun BehandlerInfo.matchesSearch(columnSearch: ColumnSearch): Boolean {
+    if (columnSearch.sequence?.last() == "BEHANDLER_NAVN") {
+        return columnSearch.searchMatches(listOf(this.fornavn, this.etternavn))
+    } else if (columnSearch.sequence?.last() == "BEHANDLER_HERID") {
+        return columnSearch.searchMatches(listOf(this.herId))
+    } else if (columnSearch.sequence?.last() == "BEHANDLER_HPR") {
+        return columnSearch.searchMatches(listOf(this.hpr))
+    }
+    return false
 }
 
 private fun ColumnSearch.searchMatches(fields: List<String?>): Boolean {
