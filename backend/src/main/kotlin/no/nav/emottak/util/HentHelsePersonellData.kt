@@ -1,15 +1,22 @@
 package no.nav.emottak.util
 
 import io.ktor.utils.io.charsets.forName
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.TransformerException
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 import no.nav.emottak.log
 import no.nav.emottak.model.BehandlerInfo
+import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
 import java.io.ByteArrayInputStream
+import java.io.StringWriter
 import java.util.Base64
-import javax.xml.parsers.DocumentBuilderFactory
+
 
 fun hentHelsePersonellData(data: String): BehandlerInfo? {
     if (data.isBlank()) return null
@@ -76,6 +83,8 @@ private fun String.toByteArrayInCorrectCharset(): ByteArray {
         } catch (e: Exception) {
             log.warn("Klarte ikke hente ut tegnsett", e)
         }
+    } else {
+        log.debug("Fant ikke \"encoding=\" i teksten...")
     }
     log.debug("Konverterer til ByteArray med charset: {}", charset)
     return this.toByteArray(charset)
@@ -152,11 +161,27 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
                     }
                 }
             }
+            if (hprNr == "565464690") log.debug("Debug tegnsett: ${doc.asString()}")
             return BehandlerInfo(givenName, familyName, hprNr, herId)
         }
         return null
     } catch (e: Exception) {
         log.error("Feil ved parsing av HealthcareProfessional XML: ${e.message}", e)
+        log.debug("Deler av ByteArray som feilet: (lengde={}, start='{}')", xmlBytes.size, xmlBytes.take(120))
         return null
+    }
+}
+
+private fun Document.asString(): String {
+    try {
+        val domSource = DOMSource(this)
+        val writer = StringWriter()
+        val result = StreamResult(writer)
+        val tf = TransformerFactory.newInstance()
+        val transformer = tf.newTransformer()
+        transformer.transform(domSource, result)
+        return writer.toString()
+    } catch (ex: TransformerException) {
+        return "TransformerException: ${ex.message}"
     }
 }
