@@ -7,7 +7,9 @@ import no.nav.emottak.model.BehandlerInfo
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.ErrorHandler
+import org.xml.sax.InputSource
 import org.xml.sax.SAXParseException
+import java.io.StringReader
 import java.util.Base64
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.text.toByteArray
@@ -27,14 +29,14 @@ fun hentHelsePersonellData(data: String): BehandlerInfo? {
  */
 private fun decodeToXmlBytes(data: String): ByteArray? {
     val bytes: ByteArray? =
-        // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
         if (isUpperHex(data)) {
+            // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
             hexToBytes(data)
-        } // Standard Base64-kodet XML
-        else if (isBase64(data)) {
+        } else if (isBase64(data)) {
+            // Standard Base64-kodet XML
             data.decodeBase64InCorrectCharset()
-        } // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
-        else {
+        } else {
+            // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
             data.toByteArray(data.getCharset() ?: Charsets.UTF_8)
         }
     if (looksLikeXml(bytes)) return bytes
@@ -116,9 +118,8 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
                 override fun fatalError(e: SAXParseException): Unit = throw e
             },
         )
-
-        // val doc = builder.parse(ByteArrayInputStream(xmlBytes))
-        val doc = builder.parse(String(xmlBytes, Charsets.UTF_8))
+        val stringReader = StringReader(String(xmlBytes, Charsets.UTF_8))
+        val doc = builder.parse(InputSource(stringReader))
         doc.documentElement.normalize()
 
         // Henter kun HealthcareProfessional-noder
