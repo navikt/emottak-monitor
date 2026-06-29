@@ -77,7 +77,6 @@ private fun String.decodeBase64InCorrectCharset(): ByteArray {
     val bytes = Base64.getDecoder().decode(this)
     val charset = String(bytes).getCharset()
     if (charset != null) return String(bytes, charset).toByteArray(charset)
-    // if (charset != null) return String(bytes, charset).toByteArray(Charsets.UTF_8)
     return bytes
 }
 
@@ -85,7 +84,6 @@ private fun ByteArray.decodeBase64InCorrectCharset(): ByteArray {
     val bytes = Base64.getDecoder().decode(this)
     val charset = String(bytes).getCharset()
     if (charset != null) return String(bytes, charset).toByteArray(charset)
-    // if (charset != null) return String(bytes, charset).toByteArray(Charsets.UTF_8)
     return bytes
 }
 
