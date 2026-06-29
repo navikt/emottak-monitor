@@ -1,5 +1,6 @@
 package no.nav.emottak.util
 
+import io.ktor.utils.io.charsets.forName
 import no.nav.emottak.log
 import no.nav.emottak.model.BehandlerInfo
 import org.w3c.dom.Element
@@ -24,32 +25,25 @@ fun hentHelsePersonellData(data: String): BehandlerInfo? {
  * Returnerer null hvis ingen strategi gir gyldig XML-start.
  */
 private fun decodeToXmlBytes(data: String): ByteArray? {
-    // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
-    if (isUpperHex(data)) {
-        hexToBytes(data)?.let { hexDecoded ->
-            if (looksLikeXml(hexDecoded)) return hexDecoded
-            // Hex-dekodet innhold kan igjen være Base64-kodet XML
-            runCatching { Base64.getDecoder().decode(hexDecoded) }
-                .getOrNull()
-                ?.takeIf { looksLikeXml(it) }
-                ?.let { return it }
+    val bytes: ByteArray? =
+        // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
+        if (isUpperHex(data)) hexToBytes(data)
+        // Standard Base64-kodet XML
+        else if (isBase64(data)) Base64.getDecoder().decode(data.toByteArrayInCorrectCharset())
+        // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
+        else data.toByteArrayInCorrectCharset()
+    if (looksLikeXml(bytes)) return bytes
+    if (bytes != null) {
+        try {
+            return Base64.getDecoder().decode(bytes)
+        } catch (e: Exception) {
+            log.warn("Forsøkte decode som Base64, men feilet (lengde=${data.length}, start='${data.take(120)}'): ", e)
         }
+    } else {
+        log.warn("Kunne ikke tolke DATA-feltet som XML (lengde=${data.length}, start='${data.take(120)}')")
+        return null
     }
-
-    // Standard Base64-kodet XML
-    if (isBase64(data)) {
-        runCatching { Base64.getDecoder().decode(data) }
-            .getOrNull()
-            ?.takeIf { looksLikeXml(it) }
-            ?.let { return it }
-    }
-
-    // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
-    val raw = data.toByteArray(Charsets.UTF_8)
-    if (looksLikeXml(raw)) return raw
-
-    log.warn("Kunne ikke tolke DATA-feltet som XML (lengde=${data.length}, start='${data.take(40)}')")
-    return null
+    return bytes
 }
 
 private fun isUpperHex(data: String): Boolean = data.length % 2 == 0 && data.all { it in '0'..'9' || it in 'A'..'F' }
@@ -63,13 +57,28 @@ private fun hexToBytes(hex: String): ByteArray? =
         }
     }.getOrNull()
 
-private fun looksLikeXml(bytes: ByteArray): Boolean {
+private fun looksLikeXml(bytes: ByteArray?): Boolean {
+    if (bytes == null) return false
     if (bytes.size < 3) return false
     // Hopp over UTF-8 BOM (EF BB BF) om den finnes
     val offset = if (bytes[0] == 0xEF.toByte() && bytes[1] == 0xBB.toByte() && bytes[2] == 0xBF.toByte()) 3 else 0
     return bytes
         .drop(offset)
         .firstOrNull { it != ' '.code.toByte() && it != '\n'.code.toByte() && it != '\r'.code.toByte() } == '<'.code.toByte()
+}
+
+private fun String.toByteArrayInCorrectCharset(): ByteArray {
+    var charset = Charsets.UTF_8
+    if (this.indexOf("encoding=\"") > -1) {
+        try {
+            val encoding = this.split("encoding=\"")[1].split('"')[0]
+            charset = Charsets.forName(encoding)
+        } catch (e: Exception) {
+            log.warn("Klarte ikke hente ut tegnsett", e)
+        }
+    }
+    log.debug("Konverterer til ByteArray med charset: {}", charset)
+    return this.toByteArray(charset)
 }
 
 private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
