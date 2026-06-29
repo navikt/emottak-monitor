@@ -84,7 +84,7 @@ private fun String.toByteArrayInCorrectCharset(): ByteArray {
             log.warn("Klarte ikke hente ut tegnsett", e)
         }
     } else {
-        log.debug("Fant ikke \"encoding=\" i teksten...")
+        log.debug("Fant ikke \"encoding=\" i teksten (lengde=${this.length}, start='${this.take(120)}')")
     }
     log.debug("Konverterer til ByteArray med charset: {}", charset)
     return this.toByteArray(charset)
@@ -161,7 +161,7 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
                     }
                 }
             }
-            if (hprNr == "565464690") log.debug("Debug tegnsett: ${doc.asString()}")
+            if (givenName.lowercase().contains("ingvild")) log.debug("Debug tegnsett: ${doc.asString()}")
             return BehandlerInfo(givenName, familyName, hprNr, herId)
         }
         return null
