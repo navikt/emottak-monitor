@@ -8,7 +8,6 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
-import java.io.ByteArrayInputStream
 import java.util.Base64
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.text.toByteArray
@@ -118,7 +117,8 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
             },
         )
 
-        val doc = builder.parse(ByteArrayInputStream(xmlBytes))
+        // val doc = builder.parse(ByteArrayInputStream(xmlBytes))
+        val doc = builder.parse(String(xmlBytes, Charsets.UTF_8))
         doc.documentElement.normalize()
 
         // Henter kun HealthcareProfessional-noder
