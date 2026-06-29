@@ -1,22 +1,17 @@
 package no.nav.emottak.util
 
+import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.forName
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.TransformerException
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 import no.nav.emottak.log
 import no.nav.emottak.model.BehandlerInfo
-import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
 import java.io.ByteArrayInputStream
-import java.io.StringWriter
 import java.util.Base64
-
+import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.text.toByteArray
 
 fun hentHelsePersonellData(data: String): BehandlerInfo? {
     if (data.isBlank()) return null
@@ -34,15 +29,19 @@ fun hentHelsePersonellData(data: String): BehandlerInfo? {
 private fun decodeToXmlBytes(data: String): ByteArray? {
     val bytes: ByteArray? =
         // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
-        if (isUpperHex(data)) hexToBytes(data)
-        // Standard Base64-kodet XML
-        else if (isBase64(data)) Base64.getDecoder().decode(data.toByteArrayInCorrectCharset())
-        // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
-        else data.toByteArrayInCorrectCharset()
+        if (isUpperHex(data)) {
+            hexToBytes(data)
+        } // Standard Base64-kodet XML
+        else if (isBase64(data)) {
+            data.decodeBase64InCorrectCharset()
+        } // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
+        else {
+            data.toByteArray(data.getCharset() ?: Charsets.UTF_8)
+        }
     if (looksLikeXml(bytes)) return bytes
     if (bytes != null) {
         try {
-            return Base64.getDecoder().decode(bytes)
+            return bytes.decodeBase64InCorrectCharset()
         } catch (e: Exception) {
             log.warn("Forsøkte decode som Base64, men feilet (lengde=${data.length}, start='${data.take(120)}'): ", e)
         }
@@ -74,20 +73,34 @@ private fun looksLikeXml(bytes: ByteArray?): Boolean {
         .firstOrNull { it != ' '.code.toByte() && it != '\n'.code.toByte() && it != '\r'.code.toByte() } == '<'.code.toByte()
 }
 
-private fun String.toByteArrayInCorrectCharset(): ByteArray {
-    var charset = Charsets.UTF_8
+private fun String.decodeBase64InCorrectCharset(): ByteArray {
+    val bytes = Base64.getDecoder().decode(this)
+    val charset = String(bytes).getCharset()
+    if (charset != null) return String(bytes, charset).toByteArray(charset)
+    // if (charset != null) return String(bytes, charset).toByteArray(Charsets.UTF_8)
+    return bytes
+}
+
+private fun ByteArray.decodeBase64InCorrectCharset(): ByteArray {
+    val bytes = Base64.getDecoder().decode(this)
+    val charset = String(bytes).getCharset()
+    if (charset != null) return String(bytes, charset).toByteArray(charset)
+    // if (charset != null) return String(bytes, charset).toByteArray(Charsets.UTF_8)
+    return bytes
+}
+
+private fun String.getCharset(): Charset? {
     if (this.indexOf("encoding=\"") > -1) {
         try {
             val encoding = this.split("encoding=\"")[1].split('"')[0]
-            charset = Charsets.forName(encoding)
+            return Charsets.forName(encoding)
         } catch (e: Exception) {
             log.warn("Klarte ikke hente ut tegnsett", e)
         }
     } else {
         log.debug("Fant ikke \"encoding=\" i teksten (lengde=${this.length}, start='${this.take(120)}')")
     }
-    log.debug("Konverterer til ByteArray med charset: {}", charset)
-    return this.toByteArray(charset)
+    return null
 }
 
 private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
@@ -161,7 +174,6 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
                     }
                 }
             }
-            if (givenName.lowercase().contains("ingvild")) log.debug("Debug tegnsett: ${doc.asString()}")
             return BehandlerInfo(givenName, familyName, hprNr, herId)
         }
         return null
@@ -169,19 +181,5 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
         log.error("Feil ved parsing av HealthcareProfessional XML: ${e.message}", e)
         log.debug("Deler av ByteArray som feilet: (lengde={}, start='{}')", xmlBytes.size, xmlBytes.take(120))
         return null
-    }
-}
-
-private fun Document.asString(): String {
-    try {
-        val domSource = DOMSource(this)
-        val writer = StringWriter()
-        val result = StreamResult(writer)
-        val tf = TransformerFactory.newInstance()
-        val transformer = tf.newTransformer()
-        transformer.transform(domSource, result)
-        return writer.toString()
-    } catch (ex: TransformerException) {
-        return "TransformerException: ${ex.message}"
     }
 }
