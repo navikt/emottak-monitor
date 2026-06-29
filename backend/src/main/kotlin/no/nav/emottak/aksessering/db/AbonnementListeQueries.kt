@@ -25,7 +25,7 @@ fun DatabaseInterface.hentAbonnementListe(
         val columnSearch = getColumnSearch(columnSearchEncoded)
 
         // Totalt antall abonnement:
-        val sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.ABONNEMENT"
+        val sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.ABONNEMENT WHERE ABONNEMENT.TJENESTE_ID = 3"
         log.debug("SQL FOR ANTALL TOTALT: '{}'", sqlTotaltAntall)
         val totalCount = connection.executeCountQuery(sqlTotaltAntall, null)
 
@@ -139,7 +139,7 @@ private fun Connection.exeuteAbonnementListeQuery(
 
 private fun ResultSet.toAbonnementListe(): Abonnement {
     val data = getColumnAsString("DATA")
-    log.debug("DATA-felt fra DB: lengde=${data?.length}, erNull=${data == null}, start='${data?.take(80)}'")
+    log.debug("DATA-felt fra DB: lengde=${data?.length}, erNull=${data == null}, start='${data?.take(180)}'")
     val helsepersonellData = hentHelsePersonellData(data ?: "")
     return Abonnement(
         endretDato = getString("endret_dato"),
@@ -220,16 +220,16 @@ internal fun List<Abonnement>.afterSQLFiltering(columnSearch: ColumnSearch): Lis
 
 private fun BehandlerInfo.matchesSearch(columnSearch: ColumnSearch): Boolean {
     if (columnSearch.sequence?.last() == "BEHANDLER_NAVN") {
-        return columnSearch.searchMatches(listOf(this.fornavn, this.etternavn))
+        return columnSearch.search(listOf(this.fornavn, this.etternavn))
     } else if (columnSearch.sequence?.last() == "BEHANDLER_HERID") {
-        return columnSearch.searchMatches(listOf(this.herId))
+        return columnSearch.search(listOf(this.herId))
     } else if (columnSearch.sequence?.last() == "BEHANDLER_HPR") {
-        return columnSearch.searchMatches(listOf(this.hpr))
+        return columnSearch.search(listOf(this.hpr))
     }
     return false
 }
 
-private fun ColumnSearch.searchMatches(fields: List<String?>): Boolean {
+private fun ColumnSearch.search(fields: List<String?>): Boolean {
     val searchText = this.sok!!.trim('%')
     for (field in fields) {
         if (field == null) continue
