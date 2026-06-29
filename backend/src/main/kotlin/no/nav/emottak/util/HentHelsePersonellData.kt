@@ -7,9 +7,8 @@ import no.nav.emottak.model.BehandlerInfo
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.ErrorHandler
-import org.xml.sax.InputSource
 import org.xml.sax.SAXParseException
-import java.io.StringReader
+import java.io.ByteArrayInputStream
 import java.util.Base64
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.text.toByteArray
@@ -29,28 +28,23 @@ fun hentHelsePersonellData(data: String): BehandlerInfo? {
  */
 private fun decodeToXmlBytes(data: String): ByteArray? {
     val bytes: ByteArray? =
-        if (isUpperHex(data)) {
-            // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
+        if (isUpperHex(data)) { // Oracle RAW-kolonner via JDBC getString() returneres som uppercase hex (kun 0-9 og A-F)
             hexToBytes(data)
-        } else if (isBase64(data)) {
-            // Standard Base64-kodet XML
+        } else if (isBase64(data)) { // Standard Base64-kodet XML
             data.decodeBase64InCorrectCharset()
-        } else {
-            // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
+        } else { // Rå XML-streng (VARCHAR2/CLOB med XML direkte)
             data.toByteArray(data.getCharset() ?: Charsets.UTF_8)
         }
     if (looksLikeXml(bytes)) return bytes
-    if (bytes != null) {
+    if (bytes != null) { // Både UpperHex og Base64 kan være pakket inn i en Base64
         try {
             return bytes.decodeBase64InCorrectCharset()
         } catch (e: Exception) {
-            log.warn("Forsøkte decode som Base64, men feilet (lengde=${data.length}, start='${data.take(120)}'): ", e)
+            log.warn("Forsøkte decode som Base64, men feilet (lengde=${data.length}, start='${data.take(120)}'): ${e.message}")
         }
-    } else {
-        log.warn("Kunne ikke tolke DATA-feltet som XML (lengde=${data.length}, start='${data.take(120)}')")
-        return null
     }
-    return bytes
+    log.warn("Kunne ikke tolke DATA-feltet som XML (lengde=${data.length}, start='${data.take(120)}')")
+    return null
 }
 
 private fun isUpperHex(data: String): Boolean = data.length % 2 == 0 && data.all { it in '0'..'9' || it in 'A'..'F' }
@@ -118,8 +112,8 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
                 override fun fatalError(e: SAXParseException): Unit = throw e
             },
         )
-        val stringReader = StringReader(String(xmlBytes, Charsets.UTF_8))
-        val doc = builder.parse(InputSource(stringReader))
+
+        val doc = builder.parse(ByteArrayInputStream(xmlBytes))
         doc.documentElement.normalize()
 
         // Henter kun HealthcareProfessional-noder
@@ -134,16 +128,20 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
             val element = node as Element
 
             val givenName =
-                (
-                    element.getElementsByTagNameNS("*", "GivenName").item(0)?.textContent
-                        ?: element.getElementsByTagName("GivenName").item(0)?.textContent ?: ""
-                ).trim()
+                fixMojibake(
+                    (
+                        element.getElementsByTagNameNS("*", "GivenName").item(0)?.textContent
+                            ?: element.getElementsByTagName("GivenName").item(0)?.textContent ?: ""
+                    ).trim(),
+                )
 
             val familyName =
-                (
-                    element.getElementsByTagNameNS("*", "FamilyName").item(0)?.textContent
-                        ?: element.getElementsByTagName("FamilyName").item(0)?.textContent ?: ""
-                ).trim()
+                fixMojibake(
+                    (
+                        element.getElementsByTagNameNS("*", "FamilyName").item(0)?.textContent
+                            ?: element.getElementsByTagName("FamilyName").item(0)?.textContent ?: ""
+                    ).trim(),
+                )
 
             var hprNr = ""
             var herId = ""
@@ -180,5 +178,22 @@ private fun parseHealthcareProfessionals(xmlBytes: ByteArray): BehandlerInfo? {
         log.error("Feil ved parsing av HealthcareProfessional XML: ${e.message}", e)
         log.debug("Deler av ByteArray som feilet: (lengde={}, start='{}')", xmlBytes.size, xmlBytes.take(120))
         return null
+    }
+}
+
+/**
+ * Reverses mojibake caused by UTF-8 bytes being misread as ISO-8859-1 and then re-encoded as UTF-8.
+ * Example: "SÃ¸dal" → "Sødal"
+ *
+ * If the text is already correct (e.g. "Sødal"), re-encoding to ISO-8859-1 produces a byte that is
+ * invalid UTF-8, which shows up as \uFFFD — in that case we return the original text unchanged.
+ */
+private fun fixMojibake(text: String): String {
+    if (text.isEmpty()) return text
+    return try {
+        val reencoded = String(text.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
+        if (reencoded.contains('\uFFFD')) text else reencoded
+    } catch (_: Exception) {
+        text
     }
 }
