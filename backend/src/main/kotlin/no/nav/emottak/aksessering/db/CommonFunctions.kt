@@ -2,7 +2,10 @@ package no.nav.emottak.aksessering.db
 
 import io.ktor.http.decodeURLQueryComponent
 import no.nav.emottak.log
+import java.nio.charset.Charset
 import java.sql.Connection
+import java.sql.PreparedStatement
+import java.util.Base64
 import kotlin.text.contains
 import kotlin.use
 
@@ -59,7 +62,7 @@ internal fun Connection.executeCountQuery(
     val preparedStatement = this.prepareStatement(sqlQuery)
     if (!sok.isNullOrBlank()) {
         log.debug("Legger inn søk: '$sok'")
-        preparedStatement.setObject(1, sok)
+        preparedStatement.setObjects(sqlQuery, sok)
     }
     return preparedStatement.use {
         val rs = it.executeQuery()
@@ -67,3 +70,18 @@ internal fun Connection.executeCountQuery(
         rs.getLong(1)
     }
 }
+
+internal fun PreparedStatement.setObjects(
+    sqlQuery: String,
+    obj: Any,
+) {
+    val nrOfInputs = sqlQuery.count { it == '?' }
+    for (i in 1..nrOfInputs) {
+        this.setObject(i, obj)
+    }
+}
+
+fun base64encodeXml(
+    xml: String,
+    charset: Charset = Charsets.UTF_8,
+): String = Base64.getEncoder().encodeToString(xml.toByteArray(charset))

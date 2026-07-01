@@ -2,17 +2,11 @@ package no.nav.emottak
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import no.nav.emottak.aksessering.db.base64encodeXml
 import no.nav.emottak.util.hentHelsePersonellData
 import org.junit.jupiter.api.Test
-import java.nio.charset.Charset
-import java.util.Base64
 
 class HelsePersonellDataTest {
-    private fun encodeXml(
-        xml: String,
-        charset: Charset = Charsets.UTF_8,
-    ): String = Base64.getEncoder().encodeToString(xml.toByteArray(charset))
-
     private fun encodeUpperHex(xml: String): String = xml.toByteArray(Charsets.UTF_8).joinToString("") { "%02X".format(it) }
 
     @Test
@@ -36,7 +30,7 @@ class HelsePersonellDataTest {
             </Root>
             """.trimIndent()
 
-        val resultat = hentHelsePersonellData(encodeXml(xml))
+        val resultat = hentHelsePersonellData(base64encodeXml(xml))
 
         resultat shouldNotBe null
         resultat!!.fornavn shouldBe "Even Fos"
@@ -57,7 +51,7 @@ class HelsePersonellDataTest {
             </Root>
             """.trimIndent()
 
-        val resultat = hentHelsePersonellData(encodeXml(xml))
+        val resultat = hentHelsePersonellData(base64encodeXml(xml))
 
         resultat shouldBe null
     }
@@ -72,7 +66,7 @@ class HelsePersonellDataTest {
             </Root>
             """.trimIndent()
 
-        val resultat = hentHelsePersonellData(encodeXml(xml))
+        val resultat = hentHelsePersonellData(base64encodeXml(xml))
 
         resultat shouldNotBe null
         resultat!!.fornavn shouldBe ""
@@ -189,7 +183,7 @@ class HelsePersonellDataTest {
             </Root>
             """.trimIndent()
 
-        val resultat = hentHelsePersonellData(encodeXml(xml, Charsets.ISO_8859_1))
+        val resultat = hentHelsePersonellData(base64encodeXml(xml, Charsets.ISO_8859_1))
 
         resultat shouldNotBe null
         resultat!!.fornavn shouldBe "Ærling"
@@ -221,7 +215,7 @@ class HelsePersonellDataTest {
             </Root>
             """.trimIndent()
 
-        val resultat = hentHelsePersonellData(encodeXml(xml))
+        val resultat = hentHelsePersonellData(base64encodeXml(xml))
         resultat shouldNotBe null
         resultat!!.fornavn shouldBe "Test"
         resultat.etternavn shouldBe "Sødal"

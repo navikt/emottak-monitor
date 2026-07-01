@@ -68,15 +68,25 @@ private fun generateSQLQuery(
         // Column Empty
         if (columnSearch.isSearchColnEmpty) {
             if (columnSearch.isEqual) {
-                sqlColumnSearch += " AND LOWER(?) IN (" +
-                    "LOWER(PARTNER_CPA.CPA_ID), " +
-                    "LOWER(PARTNER_CPA.PARTNER_ENDPOINT), " +
-                    "LOWER(PARTNER_CPA.PARTNER_SUBJECTDN), " +
-                    "PARTNER.ORGNUMMER, " +
-                    "PARTNER.HER_ID, " +
-                    "LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE)) "
+                sqlColumnSearch += """ AND LOWER(?) IN (
+                    LOWER(PARTNER_CPA.CPA_ID), 
+                    PARTNER.PARTNER_ID, 
+                    PARTNER.ORGNUMMER, 
+                    PARTNER.HER_ID, 
+                    LOWER(PARTNER_CPA.PARTNER_ENDPOINT), 
+                    LOWER(PARTNER_CPA.PARTNER_SUBJECTDN), 
+                    LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE)
+                ) """
             } else if (columnSearch.isContain || columnSearch.isStart) {
-                sqlColumnSearch += likeSearch(columnSearch)
+                sqlColumnSearch += """ AND (
+                    LOWER(PARTNER_CPA.CPA_ID) LIKE LOWER(?) 
+                    OR PARTNER.PARTNER_ID LIKE ? 
+                    OR PARTNER.ORGNUMMER LIKE ? 
+                    OR PARTNER.HER_ID LIKE ? 
+                    OR LOWER(PARTNER_CPA.PARTNER_ENDPOINT) LIKE LOWER(?) 
+                    OR LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) LIKE LOWER(?) 
+                    OR LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) LIKE LOWER(?) 
+                ) """
             }
         } else {
             // Column NOT Empty
@@ -138,7 +148,7 @@ private fun Connection.exeutePartnerCpaListeQuery(
     try {
         val preparedStatement = this.prepareStatement(query)
         if (!sok.isNullOrBlank()) {
-            preparedStatement.setObject(1, sok)
+            preparedStatement.setObjects(query, sok)
         }
         return preparedStatement.use { it.executeQuery().toList { toPartnerCpaListe() } }.toList()
     } catch (e: Exception) {

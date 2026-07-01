@@ -45,7 +45,7 @@ private fun generateSQLQuery(
 ): String {
     var sqlColumnSearch = """
             SELECT PARTNER.NAVN AS partner_navn, PARTNER.PARTNER_ID AS partner_id, PARTNER.HER_ID, PARTNER.ORGNUMMER AS partner_orgnr, 
-            ABONNEMENT.KEY, ABONNEMENT.SLUTT_DATO, ABONNEMENT.SIST_ENDRET AS endret_dato, ABONNEMENT.DATA, ABONNEMENT.MOTTAK_ID, ABONNEMENT.AB_ID 
+            ABONNEMENT."KEY", ABONNEMENT.SLUTT_DATO, ABONNEMENT.SIST_ENDRET AS endret_dato, ABONNEMENT."DATA", ABONNEMENT.MOTTAK_ID, ABONNEMENT.AB_ID 
             FROM $databasePrefix.PARTNER, $databasePrefix.ABONNEMENT 
             WHERE PARTNER.PARTNER_ID = ABONNEMENT.PARTNER_ID AND ABONNEMENT.TJENESTE_ID = 3
         """
@@ -55,13 +55,20 @@ private fun generateSQLQuery(
         // Column Empty
         if (columnSearch.isSearchColnEmpty) {
             if (columnSearch.isEqual) {
-                sqlColumnSearch += " AND LOWER(?) IN (" +
-                    "LOWER(PARTNER.PARTNER_ID), " +
-                    "LOWER(ABONNEMENT.KEY), " +
-                    "PARTNER.ORGNUMMER, " +
-                    "PARTNER.HER_ID ) "
+                sqlColumnSearch += """ AND LOWER(?) IN (
+                    PARTNER.PARTNER_ID, 
+                    LOWER(ABONNEMENT."KEY"), 
+                    PARTNER.ORGNUMMER, 
+                    PARTNER.HER_ID 
+                ) """
             } else if (columnSearch.isContain || columnSearch.isStart) {
-                sqlColumnSearch += likeSearch(columnSearch)
+                sqlColumnSearch += """ AND (
+                    LOWER(PARTNER.NAVN) LIKE LOWER(?) 
+                    OR LOWER(PARTNER.PARTNER_ID) LIKE LOWER(?) 
+                    OR ABONNEMENT."KEY" LIKE ? 
+                    OR PARTNER.ORGNUMMER LIKE ? 
+                    OR LOWER(PARTNER.HER_ID) LIKE LOWER(?) 
+                ) """
             }
         } else {
             // Column NOT Empty
@@ -82,7 +89,7 @@ private fun likeSearch(columnSearch: ColumnSearch) =
     if (columnSearch.sequence?.last().equals("PARTNER_NAVN")) {
         " AND LOWER(PARTNER.NAVN) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ID")) {
-        " AND LOWER(PARTNER.PARTNER_ID) LIKE LOWER(?) "
+        " AND PARTNER.PARTNER_ID LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("KEY")) {
         " AND ABONNEMENT.KEY LIKE ? "
     } else if (columnSearch.sequence?.last().equals("OrgNr")) {
@@ -125,7 +132,7 @@ private fun Connection.exeuteAbonnementListeQuery(
     try {
         val preparedStatement = this.prepareStatement(query)
         if (!columnSearch.sok.isNullOrBlank() && !columnSearch.applyFilterAfterSQL()) {
-            preparedStatement.setObject(1, columnSearch.sok)
+            preparedStatement.setObjects(query, columnSearch.sok)
         }
         return preparedStatement.use { it.executeQuery().toList { toAbonnementListe() } }.toList().also { checkForDuplicates(it) }
     } catch (e: Exception) {

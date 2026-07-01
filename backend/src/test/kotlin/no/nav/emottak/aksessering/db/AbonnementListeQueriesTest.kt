@@ -8,8 +8,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import no.nav.emottak.TestDatabase
 import no.nav.emottak.model.Abonnement
 import no.nav.emottak.model.BehandlerInfo
+import no.nav.emottak.services.MessageQueryService
 import org.slf4j.Logger
 
 class AbonnementListeQueriesTest :
@@ -203,6 +205,123 @@ class AbonnementListeQueriesTest :
                 resultList[3].behandlerInfo!!.fornavn shouldBe "Tor"
             }
         }
+
+        describe("Database query tests") {
+            lateinit var testDatabase: TestDatabase
+            lateinit var messageQueryService: MessageQueryService
+
+            beforeContainer {
+                testDatabase = TestDatabase()
+                testDatabase.runSqlScript("/hendelse_melding_ddl.sql")
+                messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix)
+                testDatabase.insertTestdata()
+            }
+
+            describe("HentAbonnementListe") {
+
+                it("should retrieve all abonnements") {
+                    val resultat = messageQueryService.abonnementListe("")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 5
+                    resultat.abonnementListe[0].partnerId shouldBe "105"
+                    resultat.abonnementListe[1].partnerId shouldBe "200"
+                    resultat.abonnementListe[2].partnerId shouldBe "300"
+                    resultat.abonnementListe[3].partnerId shouldBe "401"
+                    resultat.abonnementListe[4].partnerId shouldBe "401"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
+                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 2"
+                    resultat.abonnementListe[2].partnerNavn shouldBe "Partner 3"
+                    resultat.abonnementListe[3].partnerNavn shouldBe "Partner 4"
+                    resultat.abonnementListe[4].partnerNavn shouldBe "Partner 4"
+                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
+                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Åse"
+                    resultat.abonnementListe[2].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[2].behandlerInfo!!.fornavn shouldBe ""
+                    resultat.abonnementListe[3].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[3].behandlerInfo!!.fornavn shouldBe "Ærling"
+                    resultat.abonnementListe[4].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[4].behandlerInfo!!.fornavn shouldBe "Ærling"
+                }
+
+                it("should retrieve abonnements where partnerId equals 105") {
+                    val resultat = messageQueryService.abonnementListe("105¤er lik¤PARTNER_ID")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 1
+                    resultat.abonnementListe[0].partnerId shouldBe "105"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
+                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
+                }
+
+                it("should retrieve abonnements where partnerId contains 00") {
+                    val resultat = messageQueryService.abonnementListe("00¤inneholder¤PARTNER_ID")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 2
+                    resultat.abonnementListe[0].partnerId shouldBe "200"
+                    resultat.abonnementListe[1].partnerId shouldBe "300"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 2"
+                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 3"
+                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Åse"
+                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe ""
+                }
+
+                it("should retrieve abonnements here partnerNavn begins with 'Partner'") {
+                    val resultat = messageQueryService.abonnementListe("Partner¤starter med¤PARTNER_NAVN")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 5
+                    resultat.abonnementListe[0].partnerId shouldBe "105"
+                    resultat.abonnementListe[1].partnerId shouldBe "200"
+                    resultat.abonnementListe[2].partnerId shouldBe "300"
+                    resultat.abonnementListe[3].partnerId shouldBe "401"
+                    resultat.abonnementListe[4].partnerId shouldBe "401"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
+                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 2"
+                    resultat.abonnementListe[2].partnerNavn shouldBe "Partner 3"
+                    resultat.abonnementListe[3].partnerNavn shouldBe "Partner 4"
+                    resultat.abonnementListe[4].partnerNavn shouldBe "Partner 4"
+                }
+
+                it("should not retrieve abonnements if there's no match") {
+                    val resultat = messageQueryService.abonnementListe("Per¤inneholder¤")
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.abonnementListe.size shouldBe 0
+                }
+
+                it("should retrieve abonnements where BehandlerInfo-names contains 'mann") {
+                    val resultat = messageQueryService.abonnementListe("mann¤inneholder¤BEHANDLER_NAVN")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 2
+                    resultat.abonnementListe[0].partnerId shouldBe "105"
+                    resultat.abonnementListe[1].partnerId shouldBe "200"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
+                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 2"
+                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
+                    resultat.abonnementListe[0].behandlerInfo!!.etternavn shouldBe "Normann"
+                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Åse"
+                    resultat.abonnementListe[1].behandlerInfo!!.etternavn shouldBe "Nordmann"
+                }
+
+                it("should retrieve abonnements where some database fields contains '5'") {
+                    val resultat = messageQueryService.abonnementListe("5¤inneholder¤")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 1
+                    resultat.abonnementListe[0].partnerId shouldBe "105"
+                }
+            }
+        }
     })
 
 private fun createAbonnementList(nrOfDuplicates: Int): List<Abonnement> {
@@ -243,4 +362,123 @@ private fun createAbonnementList(nrOfDuplicates: Int): List<Abonnement> {
         }
     }
     return abonnementsList
+}
+
+private fun TestDatabase.insertTestdata() {
+    val a =
+        Abonnement(
+            partnerId = "105",
+            partnerNavn = "Partner 1",
+            partnerOrgnr = "Partner Orgnr",
+            partnerHerId = "1234",
+            endretDato = "2026-07-08 12:00:00",
+            sluttDato = null,
+            tssId = "80000000000",
+            abId = 1001,
+            behandlerInfo =
+                BehandlerInfo(
+                    fornavn = "Ola",
+                    etternavn = "Normann",
+                    hpr = "010101010",
+                    herId = null,
+                ),
+        )
+    val b =
+        a.copy(
+            partnerId = "200",
+            partnerNavn = "Partner 2",
+            behandlerInfo = BehandlerInfo("Ã\u0085se", "Nordmann", null, null),
+        )
+    val c =
+        a.copy(
+            partnerId = "300",
+            partnerNavn = "Partner 3",
+            sluttDato = "2027-08-09 23:00:00",
+            behandlerInfo = null,
+        )
+    val d =
+        a.copy(
+            partnerId = "401",
+            partnerNavn = "Partner 4",
+            partnerHerId = "67890",
+            behandlerInfo = BehandlerInfo("Ærling", "Håland", "44044", "040404040"),
+        )
+    val e =
+        d.copy(
+            behandlerInfo = d.behandlerInfo!!.copy(hpr = "44055", herId = "040405050"),
+        )
+    this.insertAbonnement(a, encodeDataToBase64 = false)
+    this.insertAbonnement(b)
+    this.insertAbonnement(c)
+    this.insertAbonnement(d)
+    this.insertAbonnement(e, doubleEncodeBase64 = true)
+}
+
+private fun TestDatabase.insertAbonnement(
+    a: Abonnement,
+    encodeDataToBase64: Boolean = true,
+    doubleEncodeBase64: Boolean = false,
+) {
+    val partnerExists =
+        connection.use {
+            it.prepareStatement("SELECT * FROM PARTNER WHERE PARTNER_ID = ${a.partnerId}").use { stmt ->
+                stmt.executeQuery().next()
+            }
+        }
+    if (!partnerExists) {
+        this.runSql(
+            "INSERT INTO PARTNER(PARTNER_ID, NAVN, HER_ID, ORGNUMMER, KOMMUNIKASJONSSYSTEM_ID) " +
+                "values(" + a.partnerId + ", '" + a.partnerNavn + "', '" + a.partnerHerId + "', '" + a.partnerOrgnr + "', 1)",
+        )
+    }
+    val xml =
+        if (a.behandlerInfo != null) {
+            """<?xml version="1.0" encoding="UTF-8"?>
+                <Root>
+                    <HealthcareProfessional>
+                        <FamilyName>${a.behandlerInfo.etternavn}</FamilyName>
+                        <GivenName>${a.behandlerInfo.fornavn}</GivenName>
+                        <Ident>
+                            <Id>${a.behandlerInfo.herId}</Id>
+                            <TypeId V="HER" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" S="2.16.578.1.12.4.1.1.8116" />
+                        </Ident>
+                        <Ident>
+                            <Id>${a.behandlerInfo.hpr}</Id>
+                            <TypeId V="HPR" DN="HPR-nummer" S="2.16.578.1.12.4.1.1.8116" />
+                        </Ident>
+                    </HealthcareProfessional>
+                </Root>
+            """
+        } else {
+            """<?xml version="1.0" encoding="UTF-8"?>
+                <Root>
+                    <HealthcareProfessional/>
+                </Root>
+            """
+        }
+    val data =
+        if (encodeDataToBase64) {
+            var encoded = base64encodeXml(xml)
+            if (doubleEncodeBase64) encoded = base64encodeXml(encoded)
+            encoded
+        } else {
+            xml
+        }
+    val sql =
+        "INSERT INTO ABONNEMENT " +
+            "(TJENESTE_ID, \"KEY\", \"DATA\", SLUTT_DATO, SIST_ENDRET, PARTNER_ID, MOTTAK_ID, AB_ID) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    connection.use {
+        it.prepareStatement(sql).use { stmt ->
+            stmt.setObject(1, 3)
+            stmt.setObject(2, a.tssId)
+            stmt.setObject(3, data)
+            stmt.setObject(4, a.sluttDato)
+            stmt.setObject(5, a.endretDato)
+            stmt.setObject(6, a.partnerId)
+            stmt.setObject(7, 123)
+            stmt.setObject(8, a.abId)
+            stmt.executeUpdate()
+        }
+    }
 }
