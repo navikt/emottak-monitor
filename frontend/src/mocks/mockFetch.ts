@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 console.log("This is the Mock calling...");
 if (process.env.NODE_ENV === 'development') {
     console.log("Mock is initializing in development environment...");
-    const mock = new MockAdapter(axios, { delayResponse: 50 }); // optional delay
+    const mock = new MockAdapter(axios, { delayResponse: 500 }); // optional delay
     console.log("Mock initialized...");
 
     // Mocke kall til v1/hentmeldinger?:
@@ -898,6 +898,7 @@ if (process.env.NODE_ENV === 'development') {
             abonnementListe: abonnementliste,
             totalNumberOfEntries: 4,
         };
+
         return [200, payload];
     });
 }

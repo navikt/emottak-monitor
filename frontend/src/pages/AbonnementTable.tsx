@@ -262,12 +262,13 @@ const AbonnementTable = () => {
                 </Table.Header>
                 <Table.Body>
                     {showSpinner && (
-                        <RowWithContent>
-                            <NavFrontendSpinner />
+                        <RowWithContent colSpan={12}>
+                            <NavFrontendSpinner /><br />
+                            Vennligst vent - tung spørring kjøres...
                         </RowWithContent>
                     )}
-                    {showErrorMessage && <RowWithContent>{error?.message}</RowWithContent>}
-                    {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
+                    {showErrorMessage && <RowWithContent colSpan={12}>{error?.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={12}>Ingen data funnet !</RowWithContent>}
                     {showData &&
                         currentTableData.map((message, index) => {
                             return (
