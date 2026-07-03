@@ -248,6 +248,7 @@ const PartnerListeTable = () => {
                           <option value={"TOMT"}></option>
                           <option value={"CPA_ID"}>CPA_ID</option>
                           <option value={"PARTNER_ID"}>PARTNER_ID</option>
+                          <option value={"PARTNER_NAME"}>PARTNER_NAVN</option>
                           <option value={"OrgNr"}>OrgNr</option>
                           <option value={"HerId"}>HerId</option>
                           <option value={"PARTNER_ENDPOINT"}>PARTNER_ENDPOINT</option>

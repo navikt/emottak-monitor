@@ -2,6 +2,7 @@
   --root-bg:          #fff;
   --table-bg:         #fff;
   --text-primary:     var(--navds-semantic-color-text);
+  --text-error:       red;
   --table-hover-bg:   var(--navds-global-color-gray-200);
   --table-row-bg:     var(--navds-global-color-gray-100);
   --active-bg:        var(--navds-global-color-gray-50);
@@ -18,6 +19,7 @@
   --table-header-bg:  var(--navds-global-color-orange-200);
   --table-header-fg:  var(--navds-semantic-color-text);
   --theme-button-bg:  var(--navds-global-color-orange-100);
+  --kibana-button-bg:  var(--navds-global-color-orange-200);
 }
 
 [data-scheme="dev"] {
@@ -25,4 +27,5 @@
   --table-header-bg:  var(--navds-global-color-blue-100);
   --table-header-fg:  var(--navds-semantic-color-text);
   --theme-button-bg:  var(--navds-global-color-blue-50);
+  --kibana-button-bg:  var(--navds-global-color-blue-200);
 }

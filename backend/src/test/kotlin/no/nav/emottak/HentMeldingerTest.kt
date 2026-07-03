@@ -50,7 +50,6 @@ class HentMeldingerTest {
         // Default for Pageable is ascending
         var requestedPage = Pageable(1, 4)
         var resultPage = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
-        println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -101,7 +100,6 @@ class HentMeldingerTest {
 
         var requestedPage = Pageable(1, 4, "DESC")
         var resultPage = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
-        println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -152,7 +150,6 @@ class HentMeldingerTest {
 
         // Default for unpaged is descending
         val resultPage = messageQueryService.meldinger(fom, tom)
-        println("Result: " + resultPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 9
         resultPage.totalPages shouldBe 1
