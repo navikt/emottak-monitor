@@ -134,6 +134,15 @@ class CpaListeQueriesTest :
                 resultat.partnerCpaListe[3].partnerName shouldBe "Partner 1"
             }
 
+            it("text search with 'starter med' should return CPAs matching starts with (case ignored)") {
+                val resultat = messageQueryService.cpaliste("Partner 5¤rer lik¤PARTNER_NAME")
+                resultat.partnerCpaListe shouldNotBe null
+                resultat.totalNumberOfEntries shouldBe 5
+                resultat.partnerCpaListe.size shouldBe 1
+                resultat.partnerCpaListe[0].partnerID shouldBe "500"
+                resultat.partnerCpaListe[0].partnerName shouldBe "Partner 5"
+            }
+
             it("text search with 'inneholder' should return CPAs containing search text (case ignored)") {
                 val resultat = messageQueryService.cpaliste("SYS¤inneholder¤KomSystem")
                 resultat.totalNumberOfEntries shouldBe 5

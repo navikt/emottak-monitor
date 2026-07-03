@@ -184,6 +184,7 @@ const AbonnementTable = () => {
                                     <option value={"PARTNER_ID"}>partnerId</option>
                                     <option value={"OrgNr"}>OrgNr</option>
                                     <option value={"HerId"}>HerId</option>
+                                    <option value={"KEY"}>TssID</option>
                                     <option value={"BEHANDLER_NAVN"}>Behandlers navn</option>
                                     <option value={"BEHANDLER_HERID"}>Behandlers HerId</option>
                                     <option value={"BEHANDLER_HPR"}>Behandlers HPR</option>
