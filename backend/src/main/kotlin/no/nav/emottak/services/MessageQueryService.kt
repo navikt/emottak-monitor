@@ -2,6 +2,7 @@ package no.nav.emottak.services
 
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
+import no.nav.emottak.aksessering.db.hentAbonnementListe
 import no.nav.emottak.aksessering.db.hentEBMessageIdInfo
 import no.nav.emottak.aksessering.db.hentFeilStatistikk
 import no.nav.emottak.aksessering.db.hentHendelser
@@ -9,6 +10,7 @@ import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.aksessering.db.hentPartnerCpaListe
 import no.nav.emottak.db.DatabaseInterface
+import no.nav.emottak.model.AbonnementListeData
 import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
@@ -53,8 +55,10 @@ class MessageQueryService(
         tom: LocalDateTime,
     ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
 
-    fun cpaliste(searchColmn: String?): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn.toString())
+    fun cpaliste(searchColmn: String): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn)
 
-    fun partnerliste(searchColmn: String?): PartnerCpaListeData =
-        databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn.toString(), isPartner = true)
+    fun partnerliste(searchColmn: String): PartnerCpaListeData =
+        databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn, isPartner = true)
+
+    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
 }

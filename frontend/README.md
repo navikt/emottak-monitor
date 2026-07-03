@@ -4,16 +4,23 @@ URL til tjenesten i dev: https://emottak-monitor-frontend.intern.dev.nav.no/
 
 ## Lokal utvikling
 
-Last ned dependencies
+Last ned dependencies:
 
 ```
+cd ./frontend/
 yarn install
 ```
 
-Start applikasjon
+Start applikasjon (krever at backend er oppe og kjører):
 
 ```
 yarn start
+```
+
+For kjøring av frontend lokalt uten backend kan man kjøre følgende node-skript som vil mocke backend (ved hjelp av src/mocks/mockFetch.ts):
+
+```
+node start-local-with-mock.js
 ```
 
 ## Tilgangsstyring

@@ -1,9 +1,13 @@
 import { Table } from "@navikt/ds-react";
 import React, { PropsWithChildren } from "react";
 
-const RowWithContent = ({ children }: PropsWithChildren<{}>) => (
+interface RowWithContentProps extends PropsWithChildren<{}> {
+    colSpan?: number;
+}
+
+const RowWithContent = ({ children, colSpan = 9 }: RowWithContentProps) => (
   <Table.Row>
-    <Table.DataCell style={{ textAlign: "center" }} colSpan={9}>
+    <Table.DataCell style={{ textAlign: "center" }} colSpan={colSpan}>
       {children}
     </Table.DataCell>
   </Table.Row>
