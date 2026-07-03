@@ -3,7 +3,6 @@ import { Datepicker, isISODateString } from "nav-datovelger";
 import React from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
-export type FilterKeys = "role" | "service" | "action" | "status " | "hendelsedeskr";
 
 type FilterProps<T, K extends keyof T> = {
   messages: T[];
@@ -66,8 +65,7 @@ const Filter = <T, K extends keyof T>({
             onChange={onFromDateChange}
             inputProps={{
               name: "dateInput",
-              "aria-invalid":
-                fromDate !== "" && isISODateString(fromDate) === false,
+              "aria-invalid": fromDate !== "" && !isISODateString(fromDate),
             }}
             calendarSettings={{ showWeekNumbers: false }}
             showYearSelector={true}
@@ -88,9 +86,11 @@ const Filter = <T, K extends keyof T>({
       </div>
       {filterKeys.includes("role" as K) && (
         <Select
+          className={styles.selectFilter}
           style={{
             textAlign: "left",
             gridArea: "role",
+            marginTop: "0.5rem",
           }}
           label="Rolle"
           size="small"
@@ -113,8 +113,10 @@ const Filter = <T, K extends keyof T>({
       )}
       {filterKeys.includes("service" as K) && (
         <Select
+          className={styles.selectFilter}
           style={{
             gridArea: "service",
+            marginTop: "0.5rem",
           }}
           label="Service"
           size="small"
@@ -154,8 +156,7 @@ const Filter = <T, K extends keyof T>({
             onChange={onToDateChange}
             inputProps={{
               name: "dateInput",
-              "aria-invalid":
-                toDate !== "" && isISODateString(toDate) === false,
+              "aria-invalid": toDate !== "" && !isISODateString(toDate),
             }}
             calendarSettings={{ showWeekNumbers: false }}
             showYearSelector={true}
@@ -176,6 +177,11 @@ const Filter = <T, K extends keyof T>({
       </div>
       {filterKeys.includes("action" as K) && (
         <Select
+          className={styles.selectFilter}
+          style={{
+            gridArea: "action",
+            marginTop: "0.5rem",
+          }}
           label="Action"
           size="small"
           onChange={(event) =>
@@ -184,7 +190,6 @@ const Filter = <T, K extends keyof T>({
               event.currentTarget.value as unknown as T[K]
             )
           }
-          style={{ gridArea: "action" }}
         >
           <option value="">Velg action</option>
           {uniqueFilters["action" as K].map((action) => {
@@ -198,6 +203,11 @@ const Filter = <T, K extends keyof T>({
       )}
       {filterKeys.includes("status" as K) && (
         <Select
+          className={styles.selectFilter}
+          style={{
+            gridArea: "status",
+            marginTop: "0.5rem",
+          }}
           label="Status"
           size="small"
           onChange={(event) =>
@@ -206,7 +216,6 @@ const Filter = <T, K extends keyof T>({
               event.currentTarget.value as unknown as T[K]
             )
           }
-          style={{ gridArea: "status" }}
         >
           <option value="">Velg status</option>
           {uniqueFilters["status" as K].map((status) => {
@@ -218,27 +227,31 @@ const Filter = <T, K extends keyof T>({
           })}
         </Select>
       )}
-        {filterKeys.includes("hendelsedeskr" as K) && (
-        <Select
-            label="Hendelse"
-            size="small"
-            onChange={(event) =>
-                onFilterChange(
-                    "hendelsedeskr" as K,
-                    event.currentTarget.value as unknown as T[K]
-                )
-            }
-            style={{ gridArea: "hendelsedeskr" }}
-        >
-            <option value="">Velg hendelse</option>
-            {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
-                return (
-                    <option key={hendelsedeskr} value={hendelsedeskr}>
-                        {hendelsedeskr}
-                    </option>
-                );
-            })}
-        </Select>
+      {filterKeys.includes("hendelsedeskr" as K) && (
+      <Select
+        className={styles.selectFilter}
+        style={{
+          gridArea: "hendelsedeskr",
+          marginTop: "0.5rem",
+        }}
+        label="Hendelse"
+        size="small"
+        onChange={(event) =>
+          onFilterChange(
+            "hendelsedeskr" as K,
+            event.currentTarget.value as unknown as T[K]
+          )
+        }
+      >
+        <option value="">Velg hendelse</option>
+        {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
+          return (
+            <option key={hendelsedeskr} value={hendelsedeskr}>
+              {hendelsedeskr}
+            </option>
+          );
+        })}
+      </Select>
     )}
     </div>
   );

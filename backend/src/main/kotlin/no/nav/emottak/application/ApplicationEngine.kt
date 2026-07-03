@@ -26,6 +26,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.Environment
+import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
@@ -118,6 +119,7 @@ private fun Application.serverSetup(
                 hentRollerServicesAction(scopedAuthHttpClient)
                 hentCPAListe(meldingService, scopedAuthHttpClient)
                 hentPartnerListe(meldingService, scopedAuthHttpClient)
+                hentAbonnementListe(meldingService)
                 hentConversationStatusEbms(scopedAuthHttpClient)
             }
         }
