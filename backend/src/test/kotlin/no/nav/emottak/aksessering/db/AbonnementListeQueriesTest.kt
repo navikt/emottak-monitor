@@ -212,9 +212,13 @@ class AbonnementListeQueriesTest :
 
             beforeContainer {
                 testDatabase = TestDatabase()
-                testDatabase.runSqlScript("/hendelse_melding_ddl.sql")
+                testDatabase.runSqlScript("/partner_abonnement_ddl.sql")
                 messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix)
                 testDatabase.insertTestdata()
+            }
+
+            afterContainer {
+                testDatabase.runSql("DROP TABLE PARTNER")
             }
 
             describe("HentAbonnementListe") {
@@ -243,7 +247,7 @@ class AbonnementListeQueriesTest :
                     resultat.abonnementListe[3].behandlerInfo shouldNotBe null
                     resultat.abonnementListe[3].behandlerInfo!!.fornavn shouldBe "Ærling"
                     resultat.abonnementListe[4].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[4].behandlerInfo!!.fornavn shouldBe "Ærling"
+                    resultat.abonnementListe[4].behandlerInfo!!.fornavn shouldBe "Erling"
                 }
 
                 it("should retrieve abonnements where partnerId equals 105") {
@@ -289,14 +293,14 @@ class AbonnementListeQueriesTest :
                     resultat.abonnementListe[4].partnerNavn shouldBe "Partner 4"
                 }
 
-                it("should not retrieve abonnements if there's no match") {
+                it("should not retrieve abonnements if there's no match (search in all db-columns)") {
                     val resultat = messageQueryService.abonnementListe("Per¤inneholder¤")
                     resultat.totalNumberOfEntries shouldBe 5
                     resultat.abonnementListe shouldNotBe null
                     resultat.abonnementListe.size shouldBe 0
                 }
 
-                it("should retrieve abonnements where BehandlerInfo-names contains 'mann") {
+                it("should retrieve abonnements where BehandlerInfo-names contains 'mann'") {
                     val resultat = messageQueryService.abonnementListe("mann¤inneholder¤BEHANDLER_NAVN")
                     resultat.abonnementListe shouldNotBe null
                     resultat.totalNumberOfEntries shouldBe 5
@@ -319,6 +323,27 @@ class AbonnementListeQueriesTest :
                     resultat.totalNumberOfEntries shouldBe 5
                     resultat.abonnementListe.size shouldBe 1
                     resultat.abonnementListe[0].partnerId shouldBe "105"
+                }
+
+                it("should retrieve abonnements where some database fields equals 'Partner 4'") {
+                    val resultat = messageQueryService.abonnementListe("Partner 4¤er lik¤")
+                    resultat.abonnementListe shouldNotBe null
+                    resultat.totalNumberOfEntries shouldBe 5
+                    resultat.abonnementListe.size shouldBe 2
+                    resultat.abonnementListe[0].partnerId shouldBe "401"
+                    resultat.abonnementListe[1].partnerId shouldBe "401"
+                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 4"
+                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 4"
+                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ærling"
+                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Erling"
+                    resultat.abonnementListe[0].behandlerInfo!!.etternavn shouldBe "Håland"
+                    resultat.abonnementListe[1].behandlerInfo!!.etternavn shouldBe "Haaland"
+                    resultat.abonnementListe[0].behandlerInfo!!.hpr shouldBe "44044"
+                    resultat.abonnementListe[1].behandlerInfo!!.hpr shouldBe "44055"
+                    resultat.abonnementListe[0].behandlerInfo!!.herId shouldBe "040404040"
+                    resultat.abonnementListe[1].behandlerInfo!!.herId shouldBe ""
                 }
             }
         }
@@ -405,7 +430,7 @@ private fun TestDatabase.insertTestdata() {
         )
     val e =
         d.copy(
-            behandlerInfo = d.behandlerInfo!!.copy(hpr = "44055", herId = "040405050"),
+            behandlerInfo = BehandlerInfo(fornavn = "Erling", etternavn = "Haaland", hpr = "44055"),
         )
     this.insertAbonnement(a, encodeDataToBase64 = false)
     this.insertAbonnement(b)
@@ -436,14 +461,14 @@ private fun TestDatabase.insertAbonnement(
             """<?xml version="1.0" encoding="UTF-8"?>
                 <Root>
                     <HealthcareProfessional>
-                        <FamilyName>${a.behandlerInfo.etternavn}</FamilyName>
-                        <GivenName>${a.behandlerInfo.fornavn}</GivenName>
+                        <FamilyName>${a.behandlerInfo.etternavn ?: ""}</FamilyName>
+                        <GivenName>${a.behandlerInfo.fornavn ?: ""}</GivenName>
                         <Ident>
-                            <Id>${a.behandlerInfo.herId}</Id>
+                            <Id>${a.behandlerInfo.herId ?: ""}</Id>
                             <TypeId V="HER" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" S="2.16.578.1.12.4.1.1.8116" />
                         </Ident>
                         <Ident>
-                            <Id>${a.behandlerInfo.hpr}</Id>
+                            <Id>${a.behandlerInfo.hpr ?: ""}</Id>
                             <TypeId V="HPR" DN="HPR-nummer" S="2.16.578.1.12.4.1.1.8116" />
                         </Ident>
                     </HealthcareProfessional>

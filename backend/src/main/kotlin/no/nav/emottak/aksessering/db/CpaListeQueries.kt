@@ -68,21 +68,29 @@ private fun generateSQLQuery(
         // Column Empty
         if (columnSearch.isSearchColnEmpty) {
             if (columnSearch.isEqual) {
-                sqlColumnSearch += """ AND LOWER(?) IN (
+                sqlColumnSearch += if (generatePartnerQuery) " WHERE" else " AND"
+                sqlColumnSearch += """ LOWER(?) IN (
                     LOWER(PARTNER_CPA.CPA_ID), 
-                    PARTNER.PARTNER_ID, 
                     PARTNER.ORGNUMMER, 
                     PARTNER.HER_ID, 
+                    LOWER(PARTNER.NAVN), 
                     LOWER(PARTNER_CPA.PARTNER_ENDPOINT), 
                     LOWER(PARTNER_CPA.PARTNER_SUBJECTDN), 
-                    LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE)
-                ) """
+                    LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE)"""
+                sqlColumnSearch +=
+                    if (columnSearch.sok.isNumeric()) {
+                        ", PARTNER.PARTNER_ID )"
+                    } else {
+                        " )"
+                    }
             } else if (columnSearch.isContain || columnSearch.isStart) {
-                sqlColumnSearch += """ AND (
+                sqlColumnSearch += if (generatePartnerQuery) " WHERE" else " AND"
+                sqlColumnSearch += """ (
                     LOWER(PARTNER_CPA.CPA_ID) LIKE LOWER(?) 
                     OR PARTNER.PARTNER_ID LIKE ? 
                     OR PARTNER.ORGNUMMER LIKE ? 
                     OR PARTNER.HER_ID LIKE ? 
+                    OR LOWER(PARTNER.NAVN) LIKE LOWER(?) 
                     OR LOWER(PARTNER_CPA.PARTNER_ENDPOINT) LIKE LOWER(?) 
                     OR LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) LIKE LOWER(?) 
                     OR LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) LIKE LOWER(?) 
@@ -91,9 +99,9 @@ private fun generateSQLQuery(
         } else {
             // Column NOT Empty
             if (columnSearch.isContain || columnSearch.isStart) {
-                sqlColumnSearch += likeSearch(columnSearch)
+                sqlColumnSearch += likeSearch(columnSearch, generatePartnerQuery)
             } else if (columnSearch.isEqual) {
-                sqlColumnSearch += equalSearch(columnSearch)
+                sqlColumnSearch += equalSearch(columnSearch, generatePartnerQuery)
             }
         }
         sqlColumnSearch += " ORDER BY PARTNER_CPA.CPA_ID DESC "
@@ -103,43 +111,67 @@ private fun generateSQLQuery(
     return sqlColumnSearch
 }
 
-private fun likeSearch(columnSearch: ColumnSearch) =
+private fun likeSearch(
+    columnSearch: ColumnSearch,
+    isPartnerQuery: Boolean,
+): String {
+    val keyword = if (isPartnerQuery) " WHERE" else " AND"
     if (columnSearch.sequence?.last().equals("CPA_ID")) {
-        " AND LOWER(PARTNER_CPA.CPA_ID) LIKE LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.CPA_ID) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ID")) {
-        " AND PARTNER.PARTNER_ID LIKE ? "
+        return if (columnSearch.sok.isNumeric()) {
+            "$keyword PARTNER.PARTNER_ID LIKE ? "
+        } else {
+            "$keyword PARTNER.PARTNER_ID LIKE 999999 "
+        }
+    } else if (columnSearch.sequence?.last().equals("PARTNER_NAME")) {
+        return "$keyword LOWER(PARTNER.NAVN) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("OrgNr")) {
-        " AND PARTNER.ORGNUMMER LIKE ? "
+        return "$keyword PARTNER.ORGNUMMER LIKE ? "
     } else if (columnSearch.sequence?.last().equals("HerId")) {
-        " AND PARTNER.HER_ID LIKE ? "
+        return "$keyword PARTNER.HER_ID LIKE ? "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ENDPOINT")) {
-        " AND LOWER(PARTNER_CPA.PARTNER_ENDPOINT) LIKE LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.PARTNER_ENDPOINT) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_SUBJECTDN")) {
-        " AND LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) LIKE LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) LIKE LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("KomSystem")) {
-        " AND LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) LIKE LOWER(?) "
+        return "$keyword LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) LIKE LOWER(?) "
     } else {
-        ""
+        log.warn("Ukjent kolonne for likeSearch: '{}'", columnSearch.sequence?.last())
+        return ""
     }
+}
 
-private fun equalSearch(columnSearch: ColumnSearch) =
+private fun equalSearch(
+    columnSearch: ColumnSearch,
+    isPartnerQuery: Boolean,
+): String {
+    val keyword = if (isPartnerQuery) " WHERE" else " AND"
     if (columnSearch.sequence?.last().equals("CPA_ID")) {
-        " AND LOWER(PARTNER_CPA.CPA_ID) = LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.CPA_ID) = LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ID")) {
-        " AND PARTNER.PARTNER_ID = ? "
+        return if (columnSearch.sok.isNumeric()) {
+            "$keyword PARTNER.PARTNER_ID = ? "
+        } else {
+            "$keyword PARTNER.PARTNER_ID = 999999 "
+        }
+    } else if (columnSearch.sequence?.last().equals("PARTNER_NAME")) {
+        return "$keyword LOWER(PARTNER.NAVN) = LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("OrgNr")) {
-        " AND PARTNER.ORGNUMMER = ? "
+        return "$keyword PARTNER.ORGNUMMER = ? "
     } else if (columnSearch.sequence?.last().equals("HerId")) {
-        " AND PARTNER.HER_ID = ? "
+        return "$keyword PARTNER.HER_ID = ? "
     } else if (columnSearch.sequence?.last().equals("PARTNER_ENDPOINT")) {
-        " AND LOWER(PARTNER_CPA.PARTNER_ENDPOINT) = LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.PARTNER_ENDPOINT) = LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("PARTNER_SUBJECTDN")) {
-        " AND LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) = LOWER(?) "
+        return "$keyword LOWER(PARTNER_CPA.PARTNER_SUBJECTDN) = LOWER(?) "
     } else if (columnSearch.sequence?.last().equals("KomSystem")) {
-        " AND LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) = LOWER(?) "
+        return "$keyword LOWER(KOMMUNIKASJONSSYSTEM.BESKRIVELSE) = LOWER(?) "
     } else {
-        ""
+        log.warn("Ukjent kolonne for equalSearch: '{}'", columnSearch.sequence?.last())
+        return ""
     }
+}
 
 private fun Connection.exeutePartnerCpaListeQuery(
     query: String,
@@ -175,3 +207,5 @@ private fun ResultSet.toPartnerCpaListe(): PartnerCpaListe =
         lastUsed = getString("LASTUSED"),
         lastUsedEbms = null,
     )
+
+private fun String?.isNumeric() = this?.trim('%')?.matches(Regex("^[0-9]+$")) ?: false

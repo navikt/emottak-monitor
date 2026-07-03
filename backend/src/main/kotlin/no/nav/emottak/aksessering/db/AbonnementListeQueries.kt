@@ -56,7 +56,7 @@ private fun generateSQLQuery(
         if (columnSearch.isSearchColnEmpty) {
             if (columnSearch.isEqual) {
                 sqlColumnSearch += """ AND LOWER(?) IN (
-                    PARTNER.PARTNER_ID, 
+                    LOWER(PARTNER.NAVN),
                     LOWER(ABONNEMENT."KEY"), 
                     PARTNER.ORGNUMMER, 
                     PARTNER.HER_ID 

@@ -297,7 +297,6 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.PartialContent
-                        println(response.bodyAsText())
                         val partnerCpaListeData = LENIENT_JSON_PARSER.decodeFromString<PartnerCpaListeData>(response.bodyAsText())
                         partnerCpaListeData.totalNumberOfEntries shouldBe 432
                         partnerCpaListeData.partnerCpaListe shouldContain

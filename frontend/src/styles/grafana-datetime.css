@@ -16,7 +16,7 @@ div:has(> .nav-datovelger),
 }
 .react-time-picker__wrapper,
 .react-time-picker__inputGroup,
-.react-time-picker__button {
+.react-time-picker__clock-button {
   border-radius: 4px;
 }
 /* Gjør kalender-under til kalender-over: */
