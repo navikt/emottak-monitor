@@ -76,7 +76,7 @@
     "@types/react-router-dom": "^5.3.2",
     "@types/react-time-picker": "^4.0.2",
     "axios-mock-adapter": "^2.1.0",
-    "http-proxy-middleware": "^2.0.9",
+    "http-proxy-middleware": "^2.0.10",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.4",
     "nav-frontend-toggle": "^2.1.1",
