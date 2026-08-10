@@ -7,18 +7,24 @@ import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
-import no.nav.emottak.model.MessageLoggInfo
+import no.nav.emottak.model.MessageLogInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
 
 fun getMessages(): List<MessageInfo> = emptyList()
 
-fun getMessageLogg(): List<MessageLoggInfo> = emptyList()
+fun getMessageLogg(): List<MessageLogInfo> = emptyList()
 
 fun getMessageCpa(): List<MessageCPAInfo> = emptyList()
 
-fun getMottakIdInfo(): List<MottakIdInfo> = emptyList()
+fun getMottakIdInfo(): List<MottakIdInfo> =
+    listOf(
+        MottakIdInfo(
+            datomottatt = "2026-08-20 12:13:14",
+            mottakid = "123456789012345678901",
+        ),
+    )
 
 fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 

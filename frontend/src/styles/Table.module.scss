@@ -24,3 +24,15 @@
 .expandable, .clickable {
   cursor: pointer;
 }
+
+.warnFieldset {
+  color: var(--text-error);
+}
+
+.truncate {
+  white-space: nowrap; /* Prevent the text from wrapping to the next line */
+  overflow: hidden; /* Ensure content is clipped within the container */
+  text-overflow: ellipsis; /* Add ellipsis (…) when the text is truncated */
+  width: 800px; /* Adjust the width as needed */
+  cursor: pointer;
+}
