@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
+import logStyles from "../styles/Logg.module.scss";
+import clsx from "clsx";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -57,26 +59,19 @@ const LoggTable = (props: LoggTableProps) => {
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
     { key: "hendelsesdato", name: "Dato" },
-    { key: "hendelsesbeskrivelse", name: "Beskrivelse" },
+    { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "hendelsesdetaljer", name: "Detaljer" },
     { key: "hendelsesid", name: "ID" },
   ];
 
   return (
-      <div>
+      <div className={clsx(logStyles.logDiv, logStyles.small)}>
       {(data == null || data.meldingsdetaljer == null) ? (
-          <fieldset className={tableStyles.warnFieldset}><legend>Feil:</legend>Fikk ikke data tilbake fra databasen</fieldset>
+          <fieldset className={logStyles.warnFieldset}><legend>Feil:</legend>Fikk ikke data tilbake fra databasen</fieldset>
       ) : (
           <>
-            {data?.warning && <fieldset className={tableStyles.warnFieldset}><legend>Advarsel:</legend>{data?.warning}</fieldset>}
-            <fieldset style={{
-              width: "100%",
-              borderWidth: "2px",
-              borderColor: "grey",
-              borderStyle: "solid",
-              padding: "5px",
-              margin: "0px"
-            }}>
+            {data?.warning && <fieldset className={logStyles.warnFieldset}><legend>Advarsel:</legend>{data?.warning}</fieldset>}
+            <fieldset className={logStyles.meldingsdetaljer}>
               <legend>Meldingsdetaljer:</legend>
               <table>
                 <tbody>
@@ -131,16 +126,16 @@ const LoggTable = (props: LoggTableProps) => {
                             <Table.DataCell className="tabell__td--sortert">
                               {logDetails.hendelsesdato.substring(0, 23)}
                             </Table.DataCell>
-                            <Table.DataCell>
+                            <Table.DataCell style={{fontWeight: "bold"}}>
                               {logDetails.hendelsesbeskrivelse}
                             </Table.DataCell>
                             <Table.DataCell>
                               <div
-                                  className={(logDetails.hendelsesdetaljer?.length ?? 0) > 130
-                                      ? tableStyles.truncate
+                                  className={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
+                                      ? logStyles.truncate
                                       : undefined}
-                                  onClick={(logDetails.hendelsesdetaljer?.length ?? 0) > 130
-                                      ? (e) => e.currentTarget.classList.remove(tableStyles.truncate)
+                                  onClick={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
+                                      ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
                                       : undefined}
                               >
                                 {logDetails.hendelsesdetaljer}
