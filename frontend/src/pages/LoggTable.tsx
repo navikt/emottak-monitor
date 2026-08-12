@@ -66,7 +66,7 @@ const LoggTable = (props: LoggTableProps) => {
 
   return (
       <div className={clsx(logStyles.logDiv, logStyles.small)}>
-      {(data == null || data.meldingsdetaljer == null) ? (
+      {(!loading && (data == null || data.meldingsdetaljer == null)) ? (
           <fieldset className={logStyles.warnFieldset}><legend>Feil:</legend>Fikk ikke data tilbake fra databasen</fieldset>
       ) : (
           <>
