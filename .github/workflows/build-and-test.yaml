@@ -20,6 +20,44 @@ jobs:
       # Build & test frontend + Docker Image
       - name: 'yarn build'
         run: cd frontend && yarn build
+      - name: Build frontend container image
+        run: docker build -f frontend/Dockerfile -t emottak-monitor-frontend:ci frontend
+      - name: Guard frontend container startup
+        run: |
+          set -euo pipefail
+          container_name=emottak-monitor-frontend-ci
+          host_port=18080
+          started=false
+
+          cleanup() {
+            docker rm -f "$container_name" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run -d --rm \
+            --name "$container_name" \
+            -p "${host_port}:8080" \
+            -e REACT_APP_URL="https://example.com" \
+            emottak-monitor-frontend:ci >/dev/null
+
+          for _ in $(seq 1 30); do
+            if ! docker ps --format '{{.Names}}' | grep -q "^${container_name}$"; then
+              echo "Frontend container exited before becoming healthy."
+              docker logs "$container_name" || true
+              exit 1
+            fi
+            if curl -fsS "http://127.0.0.1:${host_port}/" >/dev/null; then
+              started=true
+              break
+            fi
+            sleep 1
+          done
+
+          docker logs "$container_name"
+          if [ "$started" != "true" ]; then
+            echo "Frontend container did not start successfully within timeout."
+            exit 1
+          fi
 
   build-backend:
     name: "Build and test backend"
