@@ -49,6 +49,29 @@ jobs:
         env:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - run: cd backend && ./gradlew shadowJar -x test
+        env:
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build backend container image
+        run: docker build -f backend/Dockerfile -t emottak-monitor-backend:ci backend
+      - name: Guard startup failure clarity
+        run: |
+          set +e
+          docker run --rm emottak-monitor-backend:ci > /tmp/backend-container-startup.log 2>&1
+          exit_code=$?
+          set -e
+          cat /tmp/backend-container-startup.log
+
+          if [ "$exit_code" -eq 0 ]; then
+            echo "Expected startup to fail without required runtime environment variables."
+            exit 1
+          fi
+
+          if ! grep -q 'Missing required variable "' /tmp/backend-container-startup.log; then
+            echo "Unexpected startup failure. Expected missing environment variable error."
+            exit 1
+          fi
       - name: Store reports
         if: failure()
         uses: actions/upload-artifact@v4
