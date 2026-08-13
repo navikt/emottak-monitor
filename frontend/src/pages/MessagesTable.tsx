@@ -1,7 +1,7 @@
-import { Table } from "@navikt/ds-react";
+import { Button, Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
@@ -21,6 +21,7 @@ type MessageInfo = {
   avsender: string;
   cpaid: string;
   datomottat: string;
+  mottakid: string;
   mottakidliste: string;
   referanse: string;
   role: string;
@@ -38,11 +39,37 @@ type Page = {
 
 const MessagesTable = () => {
   const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  const toggleGroup = (key: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
+  const yesterday = new Date();
 
-  const [fromDate, setFromDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState("");
+  useEffect(() => {
+    // 1. Get today's date
+    const date = new Date();
+    // 2. Subtract one day
+    date.setDate(date.getDate() - 10 );
+
+    // 3. Format to dd/mm/yyyy using British English locale (en-GB)
+    const formatted = date.toLocaleDateString('en-GB', {
+       day: '2-digit',
+       month: '2-digit',
+       year: 'numeric'
+        }).replace(/\//g, '.'); // Replace / with . to match dd.mm.yyyy
+
+        setFromDate(formatted);
+    }, []);
+
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
@@ -61,7 +88,7 @@ const MessagesTable = () => {
   const debouncedMessageId = useDebounce(messageId, 1000);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
   const [sortOrder, setSortOrder] = useState("DESC");
 
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
@@ -106,6 +133,22 @@ const MessagesTable = () => {
     sortConfig,
   } = useTableSorting(filteredMessages);
 
+  // Group messages by mottakidliste (same conversation = same EBCONVERS_ID).
+  // Normalize the key by sorting IDs to handle non-deterministic Oracle LISTAGG ordering.
+  // Within each group, sort by datomottat so the latest message is last (main row).
+  const groupedMessages = useMemo(() => {
+    const map = new Map<string, MessageInfo[]>();
+    for (const msg of filteredAndSortedMessages) {
+      const key = msg.mottakidliste.split(",").map(s => s.trim()).filter(Boolean).sort().join(",");
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(msg);
+    }
+    return Array.from(map.entries()).map(([key, group]) => ({
+      key,
+      messages: [...group].sort((a, b) => a.datomottat.localeCompare(b.datomottat)),
+    }));
+  }, [filteredAndSortedMessages]);
+
   const getClassNamesFor = (name: keyof MessageInfo) => {
     if (!sortConfig) {
       return;
@@ -129,8 +172,9 @@ const MessagesTable = () => {
     }
   };
 
-  const headers: { key: keyof MessageInfo; name: string }[] = [
+  const headers: { key: keyof MessageInfo | "collapse"; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
+    { key: "collapse", name: "" },
     { key: "mottakidliste", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
@@ -146,6 +190,14 @@ const MessagesTable = () => {
   const showNoDataMessage =
     !loading && !error?.message && messages?.length === 0;
   const showData = !loading && !error?.message && !!messages?.length;
+
+  const totalFilterCount = filteredAndSortedMessages.length ?? 0;
+  const totalMessagess = data?.totalElements;
+  let showTo = pageSize * currentPage;
+  const showFrom = showTo - (pageSize-1);
+  if (showTo > totalFilterCount) showTo = totalFilterCount;
+  let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
+  if (totalMessagess != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalMessagess} melding'er)`;
 
   return (
       <>
@@ -198,7 +250,8 @@ const MessagesTable = () => {
             />
           </div>
         </div>
-        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
+        {/**
+          <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
           <span>{totalCount} hendelser</span>
           <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
             <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
@@ -219,14 +272,51 @@ const MessagesTable = () => {
             </label>
           </div>
         </div>
+      **/}
+
+        <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px", margin: "0px 0px 7px 0px" }}>
+          <legend>Sideinformasjon:</legend>
+          <table style={{ border: "0px", width: "100%" }}>
+            <tbody>
+            <tr>
+              <td style={{ width: "33%" }}>
+                <span>Rader per side </span>
+                <select value={pageSize} onChange={onPageSizeChange}>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
+                </select>
+              </td>
+              <td style={{  width: "33%", textAlign: "center" }}>
+                <Pagination
+                    totalCount={totalCount}
+                    pageSize={pageSize}
+                    siblingCount={1}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                />
+              </td>
+              <td style={{  width: "33%", textAlign: "center" }}>
+                {pageLabel}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          {/* Form fields */}
+          {/* error.message && <p style={{ color: 'red' }}>{error.message}</p>*/}
+        </fieldset>
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
             <Table.Row>
               {headers.map(({key, name}) => (
                   <Table.HeaderCell
                       key={key}
-                      onClick={() => requestSort(key)}
-                      className={getClassNamesFor(key)}
+                      onClick={() => key !== "collapse" && requestSort(key)}
+                      className={key !== "collapse" ? getClassNamesFor(key) : undefined}
+                      style={key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} : undefined}
                   >
                     {name}
                   </Table.HeaderCell>
@@ -242,52 +332,52 @@ const MessagesTable = () => {
             {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
             {showData &&
-                filteredAndSortedMessages.map((message, index) => {
-                  return (
-                      <Table.Row
-                          key={message.cpaid + index}
-                          className={clsx({[tableStyles.coloredRow]: index % 2})}
-                      >
-                        <Table.DataCell className="tabell__td--sortert">
-                          {message.datomottat.substring(0, 23)}
-                        </Table.DataCell>
-                        <Table.DataCell>
-                          {message.mottakidliste.split(",").map((mottakid, idx, arr) => (
-                              <React.Fragment key={mottakid}>
-                                <Link
-                                    key={mottakid}
-                                    to={`/logg/${mottakid}`}
-                                    state={{backgroundLocation: location}}
-                                >{mottakid}</Link>
-                                {idx < arr.length - 1 && ', '}
-                              </React.Fragment>
-                          ))}
-                        </Table.DataCell>
-                        <Table.DataCell>{message.role}</Table.DataCell>
-                        <Table.DataCell>{message.service}</Table.DataCell>
-                        <Table.DataCell>{message.action}</Table.DataCell>
-                        <Table.DataCell>{message.referanse}</Table.DataCell>
-                        <Table.DataCell>{message.avsender}</Table.DataCell>
-                        <Table.DataCell>
-                          <Link
-                              key={message.cpaid}
-                              to={`/cpa/${message.cpaid}`}
-                              state={{backgroundLocation: location}}
-                          >{message.cpaid}</Link>
-                        </Table.DataCell>
-                        <Table.DataCell>{message.status}</Table.DataCell>
-                      </Table.Row>
-                  );
+                groupedMessages.flatMap(({ key, messages }, groupIndex) => {
+                  const isExpanded = expandedGroups.has(key);
+                  const ids = key.split(",");
+                  const displayMessages = isExpanded ? messages : [messages[messages.length - 1]];
+
+                  return displayMessages.map((msg, msgIndex) => {
+                    return (
+                        <Table.Row key={`${key}-${msgIndex}`} className={clsx({[tableStyles.coloredRow]: groupIndex % 2})}>
+                          <Table.DataCell className="tabell__td--sortert">
+                            {msgIndex === 0 ? msg.datomottat.substring(0, 23) : ""}
+                          </Table.DataCell>
+                          <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
+                            {msgIndex === 0 && ids.length > 1 && (
+                                <Button
+                                    variant="primary"
+                                    size="xsmall"
+                                    onClick={() => toggleGroup(key)}
+                                >
+                                  {isExpanded ? "-" : "+"}
+                                </Button>
+                            )}
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            <Link
+                                to={`/logg/${msg.mottakid}`}
+                                state={{backgroundLocation: location}}
+                            >{msg.mottakid}</Link>
+                          </Table.DataCell>
+                          <Table.DataCell>{msg.role}</Table.DataCell>
+                          <Table.DataCell>{msg.service}</Table.DataCell>
+                          <Table.DataCell>{msg.action}</Table.DataCell>
+                          <Table.DataCell>{msg.referanse}</Table.DataCell>
+                          <Table.DataCell>{msg.avsender}</Table.DataCell>
+                          <Table.DataCell>
+                            <Link
+                                to={`/cpa/${msg.cpaid}`}
+                                state={{backgroundLocation: location}}
+                            >{msg.cpaid}</Link>
+                          </Table.DataCell>
+                          <Table.DataCell>{msg.status}</Table.DataCell>
+                        </Table.Row>
+                    );
+                  });
                 })}
           </Table.Body>
         </Table>
-        <Pagination
-            totalCount={totalCount}
-            pageSize={pageSize}
-            siblingCount={1}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-        />
       </>
   );
 };

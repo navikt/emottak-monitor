@@ -36,7 +36,7 @@ fun DatabaseInterface.hentMeldinger(
             }
 
         var sql = """
-                    SELECT MELDING.DATOMOTTAT, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
+                    SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
                     WHERE MELDING2.EBCONVERS_ID = MELDING.EBCONVERS_ID GROUP BY MELDING2.EBCONVERS_ID) AS MOTTAK_ID_LISTE,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
@@ -79,6 +79,7 @@ fun DatabaseInterface.hentMeldinger(
 fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
         getString("DATOMOTTAT"),
+        getString("MOTTAK_ID"),
         getString("MOTTAK_ID_LISTE"),
         getString("ROLE"),
         getString("SERVICE"),
