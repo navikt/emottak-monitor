@@ -473,43 +473,67 @@ if (process.env.NODE_ENV === 'development') {
     // Mocke kall til v1/hentlogg?:
     mock.onGet(/\/v1\/hentlogg\?/).reply((config) => {
         console.log("Mocker hentlogg");
-        const payload = [
+        const meldingsdetaljer = {
+            "datomottatt": "2026-06-17 15:30:42.90712",
+            "mottakid": "2608101400navm65888",
+            "role": "KontrollUtbetaler",
+            "service": "BehandlerKrav",
+            "action": "Svarmelding",
+            "referanse": "b4617abb-40cf-4210-9039-16c5d78a1c84",
+            "avsender": "NAVmottak",
+            "cpaid": "nav:qass:34961",
+            "status": "Ferdigbehandlet",
+        }
+        const hendelser = [
             {
                 "hendelsesdato": "2026-06-17 15:30:42.90712",
                 "hendelsesbeskrivelse": "Melding mottatt fra intern avsender",
+                "hendelsesdetaljer": null,
                 "hendelsesid": "155"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.937318",
                 "hendelsesbeskrivelse": "Melding lagret i juridisk logg",
+                "hendelsesdetaljer": "Juridisk ID: 123456",
                 "hendelsesid": "136"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.943654",
                 "hendelsesbeskrivelse": "Melding pakket ut av fellesformat",
+                "hendelsesdetaljer": null,
                 "hendelsesid": "172"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.94729",
                 "hendelsesbeskrivelse": "XML-informasjon hentet fra melding",
+                "hendelsesdetaljer": "Melding lest OK - lengde: 5678",
                 "hendelsesid": "164"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.952282",
                 "hendelsesbeskrivelse": "Melding kryptert",
+                "hendelsesdetaljer": "Sertifikat: ABC 123, CN=Ajhgfdsdfghgfdag f sggae a ae fdafafds, C=jhfdsdfgh, SURNAME=hhgfafgdfs, O=jhgfdafsghdg, TYPE [jdgsgfs] Algoritme: sfdmdslknfdnhnd, Sertifikat: ABC 123, CN=Ajhgfdsghdfg dgdfg gf fddg fdgfdgfdg fdg fdg dfg df fd ggdfghgfdag f sggae a ae fdafafds, C=jhfdsdfgh, SURNAME=hhgfafgdfs, O=jhgfdafsghdg, TYPE [jdgsgfs] Algoritme: sfdmdslknfdnhnd",
                 "hendelsesid": "101"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.957683",
                 "hendelsesbeskrivelse": "Melding lagt på kø",
+                "hendelsesdetaljer": "Kønavn: DEV.QA.SOMETHING.MY_QUEUE",
                 "hendelsesid": "187"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.968198",
                 "hendelsesbeskrivelse": "Melding sendt",
+                "hendelsesdetaljer": "OK",
                 "hendelsesid": "154"
             }
         ];
+        const payload = {
+            "meldingsdetaljer": meldingsdetaljer,
+            "meldingslogg": hendelser,
+            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2608101400navm65888 (3 stk)!"
+            "warning": null
+        }
         return [200, payload];
     });
 

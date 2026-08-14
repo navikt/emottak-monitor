@@ -15,7 +15,7 @@ type MottakIdInfo = {
   antall: number;
   avsender: string;
   cpaid: string;
-  datomottat: string;
+  datomottatt: string;
   mottakid: string;
   referanse: string;
   role: string;
@@ -54,7 +54,7 @@ const MottakIdSok = () => {
   };
 
   const headers: { key: keyof MottakIdInfo; name: string }[] = [
-    { key: "datomottat", name: "Mottatt" },
+    { key: "datomottatt", name: "Mottatt" },
     { key: "mottakid", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
@@ -100,7 +100,7 @@ const MottakIdSok = () => {
                     className={clsx({ [styles.coloredRow]: index % 2 })}
                   >
                     <Table.DataCell className="tabell__td--sortert">
-                      {detail.datomottat.substring(0, 23)}
+                      {detail.datomottatt.substring(0, 23)}
                     </Table.DataCell>
                     <Table.DataCell>
                       <Lenke href={`/logg/${detail.mottakid}`}>
