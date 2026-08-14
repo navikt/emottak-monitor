@@ -1,13 +1,13 @@
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /usr/src/app
 COPY server server/
 COPY build build/
 
 WORKDIR /usr/src/app/server
 RUN yarn
-RUN yarn global add ts-node 'typescript@5' '@types/node'
+RUN yarn global add tsx typescript @types/node
 
 ENV PORT=8080
 EXPOSE $PORT
 
-CMD ["ts-node", "server.ts"]
+CMD ["tsx", "server.ts"]

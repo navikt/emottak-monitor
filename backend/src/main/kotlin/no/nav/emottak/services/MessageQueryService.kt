@@ -16,7 +16,7 @@ import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
-import no.nav.emottak.model.MessageLoggInfo
+import no.nav.emottak.model.MessageLogInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
@@ -42,7 +42,7 @@ class MessageQueryService(
         pageable: Pageable? = null,
     ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom, pageable)
 
-    fun messagelogg(mottakid: String?): List<MessageLoggInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
+    fun messagelogg(mottakid: String?): List<MessageLogInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
 
     fun messagecpa(cpaid: String?): List<MessageCPAInfo> = databaseInterface.getMessageCPA(databasePrefix, cpaid)
 
