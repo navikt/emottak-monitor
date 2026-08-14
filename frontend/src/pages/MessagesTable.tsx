@@ -51,25 +51,19 @@ const MessagesTable = () => {
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-  const yesterday = new Date();
 
-  const [fromDate, setFromDate] = useState("");
-  useEffect(() => {
-    // 1. Get today's date
+  const initialFromDate = () => {
+    // Dato satt tilbake i tid, formatert som ISO (yyyy-mm-dd) i likhet med toDate/initialDate,
+    // slik at Datepicker-komponenten (som forventer ISO-strenger) validerer verdien med en gang.
     const date = new Date();
-    // 2. Subtract one day
-    date.setDate(date.getDate() - 1 );
+    date.setDate(date.getDate() - 1);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-    // 3. Format to dd/mm/yyyy using British English locale (en-GB)
-    const formatted = date.toLocaleDateString('en-GB', {
-       day: '2-digit',
-       month: '2-digit',
-       year: 'numeric'
-        }).replace(/\//g, '.'); // Replace / with . to match dd.mm.yyyy
-
-        setFromDate(formatted);
-    }, []);
-
+  const [fromDate, setFromDate] = useState(initialFromDate());
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
