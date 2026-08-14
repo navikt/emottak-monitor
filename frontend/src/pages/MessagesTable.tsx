@@ -58,7 +58,7 @@ const MessagesTable = () => {
     // 1. Get today's date
     const date = new Date();
     // 2. Subtract one day
-    date.setDate(date.getDate() - 10 );
+    date.setDate(date.getDate() - 1 );
 
     // 3. Format to dd/mm/yyyy using British English locale (en-GB)
     const formatted = date.toLocaleDateString('en-GB', {
@@ -133,13 +133,15 @@ const MessagesTable = () => {
     sortConfig,
   } = useTableSorting(filteredMessages);
 
-  // Group messages by mottakidliste (same conversation = same EBCONVERS_ID).
-  // Normalize the key by sorting IDs to handle non-deterministic Oracle LISTAGG ordering.
-  // Within each group, sort by datomottat so the latest message is last (main row).
   const groupedMessages = useMemo(() => {
     const map = new Map<string, MessageInfo[]>();
     for (const msg of filteredAndSortedMessages) {
-      const key = msg.mottakidliste.split(",").map(s => s.trim()).filter(Boolean).sort().join(",");
+      const key = (msg.mottakidliste ?? msg.mottakid ?? "")
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean)
+          .sort()
+          .join(",");
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(msg);
     }
