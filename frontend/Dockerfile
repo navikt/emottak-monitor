@@ -5,7 +5,7 @@ COPY build build/
 
 WORKDIR /usr/src/app/server
 RUN yarn
-RUN yarn global add ts-node typescript '@types/node'
+RUN yarn global add ts-node 'typescript@5' '@types/node'
 
 ENV PORT=8080
 EXPOSE $PORT
