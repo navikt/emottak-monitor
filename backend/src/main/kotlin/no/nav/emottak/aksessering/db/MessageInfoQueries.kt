@@ -18,12 +18,18 @@ fun DatabaseInterface.hentMeldinger(
     pageable: Pageable? = null,
 ): Page<MessageInfo> =
     connection.use { connection ->
+        var filterClause = ""
+        if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
+        if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
+        if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
+
         val countStatement =
             connection.prepareStatement(
                 """
-                SELECT count(*)
-                    FROM $databasePrefix.MELDING
-                    WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL
+                SELECT COUNT(DISTINCT MELDING_FILTER.EBCONVERS_ID)
+                    FROM $databasePrefix.MELDING MELDING_FILTER
+                    WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
+                    $filterClause
             """,
             )
         countStatement.setObject(1, fom)
@@ -35,30 +41,35 @@ fun DatabaseInterface.hentMeldinger(
                 rs.getLong(1)
             }
 
-        var sql = """
-                    SELECT MELDING.DATOMOTTAT, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
-                    WHERE MELDING2.EBCONVERS_ID = MELDING.EBCONVERS_ID GROUP BY MELDING2.EBCONVERS_ID) AS MOTTAK_ID_LISTE,
-                    MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
-                    (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
-                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
-                    FROM $databasePrefix.MELDING
-                    WHERE MELDING.DATOMOTTAT BETWEEN ? AND ? AND MELDING.EBCONVERS_ID IS NOT NULL 
-                """
-        if (!mottakId.isNullOrBlank()) sql += " AND LOWER(MELDING.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
-        if (!cpaId.isNullOrBlank()) sql += " AND LOWER(MELDING.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
-        if (!messageId.isNullOrBlank()) sql += " AND LOWER(MELDING.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
-
-        sql += " ORDER BY MELDING.DATOMOTTAT "
         // We always use ORDER BY, with default DESC
         var orderBy = "DESC"
         if (pageable != null) {
             orderBy = pageable.sort
         }
-        sql = sql + orderBy
+
+        var groupSql = """
+                        SELECT MELDING_FILTER.EBCONVERS_ID
+                        FROM $databasePrefix.MELDING MELDING_FILTER
+                        WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
+                        $filterClause
+                    GROUP BY MELDING_FILTER.EBCONVERS_ID
+                    ORDER BY MAX(MELDING_FILTER.DATOMOTTAT) $orderBy
+                """
         // We only use LIMIT and OFFSET when asked for a page
         if (pageable != null) {
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
+            groupSql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
+
+        val sql = """
+                    SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
+                    WHERE MELDING2.EBCONVERS_ID = MELDING.EBCONVERS_ID GROUP BY MELDING2.EBCONVERS_ID) AS MOTTAK_ID_LISTE,
+                    MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
+                    (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
+                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
+                    FROM $databasePrefix.MELDING
+                    WHERE MELDING.EBCONVERS_ID IN ($groupSql)
+                    ORDER BY MAX(MELDING.DATOMOTTAT) OVER (PARTITION BY MELDING.EBCONVERS_ID) $orderBy, MELDING.DATOMOTTAT ASC
+                """
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
@@ -79,6 +90,7 @@ fun DatabaseInterface.hentMeldinger(
 fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
         getString("DATOMOTTAT"),
+        getString("MOTTAK_ID"),
         getString("MOTTAK_ID_LISTE"),
         getString("ROLE"),
         getString("SERVICE"),
