@@ -22,7 +22,7 @@ type MessageInfo = {
   cpaid: string;
   datomottat: string;
   mottakid: string;
-  mottakidliste: string;
+  conversationId: string;
   referanse: string;
   role: string;
   service: string;
@@ -51,7 +51,6 @@ const MessagesTable = () => {
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-  const yesterday = new Date();
 
   const [fromDate, setFromDate] = useState("");
   useEffect(() => {
@@ -89,12 +88,11 @@ const MessagesTable = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [sortOrder, setSortOrder] = useState("DESC");
 
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
-      `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`;
+      `&page=${currentPage}&size=${pageSize}`;
 
 
   const { fetchState, callRequest } = useFetch<Page>(url);
@@ -120,7 +118,7 @@ const MessagesTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, sortOrder]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime]);
 
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],
@@ -136,18 +134,13 @@ const MessagesTable = () => {
   const groupedMessages = useMemo(() => {
     const map = new Map<string, MessageInfo[]>();
     for (const msg of filteredAndSortedMessages) {
-      const key = (msg.mottakidliste ?? msg.mottakid ?? "")
-          .split(",")
-          .map(s => s.trim())
-          .filter(Boolean)
-          .sort()
-          .join(",");
+      const key = msg.conversationId;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(msg);
     }
     return Array.from(map.entries()).map(([key, group]) => ({
       key,
-      messages: [...group].sort((a, b) => a.datomottat.localeCompare(b.datomottat)),
+      messages: [...group].sort((a, b) => b.datomottat.localeCompare(a.datomottat)),
     }));
   }, [filteredAndSortedMessages]);
 
@@ -166,19 +159,11 @@ const MessagesTable = () => {
     }
   };
 
-  const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const order = e.target.value;
-    if (order !== sortOrder) {
-      setCurrentPage(1);
-      setSortOrder(order);
-    }
-  };
-
   const headers: { key: keyof MessageInfo | "collapse"; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
     { key: "collapse", name: "" },
-    { key: "mottakidliste", name: "Mottak-id" },
-    { key: "role", name: "Role" },
+    { key: "mottakid", name: "Mottak-id" },
+    { key: "role", name: "Rolle" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
     { key: "referanse", name: "Referanse" },
@@ -252,29 +237,6 @@ const MessagesTable = () => {
             />
           </div>
         </div>
-        {/**
-          <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
-          <span>{totalCount} hendelser</span>
-          <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
-            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-              <span>Sorteringsrekkefølge</span>
-              <select value={sortOrder} onChange={onSortOrderChange}>
-                <option value="DESC">Nyeste først</option>
-                <option value="ASC">Eldste først</option>
-              </select>
-            </label>
-            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-            <span>Rader per side</span>
-              <select value={pageSize} onChange={onPageSizeChange}>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </label>
-          </div>
-        </div>
-      **/}
 
         <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px", margin: "0px 0px 7px 0px" }}>
           <legend>Sideinformasjon:</legend>
@@ -308,7 +270,7 @@ const MessagesTable = () => {
             </tbody>
           </table>
           {/* Form fields */}
-          {/* error.message && <p style={{ color: 'red' }}>{error.message}</p>*/}
+          {error != null && <p style={{ color: 'red' }}>{error.message}</p>}
         </fieldset>
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
@@ -318,7 +280,11 @@ const MessagesTable = () => {
                       key={key}
                       onClick={() => key !== "collapse" && requestSort(key)}
                       className={key !== "collapse" ? getClassNamesFor(key) : undefined}
-                      style={key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} : undefined}
+                      style={
+                        key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} :
+                        key === "datomottat" ? { width: "11.5em"} :
+                            undefined
+                      }
                   >
                     {name}
                   </Table.HeaderCell>
@@ -336,47 +302,75 @@ const MessagesTable = () => {
             {showData &&
                 groupedMessages.flatMap(({ key, messages }, groupIndex) => {
                   const isExpanded = expandedGroups.has(key);
-                  const ids = key.split(",");
-                  const displayMessages = isExpanded ? messages : [messages[messages.length - 1]];
+                  const message = messages[0];
+                  const expandableMessages:MessageInfo[] = messages.slice(1);
 
-                  return displayMessages.map((msg, msgIndex) => {
-                    return (
-                        <Table.Row key={`${key}-${msgIndex}`} className={clsx({[tableStyles.coloredRow]: groupIndex % 2})}>
-                          <Table.DataCell className="tabell__td--sortert">
-                            {msgIndex === 0 ? msg.datomottat.substring(0, 23) : ""}
-                          </Table.DataCell>
-                          <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
-                            {msgIndex === 0 && ids.length > 1 && (
-                                <Button
-                                    variant="primary"
-                                    size="xsmall"
-                                    onClick={() => toggleGroup(key)}
-                                >
-                                  {isExpanded ? "-" : "+"}
-                                </Button>
-                            )}
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <Link
-                                to={`/logg/${msg.mottakid}`}
-                                state={{backgroundLocation: location}}
-                            >{msg.mottakid}</Link>
-                          </Table.DataCell>
-                          <Table.DataCell>{msg.role}</Table.DataCell>
-                          <Table.DataCell>{msg.service}</Table.DataCell>
-                          <Table.DataCell>{msg.action}</Table.DataCell>
-                          <Table.DataCell>{msg.referanse}</Table.DataCell>
-                          <Table.DataCell>{msg.avsender}</Table.DataCell>
-                          <Table.DataCell>
-                            <Link
-                                to={`/cpa/${msg.cpaid}`}
-                                state={{backgroundLocation: location}}
-                            >{msg.cpaid}</Link>
-                          </Table.DataCell>
-                          <Table.DataCell>{msg.status}</Table.DataCell>
-                        </Table.Row>
-                    );
-                  });
+                  return (
+                      <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>
+                        <Table.DataCell className="tabell__td--sortert">
+                          {message.datomottat.substring(0, 23)}
+                        </Table.DataCell>
+                        <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
+                          {expandableMessages.length > 0 && (
+                              <Button
+                                  variant="primary"
+                                  size="xsmall"
+                                  onClick={() => toggleGroup(key)}
+                              >
+                                {isExpanded ? "-" : "+"}
+                              </Button>
+                          )}
+                        </Table.DataCell>
+                        <Table.DataCell>
+                          <Link
+                              to={`/logg/${message.mottakid}`}
+                              state={{backgroundLocation: location}}
+                          >{message.mottakid}</Link>
+                          { isExpanded && (
+                              <table className={tableStyles.expandableTable}>
+                                <thead>
+                                  <tr>
+                                    <th>Mottak-id</th>
+                                    <th>Klokkeslett</th>
+                                    <th>Rolle</th>
+                                    <th>Service</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {expandableMessages.map((msg) => (
+                                    <tr key={msg.mottakid}>
+                                      <td>
+                                        <Link
+                                            to={`/logg/${msg.mottakid}`}
+                                            state={{backgroundLocation: location}}
+                                        >{msg.mottakid}</Link>
+                                      </td>
+                                      <td>{msg.datomottat.split(" ")[1].substring(0,12)}</td>
+                                      <td>{msg.role}</td>
+                                      <td>{msg.service}</td>
+                                      <td>{msg.action}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                              </table>
+                            )
+                          }
+                        </Table.DataCell>
+                        <Table.DataCell>{message.role}</Table.DataCell>
+                        <Table.DataCell>{message.service}</Table.DataCell>
+                        <Table.DataCell>{message.action}</Table.DataCell>
+                        <Table.DataCell>{message.referanse}</Table.DataCell>
+                        <Table.DataCell>{message.avsender}</Table.DataCell>
+                        <Table.DataCell>
+                          <Link
+                              to={`/cpa/${message.cpaid}`}
+                              state={{backgroundLocation: location}}
+                          >{message.cpaid}</Link>
+                        </Table.DataCell>
+                        <Table.DataCell>{message.status}</Table.DataCell>
+                      </Table.Row>
+                  );
                 })}
           </Table.Body>
         </Table>
