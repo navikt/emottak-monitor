@@ -74,6 +74,10 @@ fieldset,
   border: 1px solid var(--text-primary) !important;
 }
 
+legend {
+  margin-bottom: var(--legend-margin-bottom);
+}
+
 .react-clock__mark__body,
 .react-clock__hand__body {
   background-color: var(--text-primary) !important;

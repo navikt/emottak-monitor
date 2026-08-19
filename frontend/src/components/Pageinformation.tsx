@@ -1,11 +1,12 @@
 import Pagination from "../components/Pagination";
 import React from "react";
+import styles from "./Filter.module.scss";
 
 type PageinformationProps = {
     pageSize: number;
     onPageSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     totalCount: number;
-    filterCount: number;
+    filterCount?: number;
     currentPage: number;
     setCurrentPage: (page: number) => void;
     errorMessage?: (string | null);
@@ -20,6 +21,7 @@ const Pageinformation = ({
     setCurrentPage,
     errorMessage,
 }: PageinformationProps) => {
+    if (filterCount == undefined) filterCount = totalCount;
     let showTo = pageSize * currentPage;
     const showFrom = showTo - (pageSize-1);
     if (showTo > filterCount) showTo = filterCount;
@@ -34,7 +36,7 @@ const Pageinformation = ({
                 <tr>
                     <td style={{ width: "33%" }}>
                         <span>Rader per side </span>
-                        <select value={pageSize} onChange={onPageSizeChange}>
+                        <select className={styles.inputId} value={pageSize} onChange={onPageSizeChange}>
                             <option value={25}>25</option>
                             <option value={50}>50</option>
                             <option value={100}>100</option>

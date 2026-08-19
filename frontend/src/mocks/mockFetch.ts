@@ -97,7 +97,7 @@ if (process.env.NODE_ENV === 'development') {
                 {
                     "datomottat": "2026-06-17 13:52:46.588353",
                     "mottakid": "2606171352dent27355.1",
-                    "conversationId": "unik",
+                    "conversationId": "unik 1",
                     "role": "KontrollUtbetaler",
                     "service": "BehandlerKrav",
                     "action": "Svarmelding",
@@ -145,6 +145,78 @@ if (process.env.NODE_ENV === 'development') {
                     "cpaid": "nav:108469",
                     "antall": 5,
                     "status": "Ferdigbehandlet"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:50.588353",
+                    "mottakid": "2606171352dent22222.1",
+                    "conversationId": "unik 2",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:51.588353",
+                    "mottakid": "2606171352dent33333.1",
+                    "conversationId": "unik 3",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:52.588353",
+                    "mottakid": "2606171352dent44444.1",
+                    "conversationId": "unik 4",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:53.588353",
+                    "mottakid": "2606171352dent55555.1",
+                    "conversationId": "unik 5",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:54.588353",
+                    "mottakid": "2606171352dent66666.1",
+                    "conversationId": "unik 6",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:55.588353",
+                    "mottakid": "2606171352dent77777.1",
+                    "conversationId": "unik 7",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
                 }
             ],
             "totalPages": 24

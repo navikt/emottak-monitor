@@ -2,7 +2,6 @@ import {Table} from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import Pagination from "../components/Pagination";
 import RowWithContent from "../components/RowWithContent";
 import tableStyles from "../styles/Table.module.scss";
 import clsx from "clsx";
@@ -107,13 +106,6 @@ const ConversationStatusTable = () => {
                         })}
                 </Table.Body>
             </Table>
-            <Pagination
-                totalCount={totalCount}
-                pageSize={params.pageSize}
-                siblingCount={1}
-                currentPage={params.currentPage}
-                onPageChange={goToPage}
-            />
         </>
     );
 }

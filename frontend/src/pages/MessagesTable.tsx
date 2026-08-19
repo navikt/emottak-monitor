@@ -92,7 +92,7 @@ const MessagesTable = () => {
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
-      `&page=${currentPage}&size=${pageSize}`;
+      `&page=${currentPage}&size=${pageSize}&sort=DESC`;
 
 
   const { fetchState, callRequest } = useFetch<Page>(url);
@@ -232,7 +232,6 @@ const MessagesTable = () => {
             pageSize={pageSize}
             onPageSizeChange={onPageSizeChange}
             totalCount={data?.totalElements ?? 0}
-            filterCount={groupedMessages.length ?? 0}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
         />
