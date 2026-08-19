@@ -10,7 +10,7 @@ import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
-import { initialDate, initialTime } from "../util";
+import { initialDate, initialTime, ISODate } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
@@ -58,15 +58,7 @@ const MessagesTable = () => {
     const date = new Date();
     // 2. Subtract one day
     date.setDate(date.getDate() - 1 );
-
-    // 3. Format to dd/mm/yyyy using British English locale (en-GB)
-    const formatted = date.toLocaleDateString('en-GB', {
-       day: '2-digit',
-       month: '2-digit',
-       year: 'numeric'
-        }).replace(/\//g, '.'); // Replace / with . to match dd.mm.yyyy
-
-        setFromDate(formatted);
+    setFromDate(ISODate(date));
     }, []);
 
   const [toDate, setToDate] = useState(initialDate(""));
