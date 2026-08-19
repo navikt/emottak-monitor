@@ -9,7 +9,7 @@ import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
-import Pagination from "../components/Pagination";
+import Pageinformation from "../components/Pageinformation";
 import { initialDate, initialTime } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
@@ -104,7 +104,6 @@ const MessagesTable = () => {
 
   const { loading, error, data } = fetchState;
   const messages = data?.content ?? [];
-  const totalCount = data?.totalElements ?? 0;
 
   useEffect(() => {
     callRequest();
@@ -178,14 +177,6 @@ const MessagesTable = () => {
     !loading && !error?.message && messages?.length === 0;
   const showData = !loading && !error?.message && !!messages?.length;
 
-  const totalFilterCount = filteredAndSortedMessages.length ?? 0;
-  const totalMessagess = data?.totalElements;
-  let showTo = pageSize * currentPage;
-  const showFrom = showTo - (pageSize-1);
-  if (showTo > totalFilterCount) showTo = totalFilterCount;
-  let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
-  if (totalMessagess != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalMessagess} melding'er)`;
-
   return (
       <>
         <Filter
@@ -237,41 +228,14 @@ const MessagesTable = () => {
             />
           </div>
         </div>
-
-        <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px", margin: "0px 0px 7px 0px" }}>
-          <legend>Sideinformasjon:</legend>
-          <table style={{ border: "0px", width: "100%" }}>
-            <tbody>
-            <tr>
-              <td style={{ width: "33%" }}>
-                <span>Rader per side </span>
-                <select value={pageSize} onChange={onPageSizeChange}>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-                </select>
-              </td>
-              <td style={{  width: "33%", textAlign: "center" }}>
-                <Pagination
-                    totalCount={totalCount}
-                    pageSize={pageSize}
-                    siblingCount={1}
-                    currentPage={currentPage}
-                    onPageChange={setCurrentPage}
-                />
-              </td>
-              <td style={{  width: "33%", textAlign: "center" }}>
-                {pageLabel}
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          {/* Form fields */}
-          {error != null && <p style={{ color: 'red' }}>{error.message}</p>}
-        </fieldset>
+        <Pageinformation
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
+            totalCount={data?.totalElements ?? 0}
+            filterCount={groupedMessages.length ?? 0}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+        />
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
             <Table.Row>
