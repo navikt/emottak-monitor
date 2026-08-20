@@ -23,8 +23,7 @@ const toggleAllExpandables = (image: JQuery, selector: JQuery): void => {
         this.click();
     });
 };
-function ISODate() {
-  let date = new Date();
+function ISODate(date: Date = new Date()) {
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
   let day = date.getDate();
@@ -61,4 +60,4 @@ function initialFilter(filterString: string | null) {
 
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
 
-export { initialDate, initialTime, initialFilter, Cog, toggleAllExpandables };
+export { initialDate, initialTime, initialFilter, Cog, toggleAllExpandables, ISODate };

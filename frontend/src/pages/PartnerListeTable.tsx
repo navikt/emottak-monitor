@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
 import {Input} from "nav-frontend-skjema";
-import Pagination from "../components/Pagination";
+import Pageinformation from "../components/Pageinformation";
 import RowWithContent from "../components/RowWithContent";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import search from "../images/search.gif";
@@ -150,11 +150,11 @@ const PartnerListeTable = () => {
   };
   const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      setErrorMessage('')
-      setSearchColmn('')
-      setInnValue('')
-      setSelectedColnValue("")
-      setSelectedCEqualValue("er lik") //TODO: First option
+      setErrorMessage('');
+      setSearchColmn('');
+      setInnValue('');
+      setSelectedColnValue("");
+      setSelectedCEqualValue("er lik");
   };
 
   const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -169,7 +169,7 @@ const PartnerListeTable = () => {
               // If not an integer, set an error message
               setErrorMessage("Partner_id skal være nummer!");
               setSearchColmn(999999 + result);
-              return
+              return;
           }
       }  else
             setSearchColmn(result);
@@ -207,14 +207,6 @@ const PartnerListeTable = () => {
   const showNoDataMessage =
       !loading && !error?.message && partnerInfo?.length === 0;
   const showData = !loading && !error?.message && !!partnerInfo?.length;
-
-  const totalPartners = data?.totalNumberOfEntries;
-  const totalFilterCount = filteredAndSortedPartners.length;
-  let showTo = pageSize * currentPage;
-  const showFrom = showTo - (pageSize-1);
-  if (showTo > totalFilterCount) showTo = totalFilterCount;
-  let pageLabel = `Viser ${showFrom} til ${showTo} av ${totalFilterCount}`;
-  if (totalPartners != totalFilterCount) pageLabel += ` (filtrert fra totalt ${totalPartners} partnere)`;
 
     return (
       <>
@@ -279,41 +271,15 @@ const PartnerListeTable = () => {
             </form>
           </fieldset>
         </div>
-        <fieldset style={{width: "100%", borderWidth: "2px", borderColor: "grey", borderStyle: "solid", padding: "5px", margin: "0px 0px 7px 0px" }}>
-          <legend>Sideinformasjon:</legend>
-            <table style={{ border: "0px", width: "100%" }}>
-                <tbody>
-                  <tr>
-                    <td style={{ width: "33%" }}>
-                        <span>Rader per side </span>
-                        <select value={pageSize} onChange={onPageSizeChange}>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                            <option value={250}>250</option>
-                            <option value={500}>500</option>
-                            <option value={1000}>1000</option>
-                        </select>
-                    </td>
-                    <td style={{  width: "33%", textAlign: "center" }}>
-                        <Pagination
-                            totalCount={totalFilterCount}
-                            pageSize={pageSize}
-                            siblingCount={1}
-                            currentPage={currentPage}
-                            onPageChange={setCurrentPage}
-                        />
-                    </td>
-                    <td style={{  width: "34%", textAlign: "right" }}>
-                        <span>{pageLabel}</span>
-                    </td>
-                  </tr>
-                </tbody>
-            </table>
-        </fieldset>
-
-          {/* Form fields */}
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Pageinformation
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+          totalCount={data?.totalNumberOfEntries ?? 0}
+          filterCount={filteredAndSortedPartners.length ?? 0}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          errorMessage={errorMessage}
+        />
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
             <Table.Row>
