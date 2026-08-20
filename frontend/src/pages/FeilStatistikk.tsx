@@ -54,7 +54,7 @@ const FeilStatistikk = () => {
   const { loading, error, data } = fetchState;
   const statistikkInfoList = data ? mappedStatistikkInfo(data) : [];
 
-  let pageSize = 10;
+  let pageSize = 25;
   const [currentPage, setCurrentPage] = useState(1);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(

@@ -64,7 +64,7 @@ const MessagesTable = () => {
   const debouncedMessageId = useDebounce(messageId, 1000);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
 
   const url = `/v1/hentmeldingerebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +

@@ -52,7 +52,7 @@ const EventsTable = () => {
   const debouncedToTime = useDebounce(toTime, 200);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
 
   const { fetchState, callRequest } = useFetch<Page>(
     `/v1/henthendelser?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +

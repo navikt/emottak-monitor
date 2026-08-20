@@ -56,7 +56,7 @@ const EventsTable = () => {
   const [action, setAction] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
 
   const { fetchState, callRequest } = useFetch<PageDto>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
