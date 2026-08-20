@@ -9,7 +9,7 @@ import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
-import { initialDate, initialTime } from "../util";
+import { initialFromDate, initialToDate, initialTime } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
@@ -42,8 +42,8 @@ const MessagesTable = () => {
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
-  const [fromDate, setFromDate] = useState(initialDate(""));
-  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState(initialFromDate(""));
+  const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 

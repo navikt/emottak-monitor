@@ -9,7 +9,7 @@ import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
-import { initialDate, initialTime } from "../util";
+import { initialFromDate, initialToDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
@@ -40,8 +40,8 @@ const EventsTable = () => {
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
-  const [fromDate, setFromDate] = useState(initialDate(""));
-  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState(initialFromDate(""));
+  const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 
