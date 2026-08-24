@@ -33,23 +33,24 @@ fun DatabaseInterface.hentHendelser(
                 rs.getLong(1)
             }
 
-        var sql = """
-                SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.ROLE,
-                MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
-                FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
-                WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
-                AND LOGG.HENDELSEDATO BETWEEN ? AND ?
-                ORDER BY LOGG.HENDELSEDATO  
+        var sql =
             """
-        // We always use ORDER BY, with default DESC
+            SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.EBCONVERS_ID,
+            MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION,  MELDING.STATUSLEVEL, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
+            FROM $databasePrefix.MELDING
+            JOIN $databasePrefix.LOGG ON MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
+            JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
+            WHERE LOGG.HENDELSEDATO BETWEEN ? AND ?
+            """.trimIndent()
+
         var orderBy = "DESC"
         if (pageable != null && pageable.sort != null) {
             orderBy = pageable.sort
         }
-        sql = sql + orderBy
-        // We only use LIMIT and OFFSET when asked for a page
+        sql = "$sql ORDER BY LOGG.HENDELSEDATO $orderBy, MELDING.EBCONVERS_ID, LOGG.MOTTAK_ID"
+
         if (pageable != null) {
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
+            sql = "$sql OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
@@ -79,4 +80,6 @@ fun ResultSet.toHendelseInfo(): HendelseInfo =
         getString("ACTION"),
         getString("REFERANSEPARAM"),
         getString("AVSENDER"),
+        getString("EBCONVERS_ID"),
+        statuslevel = getString("STATUSLEVEL"),
     )

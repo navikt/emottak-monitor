@@ -34,7 +34,17 @@ function ISODate(date: Date = new Date()) {
   return year + "-" + monthString + "-" + dayString;
 }
 
-function initialDate(dateParam: string | null) {
+function initialFromDate(dateParam: string | null) {
+    if (dateParam) {
+        return dateParam;
+    } else {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday.toISOString().split('T')[0];
+    }
+}
+
+function initialToDate(dateParam: string | null) {
   if (dateParam) {
     return dateParam;
   } else {
@@ -60,4 +70,4 @@ function initialFilter(filterString: string | null) {
 
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
 
-export { initialDate, initialTime, initialFilter, Cog, toggleAllExpandables, ISODate };
+export { initialFromDate, initialToDate, initialTime, initialFilter, Cog, toggleAllExpandables };

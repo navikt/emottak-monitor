@@ -10,10 +10,13 @@ import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
-import { initialDate, initialTime, ISODate } from "../util";
+import { initialFromDate, initialToDate, initialTime } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type MessageInfo = {
   action: string;
@@ -52,16 +55,8 @@ const MessagesTable = () => {
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
-  const [fromDate, setFromDate] = useState("");
-  useEffect(() => {
-    // 1. Get today's date
-    const date = new Date();
-    // 2. Subtract one day
-    date.setDate(date.getDate() - 1 );
-    setFromDate(ISODate(date));
-    }, []);
-
-  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState(initialFromDate(""));
+  const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 
@@ -151,6 +146,7 @@ const MessagesTable = () => {
   };
 
   const headers: { key: keyof MessageInfo | "collapse"; name: string }[] = [
+    { key: "status", name: "" },
     { key: "datomottat", name: "Mottatt" },
     { key: "collapse", name: "" },
     { key: "mottakid", name: "Mottak-id" },
@@ -160,7 +156,6 @@ const MessagesTable = () => {
     { key: "referanse", name: "Referanse" },
     { key: "avsender", name: "Avsender" },
     { key: "cpaid", name: "CPA-id" },
-    { key: "status", name: "Status" },
   ];
 
   const showSpinner = loading;
@@ -262,6 +257,17 @@ const MessagesTable = () => {
 
                   return (
                       <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>
+                        <Table.DataCell>
+                          {
+                            (message.status === "Ferdigbehandlet") ? (
+                                <img src={ok} alt="ok" />
+                            ) : (message.status === "Information") ? (
+                                <img src={info} alt="info" />
+                            ) : (message.status === "Feil") ? (
+                                <img src={err} alt="error" />
+                            ) : ""
+                          }
+                        </Table.DataCell>
                         <Table.DataCell className="tabell__td--sortert">
                           {message.datomottat.substring(0, 23)}
                         </Table.DataCell>
@@ -284,24 +290,27 @@ const MessagesTable = () => {
                           { isExpanded && (
                               <table className={tableStyles.expandableTable}>
                                 <thead>
-                                  <tr>
-                                    <th>Mottak-id</th>
-                                    <th>Klokkeslett</th>
-                                    <th>Rolle</th>
-                                    <th>Service</th>
-                                    <th>Action</th>
-                                  </tr>
                                 </thead>
                                 <tbody>
                                 {expandableMessages.map((msg) => (
                                     <tr key={msg.mottakid}>
+                                      <td>
+                                        {
+                                          (message.status === "Ferdigbehandlet") ? (
+                                              <img src={ok} alt="ok" />
+                                          ) : (message.status === "Information") ? (
+                                              <img src={info} alt="info" />
+                                          ) : (message.status === "Feil") ? (
+                                              <img src={err} alt="error" />
+                                          ) : ""
+                                        }
+                                      </td>
                                       <td>
                                         <Link
                                             to={`/logg/${msg.mottakid}`}
                                             state={{backgroundLocation: location}}
                                         >{msg.mottakid}</Link>
                                       </td>
-                                      <td>{msg.datomottat.split(" ")[1].substring(0,12)}</td>
                                       <td>{msg.role}</td>
                                       <td>{msg.service}</td>
                                       <td>{msg.action}</td>
@@ -323,7 +332,6 @@ const MessagesTable = () => {
                               state={{backgroundLocation: location}}
                           >{message.cpaid}</Link>
                         </Table.DataCell>
-                        <Table.DataCell>{message.status}</Table.DataCell>
                       </Table.Row>
                   );
                 })}

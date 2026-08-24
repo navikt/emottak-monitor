@@ -4,7 +4,7 @@ import {Input} from "nav-frontend-skjema";
 import PrepopulatedSelectFilter, {FIELD} from "./PrepopulatedSelectFilter";
 import SelectableDateTimeSelector from "./SelectableDateTimeSelector";
 import React, {useState} from "react";
-import {initialDate, initialTime} from "../util";
+import { initialFromDate, initialToDate, initialTime } from "../util";
 import {ConversationStatusSearchParams} from "../hooks/useConversationStatusSearch";
 import Pageinformation from "./Pageinformation";
 
@@ -40,8 +40,8 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
     const [showToField, setShowToField] = useState(false);
     const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
     const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-    const [fromDate, setFromDate] = useState(initialDate(""));
-    const [toDate, setToDate] = useState(initialDate(""));
+    const [fromDate, setFromDate] = useState(initialFromDate(""));
+    const [toDate, setToDate] = useState(initialToDate(""));
     const [fromTime, setFromTime] = useState(initialTime(""));
     const [toTime, setToTime] = useState(initialTime(""));
     const onFromDateChange  = (value: string) => { setFromDate(value); };
