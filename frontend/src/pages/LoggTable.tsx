@@ -7,6 +7,9 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import logStyles from "../styles/Logg.module.scss";
 import clsx from "clsx";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -31,6 +34,7 @@ type MessageLogInfo = {
   hendelsesbeskrivelse: string;
   hendelsesdetaljer?: string,
   hendelsesid: string;
+  statuslevel: string;
 };
 
 type LoggTableProps = {
@@ -124,6 +128,17 @@ const LoggTable = (props: LoggTableProps) => {
                     items.map((logDetails) => {
                       return (
                           <Table.Row key={logDetails.hendelsesid}>
+                            <Table.DataCell className="tabell__td--sortert">
+                              {
+                                (logDetails.statuslevel === "50") ? (
+                                    <img src={ok} alt="ok" />
+                                ) : (logDetails.statuslevel === "10") ? (
+                                    <img src={info} alt="info" />
+                                ) : (logDetails.statuslevel === "30") ? (
+                                    <img src={err} alt="error" />
+                                ) : ""
+                              }
+                            </Table.DataCell>
                             <Table.DataCell className="tabell__td--sortert">
                               {logDetails.hendelsesdato.substring(0, 23)}
                             </Table.DataCell>

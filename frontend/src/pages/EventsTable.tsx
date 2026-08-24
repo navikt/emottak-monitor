@@ -13,6 +13,9 @@ import useTableSorting from "../hooks/useTableSorting";
 import { initialFromDate, initialToDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type EventInfo = {
   action: string;
@@ -25,6 +28,7 @@ type EventInfo = {
   service: string;
   tillegsinfo: string | null;
   ebconversid: string;
+  statuslevel: string;
 };
 
 type Page = {
@@ -128,6 +132,7 @@ const EventsTable = () => {
   };
 
   const headers: { key: keyof EventInfo | "collapse"; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsedato", name: "Mottatt" },
     { key: "hendelsedeskr", name: "Hendelse" },
     { key: "collapse", name: "" },
@@ -214,6 +219,17 @@ const EventsTable = () => {
 
                   return (
                       <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
+                        <Table.DataCell>
+                          {
+                            (event.statuslevel === "50") ? (
+                                <img src={ok} alt="ok" />
+                            ) : (event.statuslevel === "10") ? (
+                                <img src={info} alt="info" />
+                            ) : (event.statuslevel === "30") ? (
+                                <img src={err} alt="error" />
+                            ) : ""
+                          }
+                        </Table.DataCell>
                         <Table.DataCell className="tabell__td--sortert">
                           {event.hendelsedato.substring(0, 23)}
                         </Table.DataCell>
@@ -246,6 +262,17 @@ const EventsTable = () => {
                                 <tbody>
                                 {relatedMessages.map((msg, msgIndex) => (
                                     <tr key={`${msg.mottakid}-${msg.hendelsedato}-${msgIndex}`}>
+                                      <td>
+                                        {
+                                          (event.statuslevel === "50") ? (
+                                              <img src={ok} alt="ok" />
+                                          ) : (event.statuslevel === "10") ? (
+                                              <img src={info} alt="info" />
+                                          ) : (event.statuslevel === "30") ? (
+                                              <img src={err} alt="error" />
+                                          ) : ""
+                                        }
+                                      </td>
                                       <td>
                                         <Link
                                             to={`/logg/${msg.mottakid}`}

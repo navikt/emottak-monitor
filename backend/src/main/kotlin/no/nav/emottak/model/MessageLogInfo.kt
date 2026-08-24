@@ -5,4 +5,5 @@ data class MessageLogInfo(
     val hendelsesbeskrivelse: String,
     val hendelsesdetaljer: String?,
     val hendelsesid: String,
+    val statuslevel: String,
 )
