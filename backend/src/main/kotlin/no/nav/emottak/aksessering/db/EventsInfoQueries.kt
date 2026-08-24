@@ -36,7 +36,7 @@ fun DatabaseInterface.hentHendelser(
         var sql =
             """
             SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.EBCONVERS_ID,
-            MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
+            MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION,  MELDING.STATUSLEVEL, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
             FROM $databasePrefix.MELDING
             JOIN $databasePrefix.LOGG ON MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
             JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
@@ -81,4 +81,5 @@ fun ResultSet.toHendelseInfo(): HendelseInfo =
         getString("REFERANSEPARAM"),
         getString("AVSENDER"),
         getString("EBCONVERS_ID"),
+        statuslevel = getString("STATUSLEVEL"),
     )
