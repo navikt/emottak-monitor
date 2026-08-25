@@ -23,10 +23,19 @@ type MottakIdInfo = {
   role?: string;
   service?: string;
   action?: string;
-  referanse?: string;
+  ebcomnavn?: string;
   avsender?: string;
   cpaid?: string;
   status?: string;
+  meldingsparam?: string;
+  refparam?: string;
+  avsenderparam?: string;
+  ebconvers_id?: string;
+  ebmessage_id?: string;
+  certdn?: string;
+  trustdn?: string;
+  docsignerdn?: string;
+  docsignerissuerdn?: string;
 };
 
 type MessageLogInfo = {
@@ -98,17 +107,57 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>Avsender</b></td>
-                  <td>{data?.meldingsdetaljer.avsender}</td>
+                  <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
                   <td>{data?.meldingsdetaljer.cpaid}</td>
                   <td></td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td><b>Referanse</b></td>
-                  <td>{data?.meldingsdetaljer.referanse}</td>
-                  <td><b>Status</b></td>
-                  <td>{data?.meldingsdetaljer.status}</td>
+                  <td><b>Melding.param</b></td>
+                  <td>{data?.meldingsdetaljer.meldingsparam}</td>
+                  <td><b>Ref.param</b></td>
+                  <td>{data?.meldingsdetaljer.refparam}</td>
+                  <td><b>Avsender.param</b></td>
+                  <td>{data?.meldingsdetaljer.avsenderparam}</td>
+                </tr>
+                <tr>
+                  <td><b>EbConversationId</b></td>
+                  <td>{data?.meldingsdetaljer.ebconvers_id}</td>
+                  <td><b>EbMessageId</b></td>
+                  <td>{data?.meldingsdetaljer.ebmessage_id}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>ebXML signer</b></td>
+                  <td>{data?.meldingsdetaljer.certdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Utsteder</b></td>
+                  <td>{data?.meldingsdetaljer.trustdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Payload signer</b></td>
+                  <td>{data?.meldingsdetaljer.docsignerdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Utsteder</b></td>
+                  <td>{data?.meldingsdetaljer.docsignerissuerdn}</td>
+                  <td></td>
+                  <td></td>
                   <td></td>
                   <td></td>
                 </tr>
