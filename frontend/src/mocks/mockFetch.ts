@@ -18,7 +18,8 @@ if (process.env.NODE_ENV === 'development') {
             "content": [
                 {
                     "datomottat": "2026-06-17 13:52:49.880759",
-                    "mottakidliste": "2606171352lege27403.1,2606171352navm27410",
+                    "mottakid": "2606171352lege27403.1",
+                    "conversationId": "convers 1",
                     "role": "Saksbehandler",
                     "service": "Sykmelding",
                     "action": "Svar",
@@ -30,7 +31,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:49.876352",
-                    "mottakidliste": "2606171352gisk27387.1,2606171352navm27471",
+                    "mottakid": "2606171352navm27471",
+                    "conversationId": "convers 1",
                     "role": "Saksbehandler",
                     "service": "Sykmelding",
                     "action": "Svar",
@@ -42,7 +44,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.869049",
-                    "mottakidliste": "2606171352loml27384.1,2606171352navm27409",
+                    "mottakid": "2606171352navm27409",
+                    "conversationId": "convers 2",
                     "role": "Saksbehandler",
                     "service": "Sykmelding",
                     "action": "Svar",
@@ -54,7 +57,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.847066",
-                    "mottakidliste": "2606171352navm27348,2606171352sknl27405.1",
+                    "mottakid": "2606171352navm27348",
+                    "conversationId": "convers 2",
                     "role": "Saksbehandler",
                     "service": "ForesporselFraSaksbehandler",
                     "action": "Bekreftelse",
@@ -66,7 +70,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.660944",
-                    "mottakidliste": "2606171352navm27408,2606171352tann27377.1",
+                    "mottakid": "2606171352navm27408",
+                    "conversationId": "convers 2",
                     "role": "KontrollUtbetaler",
                     "service": "BehandlerKrav",
                     "action": "Svarmelding",
@@ -78,7 +83,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.244564",
-                    "mottakidliste": "2606171352joma27352.1,2606171352navm27347",
+                    "mottakid": "2606171352navm27347",
+                    "conversationId": "convers 3",
                     "role": "Saksbehandler",
                     "service": "Sykmelding",
                     "action": "Svar",
@@ -90,7 +96,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.588353",
-                    "mottakidliste": "2606171352dent27355.1,2606171352navm27407",
+                    "mottakid": "2606171352dent27355.1",
+                    "conversationId": "unik 1",
                     "role": "KontrollUtbetaler",
                     "service": "BehandlerKrav",
                     "action": "Svarmelding",
@@ -102,7 +109,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.113456",
-                    "mottakidliste": "2606171352navm27346,2606171352stav27364.1",
+                    "mottakid": "2606171352navm27346",
+                    "conversationId": "convers 2",
                     "role": "Saksbehandler",
                     "service": "Sykmelding",
                     "action": "Svar",
@@ -114,7 +122,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.098998",
-                    "mottakidliste": "2606171352hels27406.1,2606171352navm27345",
+                    "mottakid": "2606171352hels27406.1",
+                    "conversationId": "convers 3",
                     "role": "Frikortregister",
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
@@ -126,7 +135,8 @@ if (process.env.NODE_ENV === 'development') {
                 },
                 {
                     "datomottat": "2026-06-17 13:52:45.954395",
-                    "mottakidliste": "2606171352hels27406.1,2606171352navm27345",
+                    "mottakid": "2606171352navm27345",
+                    "conversationId": "convers 3",
                     "role": "Behandler",
                     "service": "HarBorgerFrikortMengde",
                     "action": "EgenandelForesporsel",
@@ -135,6 +145,78 @@ if (process.env.NODE_ENV === 'development') {
                     "cpaid": "nav:108469",
                     "antall": 5,
                     "status": "Ferdigbehandlet"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:50.588353",
+                    "mottakid": "2606171352dent22222.1",
+                    "conversationId": "unik 2",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:51.588353",
+                    "mottakid": "2606171352dent33333.1",
+                    "conversationId": "unik 3",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:52.588353",
+                    "mottakid": "2606171352dent44444.1",
+                    "conversationId": "unik 4",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:53.588353",
+                    "mottakid": "2606171352dent55555.1",
+                    "conversationId": "unik 5",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:54.588353",
+                    "mottakid": "2606171352dent66666.1",
+                    "conversationId": "unik 6",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
+                },
+                {
+                    "datomottat": "2026-06-17 13:52:55.588353",
+                    "mottakid": "2606171352dent77777.1",
+                    "conversationId": "unik 7",
+                    "role": "KontrollUtbetaler",
+                    "service": "BehandlerKrav",
+                    "action": "Svarmelding",
+                    "avsender": "NAVmottak",
+                    "cpaid": "nav:105732",
+                    "antall": 7,
+                    "status": "Informasjon"
                 }
             ],
             "totalPages": 24

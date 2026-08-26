@@ -6,6 +6,7 @@ import SelectableDateTimeSelector from "./SelectableDateTimeSelector";
 import React, {useState} from "react";
 import {initialDate, initialTime} from "../util";
 import {ConversationStatusSearchParams} from "../hooks/useConversationStatusSearch";
+import Pageinformation from "./Pageinformation";
 
 export const STATUS_OPTIONS = ['Informasjon', 'Feil', 'Ferdigbehandlet'];
 
@@ -51,22 +52,13 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
     // Page and sort-inputs:
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(currentParams.pageSize);
-    const [sortOrder, setSortOrder] = useState(currentParams.sortOrder);
 
     const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newSize = parseInt(e.target.value, 10);
         if (newSize !== pageSize) {
             setCurrentPage(1);
             setPageSize(newSize);
-            performSearch(1, newSize, sortOrder);
-        }
-    };
-    const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newOrder = e.target.value;
-        if (newOrder !== sortOrder) {
-            setCurrentPage(1);
-            setSortOrder(newOrder);
-            performSearch(1, pageSize, newOrder);
+            performSearch(1, newSize);
         }
     };
 
@@ -76,7 +68,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
         performSearch(1);
     };
 
-    const performSearch = (currentpage: number = currentPage, pagesize: number = pageSize, sortorder: string = sortOrder) => {
+    const performSearch = (currentpage: number = currentPage, pagesize: number = pageSize) => {
         const statuses = selectedStatuses.join(",");
         const searchFilters: ConversationStatusSearchParams = {
             statuses: statuses,
@@ -88,7 +80,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
             toTime: showToField ? toTime : undefined,
             currentPage: currentpage,
             pageSize: pagesize,
-            sortOrder: sortorder
+            sortOrder: "DESC"
         };
         onSearch(searchFilters);
     }
@@ -147,27 +139,13 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
                 </fieldset>
                 <div style={{ display: "inline", verticalAlign: "bottom" }}><button type="submit">Send query</button></div>
             </div>
-            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
-                <span>{totalCount} conversations</span>
-                <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
-                    <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-                        <span>Sorteringsrekkefølge</span>
-                        <select value={sortOrder} onChange={onSortOrderChange}>
-                            <option value="DESC">Nyeste først</option>
-                            <option value="ASC">Eldste først</option>
-                        </select>
-                    </label>
-                    <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-                        <span>Rader per side</span>
-                        <select value={pageSize} onChange={onPageSizeChange}>
-                            <option value={10}>10</option>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
-                    </label>
-                </div>
-            </div>
+            <Pageinformation
+                pageSize={pageSize}
+                onPageSizeChange={onPageSizeChange}
+                totalCount={totalCount}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+            />
         </form>
     );
 }

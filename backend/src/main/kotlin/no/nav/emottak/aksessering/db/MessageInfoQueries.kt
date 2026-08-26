@@ -61,8 +61,7 @@ fun DatabaseInterface.hentMeldinger(
         }
 
         val sql = """
-                    SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, (SELECT LISTAGG(MELDING2.MOTTAK_ID, ',') WITHIN GROUP(ORDER BY MELDING2.EBCONVERS_ID) FROM $databasePrefix.MELDING MELDING2
-                    WHERE MELDING2.EBCONVERS_ID = MELDING.EBCONVERS_ID GROUP BY MELDING2.EBCONVERS_ID) AS MOTTAK_ID_LISTE,
+                    SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.EBCONVERS_ID,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
@@ -91,7 +90,7 @@ fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
         getString("DATOMOTTAT"),
         getString("MOTTAK_ID"),
-        getString("MOTTAK_ID_LISTE"),
+        getString("EBCONVERS_ID"),
         getString("ROLE"),
         getString("SERVICE"),
         getString("ACTION"),

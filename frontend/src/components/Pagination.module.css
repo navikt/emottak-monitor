@@ -1,6 +1,7 @@
 .paginationContainer {
   display: flex;
   list-style-type: none;
+  margin: 0;
 }
 
 .paginationItem {

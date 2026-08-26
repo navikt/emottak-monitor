@@ -46,7 +46,7 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
             log.info("Kjører dabasespørring for å hente meldinger...")
             val meldinger = meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
-            log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakidliste}")
+            log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakid}")
             call.respond(meldinger)
         }
     }
