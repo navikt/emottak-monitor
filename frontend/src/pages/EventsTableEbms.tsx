@@ -3,7 +3,7 @@ import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Pagination from "../components/Pagination";
+import Pageinformation from "../components/Pageinformation";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
@@ -57,13 +57,12 @@ const EventsTable = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortOrder, setSortOrder] = useState("DESC");
 
   const { fetchState, callRequest } = useFetch<PageDto>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&role=${role}&service=${service}&action=${action}` +
-      `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`
+      `&page=${currentPage}&size=${pageSize}&sort=DESC`
   );
 
   const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
@@ -76,7 +75,6 @@ const EventsTable = () => {
 
   const { loading, error, data } = fetchState;
   const events = data?.content ?? [];
-  const totalCount = data?.totalElements ?? 0;
 
   useEffect(() => {
     callRequest();
@@ -90,7 +88,7 @@ const EventsTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, sortOrder]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action]);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
@@ -115,14 +113,6 @@ const EventsTable = () => {
     if (newSize !== pageSize) {
       setCurrentPage(1);
       setPageSize(newSize);
-    }
-  };
-
-  const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const order = e.target.value;
-    if (order !== sortOrder) {
-      setCurrentPage(1);
-      setSortOrder(order);
     }
   };
 
@@ -162,27 +152,13 @@ const EventsTable = () => {
         onServiceChange={onServiceChange}
         onActionChange={onActionChange}
       />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0" }}>
-        <span>{totalCount} hendelser</span>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 16 }}>
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <span>Sorteringsrekkefølge</span>
-            <select value={sortOrder} onChange={onSortOrderChange}>
-              <option value="DESC">Nyeste først</option>
-              <option value="ASC">Eldste først</option>
-            </select>
-          </label>
-          <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-            <span>Rader per side</span>
-            <select value={pageSize} onChange={onPageSizeChange}>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-          </label>
-        </div>
-      </div>
+      <Pageinformation
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+          totalCount={data?.totalElements ?? 0}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+      />
       <Table className={tableStyles.table}>
         <Table.Header className={tableStyles.tableHeader}>
           <Table.Row>
@@ -236,14 +212,6 @@ const EventsTable = () => {
             })}
         </Table.Body>
       </Table>
-
-      <Pagination
-        totalCount={totalCount}
-        pageSize={pageSize}
-        siblingCount={1}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
     </>
   );
 };

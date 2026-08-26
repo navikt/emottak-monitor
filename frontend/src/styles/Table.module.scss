@@ -21,6 +21,19 @@
   background-color: var(--table-hover-bg) !important;
 }
 
+.cellTextAtTop td {
+  vertical-align: top;
+}
+
 .expandable, .clickable {
   cursor: pointer;
+}
+
+.expandableTable {
+  border: 1px solid var(--navds-global-color-gray-500);
+  margin-top: 3px;
+}
+
+.expandableTable th {
+  border-bottom: 1px solid var(--navds-global-color-gray-500);
 }

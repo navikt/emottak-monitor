@@ -54,10 +54,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId1"
-        resultPage.content[1].mottakidliste shouldBe "mId2"
-        resultPage.content[2].mottakidliste shouldBe "mId3"
-        resultPage.content[3].mottakidliste shouldBe "mId4"
+        resultPage.content[0].mottakid shouldBe "mId1"
+        resultPage.content[1].mottakid shouldBe "mId2"
+        resultPage.content[2].mottakid shouldBe "mId3"
+        resultPage.content[3].mottakid shouldBe "mId4"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -65,10 +65,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId5"
-        resultPage.content[1].mottakidliste shouldBe "mId6"
-        resultPage.content[2].mottakidliste shouldBe "mId7"
-        resultPage.content[3].mottakidliste shouldBe "mId8"
+        resultPage.content[0].mottakid shouldBe "mId5"
+        resultPage.content[1].mottakid shouldBe "mId6"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId8"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -76,7 +76,7 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId9"
+        resultPage.content[0].mottakid shouldBe "mId9"
     }
 
     @Test
@@ -104,10 +104,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId9"
-        resultPage.content[1].mottakidliste shouldBe "mId8"
-        resultPage.content[2].mottakidliste shouldBe "mId7"
-        resultPage.content[3].mottakidliste shouldBe "mId6"
+        resultPage.content[0].mottakid shouldBe "mId9"
+        resultPage.content[1].mottakid shouldBe "mId8"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -115,10 +115,10 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId5"
-        resultPage.content[1].mottakidliste shouldBe "mId4"
-        resultPage.content[2].mottakidliste shouldBe "mId3"
-        resultPage.content[3].mottakidliste shouldBe "mId2"
+        resultPage.content[0].mottakid shouldBe "mId5"
+        resultPage.content[1].mottakid shouldBe "mId4"
+        resultPage.content[2].mottakid shouldBe "mId3"
+        resultPage.content[3].mottakid shouldBe "mId2"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
@@ -126,7 +126,7 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId1"
+        resultPage.content[0].mottakid shouldBe "mId1"
     }
 
     @Test
@@ -154,15 +154,15 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 9
         resultPage.totalPages shouldBe 1
         resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakidliste shouldBe "mId9"
-        resultPage.content[1].mottakidliste shouldBe "mId8"
-        resultPage.content[2].mottakidliste shouldBe "mId7"
-        resultPage.content[3].mottakidliste shouldBe "mId6"
-        resultPage.content[4].mottakidliste shouldBe "mId5"
-        resultPage.content[5].mottakidliste shouldBe "mId4"
-        resultPage.content[6].mottakidliste shouldBe "mId3"
-        resultPage.content[7].mottakidliste shouldBe "mId2"
-        resultPage.content[8].mottakidliste shouldBe "mId1"
+        resultPage.content[0].mottakid shouldBe "mId9"
+        resultPage.content[1].mottakid shouldBe "mId8"
+        resultPage.content[2].mottakid shouldBe "mId7"
+        resultPage.content[3].mottakid shouldBe "mId6"
+        resultPage.content[4].mottakid shouldBe "mId5"
+        resultPage.content[5].mottakid shouldBe "mId4"
+        resultPage.content[6].mottakid shouldBe "mId3"
+        resultPage.content[7].mottakid shouldBe "mId2"
+        resultPage.content[8].mottakid shouldBe "mId1"
     }
 
     fun insertMelding(
@@ -175,8 +175,8 @@ class HentMeldingerTest {
                 "values(" + hendelseid + ",'" + mottakid + "')",
         )
         testDatabase.runSql(
-            "insert into MELDING(MOTTAK_ID, DATOMOTTAT, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, E" +
-                "BCONVERS_ID, AVTALE_ID, STATUSLEVEL) " +
+            "insert into MELDING(MOTTAK_ID, DATOMOTTAT, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, " +
+                "EBCONVERS_ID, AVTALE_ID, STATUSLEVEL) " +
                 "values('" + mottakid + "','" + tid + "','role_" + mottakid + "','service_" + mottakid + "','action_" +
                 mottakid + "','param_" + mottakid + "','sender_" + mottakid + "','convers_" + mottakid +
                 "','cpa_+mottakid+',1)",

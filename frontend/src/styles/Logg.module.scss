@@ -1,0 +1,36 @@
+.logDiv {
+  padding: var(--navds-spacing-2);
+}
+
+.small * {
+  font-size: var(--small-font-size);
+}
+
+.meldingsdetaljer {
+  width: 100%;
+  border-width: 2px;
+  border-color: grey;
+  border-style: solid;
+  padding: 5px;
+  margin: 0px 0px 6px 0px;
+}
+
+.meldingsdetaljer legend {
+  padding: 0px 5px;
+}
+
+.truncate {
+  white-space: nowrap; /* Prevent the text from wrapping to the next line */
+  overflow: hidden; /* Ensure content is clipped within the container */
+  text-overflow: ellipsis; /* Add ellipsis (…) when the text is truncated */
+  width: 800px; /* Adjust the width as needed */
+  cursor: pointer;
+}
+
+.warnFieldset {
+  color: var(--text-error);
+}
+
+.small .navds-table__header-cell, .small .navds-table__data-cell {
+  padding: var(--navds-spacing-2) var(--navds-spacing-1);
+}

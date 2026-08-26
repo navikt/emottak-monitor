@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.MessageLogData
 import no.nav.emottak.model.Pageable
 import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.model.PartnerListe
@@ -45,7 +46,7 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
             log.info("Kjører dabasespørring for å hente meldinger...")
             val meldinger = meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
-            log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakidliste}")
+            log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakid}")
             call.respond(meldinger)
         }
     }
@@ -108,10 +109,21 @@ fun Route.hentLogg(meldingService: MessageQueryService): Route =
             returnBadRequest("Mangler parameter: mottakId")
             return@get
         }
+        log.info("Henter meldingsdetaljer for $mottakid")
+        val meldinger = meldingService.mottakid(mottakid)
+        val warnMsg =
+            if (meldinger.size != 1) {
+                val msg = "Fikk ikke 1 melding tilbake ved oppslag på $mottakid, men ${meldinger.size} stk!"
+                log.warn(msg)
+                msg
+            } else {
+                null
+            }
         log.info("Henter hendelseslogg for $mottakid")
         val logg = meldingService.messagelogg(mottakid)
         log.info("Antall hendelser for $mottakid: ${logg.size}")
-        call.respond(logg)
+        val loggData = MessageLogData(meldinger.firstOrNull(), logg, warnMsg)
+        call.respond(loggData)
     }
 
 // Modal: Ved klikk på mottak-id for ebms (frontend: /loggebms)

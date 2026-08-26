@@ -1,7 +1,7 @@
-import { Table } from "@navikt/ds-react";
+import { Button, Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
@@ -9,8 +9,8 @@ import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
-import Pagination from "../components/Pagination";
-import { initialDate, initialTime } from "../util";
+import Pageinformation from "../components/Pageinformation";
+import { initialDate, initialTime, ISODate } from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
@@ -21,7 +21,8 @@ type MessageInfo = {
   avsender: string;
   cpaid: string;
   datomottat: string;
-  mottakidliste: string;
+  mottakid: string;
+  conversationId: string;
   referanse: string;
   role: string;
   service: string;
@@ -38,11 +39,28 @@ type Page = {
 
 const MessagesTable = () => {
   const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  const toggleGroup = (key: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
 
-  const [fromDate, setFromDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState("");
+  useEffect(() => {
+    // 1. Get today's date
+    const date = new Date();
+    // 2. Subtract one day
+    date.setDate(date.getDate() - 1 );
+    setFromDate(ISODate(date));
+    }, []);
+
   const [toDate, setToDate] = useState(initialDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
@@ -61,13 +79,12 @@ const MessagesTable = () => {
   const debouncedMessageId = useDebounce(messageId, 1000);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortOrder, setSortOrder] = useState("DESC");
+  const [pageSize, setPageSize] = useState(25);
 
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
-      `&page=${currentPage}&size=${pageSize}&sort=${sortOrder}`;
+      `&page=${currentPage}&size=${pageSize}&sort=DESC`;
 
 
   const { fetchState, callRequest } = useFetch<Page>(url);
@@ -79,7 +96,6 @@ const MessagesTable = () => {
 
   const { loading, error, data } = fetchState;
   const messages = data?.content ?? [];
-  const totalCount = data?.totalElements ?? 0;
 
   useEffect(() => {
     callRequest();
@@ -93,7 +109,7 @@ const MessagesTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, sortOrder]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime]);
 
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],
@@ -105,6 +121,19 @@ const MessagesTable = () => {
     requestSort,
     sortConfig,
   } = useTableSorting(filteredMessages);
+
+  const groupedMessages = useMemo(() => {
+    const map = new Map<string, MessageInfo[]>();
+    for (const msg of filteredAndSortedMessages) {
+      const key = msg.conversationId;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(msg);
+    }
+    return Array.from(map.entries()).map(([key, group]) => ({
+      key,
+      messages: [...group].sort((a, b) => b.datomottat.localeCompare(a.datomottat)),
+    }));
+  }, [filteredAndSortedMessages]);
 
   const getClassNamesFor = (name: keyof MessageInfo) => {
     if (!sortConfig) {
@@ -121,18 +150,11 @@ const MessagesTable = () => {
     }
   };
 
-  const onSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const order = e.target.value;
-    if (order !== sortOrder) {
-      setCurrentPage(1);
-      setSortOrder(order);
-    }
-  };
-
-  const headers: { key: keyof MessageInfo; name: string }[] = [
+  const headers: { key: keyof MessageInfo | "collapse"; name: string }[] = [
     { key: "datomottat", name: "Mottatt" },
-    { key: "mottakidliste", name: "Mottak-id" },
-    { key: "role", name: "Role" },
+    { key: "collapse", name: "" },
+    { key: "mottakid", name: "Mottak-id" },
+    { key: "role", name: "Rolle" },
     { key: "service", name: "Service" },
     { key: "action", name: "Action" },
     { key: "referanse", name: "Referanse" },
@@ -198,35 +220,26 @@ const MessagesTable = () => {
             />
           </div>
         </div>
-        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0"}}>
-          <span>{totalCount} hendelser</span>
-          <div style={{display: "inline-flex", alignItems: "center", gap: 16}}>
-            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-              <span>Sorteringsrekkefølge</span>
-              <select value={sortOrder} onChange={onSortOrderChange}>
-                <option value="DESC">Nyeste først</option>
-                <option value="ASC">Eldste først</option>
-              </select>
-            </label>
-            <label style={{display: "inline-flex", alignItems: "center", gap: 8}}>
-            <span>Rader per side</span>
-              <select value={pageSize} onChange={onPageSizeChange}>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </label>
-          </div>
-        </div>
+        <Pageinformation
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
+            totalCount={data?.totalElements ?? 0}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+        />
         <Table className={tableStyles.table}>
           <Table.Header className={tableStyles.tableHeader}>
             <Table.Row>
               {headers.map(({key, name}) => (
                   <Table.HeaderCell
                       key={key}
-                      onClick={() => requestSort(key)}
-                      className={getClassNamesFor(key)}
+                      onClick={() => key !== "collapse" && requestSort(key)}
+                      className={key !== "collapse" ? getClassNamesFor(key) : undefined}
+                      style={
+                        key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} :
+                        key === "datomottat" ? { width: "11.5em"} :
+                            undefined
+                      }
                   >
                     {name}
                   </Table.HeaderCell>
@@ -242,26 +255,62 @@ const MessagesTable = () => {
             {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
             {showData &&
-                filteredAndSortedMessages.map((message, index) => {
+                groupedMessages.flatMap(({ key, messages }, groupIndex) => {
+                  const isExpanded = expandedGroups.has(key);
+                  const message = messages[0];
+                  const expandableMessages:MessageInfo[] = messages.slice(1);
+
                   return (
-                      <Table.Row
-                          key={message.cpaid + index}
-                          className={clsx({[tableStyles.coloredRow]: index % 2})}
-                      >
+                      <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>
                         <Table.DataCell className="tabell__td--sortert">
                           {message.datomottat.substring(0, 23)}
                         </Table.DataCell>
+                        <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
+                          {expandableMessages.length > 0 && (
+                              <Button
+                                  variant="primary"
+                                  size="xsmall"
+                                  onClick={() => toggleGroup(key)}
+                              >
+                                {isExpanded ? "-" : "+"}
+                              </Button>
+                          )}
+                        </Table.DataCell>
                         <Table.DataCell>
-                          {message.mottakidliste.split(",").map((mottakid, idx, arr) => (
-                              <React.Fragment key={mottakid}>
-                                <Link
-                                    key={mottakid}
-                                    to={`/logg/${mottakid}`}
-                                    state={{backgroundLocation: location}}
-                                >{mottakid}</Link>
-                                {idx < arr.length - 1 && ', '}
-                              </React.Fragment>
-                          ))}
+                          <Link
+                              to={`/logg/${message.mottakid}`}
+                              state={{backgroundLocation: location}}
+                          >{message.mottakid}</Link>
+                          { isExpanded && (
+                              <table className={tableStyles.expandableTable}>
+                                <thead>
+                                  <tr>
+                                    <th>Mottak-id</th>
+                                    <th>Klokkeslett</th>
+                                    <th>Rolle</th>
+                                    <th>Service</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {expandableMessages.map((msg) => (
+                                    <tr key={msg.mottakid}>
+                                      <td>
+                                        <Link
+                                            to={`/logg/${msg.mottakid}`}
+                                            state={{backgroundLocation: location}}
+                                        >{msg.mottakid}</Link>
+                                      </td>
+                                      <td>{msg.datomottat.split(" ")[1].substring(0,12)}</td>
+                                      <td>{msg.role}</td>
+                                      <td>{msg.service}</td>
+                                      <td>{msg.action}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                              </table>
+                            )
+                          }
                         </Table.DataCell>
                         <Table.DataCell>{message.role}</Table.DataCell>
                         <Table.DataCell>{message.service}</Table.DataCell>
@@ -270,7 +319,6 @@ const MessagesTable = () => {
                         <Table.DataCell>{message.avsender}</Table.DataCell>
                         <Table.DataCell>
                           <Link
-                              key={message.cpaid}
                               to={`/cpa/${message.cpaid}`}
                               state={{backgroundLocation: location}}
                           >{message.cpaid}</Link>
@@ -281,13 +329,6 @@ const MessagesTable = () => {
                 })}
           </Table.Body>
         </Table>
-        <Pagination
-            totalCount={totalCount}
-            pageSize={pageSize}
-            siblingCount={1}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-        />
       </>
   );
 };

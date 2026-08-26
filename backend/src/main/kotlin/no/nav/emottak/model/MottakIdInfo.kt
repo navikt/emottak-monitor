@@ -1,7 +1,7 @@
 package no.nav.emottak.model
 
 data class MottakIdInfo(
-    val datomottat: String,
+    val datomottatt: String,
     val mottakid: String,
     val role: String? = null,
     val service: String? = null,
