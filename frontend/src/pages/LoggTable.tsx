@@ -72,6 +72,7 @@ const LoggTable = (props: LoggTableProps) => {
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsesdato", name: "Dato" },
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "hendelsesdetaljer", name: "Detaljer" },
