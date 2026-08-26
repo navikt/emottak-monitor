@@ -71,6 +71,7 @@ const LoggTable = (props: LoggTableProps) => {
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsesdato", name: "Dato" },
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "hendelsesdetaljer", name: "Detaljer" },
@@ -91,7 +92,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <tr>
                   <td><b>MottakId</b></td>
                   <td>{data?.meldingsdetaljer.mottakid}</td>
-                  <td><b>Mottatt dato</b></td>
+                  <td><b>Mottatt</b></td>
                   <td>{data?.meldingsdetaljer.datomottatt}</td>
                   <td></td>
                   <td></td>
