@@ -10,6 +10,7 @@ import clsx from "clsx";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
+import AssociatedMessages from "./AssociatedMessages";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -213,7 +214,13 @@ const LoggTable = (props: LoggTableProps) => {
               </Table.Body>
               {loading && <NavFrontendSpinner/>}
               {error?.message && <p>{error.message}</p>}
-            </Table></>
+            </Table>
+            {data?.meldingsdetaljer && (
+                <AssociatedMessages
+                    mottakid={data.meldingsdetaljer.mottakid}
+                />
+            )}
+          </>
       )}
     </div>
   );
