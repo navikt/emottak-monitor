@@ -49,7 +49,8 @@ class MessageQueryService(
 
     fun mottakid(mottakid: String?): List<MottakIdInfo> = databaseInterface.hentMottakIdInfo(databasePrefix, sqlTimeout, mottakid)
 
-    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, sqlTimeout, ebmessageid)
+    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> =
+        databaseInterface.hentEBMessageIdInfo(databasePrefix, sqlTimeout, ebmessageid)
 
     fun feilstatistikk(
         fom: LocalDateTime,

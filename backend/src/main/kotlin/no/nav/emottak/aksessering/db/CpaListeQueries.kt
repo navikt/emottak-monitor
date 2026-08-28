@@ -184,10 +184,11 @@ private fun Connection.exeutePartnerCpaListeQuery(
         if (!sok.isNullOrBlank()) {
             preparedStatement.setObjects(query, sok)
         }
-        return preparedStatement.use {
-            it.queryTimeout = sqlTimeout
-            it.executeQuery().toList { toPartnerCpaListe() }
-        }.toList()
+        return preparedStatement
+            .use {
+                it.queryTimeout = sqlTimeout
+                it.executeQuery().toList { toPartnerCpaListe() }
+            }.toList()
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")

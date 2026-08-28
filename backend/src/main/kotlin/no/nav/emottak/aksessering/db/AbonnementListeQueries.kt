@@ -136,10 +136,12 @@ private fun Connection.exeuteAbonnementListeQuery(
         if (!columnSearch.sok.isNullOrBlank() && !columnSearch.applyFilterAfterSQL()) {
             preparedStatement.setObjects(query, columnSearch.sok)
         }
-        return preparedStatement.use {
-            it.queryTimeout = sqlTimeout
-            it.executeQuery().toList { toAbonnementListe() }
-        }.toList().also { checkForDuplicates(it) }
+        return preparedStatement
+            .use {
+                it.queryTimeout = sqlTimeout
+                it.executeQuery().toList { toAbonnementListe() }
+            }.toList()
+            .also { checkForDuplicates(it) }
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")
