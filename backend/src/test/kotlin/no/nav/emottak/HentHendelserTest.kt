@@ -17,7 +17,7 @@ class HentHendelserTest {
     fun setup() {
         testDatabase = TestDatabase()
         testDatabase.runSqlScript("/hendelse_melding_ddl.sql")
-        messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix)
+        messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix, 120)
     }
 
     @AfterEach
@@ -48,7 +48,7 @@ class HentHendelserTest {
 
         // Default for Pageable is ascending
         var requestedPage = Pageable(1, 4)
-        var resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
+        var resultPage = testDatabase.hentHendelser("PUBLIC", 120, fom, tom, requestedPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -59,7 +59,7 @@ class HentHendelserTest {
         resultPage.content[3].mottakid shouldBe "mId4"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentHendelser("PUBLIC", 120, fom, tom, requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -97,7 +97,7 @@ class HentHendelserTest {
         insertHendelse(1000, "mId10", outsideRequestedInterval)
 
         var requestedPage = Pageable(1, 4, "DESC")
-        var resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
+        var resultPage = testDatabase.hentHendelser("PUBLIC", 120, fom, tom, requestedPage)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -108,7 +108,7 @@ class HentHendelserTest {
         resultPage.content[3].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom, requestedPage)
+        resultPage = testDatabase.hentHendelser("PUBLIC", 120, fom, tom, requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -146,7 +146,7 @@ class HentHendelserTest {
         insertHendelse(1000, "mId10", outsideRequestedInterval)
 
         // Default for unpaged is descending
-        val resultPage = testDatabase.hentHendelser("PUBLIC", fom, tom)
+        val resultPage = testDatabase.hentHendelser("PUBLIC", 120, fom, tom)
         resultPage.page shouldBe 1
         resultPage.content.size shouldBe 9
         resultPage.totalPages shouldBe 1

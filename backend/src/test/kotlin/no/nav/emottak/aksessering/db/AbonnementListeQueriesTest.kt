@@ -213,7 +213,7 @@ class AbonnementListeQueriesTest :
             beforeContainer {
                 testDatabase = TestDatabase()
                 testDatabase.runSqlScript("/partner_abonnement_ddl.sql")
-                messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix)
+                messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix, 120)
                 testDatabase.insertTestdata()
             }
 
