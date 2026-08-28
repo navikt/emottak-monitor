@@ -26,6 +26,7 @@ import java.time.LocalDateTime
 class MessageQueryService(
     private val databaseInterface: DatabaseInterface,
     private val databasePrefix: String,
+    private val sqlTimeout: Int,
 ) {
     fun meldinger(
         fom: LocalDateTime,
@@ -34,31 +35,31 @@ class MessageQueryService(
         cpaId: String? = null,
         messageId: String? = null,
         pageable: Pageable? = null,
-    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId, pageable)
+    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, sqlTimeout, fom, tom, mottakId, cpaId, messageId, pageable)
 
     fun hendelser(
         fom: LocalDateTime,
         tom: LocalDateTime,
         pageable: Pageable? = null,
-    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom, pageable)
+    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, sqlTimeout, fom, tom, pageable)
 
-    fun messagelogg(mottakid: String?): List<MessageLogInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
+    fun messagelogg(mottakid: String?): List<MessageLogInfo> = databaseInterface.getMessageLogg(databasePrefix, sqlTimeout, mottakid)
 
-    fun messagecpa(cpaid: String?): List<MessageCPAInfo> = databaseInterface.getMessageCPA(databasePrefix, cpaid)
+    fun messagecpa(cpaid: String?): List<MessageCPAInfo> = databaseInterface.getMessageCPA(databasePrefix, sqlTimeout, cpaid)
 
-    fun mottakid(mottakid: String?): List<MottakIdInfo> = databaseInterface.hentMottakIdInfo(databasePrefix, mottakid)
+    fun mottakid(mottakid: String?): List<MottakIdInfo> = databaseInterface.hentMottakIdInfo(databasePrefix, sqlTimeout, mottakid)
 
-    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, ebmessageid)
+    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, sqlTimeout, ebmessageid)
 
     fun feilstatistikk(
         fom: LocalDateTime,
         tom: LocalDateTime,
-    ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, fom, tom)
+    ): List<FeilStatistikkInfo> = databaseInterface.hentFeilStatistikk(databasePrefix, sqlTimeout, fom, tom)
 
-    fun cpaliste(searchColmn: String): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn)
+    fun cpaliste(searchColmn: String): PartnerCpaListeData = databaseInterface.hentPartnerCpaListe(databasePrefix, sqlTimeout, searchColmn)
 
     fun partnerliste(searchColmn: String): PartnerCpaListeData =
-        databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn, isPartner = true)
+        databaseInterface.hentPartnerCpaListe(databasePrefix, sqlTimeout, searchColmn, isPartner = true)
 
-    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
+    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sqlTimeout, sok)
 }

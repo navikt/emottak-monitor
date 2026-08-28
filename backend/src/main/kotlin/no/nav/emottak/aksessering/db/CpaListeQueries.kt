@@ -11,6 +11,7 @@ import kotlin.use
 
 fun DatabaseInterface.hentPartnerCpaListe(
     databasePrefix: String,
+    sqlTimeout: Int,
     columnSearchEncoded: String = "",
     isPartner: Boolean = false,
 ): PartnerCpaListeData =
@@ -21,7 +22,7 @@ fun DatabaseInterface.hentPartnerCpaListe(
         var sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER_CPA"
         if (isPartner) sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.PARTNER"
         log.debug("SQL FOR ANTALL TOTALT: '{}'", sqlTotaltAntall)
-        val totalCount = connection.executeCountQuery(sqlTotaltAntall, null)
+        val totalCount = connection.executeCountQuery(sqlTimeout, sqlTotaltAntall, null)
 
         val sqlColmSearchResultQuery =
             generateSQLQuery(
@@ -30,7 +31,7 @@ fun DatabaseInterface.hentPartnerCpaListe(
                 generatePartnerQuery = isPartner,
             )
         log.debug("SQL FOR DETALJER: '{}'", sqlColmSearchResultQuery)
-        val listColmSearch = connection.exeutePartnerCpaListeQuery(sqlColmSearchResultQuery, columnSearch.sok)
+        val listColmSearch = connection.exeutePartnerCpaListeQuery(sqlTimeout, sqlColmSearchResultQuery, columnSearch.sok)
 
         PartnerCpaListeData(
             listColmSearch,
@@ -174,6 +175,7 @@ private fun equalSearch(
 }
 
 private fun Connection.exeutePartnerCpaListeQuery(
+    sqlTimeout: Int,
     query: String,
     sok: String?,
 ): List<PartnerCpaListe> {
@@ -182,7 +184,10 @@ private fun Connection.exeutePartnerCpaListeQuery(
         if (!sok.isNullOrBlank()) {
             preparedStatement.setObjects(query, sok)
         }
-        return preparedStatement.use { it.executeQuery().toList { toPartnerCpaListe() } }.toList()
+        return preparedStatement.use {
+            it.queryTimeout = sqlTimeout
+            it.executeQuery().toList { toPartnerCpaListe() }
+        }.toList()
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")

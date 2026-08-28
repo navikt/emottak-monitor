@@ -7,6 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.hentEBMessageIdInfo(
     databasePrefix: String,
+    sqlTimeout: Int,
     ebmessageid: String?,
 ): List<EBMessageIdInfo> =
     connection.use { connection ->
@@ -22,6 +23,7 @@ fun DatabaseInterface.hentEBMessageIdInfo(
             )
         statement.setObject(1, ebmessageid)
         statement.use {
+            it.queryTimeout = sqlTimeout
             it.executeQuery().toList { toEBMessageIdInfo() }
         }
     }

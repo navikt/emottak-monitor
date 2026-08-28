@@ -2,7 +2,6 @@ package no.nav.emottak.aksessering.db
 
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
-import no.nav.emottak.log
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
@@ -11,6 +10,7 @@ import java.time.LocalDateTime
 
 fun DatabaseInterface.hentHendelser(
     databasePrefix: String,
+    sqlTimeout: Int,
     fom: LocalDateTime,
     tom: LocalDateTime,
     pageable: Pageable? = null,
@@ -27,15 +27,13 @@ fun DatabaseInterface.hentHendelser(
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
-        log.debug("Utfører count-spørring...")
         val totalCount =
             countStatement.use {
-                it.queryTimeout = 10
+                it.queryTimeout = sqlTimeout
                 val rs = it.executeQuery()
                 rs.next()
                 rs.getLong(1)
             }
-        log.debug("Count-spørring fullført")
 
         var sql = """
                 SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.ROLE,
@@ -55,7 +53,6 @@ fun DatabaseInterface.hentHendelser(
         if (pageable != null) {
             sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
-        log.debug("Utfører data-spørring...")
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
@@ -66,10 +63,9 @@ fun DatabaseInterface.hentHendelser(
         val list =
             statement
                 .use {
-                    it.queryTimeout = 10
+                    it.queryTimeout = sqlTimeout
                     it.executeQuery().toList { toHendelseInfo() }
                 }.toList()
-        log.debug("Data-spørring fullført")
         var returnPageable = pageable
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
         Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)

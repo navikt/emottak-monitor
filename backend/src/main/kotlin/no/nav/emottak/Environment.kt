@@ -13,6 +13,7 @@ data class Environment(
     val emottakFrontEndUrl: String = getEnvVar("EMOTTAK_ADMIN_FRONTEND_URL"),
     val oidcWellKnownUriUrl: String = getEnvVar("AZURE_APP_WELL_KNOWN_URL"),
     val emottakMonitorClientId: String = getEnvVar("AZURE_APP_EMOTTAK_CLIENT_ID"),
+    val sqlTimeout: Int = getEnvVar("SQL_TIMEOUT", "180").toInt().also { log.debug("SQL-timeout set to $it seconds") },
     val isDevelopment: Boolean = getEnvVar("DEVELOPMENT", "false").toBoolean(),
 )
 

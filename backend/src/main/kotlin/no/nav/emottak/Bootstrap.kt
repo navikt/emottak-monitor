@@ -39,7 +39,7 @@ fun main() {
 
     val database = Database(environment, vaultSecrets)
     log.info("Database is ok")
-    val messageQueryService = MessageQueryService(database, environment.databasePrefix)
+    val messageQueryService = MessageQueryService(database, environment.databasePrefix, environment.sqlTimeout)
     val scopedAuthHttpClient: HttpClient = scopedAuthHttpClient(getScope()).invoke()
 
     val applicationState = ApplicationState()

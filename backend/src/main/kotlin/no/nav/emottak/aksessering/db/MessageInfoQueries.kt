@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
+    sqlTimeout: Int,
     fom: LocalDateTime,
     tom: LocalDateTime,
     mottakId: String? = null,
@@ -36,6 +37,7 @@ fun DatabaseInterface.hentMeldinger(
         countStatement.setObject(2, tom)
         val totalCount =
             countStatement.use {
+                it.queryTimeout = sqlTimeout
                 val rs = it.executeQuery()
                 rs.next()
                 rs.getLong(1)
@@ -79,6 +81,7 @@ fun DatabaseInterface.hentMeldinger(
         val list =
             statement
                 .use {
+                    it.queryTimeout = sqlTimeout
                     it.executeQuery().toList { toMessageInfo() }
                 }.toList()
         var returnPageable = pageable

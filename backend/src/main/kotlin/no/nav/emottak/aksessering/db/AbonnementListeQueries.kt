@@ -19,6 +19,7 @@ val AFTER_SQL_FILTERS = listOf("BEHANDLER_NAVN", "BEHANDLER_HERID", "BEHANDLER_H
 
 fun DatabaseInterface.hentAbonnementListe(
     databasePrefix: String,
+    sqlTimeout: Int,
     columnSearchEncoded: String = "",
 ): AbonnementListeData =
     connection.use { connection ->
@@ -27,11 +28,11 @@ fun DatabaseInterface.hentAbonnementListe(
         // Totalt antall abonnement:
         val sqlTotaltAntall = "SELECT count(*) FROM $databasePrefix.ABONNEMENT WHERE ABONNEMENT.TJENESTE_ID = 3"
         log.debug("SQL FOR ANTALL TOTALT: '{}'", sqlTotaltAntall)
-        val totalCount = connection.executeCountQuery(sqlTotaltAntall, null)
+        val totalCount = connection.executeCountQuery(sqlTimeout, sqlTotaltAntall, null)
 
         val sqlColmSearchResultQuery = generateSQLQuery(databasePrefix, columnSearch)
         log.debug("SQL FOR DETALJER: '{}'", sqlColmSearchResultQuery)
-        val listColmSearch = connection.exeuteAbonnementListeQuery(sqlColmSearchResultQuery, columnSearch)
+        val listColmSearch = connection.exeuteAbonnementListeQuery(sqlTimeout, sqlColmSearchResultQuery, columnSearch)
 
         AbonnementListeData(
             listColmSearch.afterSQLFiltering(columnSearch),
@@ -126,6 +127,7 @@ private fun equalSearch(columnSearch: ColumnSearch) =
 private fun ColumnSearch.applyFilterAfterSQL() = this.sequence?.last() in AFTER_SQL_FILTERS
 
 private fun Connection.exeuteAbonnementListeQuery(
+    sqlTimeout: Int,
     query: String,
     columnSearch: ColumnSearch,
 ): List<Abonnement> {
@@ -134,7 +136,10 @@ private fun Connection.exeuteAbonnementListeQuery(
         if (!columnSearch.sok.isNullOrBlank() && !columnSearch.applyFilterAfterSQL()) {
             preparedStatement.setObjects(query, columnSearch.sok)
         }
-        return preparedStatement.use { it.executeQuery().toList { toAbonnementListe() } }.toList().also { checkForDuplicates(it) }
+        return preparedStatement.use {
+            it.queryTimeout = sqlTimeout
+            it.executeQuery().toList { toAbonnementListe() }
+        }.toList().also { checkForDuplicates(it) }
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")

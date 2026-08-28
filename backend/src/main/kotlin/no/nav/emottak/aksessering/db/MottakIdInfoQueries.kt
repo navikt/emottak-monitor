@@ -7,6 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.hentMottakIdInfo(
     databasePrefix: String,
+    sqlTimeout: Int,
     mottakid: String?,
 ): List<MottakIdInfo> =
     connection.use { connection ->
@@ -22,6 +23,7 @@ fun DatabaseInterface.hentMottakIdInfo(
             )
         statement.setObject(1, mottakid)
         statement.use {
+            it.queryTimeout = sqlTimeout
             it.executeQuery().toList { toMottakIdInfo() }
         }
     }
