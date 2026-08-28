@@ -622,53 +622,74 @@ if (process.env.NODE_ENV === 'development') {
     // Mocke kall til v1/hentloggebms?:
     mock.onGet(/\/v1\/hentloggebms\?/).reply((config) => {
         console.log("Mocker hentloggebms");
-        const payload = [
+        const meldingsdetaljer = {
+            "datomottatt": "2026-06-17 15:30:42.90712",
+            "mottakid": "IN.2608281121.stor.d33ab2",
+            "role": "Fordringshaver",
+            "service": "Inntektsforesporsel",
+            "action": "Foresporsel",
+            "referanse": null,
+            "avsender": "STORARTET USJENERT BJØRN KOMMUNE TEST",
+            "cpaid": "nav:qass:38576",
+            "status": "Ferdigbehandlet",
+        }
+        const hendelser = [
             {
-                "eventDate": "2026-06-17T15:01:01.794804+02:00[Europe/Oslo]",
-                "eventDescription": "Melding mottatt via SMTP",
-                "eventId": "1"
+                "hendelsesdato": "2026-06-17T15:01:01.794804+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding mottatt via SMTP",
+                "hendelsesid": "1"
             }, {
-                "eventDate": "2026-06-17T15:01:01.961656+02:00[Europe/Oslo]",
-                "eventDescription": "Payload lagret i database",
-                "eventId": "9"
+                "hendelsesdato": "2026-06-17T15:01:01.961656+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Payload lagret i database",
+                "hendelsesid": "9",
+                "hendelsesdetaljer": null
             }, {
-                "eventDate": "2026-06-17T15:01:01.981198+02:00[Europe/Oslo]",
-                "eventDescription": "Melding lagt på kø",
-                "eventId": "15"
+                "hendelsesdato": "2026-06-17T15:01:01.981198+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding lagt på kø",
+                "hendelsesid": "15",
+                "hendelsesdetaljer": "Melding lagt på QA.P414.DETTE_ER_EN_QUEUE"
             }, {
-                "eventDate": "2026-06-17T15:01:01.995638+02:00[Europe/Oslo]",
-                "eventDescription": "Payload lest fra database",
-                "eventId": "11"
+                "hendelsesdato": "2026-06-17T15:01:01.995638+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Payload lest fra database",
+                "hendelsesid": "11"
             }, {
-                "eventDate": "2026-06-17T15:01:01.996943+02:00[Europe/Oslo]",
-                "eventDescription": "Payload mottatt via HTTP",
-                "eventId": "13"
+                "hendelsesdato": "2026-06-17T15:01:01.996943+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Payload mottatt via HTTP",
+                "hendelsesid": "13"
             }, {
-                "eventDate": "2026-06-17T15:01:02.016677+02:00[Europe/Oslo]",
-                "eventDescription": "Melding lest fra kø",
-                "eventId": "17"
+                "hendelsesdato": "2026-06-17T15:01:02.016677+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding lest fra kø",
+                "hendelsesid": "17",
+                "hendelsesdetaljer": "Melding lest fra QA.P414.DETTE_ER_EN_QUEUE"
             }, {
-                "eventDate": "2026-06-17T15:01:02.080434+02:00[Europe/Oslo]",
-                "eventDescription": "Melding validert mot CPA",
-                "eventId": "37"
+                "hendelsesdato": "2026-06-17T15:01:02.080434+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding validert mot CPA",
+                "hendelsesid": "37"
             }, {
-                "eventDate": "2026-06-17T15:01:02.147888+02:00[Europe/Oslo]",
-                "eventDescription": "Melding lagret i juridisk logg",
-                "eventId": "19"
+                "hendelsesdato": "2026-06-17T15:01:02.147888+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding lagret i juridisk logg",
+                "hendelsesid": "19"
             }, {
-                "eventDate": "2026-06-17T15:01:02.171729+02:00[Europe/Oslo]",
-                "eventDescription": "Melding dekryptert",
-                "eventId": "23"
+                "hendelsesdato": "2026-06-17T15:01:02.171729+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding dekryptert",
+                "hendelsesid": "23"
             }, {
-                "eventDate": "2026-06-17T15:01:02.193386+02:00[Europe/Oslo]",
-                "eventDescription": "Signatursjekk vellykket",
-                "eventId": "29"
+                "hendelsesdato": "2026-06-17T15:01:02.193386+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Signatursjekk vellykket",
+                "hendelsesid": "29"
             }, {
-                "eventDate": "2026-06-17T15:01:02.484754+02:00[Europe/Oslo]",
-                "eventDescription": "Feil ved utsending melding til fagsystem",
-                "eventId": "34"
+                "hendelsesdato": "2026-06-17T15:01:02.484754+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Feil ved utsending melding til fagsystem",
+                "hendelsesid": "34",
+                "hendelsesdetaljer": "Det skjedde en feil"
             }
         ];
+        const payload = {
+            "meldingsdetaljer": meldingsdetaljer,
+            "meldingslogg": hendelser,
+            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på IN.2608281218.UNKN.19ee4c (3 stk)!"
+            "warning": null
+        }
         return [200, payload];
     });
 

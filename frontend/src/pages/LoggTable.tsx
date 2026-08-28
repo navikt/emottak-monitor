@@ -35,15 +35,16 @@ type MessageLogInfo = {
 
 type LoggTableProps = {
   mottakid?: string;
+  ebms: boolean;
 };
 
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakid = props.mottakid ?? params.mottakid;
+  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakid}` : `/v1/hentlogg?mottakId=${mottakid}`;
+  const idName = props.ebms ? "ReadableId" : "MottakId";
 
-  const { fetchState, callRequest } = useFetch<MessageLogData>(
-    `/v1/hentlogg?mottakId=${mottakid}`
-  );
+  const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
   const { loading, error, data: data } = fetchState;
 
@@ -54,7 +55,7 @@ const LoggTable = (props: LoggTableProps) => {
   const { items } = useTableSorting(data?.meldingslogg ?? []);
 
   if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+    return <div>Ingen gyldig {idName}</div>;
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
@@ -76,9 +77,9 @@ const LoggTable = (props: LoggTableProps) => {
               <table>
                 <tbody>
                 <tr>
-                  <td><b>MottakId</b></td>
+                  <td><b>{idName}</b></td>
                   <td>{data?.meldingsdetaljer.mottakid}</td>
-                  <td><b>Mottatt dato</b></td>
+                  <td><b>Mottatt</b></td>
                   <td>{data?.meldingsdetaljer.datomottatt}</td>
                   <td></td>
                   <td></td>

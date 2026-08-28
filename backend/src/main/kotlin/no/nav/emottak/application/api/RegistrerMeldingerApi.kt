@@ -21,6 +21,8 @@ import no.nav.emottak.model.Pageable
 import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.model.PartnerListe
 import no.nav.emottak.model.PartnerListeData
+import no.nav.emottak.model.dto.toMessageLogInfoList
+import no.nav.emottak.model.dto.toMottakIdInfo
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -122,8 +124,7 @@ fun Route.hentLogg(meldingService: MessageQueryService): Route =
         log.info("Henter hendelseslogg for $mottakid")
         val logg = meldingService.messagelogg(mottakid)
         log.info("Antall hendelser for $mottakid: ${logg.size}")
-        val loggData = MessageLogData(meldinger.firstOrNull(), logg, warnMsg)
-        call.respond(loggData)
+        call.respond(MessageLogData(meldinger.firstOrNull(), logg, warnMsg))
     }
 
 // Modal: Ved klikk på mottak-id for ebms (frontend: /loggebms)
@@ -135,9 +136,24 @@ fun Route.hentLoggEbms(httpClient: HttpClient): Route =
             returnBadRequest("Mangler parameter: readableId")
             return@get
         }
-        val url = "$eventManagerUrl/message-details/$readableId/events"
+        var url = "$eventManagerUrl/message-details/$readableId"
+        log.info("Henter meldingsdetaljer fra endepunktet til ebms for $readableId ($url)")
+        val (statusHentMeldingsdetaljer, meldingsdetaljer) = executeREST(httpClient, url, useCallRespond = false)
+        url = "$eventManagerUrl/message-details/$readableId/events"
         log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
-        executeREST(httpClient, url)
+        val (statusHentHendelseslogg, hendelseslogg) = executeREST(httpClient, url, useCallRespond = false)
+        val advarsel =
+            listOfNotNull(
+                statusHentHendelseslogg.toWarnMessage("hendelseslogg"),
+                statusHentMeldingsdetaljer.toWarnMessage("meldingsdetaljer"),
+            ).takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
+        call.respond(
+            MessageLogData(
+                meldingsdetaljer = meldingsdetaljer.toMottakIdInfo(),
+                meldingslogg = hendelseslogg.toMessageLogInfoList(),
+                warning = advarsel,
+            ),
+        )
     }
 
 // Modal: Ved klikk på CPA-id (frontend: /cpa/...)
@@ -527,3 +543,10 @@ internal fun convertUtcToLocalString(utcString: String?): String? {
         utcString
     }
 }
+
+private fun HttpStatusCode.toWarnMessage(component: String) =
+    if (!this.isSuccess()) {
+        "Hent $component returnerte HTTP $value: $description"
+    } else {
+        null
+    }
