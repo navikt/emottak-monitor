@@ -2,7 +2,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
-import { initialDate, initialTime } from "../util";
+import { initialFromDate, initialToDate, initialTime } from "../util";
 import { Table } from "@navikt/ds-react";
 import styles from "../styles/Table.module.scss";
 import RowWithContent from "../components/RowWithContent";
@@ -23,8 +23,8 @@ type MappedStatistikkInfo = {
 };
 
 const FeilStatistikk = () => {
-  const [fromDate, setFromDate] = useState(initialDate(""));
-  const [toDate, setToDate] = useState(initialDate(""));
+  const [fromDate, setFromDate] = useState(initialFromDate(""));
+  const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
 
@@ -54,7 +54,7 @@ const FeilStatistikk = () => {
   const { loading, error, data } = fetchState;
   const statistikkInfoList = data ? mappedStatistikkInfo(data) : [];
 
-  let pageSize = 10;
+  let pageSize = 25;
   const [currentPage, setCurrentPage] = useState(1);
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
