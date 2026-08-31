@@ -50,7 +50,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
     const commitToTime      = () => { setToTime(toTimeDraft); };
 
     // Page and sort-inputs:
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(currentParams.currentPage);
     const [pageSize, setPageSize] = useState(currentParams.pageSize);
 
     const onPageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -59,6 +59,14 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
             setCurrentPage(1);
             setPageSize(newSize);
             performSearch(1, newSize);
+        }
+    };
+
+    const onPageChange = (page: number | string) => {
+        const newPage = parseInt((""+page), 10);
+        if (newPage !== currentPage) {
+            setCurrentPage(newPage);
+            performSearch(newPage, pageSize);
         }
     };
 
@@ -144,7 +152,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
                 onPageSizeChange={onPageSizeChange}
                 totalCount={totalCount}
                 currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
+                setCurrentPage={onPageChange}
             />
         </form>
     );
