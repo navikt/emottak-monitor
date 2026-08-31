@@ -1,21 +1,18 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import RowWithContent from "../components/RowWithContent";
-import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
-import useFilter from "../hooks/useFilter";
-import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
-import {Link, useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
-import {initialToDate} from "../util";
 
 interface AssociatedMessagesProps {
-    mottakid: string;
+    mottakId: string;
+    conversationId: string;
 }
 
 type MessageInfo = {
@@ -32,12 +29,9 @@ type MessageInfo = {
     status: string;
 };
 
-export default function AssociatedMessages({mottakid}: AssociatedMessagesProps) {
+export default function AssociatedMessages({mottakId, conversationId}: AssociatedMessagesProps) {
 
-    const debouncedMottakId = useDebounce(mottakid, 1000);
-
-    // TODO: fromDate og toDate skal brukes
-    const url = `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&mottakId=${debouncedMottakId}`;
+    const url = `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
 
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
@@ -47,17 +41,6 @@ export default function AssociatedMessages({mottakid}: AssociatedMessagesProps) 
     useEffect(() => {
         callRequest();
     }, [callRequest]);
-
-    const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
-        messages ?? [],
-        ["role", "service", "action", "status"]
-    );
-
-    const {
-        items: filteredAndSortedMessages,
-        requestSort,
-        sortConfig,
-    } = useTableSorting(filteredMessages);
 
     const showSpinner = loading;
     const showErrorMessage = !loading && error?.message;
@@ -99,8 +82,8 @@ export default function AssociatedMessages({mottakid}: AssociatedMessagesProps) 
                     {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
                     {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
                     {showData &&
-                        filteredAndSortedMessages.map((message, index) => (
-                            (message.mottakid != mottakid) &&   <Table.Row key={message.mottakid} className={ clsx({[tableStyles.coloredRow]: index % 2}, tableStyles.cellTextAtTop) }>
+                        messages.map((message, index) => (
+                            (message.mottakid != mottakId) &&   <Table.Row key={message.mottakid} className={ clsx({[tableStyles.coloredRow]: index % 2}, tableStyles.cellTextAtTop) }>
                                 <Table.DataCell>
                                     {
                                         (message.status === "Ferdigbehandlet") ? (

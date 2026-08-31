@@ -36,10 +36,10 @@ class HentMeldingerTest {
         val outsideRequestedInterval = "2025-09-16T12:00:00"
 
         insertStatus()
-        insertMelding(1111, "mId1", insideRequestedInterval + ".001")
-        insertMelding(2222, "mId2", insideRequestedInterval + ".002")
-        insertMelding(3333, "mId3", insideRequestedInterval + ".003")
-        insertMelding(4444, "mId4", insideRequestedInterval + ".004")
+        insertMelding(1111, "mId1", insideRequestedInterval + ".001", "1")
+        insertMelding(2222, "mId2", insideRequestedInterval + ".002", "2")
+        insertMelding(3333, "mId3", insideRequestedInterval + ".003", "1")
+        insertMelding(4444, "mId4", insideRequestedInterval + ".004", "2")
         insertMelding(5555, "mId5", insideRequestedInterval + ".005")
         insertMelding(6666, "mId6", insideRequestedInterval + ".006")
         insertMelding(7777, "mId7", insideRequestedInterval + ".007")
@@ -48,35 +48,71 @@ class HentMeldingerTest {
         insertMelding(1000, "mId10", outsideRequestedInterval)
 
         // Default for Pageable is ascending
-        var requestedPage = Pageable(1, 4)
+        var requestedPage = Pageable(pageNumber = 1, pageSize = 4)
         var resultPage = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 1
-        resultPage.content.size shouldBe 4
-        resultPage.totalPages shouldBe 3
-        resultPage.totalElements shouldBe 9
+        resultPage.content.size shouldBe 6 // PageSize (4) is number of distinct conversationId's, content.size is number of actual messages
+        resultPage.totalPages shouldBe 2
+        resultPage.totalElements shouldBe 7 // Total number of distinct conversationId's.
+        println(resultPage.content)
         resultPage.content[0].mottakid shouldBe "mId1"
-        resultPage.content[1].mottakid shouldBe "mId2"
-        resultPage.content[2].mottakid shouldBe "mId3"
+        resultPage.content[1].mottakid shouldBe "mId3"
+        resultPage.content[2].mottakid shouldBe "mId2"
         resultPage.content[3].mottakid shouldBe "mId4"
+        resultPage.content[4].mottakid shouldBe "mId5"
+        resultPage.content[5].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
         resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 2
-        resultPage.content.size shouldBe 4
-        resultPage.totalPages shouldBe 3
-        resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBe "mId5"
-        resultPage.content[1].mottakid shouldBe "mId6"
-        resultPage.content[2].mottakid shouldBe "mId7"
-        resultPage.content[3].mottakid shouldBe "mId8"
+        resultPage.content.size shouldBe 3
+        resultPage.totalPages shouldBe 2
+        resultPage.totalElements shouldBe 7
+        resultPage.content[0].mottakid shouldBe "mId7"
+        resultPage.content[1].mottakid shouldBe "mId8"
+        resultPage.content[2].mottakid shouldBe "mId9"
+    }
 
-        requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
-        resultPage.page shouldBe 3
-        resultPage.content.size shouldBe 1
-        resultPage.totalPages shouldBe 3
-        resultPage.totalElements shouldBe 9
-        resultPage.content[0].mottakid shouldBe "mId9"
+    @Test
+    fun testHentMeldingerConversationId() {
+        val fom = LocalDateTime.parse("1970-01-01T00:00:00")
+        val tom = LocalDateTime.parse("2100-01-01T00:00:00")
+        val time = "2025-09-17T12:00:00"
+
+        insertStatus()
+        insertMelding(1111, "mId1", time + ".001", "01")
+        insertMelding(2222, "mId2", time + ".002", "02")
+        insertMelding(3333, "mId3", time + ".003", "01")
+        insertMelding(4444, "mId4", time + ".004", "02")
+        insertMelding(5555, "mId5", time + ".005", "03")
+
+        val requestedPage = Pageable(1, 4)
+        val resultPage = messageQueryService.meldinger(fom, tom, conversationId = "01", pageable = requestedPage)
+        resultPage.page shouldBe 1
+        resultPage.content.size shouldBe 2
+        resultPage.totalPages shouldBe 1
+        resultPage.totalElements shouldBe 1
+    }
+
+    @Test
+    fun testHentMeldingerConversationIdNoMatch() {
+        val fom = LocalDateTime.parse("1970-01-01T00:00:00")
+        val tom = LocalDateTime.parse("2100-01-01T00:00:00")
+        val time = "2025-09-17T12:00:00"
+
+        insertStatus()
+        insertMelding(1111, "mId1", time + ".001", "01")
+        insertMelding(2222, "mId2", time + ".002", "02")
+        insertMelding(3333, "mId3", time + ".003", "01")
+        insertMelding(4444, "mId4", time + ".004", "02")
+        insertMelding(5555, "mId5", time + ".005", "03")
+
+        val requestedPage = Pageable(1, 4)
+        val resultPage = messageQueryService.meldinger(fom, tom, conversationId = "1", pageable = requestedPage)
+        resultPage.page shouldBe 1
+        resultPage.content.size shouldBe 0
+        resultPage.totalPages shouldBe 0
+        resultPage.totalElements shouldBe 0
     }
 
     @Test
@@ -169,17 +205,18 @@ class HentMeldingerTest {
         hendelseid: Int,
         mottakid: String,
         tid: String,
+        conversationId: String? = null,
     ) {
         testDatabase.runSql(
             "insert into LOGG(HENDELSE_ID, MOTTAK_ID) " +
                 "values(" + hendelseid + ",'" + mottakid + "')",
         )
+        val conversId = conversationId ?: "convers_$mottakid"
         testDatabase.runSql(
             "insert into MELDING(MOTTAK_ID, DATOMOTTAT, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, " +
                 "EBCONVERS_ID, AVTALE_ID, STATUSLEVEL) " +
-                "values('" + mottakid + "','" + tid + "','role_" + mottakid + "','service_" + mottakid + "','action_" +
-                mottakid + "','param_" + mottakid + "','sender_" + mottakid + "','convers_" + mottakid +
-                "','cpa_+mottakid+',1)",
+                "values('$mottakid','$tid','role_$mottakid','service_$mottakid','action_$mottakid'," +
+                "'param_$mottakid','sender_$mottakid','$conversId','cpa_+mottakid+',1)",
         )
     }
 
