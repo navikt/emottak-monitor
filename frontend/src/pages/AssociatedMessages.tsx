@@ -65,6 +65,11 @@ export default function AssociatedMessages({mottakId, conversationId}: Associate
             <Table className={tableStyles.table}>
                 <Table.Header className={tableStyles.tableHeader}>
                     <Table.Row>
+                        <Table.HeaderCell colSpan={8} style={{textAlign:"center"}}>
+                            TILKNYTTEDE MELDINGER
+                        </Table.HeaderCell>
+                    </Table.Row>
+                    <Table.Row>
                         {headers.map(({key, name}) => (
                             <Table.HeaderCell key={key}>
                                 {name}
