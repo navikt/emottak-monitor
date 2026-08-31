@@ -20,7 +20,7 @@ const ConversationStatusTable = () => {
         cpaIdPattern: "",
         service: "",
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 25,
         sortOrder: "DESC"
     };
     const { data, loading, error, params, setParams, triggerSearch, goToPage } = useConversationStatusSearch(defaultFilters);
