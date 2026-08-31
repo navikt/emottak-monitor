@@ -1,8 +1,10 @@
 package no.nav.emottak.model.dto
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import no.nav.emottak.model.MessageLogInfo
 
+@Serializable
 private data class MessageLogDto(
     val eventDate: String,
     val eventDescription: String,
