@@ -5,7 +5,7 @@ import React, {useEffect} from "react";
 import RowWithContent from "../components/RowWithContent";
 import useFetch from "../hooks/useFetch";
 import tableStyles from "../styles/Table.module.scss";
-import {Link, useLocation} from "react-router-dom";
+import ModalLink from "../components/ModalLink";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
@@ -30,8 +30,6 @@ type MessageInfo = {
 };
 
 export default function AssociatedMessages({mottakId, conversationId}: AssociatedMessagesProps) {
-    const location = useLocation();
-
     const url = `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
@@ -104,10 +102,9 @@ export default function AssociatedMessages({mottakId, conversationId}: Associate
                                     {message.datomottat.substring(0, 23)}
                                 </Table.DataCell>
                                 <Table.DataCell>
-                                    <Link
+                                    <ModalLink
                                         to={`/logg/${message.mottakid}`}
-                                        state={{backgroundLocation: location}}
-                                    >{message.mottakid}</Link>
+                                    >{message.mottakid}</ModalLink>
                                 </Table.DataCell>
                                 <Table.DataCell>{message.role}</Table.DataCell>
                                 <Table.DataCell>{message.service}</Table.DataCell>
@@ -115,10 +112,10 @@ export default function AssociatedMessages({mottakId, conversationId}: Associate
                                 <Table.DataCell>{message.referanse}</Table.DataCell>
                                 <Table.DataCell>{message.avsender}</Table.DataCell>
                                 <Table.DataCell>
-                                    <Link
+                                    <ModalLink
                                         to={`/cpa/${message.cpaid}`}
-                                        state={{backgroundLocation: location}}
-                                    >{message.cpaid}</Link>
+                                        alwaysModal={true}
+                                    >{message.cpaid}</ModalLink>
                                 </Table.DataCell>
                             </Table.Row>
                         ))}

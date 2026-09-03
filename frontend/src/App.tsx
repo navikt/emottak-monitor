@@ -2,7 +2,7 @@ import "@navikt/ds-css";
 import "@navikt/ds-css-internal";
 import "nav-frontend-tabell-style";
 import React from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Location, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
@@ -11,6 +11,7 @@ import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
 import CpaIdTableModal from "./components/CpaIdTableModal";
+import { RouteLocationContext } from "./components/RouteLocationContext";
 import { useTheme } from './hooks/useTheme';
 import { useCompactness } from './hooks/useCompactness';
 import './styles/theme-light.scss';
@@ -37,20 +38,22 @@ export default function App() {
           {compactness === 'tight' ? '☰ Luftig' : '≡ Tett'} tema
         </button>{' '}
       </div>
-      <Routes location={state?.backgroundLocation || location}>
-        <Route element={<Layout />}>
-          {pages.map((page) => (
-            <Route key={page.path} path={page.path} element={page.element} />
-          ))}
-          <Route path="/" element={<Navigate to="/meldinger" />} />
-          <Route path="/logg/:mottakid" element={<LoggTable ebms={false} />} />
-          <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
-        </Route>
-        <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
-        <Route path="/isalive" element={<IsAlive />} />
-        <Route path="/isready" element={<IsReady />} />
-        <Route path="/metrics" element={<div>Metrics</div>} />
-      </Routes>
+      <RouteLocationContext.Provider value={state?.backgroundLocation || location}>
+        <Routes location={state?.backgroundLocation || location}>
+          <Route element={<Layout />}>
+            {pages.map((page) => (
+              <Route key={page.path} path={page.path} element={page.element} />
+            ))}
+            <Route path="/" element={<Navigate to="/meldinger" />} />
+            <Route path="/logg/:mottakid" element={<LoggTable ebms={false} />} />
+            <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
+          </Route>
+          <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
+          <Route path="/isalive" element={<IsAlive />} />
+          <Route path="/isready" element={<IsReady />} />
+          <Route path="/metrics" element={<div>Metrics</div>} />
+        </Routes>
+      </RouteLocationContext.Provider>
 
       {/* using react router functionality for showing modal with url change */}
       {state?.backgroundLocation && (
