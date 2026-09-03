@@ -31,6 +31,10 @@ type abonnementDetail = {
     behandlerInfo: BehandlerInfo;
     partnerId: string;
     abId: string;
+    Fornavn: string;
+    Familienavn: string;
+    HER_Id: string;
+    HPR: string;
 };
 
 type AbonnementData = {
@@ -52,7 +56,17 @@ const AbonnementTable = () => {
     const { fetchState, callRequest } = useFetch<AbonnementData>(url);
 
     const { loading, error, data } = fetchState;
-    const abonnementInfo = data?.abonnementListe ?? [];
+    const abonnementInfo = useMemo(
+        () =>
+            (data?.abonnementListe ?? []).map((item) => ({
+                ...item,
+                Fornavn: item.behandlerInfo?.fornavn ?? "",
+                Familienavn: item.behandlerInfo?.etternavn ?? "",
+                HER_Id: item.behandlerInfo?.herId ?? "",
+                HPR: item.behandlerInfo?.hpr ?? "",
+            })),
+        [data]
+    );
 
     useEffect(() => {
         callRequest();
@@ -134,6 +148,10 @@ const AbonnementTable = () => {
         { key: "sluttDato", name: "slutt_dato" },
         { key: "tssId", name: "TssID" },
         { key: "abId", name: "AB_ID" },
+        { key: "Fornavn", name: "Fornavn" },
+        { key: "Familienavn", name: "Familienavn" },
+        { key: "HER_Id", name: "HER-Id" },
+        { key: "HPR", name: "HPR" },
     ];
 
     const showSpinner = loading;
@@ -222,10 +240,6 @@ const AbonnementTable = () => {
                                 {name}
                             </Table.HeaderCell>
                         ))}
-                        <Table.HeaderCell>Fornavn</Table.HeaderCell>
-                        <Table.HeaderCell>Familienavn</Table.HeaderCell>
-                        <Table.HeaderCell>HER-id</Table.HeaderCell>
-                        <Table.HeaderCell>HPR</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -252,10 +266,10 @@ const AbonnementTable = () => {
                                     <Table.DataCell>{message.sluttDato}</Table.DataCell>
                                     <Table.DataCell>{message.tssId}</Table.DataCell>
                                     <Table.DataCell>{message.abId}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.fornavn}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.etternavn}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.herId}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.hpr}</Table.DataCell>
+                                    <Table.DataCell>{message.Fornavn}</Table.DataCell>
+                                    <Table.DataCell>{message.Familienavn}</Table.DataCell>
+                                    <Table.DataCell>{message.HER_Id}</Table.DataCell>
+                                    <Table.DataCell>{message.HPR}</Table.DataCell>
                                 </Table.Row>
                             );
                         })}
