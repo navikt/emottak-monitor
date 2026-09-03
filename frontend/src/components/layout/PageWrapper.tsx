@@ -11,7 +11,7 @@ const PageWrapper: React.FC<PageWrapperProps> = (props: PageWrapperProps) => {
   const location = useLocation();
 
     const title = pages.find((page) => location.pathname === page.path)?.title;
-    const enableHeader = pages.find((page) => location.pathname === page.path)?.enableHeader;
+    const enableHeader = pages.find((page) => location.pathname === page.path)?.enableHeader ?? true;
 
   return (
     <div className={styles.pageWrapper}>
