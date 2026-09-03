@@ -5,7 +5,7 @@ import React, {useEffect} from "react";
 import RowWithContent from "../components/RowWithContent";
 import useFetch from "../hooks/useFetch";
 import tableStyles from "../styles/Table.module.scss";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
@@ -30,9 +30,9 @@ type MessageInfo = {
 };
 
 export default function AssociatedMessages({mottakId, conversationId}: AssociatedMessagesProps) {
+    const location = useLocation();
 
     const url = `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
-
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;
@@ -62,10 +62,10 @@ export default function AssociatedMessages({mottakId, conversationId}: Associate
 
     return (
         <>
-            <Table className={tableStyles.table}>
+            <Table className={tableStyles.table} style={{marginTop:"6px"}}>
                 <Table.Header className={tableStyles.tableHeader}>
                     <Table.Row>
-                        <Table.HeaderCell colSpan={8} style={{textAlign:"center"}}>
+                        <Table.HeaderCell colSpan={9} style={{textAlign:"center"}}>
                             TILKNYTTEDE MELDINGER
                         </Table.HeaderCell>
                     </Table.Row>
