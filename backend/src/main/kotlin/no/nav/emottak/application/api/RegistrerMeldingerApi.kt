@@ -23,6 +23,7 @@ import no.nav.emottak.model.PartnerListe
 import no.nav.emottak.model.PartnerListeData
 import no.nav.emottak.model.dto.toMessageLogInfoList
 import no.nav.emottak.model.dto.toMottakIdInfo
+import no.nav.emottak.model.dto.toPageMessageInfo
 import no.nav.emottak.services.MessageQueryService
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -59,7 +60,8 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
 fun Route.hentMeldingerEbms(httpClient: HttpClient): Route =
     get("/hentmeldingerebms") {
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        hentMeldingerEbms(httpClient, fom, tom)
+        val mappingRequired = call.request.queryParameters["map"] != null
+        hentMeldingerEbms(httpClient, fom, tom, mappingRequired)
     }
 
 // Hendelser (frontend: /hendelser)
@@ -445,6 +447,7 @@ private suspend fun RoutingContext.hentMeldingerEbms(
     httpClient: HttpClient,
     fom: LocalDateTime,
     tom: LocalDateTime,
+    mappingRequired: Boolean = false,
 ) {
     val page = getURLEncodedQueryParameter("page")
     val size = getURLEncodedQueryParameter("size")
@@ -455,17 +458,28 @@ private suspend fun RoutingContext.hentMeldingerEbms(
     val role = getURLEncodedQueryParameter("role")
     val service = getURLEncodedQueryParameter("service")
     val action = getURLEncodedQueryParameter("action")
+    val conversationId = getURLEncodedQueryParameter("conversationId")
     val pageable = getPageable(page, size, sort) // just for validation
     if (pageable != null) {
         log.info(
-            "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, " +
+            "Fom : $fom, Tom : $tom, mottakId : $mottakId, cpaId : $cpaId, messageId : $messageId, conversationId : $conversationId, " +
                 "role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
         )
         val url =
-            "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId" +
-                "&messageId=$messageId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+            "$eventManagerUrl/message-details?fromDate=$fom&toDate=$tom&readableId=$mottakId&cpaId=$cpaId&messageId=$messageId" +
+                "&conversationId=$conversationId&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
         log.info("Henter meldinger fra message-details endepunktet til ebms ($url)")
-        executeREST(httpClient, url)
+
+        if (!mappingRequired) {
+            executeREST(httpClient, url)
+        } else { // Mapping to  required for AssociatedMessages.tsx:
+            val (responseCode, responseString) = executeREST(httpClient, url, useCallRespond = false)
+            if (responseCode != HttpStatusCode.OK) {
+                log.error("hentMeldingerEbms() feilet (HTTP $responseCode): $responseString")
+                call.respond(responseCode, responseString)
+            }
+            call.respond(responseString.toPageMessageInfo())
+        }
     }
 }
 

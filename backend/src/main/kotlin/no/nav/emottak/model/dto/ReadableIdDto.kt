@@ -16,6 +16,7 @@ private data class ReadableIdDto(
     val senderName: String? = null,
     val cpaId: String? = null,
     val status: String? = null,
+    val conversationId: String,
 )
 
 fun String.toMottakIdInfo(): MottakIdInfo? {
@@ -33,9 +34,10 @@ fun String.toMottakIdInfo(): MottakIdInfo? {
         role = messagelog.role,
         service = messagelog.service,
         action = messagelog.action,
-        referanse = messagelog.referenceParameter,
-        avsender = messagelog.senderName,
+        refparam = messagelog.referenceParameter,
+        avsenderparam = messagelog.senderName,
         cpaid = messagelog.cpaId,
         status = messagelog.status,
+        ebconvers_id = messagelog.conversationId,
     )
 }

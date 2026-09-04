@@ -3,6 +3,7 @@ package no.nav.emottak.aksessering.db
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageLogInfo
+import no.nav.emottak.model.convertStatus
 import java.sql.ResultSet
 
 fun DatabaseInterface.getMessageLogg(
@@ -31,5 +32,5 @@ fun ResultSet.toMessageLoggInfo(): MessageLogInfo =
         getString("HENDELSEDESKR"),
         getString("TILLEGSINFO"),
         getString("HENDELSE_ID"),
-        statuslevel = getString("STATUSLEVEL"),
+        statuslevel = convertStatus(getString("STATUSLEVEL")),
     )

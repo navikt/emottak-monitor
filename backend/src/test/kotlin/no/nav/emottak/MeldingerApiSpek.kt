@@ -112,7 +112,8 @@ class MeldingerApiSpek :
                                             |"referenceParameter":"123",
                                             |"senderName":"Unknown",
                                             |"cpaId":"nav:qass:123",
-                                            |"status":"Meldingen er ferdigbehandlet"}]
+                                            |"status":"Meldingen er ferdigbehandlet",
+                                            |"conversationId":"1"}]
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),

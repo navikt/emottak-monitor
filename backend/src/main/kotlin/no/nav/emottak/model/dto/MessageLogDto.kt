@@ -3,6 +3,7 @@ package no.nav.emottak.model.dto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import no.nav.emottak.model.MessageLogInfo
+import no.nav.emottak.model.convertStatus
 
 @Serializable
 private data class MessageLogDto(
@@ -20,5 +21,6 @@ fun String.toMessageLogInfoList(): List<MessageLogInfo> =
             hendelsesbeskrivelse = it.eventDescription,
             hendelsesdetaljer = it.eventData,
             hendelsesid = it.eventId,
+            statuslevel = convertStatus(it.eventStatus),
         )
     }
