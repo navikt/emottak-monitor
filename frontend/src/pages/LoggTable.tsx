@@ -49,15 +49,16 @@ type MessageLogInfo = {
 
 type LoggTableProps = {
   mottakid?: string;
+  ebms: boolean;
 };
 
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakid = props.mottakid ?? params.mottakid;
+  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakid}` : `/v1/hentlogg?mottakId=${mottakid}`;
+  const idName = props.ebms ? "ReadableId" : "MottakId";
 
-  const { fetchState, callRequest } = useFetch<MessageLogData>(
-    `/v1/hentlogg?mottakId=${mottakid}`
-  );
+  const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
   const { loading, error, data: data } = fetchState;
 
@@ -68,7 +69,7 @@ const LoggTable = (props: LoggTableProps) => {
   const { items } = useTableSorting(data?.meldingslogg ?? []);
 
   if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+    return <div>Ingen gyldig {idName}</div>;
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
@@ -91,7 +92,7 @@ const LoggTable = (props: LoggTableProps) => {
               <table>
                 <tbody>
                 <tr>
-                  <td><b>MottakId</b></td>
+                  <td><b>{idName}</b></td>
                   <td>{data?.meldingsdetaljer.mottakid}</td>
                   <td><b>Mottatt</b></td>
                   <td>{data?.meldingsdetaljer.datomottatt}</td>
@@ -132,35 +133,19 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>ebXML signer</b></td>
-                  <td>{data?.meldingsdetaljer.certdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td colSpan={5}>{data?.meldingsdetaljer.certdn}</td>
                 </tr>
                 <tr>
                   <td><b>Utsteder</b></td>
-                  <td>{data?.meldingsdetaljer.trustdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td colSpan={5}>{data?.meldingsdetaljer.trustdn}</td>
                 </tr>
                 <tr>
                   <td><b>Payload signer</b></td>
-                  <td>{data?.meldingsdetaljer.docsignerdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td colSpan={5}>{data?.meldingsdetaljer.docsignerdn}</td>
                 </tr>
                 <tr>
                   <td><b>Utsteder</b></td>
-                  <td>{data?.meldingsdetaljer.docsignerissuerdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td colSpan={5}>{data?.meldingsdetaljer.docsignerissuerdn}</td>
                 </tr>
                 </tbody>
               </table>
@@ -179,15 +164,7 @@ const LoggTable = (props: LoggTableProps) => {
                       return (
                           <Table.Row key={logDetails.hendelsesid}>
                             <Table.DataCell className="tabell__td--sortert">
-                              {
-                                (logDetails.statuslevel === "50") ? (
-                                    <img src={ok} alt="ok" />
-                                ) : (logDetails.statuslevel === "10") ? (
-                                    <img src={info} alt="info" />
-                                ) : (logDetails.statuslevel === "30") ? (
-                                    <img src={err} alt="error" />
-                                ) : ""
-                              }
+                              <img src={(logDetails.statuslevel === "ok") ? ok : (logDetails.statuslevel === "error") ? err : info} alt={logDetails.statuslevel} />
                             </Table.DataCell>
                             <Table.DataCell className="tabell__td--sortert">
                               {logDetails.hendelsesdato.substring(0, 23)}
@@ -219,6 +196,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <AssociatedMessages
                     mottakId={data.meldingsdetaljer.mottakid}
                     conversationId={data.meldingsdetaljer.ebconvers_id!!}
+                    ebms={props.ebms}
                 />
             )}
           </>

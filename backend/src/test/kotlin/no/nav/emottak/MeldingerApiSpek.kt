@@ -95,8 +95,8 @@ class MeldingerApiSpek :
                                     respond(
                                         content =
                                             """[
-                                            |{"eventDate":"2025-11-19T15:11:59.667195+01:00[Europe/Oslo]","eventDescription":"Melding mottatt via HTTP","eventId":"5"},
-                                            |{"eventDate":"2025-11-19T15:11:59.698177+01:00[Europe/Oslo]","eventDescription":"Melding validert mot CPA","eventId":"37"}]
+                                            |{"eventDate":"2025-11-19T15:11:59.667195+01:00[Europe/Oslo]","eventDescription":"Melding mottatt via HTTP","eventId":"5","eventData":"","eventStatus":"Informasjon"},
+                                            |{"eventDate":"2025-11-19T15:11:59.698177+01:00[Europe/Oslo]","eventDescription":"Melding validert mot CPA","eventId":"37","eventData":"","eventStatus":"Informasjon"}]
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
@@ -112,7 +112,8 @@ class MeldingerApiSpek :
                                             |"referenceParameter":"123",
                                             |"senderName":"Unknown",
                                             |"cpaId":"nav:qass:123",
-                                            |"status":"Meldingen er ferdigbehandlet"}]
+                                            |"status":"Meldingen er ferdigbehandlet",
+                                            |"conversationId":"1"}]
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),

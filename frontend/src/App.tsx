@@ -10,8 +10,6 @@ import CpaIdTable from "./pages/CpaIdTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
-import LoggTableEbms from "./pages/LoggTableEbms";
-import LoggTableEbmsModal from "./components/LoggTableEbmsModal";
 import CpaIdTableModal from "./components/CpaIdTableModal";
 import { RouteLocationContext } from "./components/RouteLocationContext";
 import { useTheme } from './hooks/useTheme';
@@ -47,8 +45,8 @@ export default function App() {
               <Route key={page.path} path={page.path} element={page.element} />
             ))}
             <Route path="/" element={<Navigate to="/meldinger" />} />
-            <Route path="/logg/:mottakid" element={<LoggTable />} />
-            <Route path="/loggebms/:readableId" element={<LoggTableEbms />} />
+            <Route path="/logg/:mottakid" element={<LoggTable ebms={false} />} />
+            <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
           </Route>
           <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
           <Route path="/isalive" element={<IsAlive />} />
@@ -60,8 +58,8 @@ export default function App() {
       {/* using react router functionality for showing modal with url change */}
       {state?.backgroundLocation && (
         <Routes>
-          <Route path="/logg/:mottakid" element={<LoggTableModal />} />
-          <Route path="/loggebms/:readableId" element={<LoggTableEbmsModal />} />
+          <Route path="/logg/:mottakid" element={<LoggTableModal ebms={false} />} />
+          <Route path="/loggebms/:mottakid" element={<LoggTableModal ebms={true} />} />
           <Route path="/cpa/:cpaid" element={<CpaIdTableModal />} />
         </Routes>
       )}
