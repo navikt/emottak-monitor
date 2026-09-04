@@ -1,7 +1,7 @@
-import { Table } from "@navikt/ds-react";
+import {Button, Table} from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { Link, useLocation } from "react-router-dom";
 import Filter from "../components/Filter";
 import Pageinformation from "../components/Pageinformation";
@@ -13,6 +13,9 @@ import useTableSorting from "../hooks/useTableSorting";
 import { initialFromDate, initialToDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type EventInfo = {
   action: string;
@@ -24,6 +27,8 @@ type EventInfo = {
   role: string;
   service: string;
   tillegsinfo: string | null;
+  ebconversid: string;
+  statuslevel: string;
 };
 
 type Page = {
@@ -36,10 +41,18 @@ type Page = {
 
 const EventsTable = () => {
   const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  const toggleGroup = (key: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-
   const [fromDate, setFromDate] = useState(initialFromDate(""));
   const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
@@ -93,6 +106,16 @@ const EventsTable = () => {
     sortConfig,
   } = useTableSorting(filteredEvents);
 
+  const conversationGroups = useMemo(() => {
+    const map = new Map<string, EventInfo[]>();
+    for (const msg of filteredAndSortedEvents) {
+      const key = msg.ebconversid;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(msg);
+    }
+    return map;
+  }, [filteredAndSortedEvents]);
+
   const getClassNamesFor = (name: keyof EventInfo) => {
     if (!sortConfig) {
       return;
@@ -108,9 +131,11 @@ const EventsTable = () => {
     }
   };
 
-  const headers: { key: keyof EventInfo; name: string }[] = [
+  const headers: { key: keyof EventInfo | "collapse"; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsedato", name: "Mottatt" },
     { key: "hendelsedeskr", name: "Hendelse" },
+    { key: "collapse", name: "" },
     { key: "mottakid", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
@@ -154,8 +179,13 @@ const EventsTable = () => {
               {headers.map(({key, name}) => (
                   <Table.HeaderCell
                       key={key}
-                      onClick={() => requestSort(key)}
-                      className={getClassNamesFor(key)}
+                      onClick={() => key !== "collapse" && requestSort(key)}
+                      className={key !== "collapse" ? getClassNamesFor(key) : undefined}
+                      style={
+                        key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} :
+                            key === "hendelsedato" ? { width: "11.5em"} :
+                                undefined
+                      }
                   >
                     {name}
                   </Table.HeaderCell>
@@ -172,17 +202,52 @@ const EventsTable = () => {
             {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
             {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
             {showData &&
-                filteredAndSortedEvents.map((event, index) => {
+                filteredAndSortedEvents.map((event, rowIndex) => {
+                  const rowKey = `${event.mottakid}-${event.hendelsedato}-${rowIndex}`;
+                  const isExpanded = expandedGroups.has(rowKey);
+                  // Dedupe related messages by mottakid - only need one entry per message, not every hendelse.
+                  const relatedByMottakid = new Map<string, EventInfo>();
+                  for (const msg of conversationGroups.get(event.ebconversid) ?? []) {
+                    if (msg.mottakid === event.mottakid) continue;
+                    const existing = relatedByMottakid.get(msg.mottakid);
+                    if (!existing || msg.hendelsedato > existing.hendelsedato) {
+                      relatedByMottakid.set(msg.mottakid, msg);
+                    }
+                  }
+                  const relatedMessages: EventInfo[] = Array.from(relatedByMottakid.values())
+                      .sort((a, b) => b.hendelsedato.localeCompare(a.hendelsedato));
+
                   return (
-                      <Table.Row
-                          key={event.hendelsedeskr + index}
-                          className={clsx({[tableStyles.coloredRow]: index % 2})}
-                      >
-                        <Table.DataCell>{event.hendelsedato.substring(0, 23)}</Table.DataCell>
+                      <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
                         <Table.DataCell>
+                          {
+                            (event.statuslevel === "50") ? (
+                                <img src={ok} alt="ok" />
+                            ) : (event.statuslevel === "10") ? (
+                                <img src={info} alt="info" />
+                            ) : (event.statuslevel === "30") ? (
+                                <img src={err} alt="error" />
+                            ) : ""
+                          }
+                        </Table.DataCell>
+                        <Table.DataCell className="tabell__td--sortert">
+                          {event.hendelsedato.substring(0, 23)}
+                        </Table.DataCell>
+                        <Table.DataCell  className="tabell__td--sortert">
                           <Ekspanderbartpanel tittel={event.hendelsedeskr}>
                             {event.tillegsinfo}
                           </Ekspanderbartpanel>
+                        </Table.DataCell>
+                        <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
+                          {relatedMessages.length > 0 && (
+                              <Button
+                                  variant="primary"
+                                  size="xsmall"
+                                  onClick={() => toggleGroup(rowKey)}
+                              >
+                                {isExpanded ? "-" : "+"}
+                              </Button>
+                          )}
                         </Table.DataCell>
                         <Table.DataCell>
                           <Link
@@ -192,6 +257,37 @@ const EventsTable = () => {
                           >
                             {event.mottakid}
                           </Link>
+                          { isExpanded && (
+                              <table className={tableStyles.expandableTable}>
+                                <tbody>
+                                {relatedMessages.map((msg, msgIndex) => (
+                                    <tr key={`${msg.mottakid}-${msg.hendelsedato}-${msgIndex}`}>
+                                      <td>
+                                        {
+                                          (event.statuslevel === "50") ? (
+                                              <img src={ok} alt="ok" />
+                                          ) : (event.statuslevel === "10") ? (
+                                              <img src={info} alt="info" />
+                                          ) : (event.statuslevel === "30") ? (
+                                              <img src={err} alt="error" />
+                                          ) : ""
+                                        }
+                                      </td>
+                                      <td>
+                                        <Link
+                                            to={`/logg/${msg.mottakid}`}
+                                            state={{backgroundLocation: location}}
+                                        >{msg.mottakid}</Link>
+                                      </td>
+                                      <td>{msg.role}</td>
+                                      <td>{msg.service}</td>
+                                      <td>{msg.action}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                              </table>
+                            )
+                          }
                         </Table.DataCell>
                         <Table.DataCell>{event.role}</Table.DataCell>
                         <Table.DataCell>{event.service}</Table.DataCell>

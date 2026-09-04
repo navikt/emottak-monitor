@@ -13,7 +13,7 @@ fun DatabaseInterface.getMessageLogg(
         val statement =
             connection.prepareStatement(
                 """
-                SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.HENDELSE_ID, LOGG.TILLEGSINFO 
+                SELECT LOGG.STATUSLEVEL, LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.HENDELSE_ID, LOGG.TILLEGSINFO 
                 FROM $databasePrefix.MELDING, $databasePrefix.LOGG, $databasePrefix.HENDELSE
                 WHERE MELDING.MOTTAK_ID = LOGG.MOTTAK_ID AND LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID 
                 AND LOGG.MOTTAK_ID = ? ORDER BY LOGG.HENDELSEDATO ASC
@@ -31,4 +31,5 @@ fun ResultSet.toMessageLoggInfo(): MessageLogInfo =
         getString("HENDELSEDESKR"),
         getString("TILLEGSINFO"),
         getString("HENDELSE_ID"),
+        statuslevel = getString("STATUSLEVEL"),
     )

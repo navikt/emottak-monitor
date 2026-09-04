@@ -7,6 +7,10 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import logStyles from "../styles/Logg.module.scss";
 import clsx from "clsx";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
+import AssociatedMessages from "./AssociatedMessages";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -20,10 +24,19 @@ type MottakIdInfo = {
   role?: string;
   service?: string;
   action?: string;
-  referanse?: string;
+  ebcomnavn?: string;
   avsender?: string;
   cpaid?: string;
   status?: string;
+  meldingsparam?: string;
+  refparam?: string;
+  avsenderparam?: string;
+  ebconvers_id?: string;
+  ebmessage_id?: string;
+  certdn?: string;
+  trustdn?: string;
+  docsignerdn?: string;
+  docsignerissuerdn?: string;
 };
 
 type MessageLogInfo = {
@@ -31,6 +44,7 @@ type MessageLogInfo = {
   hendelsesbeskrivelse: string;
   hendelsesdetaljer?: string,
   hendelsesid: string;
+  statuslevel: string;
 };
 
 type LoggTableProps = {
@@ -58,6 +72,7 @@ const LoggTable = (props: LoggTableProps) => {
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsesdato", name: "Dato" },
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "hendelsesdetaljer", name: "Detaljer" },
@@ -78,7 +93,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <tr>
                   <td><b>MottakId</b></td>
                   <td>{data?.meldingsdetaljer.mottakid}</td>
-                  <td><b>Mottatt dato</b></td>
+                  <td><b>Mottatt</b></td>
                   <td>{data?.meldingsdetaljer.datomottatt}</td>
                   <td></td>
                   <td></td>
@@ -93,17 +108,57 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>Avsender</b></td>
-                  <td>{data?.meldingsdetaljer.avsender}</td>
+                  <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
                   <td>{data?.meldingsdetaljer.cpaid}</td>
                   <td></td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td><b>Referanse</b></td>
-                  <td>{data?.meldingsdetaljer.referanse}</td>
-                  <td><b>Status</b></td>
-                  <td>{data?.meldingsdetaljer.status}</td>
+                  <td><b>Melding.param</b></td>
+                  <td>{data?.meldingsdetaljer.meldingsparam}</td>
+                  <td><b>Ref.param</b></td>
+                  <td>{data?.meldingsdetaljer.refparam}</td>
+                  <td><b>Avsender.param</b></td>
+                  <td>{data?.meldingsdetaljer.avsenderparam}</td>
+                </tr>
+                <tr>
+                  <td><b>EbConversationId</b></td>
+                  <td>{data?.meldingsdetaljer.ebconvers_id}</td>
+                  <td><b>EbMessageId</b></td>
+                  <td>{data?.meldingsdetaljer.ebmessage_id}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>ebXML signer</b></td>
+                  <td>{data?.meldingsdetaljer.certdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Utsteder</b></td>
+                  <td>{data?.meldingsdetaljer.trustdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Payload signer</b></td>
+                  <td>{data?.meldingsdetaljer.docsignerdn}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Utsteder</b></td>
+                  <td>{data?.meldingsdetaljer.docsignerissuerdn}</td>
+                  <td></td>
+                  <td></td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -123,6 +178,17 @@ const LoggTable = (props: LoggTableProps) => {
                     items.map((logDetails) => {
                       return (
                           <Table.Row key={logDetails.hendelsesid}>
+                            <Table.DataCell className="tabell__td--sortert">
+                              {
+                                (logDetails.statuslevel === "50") ? (
+                                    <img src={ok} alt="ok" />
+                                ) : (logDetails.statuslevel === "10") ? (
+                                    <img src={info} alt="info" />
+                                ) : (logDetails.statuslevel === "30") ? (
+                                    <img src={err} alt="error" />
+                                ) : ""
+                              }
+                            </Table.DataCell>
                             <Table.DataCell className="tabell__td--sortert">
                               {logDetails.hendelsesdato.substring(0, 23)}
                             </Table.DataCell>
@@ -148,7 +214,14 @@ const LoggTable = (props: LoggTableProps) => {
               </Table.Body>
               {loading && <NavFrontendSpinner/>}
               {error?.message && <p>{error.message}</p>}
-            </Table></>
+            </Table>
+            {data?.meldingsdetaljer && (
+                <AssociatedMessages
+                    mottakId={data.meldingsdetaljer.mottakid}
+                    conversationId={data.meldingsdetaljer.ebconvers_id!!}
+                />
+            )}
+          </>
       )}
     </div>
   );

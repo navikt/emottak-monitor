@@ -33,8 +33,9 @@ class MessageQueryService(
         mottakId: String? = null,
         cpaId: String? = null,
         messageId: String? = null,
+        conversationId: String? = null,
         pageable: Pageable? = null,
-    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId, pageable)
+    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId, conversationId, pageable)
 
     fun hendelser(
         fom: LocalDateTime,

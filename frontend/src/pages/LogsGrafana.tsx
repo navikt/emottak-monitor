@@ -36,7 +36,7 @@ const LogsGrafana: React.FC = () => {
 
     const applicationService: Record<string, string[]> = {
         'ebms-provider': ['HarBorgerFrikort', 'HarBorgerEgenandelFritak'],
-        'ebms-async': ['Inntektsforesporsel', 'Trekkopplysning'],
+        'ebms-async': ['BehandlerKrav', 'HarBorgerFrikortMengde', 'Inntektsforesporsel', 'Legemelding', 'OppgjorsKontroll', 'Sykmelding', 'Trekkopplysning'],
     };
 
     const serviceActions: Record<string, string[]> = {
@@ -45,6 +45,11 @@ const LogsGrafana: React.FC = () => {
         Trekkopplysning: ['Innmelding', 'Kvittering', 'Avvisning'],
         HarBorgerFrikort: ['EgenandelForesporsel', 'Svar', 'Avvisning'],
         HarBorgerEgenandelFritak: ['EgenandelForesporsel', 'Svar', 'Avvisning'],
+        BehandlerKrav: ["OppgjorsMelding", "OppgjorsMeldingVirksomhet", "Svarmelding"],
+        Sykmelding: ["Registrering", "Svar"],
+        Legemelding: ["Legeerklaring", "Svarmelding"],
+        HarBorgerFrikortMengde: ["EgenandelForesporsel", "Svar", "Avvisning"],
+        OppgjorsKontroll: ["Oppgjorskrav", "Svarmelding", "Oppgjorsresultat", "Utbetaling"],
     };
 
     const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

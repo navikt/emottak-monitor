@@ -10,4 +10,6 @@ data class HendelseInfo(
     val action: String? = null,
     val referanse: String? = null,
     val avsender: String? = null,
+    val ebconversid: String? = null,
+    val statuslevel: String? = null,
 )
