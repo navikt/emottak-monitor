@@ -13,6 +13,7 @@ import err from "../images/error.gif";
 interface AssociatedMessagesProps {
     mottakId: string;
     conversationId: string;
+    ebms: boolean;
 }
 
 type MessageInfo = {
@@ -29,8 +30,10 @@ type MessageInfo = {
     status: string;
 };
 
-export default function AssociatedMessages({mottakId, conversationId}: AssociatedMessagesProps) {
-    const url = `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
+export default function AssociatedMessages({mottakId, conversationId, ebms}: AssociatedMessagesProps) {
+    const loggLink = ebms ? "loggebms" : "logg"
+    const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
+    const url = `/v1/${backend}fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;
@@ -103,7 +106,7 @@ export default function AssociatedMessages({mottakId, conversationId}: Associate
                                 </Table.DataCell>
                                 <Table.DataCell>
                                     <ModalLink
-                                        to={`/logg/${message.mottakid}`}
+                                        to={`/${loggLink}/${message.mottakid}`}
                                     >{message.mottakid}</ModalLink>
                                 </Table.DataCell>
                                 <Table.DataCell>{message.role}</Table.DataCell>

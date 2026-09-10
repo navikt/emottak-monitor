@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LoggTable from "../pages/LoggTable";
 
-const LoggTableModal = () => {
+type LoggTableModalProps = {
+  ebms: boolean;
+};
+
+const LoggTableModal = (props: LoggTableModalProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,7 +31,7 @@ const LoggTableModal = () => {
           >
             Åpne som egen side
           </Button>
-          <LoggTable />
+          <LoggTable ebms={props.ebms} />
         </div>
       </Modal.Content>
     </Modal>
