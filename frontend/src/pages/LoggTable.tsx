@@ -52,6 +52,20 @@ type LoggTableProps = {
   ebms: boolean;
 };
 
+const parseJsonDetails = (details: string): [string, unknown][] | null => {
+  try {
+    const parsed: unknown = JSON.parse(details);
+    return parsed !== null && typeof parsed === "object"
+      ? Object.entries(parsed as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
+};
+
+const formatJsonValue = (value: unknown): string =>
+  typeof value === "string" ? value : JSON.stringify(value) ?? String(value);
+
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakid = props.mottakid ?? params.mottakid;
@@ -173,16 +187,30 @@ const LoggTable = (props: LoggTableProps) => {
                               {logDetails.hendelsesbeskrivelse}
                             </Table.DataCell>
                             <Table.DataCell>
-                              <div
-                                  className={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
-                                      ? logStyles.truncate
-                                      : undefined}
-                                  onClick={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
-                                      ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
-                                      : undefined}
-                              >
-                                {logDetails.hendelsesdetaljer}
-                              </div>
+                              {(() => {
+                                const details = logDetails.hendelsesdetaljer;
+                                if (!details) return null;
+
+                                const entries = parseJsonDetails(details);
+                                return entries ? (
+                                  <ul className={logStyles.detailsList}>
+                                    {entries.map(([key, value]) => (
+                                      <li key={key}>
+                                        <b>{key}:</b> {formatJsonValue(value)}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <div
+                                      className={details.length > 120 ? logStyles.truncate : undefined}
+                                      onClick={details.length > 120
+                                          ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
+                                          : undefined}
+                                  >
+                                    {details}
+                                  </div>
+                                );
+                              })()}
                             </Table.DataCell>
                             <Table.DataCell>{logDetails.hendelsesid}</Table.DataCell>
                           </Table.Row>
