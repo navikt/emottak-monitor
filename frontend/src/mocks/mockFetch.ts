@@ -250,6 +250,44 @@ if (process.env.NODE_ENV === 'development') {
         return [200, payload];
     });
 
+    // Mocke kall til v1/hentmeldingerebms?map&:
+    mock.onGet(/\/v1\/hentmeldingerebms\?map&/).reply((config) => {
+        console.log("Mocker hentmeldingerebms (for AssociatedMessages.tsx)");
+        const payload = {
+            "page":1,
+            "size":10,
+            "sort":"DESC",
+            "totalElements":2,
+            "content":[
+                {
+                    "datomottat":"2026-06-17T13:35:36.128614+02:00[Europe/Oslo]",
+                    "mottakid":"IN.2606171330.rakk.b927d7",
+                    "role":"Not applicable",
+                    "service":"urn:oasis:names:tc:ebxml-msg:service",
+                    "action":"Acknowledgment",
+                    "referanse":"Unknown",
+                    "avsender":"RAKKESTAD KOMMUNE, Pleie og Omsorg",
+                    "cpaid":"nav:32510",
+                    "antall":64,
+                    "status":"Meldingen er ferdigbehandlet"
+                }, {
+                    "datomottat":"2026-06-17T13:35:32.651346+02:00[Europe/Oslo]",
+                    "mottakid":"OUT.2606171335.NAVM.58df2a",
+                    "role":"Ytelsesutbetaler",
+                    "service":"Inntektsforesporsel",
+                    "action":"InntektInformasjon",
+                    "referanse":"Unknown",
+                    "avsender":"Nav Mottak",
+                    "cpaid":"nav:85298",
+                    "antall":64,
+                    "status":"Meldingen er ferdigbehandlet"
+                }
+            ],
+            "totalPages":1
+        };
+        return [200, payload];
+    });
+
     // Mocke kall til v1/hentmeldingerebms?:
     mock.onGet(/\/v1\/hentmeldingerebms\?/).reply((config) => {
         console.log("Mocker hentmeldingerebms");
@@ -556,15 +594,17 @@ if (process.env.NODE_ENV === 'development') {
     mock.onGet(/\/v1\/hentlogg\?/).reply((config) => {
         console.log("Mocker hentlogg");
         const meldingsdetaljer = {
-            "datomottatt": "2026-06-17 15:30:42.90712",
-            "mottakid": "2608101400navm65888",
+            "datoMottatt": "2026-06-17 15:30:42.90712",
+            "mottakId": "2608101400navm65888",
+            "messageId": "gamle-emottak-id-message",
             "role": "KontrollUtbetaler",
             "service": "BehandlerKrav",
             "action": "Svarmelding",
             "referanse": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "avsender": "NAVmottak",
-            "cpaid": "nav:qass:34961",
+            "cpaId": "nav:qass:34961",
             "status": "Ferdigbehandlet",
+            "conversationId": "gamle-emottak-id-conversation",
         }
         const hendelser = [
             {
@@ -623,21 +663,25 @@ if (process.env.NODE_ENV === 'development') {
     mock.onGet(/\/v1\/hentloggebms\?/).reply((config) => {
         console.log("Mocker hentloggebms");
         const meldingsdetaljer = {
-            "datomottatt": "2026-06-17 15:30:42.90712",
-            "mottakid": "IN.2608281121.stor.d33ab2",
+            "datoMottatt": "2026-06-17 15:30:42.90712",
+            "mottakId": "IN.2608281121.stor.d33ab2",
+            "requestId": "931c5b8f-7781-4d18-b924-345fb86ecd52",
+            "messageId": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "role": "Fordringshaver",
             "service": "Inntektsforesporsel",
             "action": "Foresporsel",
             "referanse": null,
-            "avsender": "STORARTET USJENERT BJØRN KOMMUNE TEST",
-            "cpaid": "nav:qass:38576",
+            "avsenderparam": "STORARTET USJENERT BJØRN KOMMUNE TEST",
+            "cpaId": "nav:qass:38576",
             "status": "Ferdigbehandlet",
+            "conversationId": "nye-emottak-id-conversation",
         }
         const hendelser = [
             {
                 "hendelsesdato": "2026-06-17T15:01:01.794804+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding mottatt via SMTP",
-                "hendelsesid": "1"
+                "hendelsesid": "1",
+                "hendelsesdetaljer": "{\"senderAddress\":\"Min Kommune <min_kommune@edi.nhn.no>\",\"receiverAddress\":\"ebms@nav.no\"}"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.961656+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Payload lagret i database",
@@ -647,7 +691,7 @@ if (process.env.NODE_ENV === 'development') {
                 "hendelsesdato": "2026-06-17T15:01:01.981198+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding lagt på kø",
                 "hendelsesid": "15",
-                "hendelsesdetaljer": "Melding lagt på QA.P414.DETTE_ER_EN_QUEUE"
+                "hendelsesdetaljer": "{\"queue_name\":\"team-emottak.smtp.in.ebxml.payload\"}"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.995638+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Payload lest fra database",
@@ -660,7 +704,7 @@ if (process.env.NODE_ENV === 'development') {
                 "hendelsesdato": "2026-06-17T15:01:02.016677+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding lest fra kø",
                 "hendelsesid": "17",
-                "hendelsesdetaljer": "Melding lest fra QA.P414.DETTE_ER_EN_QUEUE"
+                "hendelsesdetaljer": "{\"queue_name\":\"team-emottak.smtp.in.ebxml.payload\"}"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.080434+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding validert mot CPA",
@@ -681,7 +725,7 @@ if (process.env.NODE_ENV === 'development') {
                 "hendelsesdato": "2026-06-17T15:01:02.484754+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Feil ved utsending melding til fagsystem",
                 "hendelsesid": "34",
-                "hendelsesdetaljer": "Det skjedde en feil"
+                "hendelsesdetaljer": "{\"error_code\":\"Fatal\",\"error_message\":\"Det skjedde en feil\"}"
             }
         ];
         const payload = {
