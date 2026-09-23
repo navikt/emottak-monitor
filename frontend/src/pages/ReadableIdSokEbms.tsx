@@ -121,9 +121,9 @@ const ReadableIdSokEbms = () => {
             })
           )}
           {!loading && !error && messageInfo?.length === 0 && (
-              <RowWithContent>Ingen mottaker ident informasjon funnet !</RowWithContent>
+              <RowWithContent colSpan={headers.length}>Ingen mottaker ident informasjon funnet !</RowWithContent>
           )}
-          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+          {error?.message && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
         </Table.Body>
       </Table>
       </>

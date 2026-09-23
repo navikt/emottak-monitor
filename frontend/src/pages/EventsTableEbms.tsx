@@ -175,13 +175,13 @@ const EventsTable = () => {
         </Table.Header>
         <Table.Body>
           {showSpinner && (
-            <RowWithContent>
+            <RowWithContent colSpan={headers.length}>
               <NavFrontendSpinner />
             </RowWithContent>
           )}
 
-          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
+          {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
               filteredAndSortedEvents.map((event, index) => {
               return (
