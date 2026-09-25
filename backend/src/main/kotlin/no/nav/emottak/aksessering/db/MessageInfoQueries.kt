@@ -5,6 +5,7 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
 import java.sql.Connection
 import java.sql.ResultSet
 import java.time.LocalDateTime
@@ -133,5 +134,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        getString("STATUS"),
+        convertStatus(getString("STATUS")),
     )

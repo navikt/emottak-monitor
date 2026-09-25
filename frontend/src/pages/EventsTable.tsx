@@ -221,11 +221,11 @@ const EventsTable = () => {
                       <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
                         <Table.DataCell>
                           {
-                            (event.statuslevel === "50") ? (
+                            (event.statuslevel === "ok") ? (
                                 <img src={ok} alt="ok" />
-                            ) : (event.statuslevel === "10") ? (
+                            ) : (event.statuslevel === "info") ? (
                                 <img src={info} alt="info" />
-                            ) : (event.statuslevel === "30") ? (
+                            ) : (event.statuslevel === "error") ? (
                                 <img src={err} alt="error" />
                             ) : ""
                           }
@@ -264,11 +264,11 @@ const EventsTable = () => {
                                     <tr key={`${msg.mottakid}-${msg.hendelsedato}-${msgIndex}`}>
                                       <td>
                                         {
-                                          (event.statuslevel === "50") ? (
+                                          (msg.statuslevel === "ok") ? (
                                               <img src={ok} alt="ok" />
-                                          ) : (event.statuslevel === "10") ? (
+                                          ) : (msg.statuslevel === "info") ? (
                                               <img src={info} alt="info" />
-                                          ) : (event.statuslevel === "30") ? (
+                                          ) : (msg.statuslevel === "error") ? (
                                               <img src={err} alt="error" />
                                           ) : ""
                                         }

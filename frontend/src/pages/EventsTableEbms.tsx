@@ -13,12 +13,17 @@ import { initialFromDate, initialToDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type EventDto = {
   action: string;
   senderName: string | null;
   eventDate: string;
   description: string;
+  status: string;
+  requestId: string;
   readableId: string;
   referenceParameter: string | null;
   role: string;
@@ -117,6 +122,7 @@ const EventsTable = () => {
   };
 
   const headers: { key: keyof EventDto; name: string }[] = [
+    { key: "status", name: "" },
     { key: "eventDate", name: "Mottatt" },
     { key: "description", name: "Hendelse" },
     { key: "readableId", name: "Mottak-id" },
@@ -189,6 +195,17 @@ const EventsTable = () => {
                   key={event.description + index}
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
+                  <Table.DataCell>
+                    {
+                      (event.status === "Ferdigbehandlet") ? (
+                          <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                      ) : (event.status === "Informasjon") ? (
+                          <img src={info} alt="info" title="Meldingen er under behandling" />
+                      ) : (event.status === "Feil") ? (
+                          <img src={err} alt="error" title="Meldingen feilet under behandling" />
+                      ) : ""
+                    }
+                  </Table.DataCell>
                   <Table.DataCell>{event.eventDate.substring(0, 23)}</Table.DataCell>
                   <Table.DataCell>
                       <Ekspanderbartpanel tittel={event.description}>
@@ -197,8 +214,8 @@ const EventsTable = () => {
                   </Table.DataCell>
                   <Table.DataCell>
                       <Link
-                        key={event.readableId}
-                        to={`/loggebms/${event.readableId}`}
+                        key={event.requestId}
+                        to={`/loggebms/${event.requestId}`}
                         state={{ backgroundLocation: location }}
                       >{event.readableId}</Link>
                   </Table.DataCell>
