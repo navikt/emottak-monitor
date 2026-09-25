@@ -243,12 +243,12 @@ const MessagesTable = () => {
           </Table.Header>
           <Table.Body>
             {showSpinner && (
-                <RowWithContent>
+                <RowWithContent colSpan={headers.length}>
                   <NavFrontendSpinner/>
                 </RowWithContent>
             )}
-            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+            {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
             {showData &&
                 groupedMessages.flatMap(({ key, messages }, groupIndex) => {
                   const isExpanded = expandedGroups.has(key);

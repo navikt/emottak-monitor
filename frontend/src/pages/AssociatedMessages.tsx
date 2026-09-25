@@ -81,12 +81,12 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
 
                 <Table.Body>
                     {showSpinner && (
-                        <RowWithContent>
+                        <RowWithContent colSpan={headers.length}>
                             <NavFrontendSpinner/>
                         </RowWithContent>
                     )}
-                    {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-                    {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+                    {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
                     {showData &&
                         messages.map((message, index) => (
                             (message.mottakid != mottakId) &&   <Table.Row key={message.mottakid} className={ clsx({[tableStyles.coloredRow]: index % 2}, tableStyles.cellTextAtTop) }>
