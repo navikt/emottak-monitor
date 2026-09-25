@@ -21,8 +21,8 @@ fun getMessageCpa(): List<MessageCPAInfo> = emptyList()
 fun getMottakIdInfo(): List<MottakIdInfo> =
     listOf(
         MottakIdInfo(
-            datomottatt = "2026-08-20 12:13:14",
-            mottakid = "123456789012345678901",
+            datoMottatt = "2026-08-20 12:13:14",
+            mottakId = "123456789012345678901",
         ),
     )
 
