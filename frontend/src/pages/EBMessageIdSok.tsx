@@ -121,9 +121,9 @@ const EBEMessageIdInfoSok = () => {
             })
           )}
           {!loading && !error && ebmessageInfo?.length === 0 && (
-              <RowWithContent>Ingen EBMessage ident informasjon funnet !</RowWithContent>
+              <RowWithContent colSpan={headers.length}>Ingen EBMessage ident informasjon funnet !</RowWithContent>
           )}
-          {error?.message && <RowWithContent>{error.message}</RowWithContent>}
+          {error?.message && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
         </Table.Body>
       </Table>
       </>

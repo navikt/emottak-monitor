@@ -65,12 +65,12 @@ const ConversationStatusTable = () => {
                 </Table.Header>
                 <Table.Body>
                     {showSpinner && (
-                        <RowWithContent>
+                        <RowWithContent colSpan={headers.length}>
                             <NavFrontendSpinner/>
                         </RowWithContent>
                     )}
-                    {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-                    {showNoDataMessage && <RowWithContent>Ingen conversations funnet!</RowWithContent>}
+                    {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen conversations funnet!</RowWithContent>}
                     {showData &&
                         messages.map((message, index) => {
                             return (
