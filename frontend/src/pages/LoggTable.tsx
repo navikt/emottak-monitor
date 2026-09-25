@@ -19,20 +19,20 @@ type MessageLogData = {
 };
 
 type MottakIdInfo = {
-  datomottatt: string;
-  mottakid: string;
+  datoMottatt: string;
+  mottakId: string;
+  requestId?: string;
   role?: string;
   service?: string;
   action?: string;
   ebcomnavn?: string;
-  avsender?: string;
-  cpaid?: string;
+  cpaId?: string;
   status?: string;
   meldingsparam?: string;
   refparam?: string;
   avsenderparam?: string;
-  ebconvers_id?: string;
-  ebmessage_id?: string;
+  conversationId?: string;
+  messageId?: string;
   certdn?: string;
   trustdn?: string;
   docsignerdn?: string;
@@ -54,9 +54,14 @@ type LoggTableProps = {
 
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
-  const mottakid = props.mottakid ?? params.mottakid;
-  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakid}` : `/v1/hentlogg?mottakId=${mottakid}`;
-  const idName = props.ebms ? "ReadableId" : "MottakId";
+  const mottakId = props.mottakid ?? params.mottakid;
+  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
+
+  // Kolonnenavn gamle vs nye emottak:
+  const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
+  const requestIdName = props.ebms ? "RequestId" : "";
+  const conversationIdName = props.ebms ? "ConversationId" : "EbConversationId";
+  const messageIdName = props.ebms ? "MessageId" : "EbMessageId";
 
   const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
@@ -68,8 +73,8 @@ const LoggTable = (props: LoggTableProps) => {
 
   const { items } = useTableSorting(data?.meldingslogg ?? []);
 
-  if (!mottakid) {
-    return <div>Ingen gyldig {idName}</div>;
+  if (!mottakId) {
+    return <div>Ingen gyldig {mottakIdName}</div>;
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
@@ -92,12 +97,12 @@ const LoggTable = (props: LoggTableProps) => {
               <table>
                 <tbody>
                 <tr>
-                  <td><b>{idName}</b></td>
-                  <td>{data?.meldingsdetaljer.mottakid}</td>
+                  <td><b>{mottakIdName}</b></td>
+                  <td>{data?.meldingsdetaljer.mottakId}</td>
+                  <td><b>{requestIdName}</b></td>
+                  <td>{data?.meldingsdetaljer.requestId}</td>
                   <td><b>Mottatt</b></td>
-                  <td>{data?.meldingsdetaljer.datomottatt}</td>
-                  <td></td>
-                  <td></td>
+                  <td>{data?.meldingsdetaljer.datoMottatt}</td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -111,7 +116,7 @@ const LoggTable = (props: LoggTableProps) => {
                   <td><b>Avsender</b></td>
                   <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
-                  <td>{data?.meldingsdetaljer.cpaid}</td>
+                  <td>{data?.meldingsdetaljer.cpaId}</td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -124,29 +129,33 @@ const LoggTable = (props: LoggTableProps) => {
                   <td>{data?.meldingsdetaljer.avsenderparam}</td>
                 </tr>
                 <tr>
-                  <td><b>EbConversationId</b></td>
-                  <td>{data?.meldingsdetaljer.ebconvers_id}</td>
-                  <td><b>EbMessageId</b></td>
-                  <td>{data?.meldingsdetaljer.ebmessage_id}</td>
+                  <td><b>{conversationIdName}</b></td>
+                  <td>{data?.meldingsdetaljer.conversationId}</td>
+                  <td><b>{messageIdName}</b></td>
+                  <td>{data?.meldingsdetaljer.messageId}</td>
                   <td></td>
                   <td></td>
                 </tr>
-                <tr>
-                  <td><b>ebXML signer</b></td>
-                  <td colSpan={5}>{data?.meldingsdetaljer.certdn}</td>
-                </tr>
-                <tr>
-                  <td><b>Utsteder</b></td>
-                  <td colSpan={5}>{data?.meldingsdetaljer.trustdn}</td>
-                </tr>
-                <tr>
-                  <td><b>Payload signer</b></td>
-                  <td colSpan={5}>{data?.meldingsdetaljer.docsignerdn}</td>
-                </tr>
-                <tr>
-                  <td><b>Utsteder</b></td>
-                  <td colSpan={5}>{data?.meldingsdetaljer.docsignerissuerdn}</td>
-                </tr>
+                {!props.ebms && /* Felter kun for gamle emottak: */
+                    <>
+                      <tr>
+                        <td><b>ebXML signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.certdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.trustdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Payload signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerissuerdn}</td>
+                      </tr>
+                    </>
+                }
                 </tbody>
               </table>
             </fieldset>
@@ -194,8 +203,8 @@ const LoggTable = (props: LoggTableProps) => {
             </Table>
             {data?.meldingsdetaljer && (
                 <AssociatedMessages
-                    mottakId={data.meldingsdetaljer.mottakid}
-                    conversationId={data.meldingsdetaljer.ebconvers_id!!}
+                    mottakId={data.meldingsdetaljer.mottakId}
+                    conversationId={data.meldingsdetaljer.conversationId!!}
                     ebms={props.ebms}
                 />
             )}

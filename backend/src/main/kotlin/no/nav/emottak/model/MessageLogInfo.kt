@@ -1,5 +1,8 @@
 package no.nav.emottak.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MessageLogInfo(
     val hendelsesdato: String,
     val hendelsesbeskrivelse: String,
