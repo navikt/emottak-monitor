@@ -106,6 +106,7 @@ class MeldingerApiSpek :
                                         content =
                                             """[{"receivedDate":"2025-11-19T15:11:59.646898+01:00[Europe/Oslo]",
                                             |"readableId":"IN.2511191511.UNKN.123",
+                                            |"requestId":"2af3496a-8d33-4af0-ab3e-fa1da4cd193e",
                                             |"role":"Utleverer",
                                             |"service":"HarBorgerEgenandelFritak",
                                             |"action":"EgenandelForesporsel",
@@ -113,7 +114,8 @@ class MeldingerApiSpek :
                                             |"senderName":"Unknown",
                                             |"cpaId":"nav:qass:123",
                                             |"status":"Meldingen er ferdigbehandlet",
-                                            |"conversationId":"1"}]
+                                            |"conversationId":"1",
+                                            |"messageId":"2"}]
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
