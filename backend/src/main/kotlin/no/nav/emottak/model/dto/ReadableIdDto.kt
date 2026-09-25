@@ -42,6 +42,6 @@ fun String.toMottakIdInfo(): MottakIdInfo? {
         cpaId = messagelog.cpaId,
         status = messagelog.status,
         conversationId = messagelog.conversationId,
-        messageId = messagelog.messageId
+        messageId = messagelog.messageId,
     )
 }

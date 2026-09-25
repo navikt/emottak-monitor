@@ -6,12 +6,14 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -27,6 +29,7 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
+import kotlinx.serialization.json.Json
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
 import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
@@ -46,6 +49,7 @@ import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.MessageLogData
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
@@ -218,6 +222,15 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
+
+                        val msg = Json.decodeFromString<MessageLogData>(String(response.readRawBytes()))
+                        msg.meldingsdetaljer shouldNotBe null
+                        msg.meldingsdetaljer!!.mottakId shouldBe "IN.2511191511.UNKN.123"
+                        msg.meldingsdetaljer.messageId shouldBe "2"
+                        msg.meldingsdetaljer.requestId shouldBe "2af3496a-8d33-4af0-ab3e-fa1da4cd193e"
+                        msg.meldingslogg.size shouldBe 2
+                        msg.meldingslogg[0].hendelsesbeskrivelse shouldBe "Melding mottatt via HTTP"
+                        msg.meldingslogg[1].hendelsesbeskrivelse shouldBe "Melding validert mot CPA"
                     }
                 }
 

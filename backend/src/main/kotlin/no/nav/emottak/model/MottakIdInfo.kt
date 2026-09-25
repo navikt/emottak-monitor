@@ -1,5 +1,8 @@
 package no.nav.emottak.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MottakIdInfo(
     val datoMottatt: String,
     val mottakId: String,
