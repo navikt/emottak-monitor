@@ -134,16 +134,16 @@ fun Route.hentLogg(meldingService: MessageQueryService): Route =
 @InternalAPI
 fun Route.hentLoggEbms(httpClient: HttpClient): Route =
     get("/hentloggebms") {
-        val readableId = call.request.queryParameters["readableId"]
-        if (readableId.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: readableId")
+        val requestId = call.request.queryParameters["requestId"]
+        if (requestId.isNullOrEmpty()) {
+            returnBadRequest("Mangler parameter: requestId")
             return@get
         }
-        var url = "$eventManagerUrl/message-details/$readableId"
-        log.info("Henter meldingsdetaljer fra endepunktet til ebms for $readableId ($url)")
+        var url = "$eventManagerUrl/message-details/$requestId"
+        log.info("Henter meldingsdetaljer fra endepunktet til ebms for requestId '$requestId' ($url)")
         val (statusHentMeldingsdetaljer, meldingsdetaljer) = executeREST(httpClient, url, useCallRespond = false)
-        url = "$eventManagerUrl/message-details/$readableId/events"
-        log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
+        url = "$eventManagerUrl/message-details/$requestId/events"
+        log.info("Henter hendelseslogg fra endepunktet til ebms for requestId '$requestId' ($url)")
         val (statusHentHendelseslogg, hendelseslogg) = executeREST(httpClient, url, useCallRespond = false)
         val advarsel =
             listOfNotNull(

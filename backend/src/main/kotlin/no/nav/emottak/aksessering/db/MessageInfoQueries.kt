@@ -9,6 +9,7 @@ import java.sql.Connection
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import kotlin.use
+import no.nav.emottak.model.convertStatus
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
@@ -133,5 +134,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        getString("STATUS"),
+        convertStatus(getString("STATUS")),
     )

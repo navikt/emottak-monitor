@@ -14,6 +14,9 @@ import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type MessageDto = {
   action: string;
@@ -129,6 +132,7 @@ const MessagesTable = () => {
   };
 
   const headers: { key: keyof MessageDto; name: string }[] = [
+    { key: "status", name: "" },
     { key: "receivedDate", name: "Mottatt" },
     { key: "readableIdList", name: "Mottak-id" },
     { key: "role", name: "Role" },
@@ -137,7 +141,6 @@ const MessagesTable = () => {
     { key: "referenceParameter", name: "Referanse" },
     { key: "senderName", name: "Avsender" },
     { key: "cpaId", name: "CPA-id" },
-    { key: "status", name: "Status" },
   ];
 
   const showSpinner = loading;
@@ -236,6 +239,17 @@ const MessagesTable = () => {
                           key={message.cpaId + index}
                           className={clsx({[tableStyles.coloredRow]: index % 2})}
                       >
+                        <Table.DataCell>
+                          {
+                            (message.status === "Meldingen er ferdigbehandlet") ? (
+                                <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                            ) : (message.status === "Meldingen er under behandling") ? (
+                                <img src={info} alt="info" title="Meldingen er under behandling" />
+                            ) : (message.status === "Meldingen feilet under behandling") ? (
+                                <img src={err} alt="error" title="Meldingen feilet under behandling" />
+                            ) : ""
+                          }
+                        </Table.DataCell>
                         <Table.DataCell className="tabell__td--sortert">
                           {message.receivedDate.substring(0, 23)}
                         </Table.DataCell>
@@ -263,7 +277,6 @@ const MessagesTable = () => {
                               state={{backgroundLocation: location}}
                           >{message.cpaId}</Link>
                         </Table.DataCell>
-                        <Table.DataCell>{message.status}</Table.DataCell>
                       </Table.Row>
                   );
                 })}
