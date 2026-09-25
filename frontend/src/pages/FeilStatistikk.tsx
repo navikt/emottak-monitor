@@ -126,13 +126,13 @@ const FeilStatistikk = () => {
         </Table.Header>
         <Table.Body>
           {showSpinner && (
-            <RowWithContent>
+            <RowWithContent colSpan={headers.length}>
               <NavFrontendSpinner />
             </RowWithContent>
           )}
 
-          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>Ingen statistikk informasjon funnet !</RowWithContent>}
+          {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen statistikk informasjon funnet !</RowWithContent>}
           {showData &&
             currentTableData.map((event, index) => {
               return (
