@@ -55,7 +55,7 @@ type LoggTableProps = {
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakId = props.mottakid ?? params.mottakid;
-  const url = props.ebms ? `/v1/hentloggebms?requestId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
+  const url = props.ebms ? `/v1/hentloggebms?id=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
   // Kolonnenavn gamle vs nye emottak:
   const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
