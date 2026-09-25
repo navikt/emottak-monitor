@@ -5,11 +5,11 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
 import java.sql.Connection
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import kotlin.use
-import no.nav.emottak.model.convertStatus
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
