@@ -5,16 +5,42 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.sql.ResultSet
 import java.time.LocalDateTime
+
+val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
 
 fun DatabaseInterface.hentHendelser(
     databasePrefix: String,
     fom: LocalDateTime,
     tom: LocalDateTime,
     pageable: Pageable? = null,
+    role: String? = null,
+    service: String? = null,
+    action: String? = null,
+    hendelsedeskr: String? = null,
 ): Page<HendelseInfo> =
     connection.use { connection ->
+        var filterClause = ""
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING.ROLE = ?"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING.SERVICE = ?"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING.ACTION = ?"
+        if (!hendelsedeskr.isNullOrBlank()) filterClause += " AND HENDELSE.HENDELSEDESKR = ?"
+
+        fun setFilterParams(
+            statement: java.sql.PreparedStatement,
+            startIndex: Int,
+        ): Int {
+            var index = startIndex
+            if (!role.isNullOrBlank()) statement.setObject(index++, role)
+            if (!service.isNullOrBlank()) statement.setObject(index++, service)
+            if (!action.isNullOrBlank()) statement.setObject(index++, action)
+            if (!hendelsedeskr.isNullOrBlank()) statement.setObject(index++, hendelsedeskr)
+            return index
+        }
+
         val countStatement =
             connection.prepareStatement(
                 """
@@ -22,10 +48,12 @@ fun DatabaseInterface.hentHendelser(
                 FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
                 WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
+                $filterClause
             """,
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
+        setFilterParams(countStatement, 3)
         val totalCount =
             countStatement.use {
                 val rs = it.executeQuery()
@@ -41,6 +69,7 @@ fun DatabaseInterface.hentHendelser(
             JOIN $databasePrefix.LOGG ON MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
             JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
             WHERE LOGG.HENDELSEDATO BETWEEN ? AND ?
+            $filterClause
             """.trimIndent()
 
         var orderBy = "DESC"
@@ -55,9 +84,10 @@ fun DatabaseInterface.hentHendelser(
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
+        val nextIndex = setFilterParams(statement, 3)
         if (pageable != null) {
-            statement.setObject(3, pageable.offset)
-            statement.setObject(4, pageable.pageSize)
+            statement.setObject(nextIndex, pageable.offset)
+            statement.setObject(nextIndex + 1, pageable.pageSize)
         }
         val list =
             statement

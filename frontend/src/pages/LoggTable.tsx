@@ -11,6 +11,7 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
+import GrafanaLogg from "../components/GrafanaLogg";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -49,15 +50,21 @@ type MessageLogInfo = {
 
 type LoggTableProps = {
   mottakid?: string;
+  ebms: boolean;
 };
 
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
-  const mottakid = props.mottakid ?? params.mottakid;
+  const mottakId = props.mottakid ?? params.mottakid;
+  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
-  const { fetchState, callRequest } = useFetch<MessageLogData>(
-    `/v1/hentlogg?mottakId=${mottakid}`
-  );
+  // Kolonnenavn gamle vs nye emottak:
+  const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
+  const requestIdName = props.ebms ? "RequestId" : "";
+  const conversationIdName = props.ebms ? "ConversationId" : "EbConversationId";
+  const messageIdName = props.ebms ? "MessageId" : "EbMessageId";
+
+  const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
   const { loading, error, data: data } = fetchState;
 
@@ -67,8 +74,8 @@ const LoggTable = (props: LoggTableProps) => {
 
   const { items } = useTableSorting(data?.meldingslogg ?? []);
 
-  if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+  if (!mottakId) {
+    return <div>Ingen gyldig {mottakIdName}</div>;
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
@@ -91,12 +98,10 @@ const LoggTable = (props: LoggTableProps) => {
               <table>
                 <tbody>
                 <tr>
-                  <td><b>MottakId</b></td>
-                  <td>{data?.meldingsdetaljer.mottakid}</td>
+                  <td><b>{mottakIdName}</b></td>
+                  <td>{data?.meldingsdetaljer?.mottakid}</td>
                   <td><b>Mottatt</b></td>
                   <td>{data?.meldingsdetaljer.datomottatt}</td>
-                  <td></td>
-                  <td></td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -124,44 +129,62 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>EbConversationId</b></td>
-                  <td>{data?.meldingsdetaljer.ebconvers_id}</td>
+                  <td>
+                    {data?.meldingsdetaljer.ebconvers_id && (
+                        <a
+                            href={GrafanaLogg({
+                              service_name: "ebms-async",
+                              fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
+                              conversationId: data.meldingsdetaljer.ebconvers_id,
+                              messageId: "",
+                              requestId: "",
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                          {data.meldingsdetaljer.ebconvers_id}
+                        </a>
+                    )}
+                  </td>
                   <td><b>EbMessageId</b></td>
-                  <td>{data?.meldingsdetaljer.ebmessage_id}</td>
+                  <td>{data?.meldingsdetaljer.ebmessage_id && (
+                      <a
+                          href={GrafanaLogg({
+                            service_name: "ebms-async",
+                            fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
+                            conversationId: "",
+                            messageId: data.meldingsdetaljer.ebmessage_id,
+                            requestId: "",
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                      >
+                        {data.meldingsdetaljer.ebmessage_id}
+                      </a>
+                  )}</td>
                   <td></td>
                   <td></td>
                 </tr>
-                <tr>
-                  <td><b>ebXML signer</b></td>
-                  <td>{data?.meldingsdetaljer.certdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td><b>Utsteder</b></td>
-                  <td>{data?.meldingsdetaljer.trustdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td><b>Payload signer</b></td>
-                  <td>{data?.meldingsdetaljer.docsignerdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td><b>Utsteder</b></td>
-                  <td>{data?.meldingsdetaljer.docsignerissuerdn}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
+                {!props.ebms && /* Felter kun for gamle emottak: */
+                    <>
+                      <tr>
+                        <td><b>ebXML signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.certdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.trustdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Payload signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerissuerdn}</td>
+                      </tr>
+                    </>
+                }
                 </tbody>
               </table>
             </fieldset>
@@ -179,15 +202,7 @@ const LoggTable = (props: LoggTableProps) => {
                       return (
                           <Table.Row key={logDetails.hendelsesid}>
                             <Table.DataCell className="tabell__td--sortert">
-                              {
-                                (logDetails.statuslevel === "50") ? (
-                                    <img src={ok} alt="ok" />
-                                ) : (logDetails.statuslevel === "10") ? (
-                                    <img src={info} alt="info" />
-                                ) : (logDetails.statuslevel === "30") ? (
-                                    <img src={err} alt="error" />
-                                ) : ""
-                              }
+                              <img src={(logDetails.statuslevel === "ok") ? ok : (logDetails.statuslevel === "error") ? err : info} alt={logDetails.statuslevel} />
                             </Table.DataCell>
                             <Table.DataCell className="tabell__td--sortert">
                               {logDetails.hendelsesdato.substring(0, 23)}
@@ -219,6 +234,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <AssociatedMessages
                     mottakId={data.meldingsdetaljer.mottakid}
                     conversationId={data.meldingsdetaljer.ebconvers_id!!}
+                    ebms={props.ebms}
                 />
             )}
           </>

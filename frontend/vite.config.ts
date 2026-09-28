@@ -7,7 +7,8 @@ export default defineConfig({
     server: {
         proxy:{
             "/v1": {
-                target: `${ process.env.PROXY_URL }`,
+                // target: `${ process.env.PROXY_URL }`,
+                target: "http://localhost:8080",
                 changeOrigin: true,
                 secure: false
             }

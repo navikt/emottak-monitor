@@ -35,19 +35,25 @@ val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
 fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
     get("/hentmeldinger") {
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
-        val mottakId = getURLEncodedQueryParameter("mottakId")
-        val cpaId = getURLEncodedQueryParameter("cpaId")
-        val messageId = getURLEncodedQueryParameter("messageId")
-        val conversationId = getURLEncodedQueryParameter("conversationId")
+        val mottakId = getQueryParameter("mottakId")
+        val cpaId = getQueryParameter("cpaId")
+        val messageId = getQueryParameter("messageId")
+        val conversationId = getQueryParameter("conversationId")
+        val role = getQueryParameter("role")
+        val service = getQueryParameter("service")
+        val action = getQueryParameter("action")
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val sort = getURLEncodedQueryParameter("sort")
         val pageable = getPageable(page, size, sort)
         if (pageable != null) {
             log.info("Kjører dabasespørring for å hente meldinger...")
-            val meldinger = meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, pageable)
+            val meldinger =
+                meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
-            log.info("Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.mottakid}")
+            log.info(
+                "Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",
+            )
             call.respond(meldinger)
         }
     }
@@ -65,13 +71,17 @@ fun Route.hentMeldingerEbms(httpClient: HttpClient): Route =
 fun Route.hentHendelser(meldingService: MessageQueryService): Route =
     get("/henthendelser") {
         val (fom, tom) = localDateTimeLocalDateTimePair() ?: return@get
+        val role = getQueryParameter("role")
+        val service = getQueryParameter("service")
+        val action = getQueryParameter("action")
+        val hendelsedeskr = getQueryParameter("hendelsedeskr")
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val sort = getURLEncodedQueryParameter("sort")
         val pageable = getPageable(page, size, sort)
         if (pageable != null) {
             log.info("Kjører dabasespørring for å hente hendelser...")
-            val hendelser = meldingService.hendelser(fom, tom, pageable)
+            val hendelser = meldingService.hendelser(fom, tom, pageable, role, service, action, hendelsedeskr)
             log.info("Hendelser antall : ${hendelser.content.size}")
             call.respond(hendelser)
         }
@@ -481,6 +491,11 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
     call.request.queryParameters[paramName]
         ?.trim()
         ?.encodeURLParameter(spaceToPlus = false) ?: ""
+
+// Ktor already URL-decodes query parameters, so this returns the raw value as-is.
+// Use this (not getURLEncodedQueryParameter) for values used directly in SQL filters,
+// since re-encoding them (e.g. ":" -> "%3A" in cpaId values like "nav:105732") breaks matching.
+private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(
