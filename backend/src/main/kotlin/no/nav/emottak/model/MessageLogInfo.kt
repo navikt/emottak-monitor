@@ -11,7 +11,7 @@ data class MessageLogInfo(
     val statuslevel: String,
 )
 
-fun convertStatus(value: String): String =
+fun convertStatus(value: String?): String =
     when (value) {
         "Meldingen er ferdigbehandlet", "Ferdigbehandlet", "50" -> "ok"
         "Meldingen feilet under behandling", "Feil", "30" -> "error"
