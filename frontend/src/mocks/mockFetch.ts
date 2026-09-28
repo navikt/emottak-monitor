@@ -625,7 +625,7 @@ if (process.env.NODE_ENV === 'development') {
         console.log("Mocker hentlogg");
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17 15:30:42.90712",
-            "mottakId": "2608101400navm65888",
+            "mottakId": "2606171352navm27408",
             "messageId": "gamle-emottak-id-message",
             "role": "KontrollUtbetaler",
             "service": "BehandlerKrav",
@@ -690,7 +690,7 @@ if (process.env.NODE_ENV === 'development') {
         const payload = {
             "meldingsdetaljer": meldingsdetaljer,
             "meldingslogg": hendelser,
-            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2608101400navm65888 (3 stk)!"
+            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2606171352navm27408 (3 stk)!"
             "warning": null
         }
         return [200, payload];
@@ -701,7 +701,7 @@ if (process.env.NODE_ENV === 'development') {
         console.log("Mocker hentloggebms");
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17 15:30:42.90712",
-            "mottakId": "IN.2608281121.stor.d33ab2",
+            "mottakId": "IN.2606171330.rakk.b927d7",
             "requestId": "931c5b8f-7781-4d18-b924-345fb86ecd52",
             "messageId": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "role": "Fordringshaver",
@@ -830,7 +830,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "ForesporselFraSaksbehandler",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lagring melding på kø"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -840,7 +841,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "BehandlerKrav",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:59:50.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service)) {
@@ -880,7 +882,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HenvendelseFraLege",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Informasjon"
+                "latestStatus": "Informasjon",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service)) {
@@ -890,7 +893,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "Inntektsforesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lesing melding fra kø"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
@@ -910,7 +914,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "OppgjorsKontroll",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Informasjon"
+                "latestStatus": "Informasjon",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service)) {
@@ -920,7 +925,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "PasientlisteForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Validering mot CPA mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -950,7 +956,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "ForesporselFraSaksbehandler",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lagring payload i database"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -970,7 +977,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HarBorgerEgenandelFritak",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service)) {
@@ -980,7 +988,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HarBorgerFrikort",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service)) {
@@ -1010,7 +1019,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "Inntektsforesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Dekryptering av melding mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
@@ -1040,7 +1050,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "PasientlisteForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Signatursjekk mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {

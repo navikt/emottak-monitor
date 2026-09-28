@@ -11,6 +11,9 @@ import {
     useConversationStatusSearch
 } from "../hooks/useConversationStatusSearch";
 import ConversationStatusFilterForm, {STATUS_OPTIONS} from "../components/ConversationStatusFilter";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 const ConversationStatusTable = () => {
     const location = useLocation();
@@ -33,12 +36,13 @@ const ConversationStatusTable = () => {
     };
 
     const headers: { key: keyof ConversationStatusDto; name: string }[] = [
+        { key: "latestStatus", name: "" },
         { key: "createdAt", name: "Mottatt" },
         { key: "readableIdList", name: "Mottak-id" },
         { key: "service", name: "Service" },
         { key: "cpaId", name: "CPA-id" },
         { key: "statusAt", name: "Statusdato" },
-        { key: "latestStatus", name: "Status" },
+        { key: "errorDescription", name: "Beskrivelse" },
     ];
 
     const showSpinner = loading;
@@ -74,6 +78,17 @@ const ConversationStatusTable = () => {
                                     key={message.cpaId + index}
                                     className={clsx({[tableStyles.coloredRow]: index % 2})}
                                 >
+                                    <Table.DataCell>
+                                        {
+                                            (message.latestStatus === "Ferdigbehandlet") ? (
+                                                <img src={ok} alt="ok" />
+                                            ) : (message.latestStatus === "Informasjon") ? (
+                                                <img src={info} alt="info" />
+                                            ) : (message.latestStatus === "Feil") ? (
+                                                <img src={err} alt="error" />
+                                            ) : ""
+                                        }
+                                    </Table.DataCell>
                                     <Table.DataCell className="tabell__td--sortert">
                                         {message.createdAt.substring(0, 23)}
                                     </Table.DataCell>
@@ -100,7 +115,7 @@ const ConversationStatusTable = () => {
                                     <Table.DataCell>
                                         {message.statusAt.substring(0, 23)}
                                     </Table.DataCell>
-                                    <Table.DataCell>{message.latestStatus}</Table.DataCell>
+                                    <Table.DataCell>{message.errorDescription}</Table.DataCell>
                                 </Table.Row>
                             );
                         })}

@@ -88,8 +88,19 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                     {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
                     {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
                     {showData &&
-                        messages.map((message, index) => (
-                            (message.mottakid != mottakId) &&   <Table.Row key={message.mottakid} className={ clsx({[tableStyles.coloredRow]: index % 2}, tableStyles.cellTextAtTop) }>
+                        messages.map((message, index) => {
+                            const isCurrent = message.mottakid === mottakId;
+                            return (
+                            <Table.Row
+                                key={message.mottakid}
+                                className={clsx(
+                                    {
+                                        [tableStyles.coloredRow]: !isCurrent && index % 2,
+                                        [tableStyles.currentRow]: isCurrent,
+                                    },
+                                    tableStyles.cellTextAtTop
+                                )}
+                            >
                                 <Table.DataCell>
                                     {
                                         (message.status === "ok") ? (
@@ -105,9 +116,13 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                                     {message.datomottat.substring(0, 23)}
                                 </Table.DataCell>
                                 <Table.DataCell>
-                                    <ModalLink
-                                        to={`/${loggLink}/${message.mottakid}`}
-                                    >{message.mottakid}</ModalLink>
+                                    {isCurrent ? (
+                                        message.mottakid
+                                    ) : (
+                                        <ModalLink
+                                            to={`/${loggLink}/${message.mottakid}`}
+                                        >{message.mottakid}</ModalLink>
+                                    )}
                                 </Table.DataCell>
                                 <Table.DataCell>{message.role}</Table.DataCell>
                                 <Table.DataCell>{message.service}</Table.DataCell>
@@ -121,7 +136,8 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                                     >{message.cpaid}</ModalLink>
                                 </Table.DataCell>
                             </Table.Row>
-                        ))}
+                            );
+                        })}
                 </Table.Body>
             </Table>
         </>
