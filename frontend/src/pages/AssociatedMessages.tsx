@@ -92,11 +92,11 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                             (message.mottakid != mottakId) &&   <Table.Row key={message.mottakid} className={ clsx({[tableStyles.coloredRow]: index % 2}, tableStyles.cellTextAtTop) }>
                                 <Table.DataCell>
                                     {
-                                        (message.status === "Ferdigbehandlet") ? (
+                                        (message.status === "ok") ? (
                                             <img src={ok} alt="ok" />
-                                        ) : (message.status === "Information") ? (
+                                        ) : (message.status === "info") ? (
                                             <img src={info} alt="info" />
-                                        ) : (message.status === "Feil") ? (
+                                        ) : (message.status === "error") ? (
                                             <img src={err} alt="error" />
                                         ) : ""
                                     }
