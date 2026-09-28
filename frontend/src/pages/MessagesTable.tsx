@@ -259,11 +259,11 @@ const MessagesTable = () => {
                       <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>
                         <Table.DataCell>
                           {
-                            (message.status === "Ferdigbehandlet") ? (
+                            (message.status === "ok") ? (
                                 <img src={ok} alt="ok" />
-                            ) : (message.status === "Information") ? (
+                            ) : (message.status === "info") ? (
                                 <img src={info} alt="info" />
-                            ) : (message.status === "Feil") ? (
+                            ) : (message.status === "error") ? (
                                 <img src={err} alt="error" />
                             ) : ""
                           }
@@ -296,11 +296,11 @@ const MessagesTable = () => {
                                     <tr key={msg.mottakid}>
                                       <td>
                                         {
-                                          (message.status === "Ferdigbehandlet") ? (
+                                          (msg.status === "ok") ? (
                                               <img src={ok} alt="ok" />
-                                          ) : (message.status === "Information") ? (
+                                          ) : (msg.status === "info") ? (
                                               <img src={info} alt="info" />
-                                          ) : (message.status === "Feil") ? (
+                                          ) : (msg.status === "error") ? (
                                               <img src={err} alt="error" />
                                           ) : ""
                                         }

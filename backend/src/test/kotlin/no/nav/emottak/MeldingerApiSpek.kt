@@ -215,10 +215,29 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentloggebms)") {
+                it("Should return 200 OK (hentloggebms - readableId)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
-                            client.get("/v1/hentloggebms?readableId=IN.2511191511.UNKN.123") {
+                            client.get("/v1/hentloggebms?id=IN.2511191511.UNKN.123") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+
+                        val msg = Json.decodeFromString<MessageLogData>(String(response.readRawBytes()))
+                        msg.meldingsdetaljer shouldNotBe null
+                        msg.meldingsdetaljer!!.mottakId shouldBe "IN.2511191511.UNKN.123"
+                        msg.meldingsdetaljer.messageId shouldBe "2"
+                        msg.meldingsdetaljer.requestId shouldBe "2af3496a-8d33-4af0-ab3e-fa1da4cd193e"
+                        msg.meldingslogg.size shouldBe 2
+                        msg.meldingslogg[0].hendelsesbeskrivelse shouldBe "Melding mottatt via HTTP"
+                        msg.meldingslogg[1].hendelsesbeskrivelse shouldBe "Melding validert mot CPA"
+                    }
+                }
+
+                it("Should return 200 OK (hentloggebms - requestId)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentloggebms?id=2af3496a-8d33-4af0-ab3e-fa1da4cd193e") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
