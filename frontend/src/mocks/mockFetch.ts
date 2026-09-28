@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:114434",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:49.876352",
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:120166",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.869049",
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:120465",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.847066",
@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "959469326_889640782_011",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.660944",
@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:108550",
                     "antall": 6,
-                    "status": "Ferdigbehandlet"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.244564",
@@ -92,7 +92,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "912206165_889640782_011",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.588353",
@@ -105,7 +105,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.113456",
@@ -118,7 +118,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:110964",
                     "antall": 7,
-                    "status": "Ferdigbehandlet"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.098998",
@@ -131,7 +131,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:108469",
                     "antall": 6,
-                    "status": "Ferdigbehandlet"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:45.954395",
@@ -144,7 +144,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "HELSE STAVANGER HF,  ( 983974678 )",
                     "cpaid": "nav:108469",
                     "antall": 5,
-                    "status": "Ferdigbehandlet"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:50.588353",
@@ -156,7 +156,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:51.588353",
@@ -168,7 +168,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:52.588353",
@@ -180,7 +180,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:53.588353",
@@ -192,7 +192,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:54.588353",
@@ -204,7 +204,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:55.588353",
@@ -216,7 +216,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 }
             ],
             "totalPages": 24
@@ -269,7 +269,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender":"RAKKESTAD KOMMUNE, Pleie og Omsorg",
                     "cpaid":"nav:32510",
                     "antall":64,
-                    "status":"Meldingen er ferdigbehandlet"
+                    "status":"ok"
                 }, {
                     "datomottat":"2026-06-17T13:35:32.651346+02:00[Europe/Oslo]",
                     "mottakid":"OUT.2606171335.NAVM.58df2a",
@@ -280,7 +280,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender":"Nav Mottak",
                     "cpaid":"nav:85298",
                     "antall":64,
-                    "status":"Meldingen er ferdigbehandlet"
+                    "status":"ok"
                 }
             ],
             "totalPages":1
@@ -595,7 +595,7 @@ if (process.env.NODE_ENV === 'development') {
         console.log("Mocker hentlogg");
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17 15:30:42.90712",
-            "mottakId": "2608101400navm65888",
+            "mottakId": "2606171352navm27408",
             "messageId": "gamle-emottak-id-message",
             "role": "KontrollUtbetaler",
             "service": "BehandlerKrav",
@@ -653,7 +653,7 @@ if (process.env.NODE_ENV === 'development') {
         const payload = {
             "meldingsdetaljer": meldingsdetaljer,
             "meldingslogg": hendelser,
-            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2608101400navm65888 (3 stk)!"
+            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2606171352navm27408 (3 stk)!"
             "warning": null
         }
         return [200, payload];
@@ -664,7 +664,7 @@ if (process.env.NODE_ENV === 'development') {
         console.log("Mocker hentloggebms");
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17 15:30:42.90712",
-            "mottakId": "IN.2608281121.stor.d33ab2",
+            "mottakId": "IN.2606171330.rakk.b927d7",
             "requestId": "931c5b8f-7781-4d18-b924-345fb86ecd52",
             "messageId": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "role": "Fordringshaver",
