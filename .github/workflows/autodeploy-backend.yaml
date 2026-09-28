@@ -1,0 +1,33 @@
+name: Autodeploy emottak-monitor-backend
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".github/workflows/frontend.yaml"
+      - ".github/workflows/autodeploy-frontend.yaml"
+      - "frontend/**"
+      - .envrc
+      - "**/flake*"
+      - "**/README.md"
+
+jobs:
+  deploy-dev:
+    uses: ./.github/workflows/backend.yaml
+    with:
+      environment: dev-fss
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
+
+  deploy-prod:
+    needs: deploy-dev
+    uses: ./.github/workflows/backend.yaml
+    with:
+      environment: prod-fss
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
