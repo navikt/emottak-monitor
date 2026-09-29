@@ -11,7 +11,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.server.auth.authenticate
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -98,30 +97,31 @@ private fun Application.serverSetup(
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Options)
         allowHeader("Content-Type")
-        allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
+        // allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
+        allowHost("localhost", schemes = listOf("http", "http"))
         allowCredentials = true
     }
     routing {
         registerNaisApi(applicationState)
-        authenticate("jwt") {
-            route("/v1") {
-                hentMeldinger(meldingService)
-                hentMeldingerEbms(scopedAuthHttpClient)
-                hentHendelser(meldingService)
-                hentHendelserEbms(scopedAuthHttpClient)
-                hentLogg(meldingService)
-                hentLoggEbms(scopedAuthHttpClient)
-                hentCpa(meldingService)
-                hentMessageInfo(meldingService)
-                hentMessageInfoEbms(scopedAuthHttpClient)
-                hentEbMessageIdInfo(meldingService)
-                hentFeilstatistikk(meldingService)
-                hentRollerServicesAction(scopedAuthHttpClient)
-                hentCPAListe(meldingService, scopedAuthHttpClient)
-                hentPartnerListe(meldingService, scopedAuthHttpClient)
-                hentAbonnementListe(meldingService)
-                hentConversationStatusEbms(scopedAuthHttpClient)
-            }
+        // authenticate("jwt") {
+        route("/v1") {
+            hentMeldinger(meldingService)
+            hentMeldingerEbms(scopedAuthHttpClient)
+            hentHendelser(meldingService)
+            hentHendelserEbms(scopedAuthHttpClient)
+            hentLogg(meldingService)
+            hentLoggEbms(scopedAuthHttpClient)
+            hentCpa(meldingService)
+            hentMessageInfo(meldingService)
+            hentMessageInfoEbms(scopedAuthHttpClient)
+            hentEbMessageIdInfo(meldingService)
+            hentFeilstatistikk(meldingService)
+            hentRollerServicesAction(scopedAuthHttpClient)
+            hentCPAListe(meldingService, scopedAuthHttpClient)
+            hentPartnerListe(meldingService, scopedAuthHttpClient)
+            hentAbonnementListe(meldingService)
+            hentConversationStatusEbms(scopedAuthHttpClient)
         }
+        // }
     }
 }

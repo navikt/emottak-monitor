@@ -11,6 +11,7 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
+import GrafanaLogg from "../components/GrafanaLogg";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -19,20 +20,20 @@ type MessageLogData = {
 };
 
 type MottakIdInfo = {
-  datoMottatt: string;
-  mottakId: string;
-  requestId?: string;
+  datomottatt: string;
+  mottakid: string;
   role?: string;
   service?: string;
   action?: string;
   ebcomnavn?: string;
-  cpaId?: string;
+  avsender?: string;
+  cpaid?: string;
   status?: string;
   meldingsparam?: string;
   refparam?: string;
   avsenderparam?: string;
-  conversationId?: string;
-  messageId?: string;
+  ebconvers_id?: string;
+  ebmessage_id?: string;
   certdn?: string;
   trustdn?: string;
   docsignerdn?: string;
@@ -55,7 +56,7 @@ type LoggTableProps = {
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakId = props.mottakid ?? params.mottakid;
-  const url = props.ebms ? `/v1/hentloggebms?id=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
+  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
   // Kolonnenavn gamle vs nye emottak:
   const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
@@ -98,11 +99,9 @@ const LoggTable = (props: LoggTableProps) => {
                 <tbody>
                 <tr>
                   <td><b>{mottakIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.mottakId}</td>
-                  <td><b>{requestIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.requestId}</td>
+                  <td>{data?.meldingsdetaljer?.mottakid}</td>
                   <td><b>Mottatt</b></td>
-                  <td>{data?.meldingsdetaljer.datoMottatt}</td>
+                  <td>{data?.meldingsdetaljer.datomottatt}</td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -116,7 +115,7 @@ const LoggTable = (props: LoggTableProps) => {
                   <td><b>Avsender</b></td>
                   <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
-                  <td>{data?.meldingsdetaljer.cpaId}</td>
+                  <td>{data?.meldingsdetaljer.cpaid}</td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -129,10 +128,40 @@ const LoggTable = (props: LoggTableProps) => {
                   <td>{data?.meldingsdetaljer.avsenderparam}</td>
                 </tr>
                 <tr>
-                  <td><b>{conversationIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.conversationId}</td>
-                  <td><b>{messageIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.messageId}</td>
+                  <td><b>EbConversationId</b></td>
+                  <td>
+                    {data?.meldingsdetaljer.ebconvers_id && (
+                        <a
+                            href={GrafanaLogg({
+                              service_name: "ebms-async",
+                              fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
+                              conversationId: data.meldingsdetaljer.ebconvers_id,
+                              messageId: "",
+                              requestId: "",
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                          {data.meldingsdetaljer.ebconvers_id}
+                        </a>
+                    )}
+                  </td>
+                  <td><b>EbMessageId</b></td>
+                  <td>{data?.meldingsdetaljer.ebmessage_id && (
+                      <a
+                          href={GrafanaLogg({
+                            service_name: "ebms-async",
+                            fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
+                            conversationId: "",
+                            messageId: data.meldingsdetaljer.ebmessage_id,
+                            requestId: "",
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                      >
+                        {data.meldingsdetaljer.ebmessage_id}
+                      </a>
+                  )}</td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -203,8 +232,8 @@ const LoggTable = (props: LoggTableProps) => {
             </Table>
             {data?.meldingsdetaljer && (
                 <AssociatedMessages
-                    mottakId={data.meldingsdetaljer.mottakId}
-                    conversationId={data.meldingsdetaljer.conversationId!!}
+                    mottakId={data.meldingsdetaljer.mottakid}
+                    conversationId={data.meldingsdetaljer.ebconvers_id!!}
                     ebms={props.ebms}
                 />
             )}

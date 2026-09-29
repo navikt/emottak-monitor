@@ -1,7 +1,8 @@
 import {Button, Table} from "@navikt/ds-react";
+import axios from "axios";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useLocation } from "react-router-dom";
 import Filter from "../components/Filter";
 import Pageinformation from "../components/Pageinformation";
@@ -17,6 +18,22 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 
+type RelatedMessage = {
+  action: string;
+  avsender: string | null;
+  datomottat: string;
+  mottakid: string;
+  referanse: string | null;
+  role: string;
+  service: string;
+  status: string;
+};
+
+type RelatedMessagesState =
+  | { status: "loading" }
+  | { status: "error" }
+  | { status: "loaded"; messages: RelatedMessage[] };
+
 type EventInfo = {
   action: string;
   avsender: string | null;
@@ -31,6 +48,8 @@ type EventInfo = {
   statuslevel: string;
 };
 
+type FilterKey = "role" | "service" | "action" | "hendelsedeskr";
+
 type Page = {
   page: number;
   size: number;
@@ -42,13 +61,32 @@ type Page = {
 const EventsTable = () => {
   const location = useLocation();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [relatedMessagesByConversation, setRelatedMessagesByConversation] =
+      useState<Record<string, RelatedMessagesState>>({});
 
-  const toggleGroup = (key: string) => {
+  const fetchRelatedMessages = async (conversationId: string) => {
+    if (!conversationId || relatedMessagesByConversation[conversationId]) return;
+    setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "loading" } }));
+    try {
+      const res = await axios.get<{ content: RelatedMessage[] }>(
+          `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`
+      );
+      setRelatedMessagesByConversation(prev => ({
+        ...prev,
+        [conversationId]: { status: "loaded", messages: res.data.content ?? [] },
+      }));
+    } catch {
+      setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "error" } }));
+    }
+  };
+
+  const toggleGroup = (key: string, conversationId: string) => {
     setExpandedGroups(prev => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
+    fetchRelatedMessages(conversationId);
   };
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
@@ -57,18 +95,20 @@ const EventsTable = () => {
   const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
-
-  // using debounce to not use value until there has been no new changes
   const debouncedFromDate = useDebounce(fromDate, 200);
   const debouncedToDate = useDebounce(toDate, 200);
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
-
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
+  const [hendelsedeskr, setHendelsedeskr] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   const { fetchState, callRequest } = useFetch<Page>(
     `/v1/henthendelser?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&role=${role}&service=${service}&action=${action}&hendelsedeskr=${encodeURIComponent(hendelsedeskr)}` +
       `&page=${currentPage}&size=${pageSize}&sort=DESC`
   );
 
@@ -92,29 +132,30 @@ const EventsTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, hendelsedeskr]);
 
+  const filterSetters: Record<FilterKey, (value: string) => void> = {
+    role: setRole,
+    service: setService,
+    action: setAction,
+    hendelsedeskr: setHendelsedeskr,
+  };
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
     ["role", "service", "action", "hendelsedeskr"]
   );
 
+  const onFilterChange = (key: FilterKey, value: EventInfo[FilterKey]) => {
+    handleFilterChange(key, value);
+    filterSetters[key]?.(value as string);
+  };
+
   const {
     items: filteredAndSortedEvents,
     requestSort,
     sortConfig,
   } = useTableSorting(filteredEvents);
-
-  const conversationGroups = useMemo(() => {
-    const map = new Map<string, EventInfo[]>();
-    for (const msg of filteredAndSortedEvents) {
-      const key = msg.ebconversid;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(msg);
-    }
-    return map;
-  }, [filteredAndSortedEvents]);
 
   const getClassNamesFor = (name: keyof EventInfo) => {
     if (!sortConfig) {
@@ -163,7 +204,7 @@ const EventsTable = () => {
             onFromTimeBlur={commitFromTime}
             onToTimeBlur={commitToTime}
             messages={events ?? []}
-            onFilterChange={handleFilterChange}
+            onFilterChange={onFilterChange}
             filterKeys={["service", "action", "role", "hendelsedeskr"]}
         />
         <Pageinformation
@@ -194,38 +235,46 @@ const EventsTable = () => {
           </Table.Header>
           <Table.Body>
             {showSpinner && (
-                <RowWithContent colSpan={headers.length}>
+                <RowWithContent>
                   <NavFrontendSpinner/>
                 </RowWithContent>
             )}
 
-            {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen hendelser funnet !</RowWithContent>}
+            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
             {showData &&
                 filteredAndSortedEvents.map((event, rowIndex) => {
                   const rowKey = `${event.mottakid}-${event.hendelsedato}-${rowIndex}`;
                   const isExpanded = expandedGroups.has(rowKey);
-                  // Dedupe related messages by mottakid - only need one entry per message, not every hendelse.
-                  const relatedByMottakid = new Map<string, EventInfo>();
-                  for (const msg of conversationGroups.get(event.ebconversid) ?? []) {
-                    if (msg.mottakid === event.mottakid) continue;
-                    const existing = relatedByMottakid.get(msg.mottakid);
-                    if (!existing || msg.hendelsedato > existing.hendelsedato) {
-                      relatedByMottakid.set(msg.mottakid, msg);
-                    }
-                  }
-                  const relatedMessages: EventInfo[] = Array.from(relatedByMottakid.values())
-                      .sort((a, b) => b.hendelsedato.localeCompare(a.hendelsedato));
+                  const canExpand = !!event.ebconversid;
+                  const relatedState = event.ebconversid
+                      ? relatedMessagesByConversation[event.ebconversid]
+                      : undefined;
+                  const relatedMessages: RelatedMessage[] =
+                      relatedState?.status === "loaded"
+                          ? Array.from(
+                              relatedState.messages
+                                  .filter((msg) => msg.mottakid !== event.mottakid)
+                                  .reduce((acc, msg) => {
+                                    const existing = acc.get(msg.mottakid);
+                                    if (!existing || msg.datomottat > existing.datomottat) {
+                                      acc.set(msg.mottakid, msg);
+                                    }
+                                    return acc;
+                                  }, new Map<string, RelatedMessage>())
+                                  .values()
+                          ).sort((a, b) => b.datomottat.localeCompare(a.datomottat))
+                          : [];
 
                   return (
                       <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
                         <Table.DataCell>
                           {
-                            (event.statuslevel === "ok") ? (
+                            (event.statuslevel === "50") ? (
                                 <img src={ok} alt="ok" />
-                            ) : (event.statuslevel === "info") ? (
+                            ) : (event.statuslevel === "10") ? (
                                 <img src={info} alt="info" />
-                            ) : (event.statuslevel === "error") ? (
+                            ) : (event.statuslevel === "30") ? (
                                 <img src={err} alt="error" />
                             ) : ""
                           }
@@ -239,11 +288,11 @@ const EventsTable = () => {
                           </Ekspanderbartpanel>
                         </Table.DataCell>
                         <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
-                          {relatedMessages.length > 0 && (
+                          {canExpand && (
                               <Button
                                   variant="primary"
                                   size="xsmall"
-                                  onClick={() => toggleGroup(rowKey)}
+                                  onClick={() => toggleGroup(rowKey, event.ebconversid)}
                               >
                                 {isExpanded ? "-" : "+"}
                               </Button>
@@ -251,24 +300,30 @@ const EventsTable = () => {
                         </Table.DataCell>
                         <Table.DataCell>
                           <Link
-                              key={event.mottakid}
                               to={`/logg/${event.mottakid}`}
                               state={{backgroundLocation: location}}
                           >
                             {event.mottakid}
                           </Link>
                           { isExpanded && (
+                              relatedState?.status === "loading" ? (
+                                  <div style={{padding: "4px"}}><NavFrontendSpinner type="XS" /></div>
+                              ) : relatedState?.status === "error" ? (
+                                  <div style={{padding: "4px"}}>Kunne ikke hente relaterte meldinger</div>
+                              ) : relatedState?.status === "loaded" && relatedMessages.length === 0 ? (
+                                  <div style={{padding: "4px"}}>Ingen relaterte meldinger funnet</div>
+                              ) : (
                               <table className={tableStyles.expandableTable}>
                                 <tbody>
                                 {relatedMessages.map((msg, msgIndex) => (
-                                    <tr key={`${msg.mottakid}-${msg.hendelsedato}-${msgIndex}`}>
+                                    <tr key={`${msg.mottakid}-${msg.datomottat}-${msgIndex}`}>
                                       <td>
                                         {
-                                          (msg.statuslevel === "ok") ? (
+                                          (msg.status === "Ferdigbehandlet") ? (
                                               <img src={ok} alt="ok" />
-                                          ) : (msg.statuslevel === "info") ? (
+                                          ) : (msg.status === "Information") ? (
                                               <img src={info} alt="info" />
-                                          ) : (msg.statuslevel === "error") ? (
+                                          ) : (msg.status === "Feil") ? (
                                               <img src={err} alt="error" />
                                           ) : ""
                                         }
@@ -286,6 +341,7 @@ const EventsTable = () => {
                                 ))}
                                 </tbody>
                               </table>
+                              )
                             )
                           }
                         </Table.DataCell>
