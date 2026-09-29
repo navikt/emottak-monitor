@@ -33,11 +33,12 @@ type MessageInfo = {
 export default function AssociatedMessages({mottakId, conversationId, ebms}: AssociatedMessagesProps) {
     const loggLink = ebms ? "loggebms" : "logg"
     const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
-    const url = `/v1/${backend}fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${conversationId}`;
+    const url = `/v1/${backend}fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;
     const messages = data?.content ?? [];
+    const associatedMessages = messages.filter((message) => message.mottakid !== mottakId);
 
     useEffect(() => {
         callRequest();
@@ -46,8 +47,8 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
     const showSpinner = loading;
     const showErrorMessage = !loading && error?.message;
     const showNoDataMessage =
-        !loading && !error?.message && messages?.length === 0;
-    const showData = !loading && !error?.message && !!messages?.length;
+        !loading && !error?.message && associatedMessages.length === 0;
+    const showData = !loading && !error?.message && associatedMessages.length > 0;
 
     const headers: { key: keyof MessageInfo; name: string }[] = [
         { key: "status", name: "" },
@@ -88,15 +89,13 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                     {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
                     {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
                     {showData &&
-                        messages.map((message, index) => {
-                            const isCurrent = message.mottakid === mottakId;
+                        associatedMessages.map((message, index) => {
                             return (
                             <Table.Row
                                 key={message.mottakid}
                                 className={clsx(
                                     {
-                                        [tableStyles.coloredRow]: !isCurrent && index % 2,
-                                        [tableStyles.currentRow]: isCurrent,
+                                        [tableStyles.coloredRow]: index % 2,
                                     },
                                     tableStyles.cellTextAtTop
                                 )}
@@ -116,13 +115,9 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                                     {message.datomottat.substring(0, 23)}
                                 </Table.DataCell>
                                 <Table.DataCell>
-                                    {isCurrent ? (
-                                        message.mottakid
-                                    ) : (
-                                        <ModalLink
-                                            to={`/${loggLink}/${message.mottakid}`}
-                                        >{message.mottakid}</ModalLink>
-                                    )}
+                                    <ModalLink
+                                        to={`/${loggLink}/${message.mottakid}`}
+                                    >{message.mottakid}</ModalLink>
                                 </Table.DataCell>
                                 <Table.DataCell>{message.role}</Table.DataCell>
                                 <Table.DataCell>{message.service}</Table.DataCell>

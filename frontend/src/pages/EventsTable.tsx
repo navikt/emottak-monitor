@@ -270,12 +270,12 @@ const EventsTable = () => {
                       <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
                         <Table.DataCell>
                           {
-                            (event.statuslevel === "50") ? (
-                                <img src={ok} alt="ok" />
-                            ) : (event.statuslevel === "10") ? (
-                                <img src={info} alt="info" />
-                            ) : (event.statuslevel === "30") ? (
-                                <img src={err} alt="error" />
+                            (event.statuslevel === "ok") ? (
+                                <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                            ) : (event.statuslevel === "info") ? (
+                                <img src={info} alt="info" title="Meldingen er under behandling" />
+                            ) : (event.statuslevel === "error") ? (
+                                <img src={err} alt="error" title="Meldingen feilet under behandling" />
                             ) : ""
                           }
                         </Table.DataCell>
@@ -319,12 +319,12 @@ const EventsTable = () => {
                                     <tr key={`${msg.mottakid}-${msg.datomottat}-${msgIndex}`}>
                                       <td>
                                         {
-                                          (msg.status === "Ferdigbehandlet") ? (
-                                              <img src={ok} alt="ok" />
-                                          ) : (msg.status === "Information") ? (
-                                              <img src={info} alt="info" />
-                                          ) : (msg.status === "Feil") ? (
-                                              <img src={err} alt="error" />
+                                          (msg.status === "ok") ? (
+                                              <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                                          ) : (msg.status === "info") ? (
+                                              <img src={info} alt="info" title="Meldingen er under behandling" />
+                                          ) : (msg.status === "error") ? (
+                                              <img src={err} alt="error" title="Meldingen feilet under behandling" />
                                           ) : ""
                                         }
                                       </td>

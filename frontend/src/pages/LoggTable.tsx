@@ -20,20 +20,20 @@ type MessageLogData = {
 };
 
 type MottakIdInfo = {
-  datomottatt: string;
-  mottakid: string;
+  datoMottatt: string;
+  mottakId: string;
+  requestId?: string;
   role?: string;
   service?: string;
   action?: string;
   ebcomnavn?: string;
-  avsender?: string;
-  cpaid?: string;
+  cpaId?: string;
   status?: string;
   meldingsparam?: string;
   refparam?: string;
   avsenderparam?: string;
-  ebconvers_id?: string;
-  ebmessage_id?: string;
+  conversationId?: string;
+  messageId?: string;
   certdn?: string;
   trustdn?: string;
   docsignerdn?: string;
@@ -58,12 +58,7 @@ const LoggTable = (props: LoggTableProps) => {
   const mottakId = props.mottakid ?? params.mottakid;
   const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
-  // Kolonnenavn gamle vs nye emottak:
   const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
-  const requestIdName = props.ebms ? "RequestId" : "";
-  const conversationIdName = props.ebms ? "ConversationId" : "EbConversationId";
-  const messageIdName = props.ebms ? "MessageId" : "EbMessageId";
-
   const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
   const { loading, error, data: data } = fetchState;
@@ -99,9 +94,9 @@ const LoggTable = (props: LoggTableProps) => {
                 <tbody>
                 <tr>
                   <td><b>{mottakIdName}</b></td>
-                  <td>{data?.meldingsdetaljer?.mottakid}</td>
+                  <td>{data?.meldingsdetaljer?.mottakId}</td>
                   <td><b>Mottatt</b></td>
-                  <td>{data?.meldingsdetaljer.datomottatt}</td>
+                  <td>{data?.meldingsdetaljer.datoMottatt}</td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -115,7 +110,7 @@ const LoggTable = (props: LoggTableProps) => {
                   <td><b>Avsender</b></td>
                   <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
-                  <td>{data?.meldingsdetaljer.cpaid}</td>
+                  <td>{data?.meldingsdetaljer.cpaId}</td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -130,36 +125,36 @@ const LoggTable = (props: LoggTableProps) => {
                 <tr>
                   <td><b>EbConversationId</b></td>
                   <td>
-                    {data?.meldingsdetaljer.ebconvers_id && (
+                    {data?.meldingsdetaljer.conversationId && (
                         <a
                             href={GrafanaLogg({
                               service_name: "ebms-async",
-                              fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
-                              conversationId: data.meldingsdetaljer.ebconvers_id,
+                              fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
+                              conversationId: data.meldingsdetaljer.conversationId,
                               messageId: "",
-                              requestId: "",
+                              requestId: data.meldingsdetaljer.requestId ?? "",
                             })}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                          {data.meldingsdetaljer.ebconvers_id}
+                          {data.meldingsdetaljer.conversationId}
                         </a>
                     )}
                   </td>
                   <td><b>EbMessageId</b></td>
-                  <td>{data?.meldingsdetaljer.ebmessage_id && (
+                  <td>{data?.meldingsdetaljer.messageId && (
                       <a
                           href={GrafanaLogg({
                             service_name: "ebms-async",
-                            fromDate: data?.meldingsdetaljer.datomottatt.substring(0, 23),
+                            fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
                             conversationId: "",
-                            messageId: data.meldingsdetaljer.ebmessage_id,
-                            requestId: "",
+                            messageId: data.meldingsdetaljer.messageId,
+                            requestId: data.meldingsdetaljer.requestId ?? "",
                           })}
                           target="_blank"
                           rel="noopener noreferrer"
                       >
-                        {data.meldingsdetaljer.ebmessage_id}
+                        {data.meldingsdetaljer.messageId}
                       </a>
                   )}</td>
                   <td></td>
@@ -230,10 +225,10 @@ const LoggTable = (props: LoggTableProps) => {
               {loading && <NavFrontendSpinner/>}
               {error?.message && <p>{error.message}</p>}
             </Table>
-            {data?.meldingsdetaljer && (
+            {data?.meldingsdetaljer?.conversationId && (
                 <AssociatedMessages
-                    mottakId={data.meldingsdetaljer.mottakid}
-                    conversationId={data.meldingsdetaljer.ebconvers_id!!}
+                    mottakId={data.meldingsdetaljer.mottakId}
+                    conversationId={data.meldingsdetaljer.conversationId}
                     ebms={props.ebms}
                 />
             )}
