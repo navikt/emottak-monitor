@@ -67,6 +67,27 @@ const parseJsonDetails = (details: string): [string, unknown][] | null => {
 const formatJsonValue = (value: unknown): string =>
   typeof value === "string" ? value : JSON.stringify(value) ?? String(value);
 
+const jsonDetails = (entries: [string, unknown][]) => (
+  <ul className={logStyles.detailsList}>
+    {entries.map(([key, value]) => (
+      <li key={key}>
+        <b>{key}:</b> {formatJsonValue(value)}
+      </li>
+    ))}
+  </ul>
+);
+
+const textDetails = (details: string) => (
+  <div
+    className={details.length > 120 ? logStyles.truncate : undefined}
+    onClick={details.length > 120
+      ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
+      : undefined}
+  >
+    {details}
+  </div>
+);
+
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakId = props.mottakid ?? params.mottakid;
@@ -200,26 +221,11 @@ const LoggTable = (props: LoggTableProps) => {
                               {(() => {
                                 const details = logDetails.hendelsesdetaljer;
                                 if (!details) return null;
-
-                                const entries = parseJsonDetails(details);
-                                return entries ? (
-                                  <ul className={logStyles.detailsList}>
-                                    {entries.map(([key, value]) => (
-                                      <li key={key}>
-                                        <b>{key}:</b> {formatJsonValue(value)}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <div
-                                      className={details.length > 120 ? logStyles.truncate : undefined}
-                                      onClick={details.length > 120
-                                          ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
-                                          : undefined}
-                                  >
-                                    {details}
-                                  </div>
-                                );
+                                if (!props.ebms) return textDetails(details);
+                                else {
+                                  const entries = parseJsonDetails(details);
+                                  return entries ? jsonDetails(entries) : textDetails(details);
+                                }
                               })()}
                             </Table.DataCell>
                             <Table.DataCell>{logDetails.hendelsesid}</Table.DataCell>
