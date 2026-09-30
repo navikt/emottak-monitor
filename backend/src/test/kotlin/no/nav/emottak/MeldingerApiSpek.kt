@@ -35,7 +35,6 @@ import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
 import no.nav.emottak.application.api.hentHendelserEbms
@@ -43,8 +42,6 @@ import no.nav.emottak.application.api.hentLogg
 import no.nav.emottak.application.api.hentLoggEbms
 import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
-import no.nav.emottak.application.api.hentMessageInfo
-import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
@@ -74,7 +71,6 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
-                io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
                 io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
                 io.mockk.coEvery { messageQueryService.partnerliste(any()) } returns getCPAListe()
@@ -257,36 +253,6 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentcpa?cpaid=nav:qass:30823") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentmessageinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentmessageinfo?mottakId=123456789012345678901") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentmessageinfoebms)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentmessageinfoebms?readableId=IN.2511191511.UNKN.123") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentebmessageidinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -617,9 +583,6 @@ private fun <T> withTestApplicationForApi(
                     hentLogg(messageQueryService)
                     hentLoggEbms(mockHttpClient)
                     hentCpa(messageQueryService)
-                    hentMessageInfo(messageQueryService)
-                    hentMessageInfoEbms(mockHttpClient)
-                    hentEbMessageIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)
