@@ -174,21 +174,6 @@ fun Route.hentCpa(meldingService: MessageQueryService): Route =
         call.respond(cpaInfo)
     }
 
-// Mottak-id søk (frontend: /mottakidsok)
-@InternalAPI
-fun Route.hentMessageInfo(meldingService: MessageQueryService): Route =
-    get("/hentmessageinfo") {
-        val mottakid = call.request.queryParameters["mottakId"]
-        if (mottakid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: mottakId")
-            return@get
-        }
-        log.info("Henter info for $mottakid")
-        val messageInfo = meldingService.mottakid(mottakid)
-        log.info("Melding info for $mottakid: ${messageInfo.size}")
-        call.respond(messageInfo)
-    }
-
 // Mottak-id søk ebms (frontend: /readableidsokebms)
 @InternalAPI
 fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
