@@ -134,16 +134,16 @@ fun Route.hentLogg(meldingService: MessageQueryService): Route =
 @InternalAPI
 fun Route.hentLoggEbms(httpClient: HttpClient): Route =
     get("/hentloggebms") {
-        val readableId = call.request.queryParameters["readableId"]
-        if (readableId.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: readableId")
+        val id = call.request.queryParameters["id"] // Støtter både requestId og readableId
+        if (id.isNullOrEmpty()) {
+            returnBadRequest("Mangler parameter: id")
             return@get
         }
-        var url = "$eventManagerUrl/message-details/$readableId"
-        log.info("Henter meldingsdetaljer fra endepunktet til ebms for $readableId ($url)")
+        var url = "$eventManagerUrl/message-details/$id"
+        log.info("Henter meldingsdetaljer fra endepunktet til ebms for id '$id' ($url)")
         val (statusHentMeldingsdetaljer, meldingsdetaljer) = executeREST(httpClient, url, useCallRespond = false)
-        url = "$eventManagerUrl/message-details/$readableId/events"
-        log.info("Henter hendelseslogg fra endepunktet til ebms for $readableId ($url)")
+        url = "$eventManagerUrl/message-details/$id/events"
+        log.info("Henter hendelseslogg fra endepunktet til ebms for id '$id' ($url)")
         val (statusHentHendelseslogg, hendelseslogg) = executeREST(httpClient, url, useCallRespond = false)
         val advarsel =
             listOfNotNull(
@@ -172,50 +172,6 @@ fun Route.hentCpa(meldingService: MessageQueryService): Route =
         val cpaInfo = meldingService.messagecpa(cpaid)
         log.info("Partner id for $cpaid: ${cpaInfo.size}")
         call.respond(cpaInfo)
-    }
-
-// Mottak-id søk (frontend: /mottakidsok)
-@InternalAPI
-fun Route.hentMessageInfo(meldingService: MessageQueryService): Route =
-    get("/hentmessageinfo") {
-        val mottakid = call.request.queryParameters["mottakId"]
-        if (mottakid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: mottakId")
-            return@get
-        }
-        log.info("Henter info for $mottakid")
-        val messageInfo = meldingService.mottakid(mottakid)
-        log.info("Melding info for $mottakid: ${messageInfo.size}")
-        call.respond(messageInfo)
-    }
-
-// Mottak-id søk ebms (frontend: /readableidsokebms)
-@InternalAPI
-fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
-    get("/hentmessageinfoebms") {
-        val readableId = call.request.queryParameters["readableId"]
-        if (readableId.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: readableId")
-            return@get
-        }
-        val url = "$eventManagerUrl/message-details/$readableId"
-        log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
-        executeREST(httpClient, url)
-    }
-
-// EBMessage-id søk (frontend: /ebmessageidsok)
-@InternalAPI
-fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentebmessageidinfo") {
-        val ebmessageid = call.request.queryParameters["ebmessageId"]
-        if (ebmessageid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: ebmessageId")
-            return@get
-        }
-        log.info("Henter info for $ebmessageid")
-        val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
-        log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
-        call.respond(ebMessageIdIdInfo)
     }
 
 // Feilstatistikk (frontend: /feilstatistikk)

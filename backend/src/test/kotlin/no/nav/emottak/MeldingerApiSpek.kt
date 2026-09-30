@@ -6,12 +6,14 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -27,12 +29,12 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.ktor.utils.io.InternalAPI
 import io.mockk.mockk
+import kotlinx.serialization.json.Json
 import no.nav.emottak.application.api.LENIENT_JSON_PARSER
 import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
 import no.nav.emottak.application.api.hentHendelserEbms
@@ -40,12 +42,11 @@ import no.nav.emottak.application.api.hentLogg
 import no.nav.emottak.application.api.hentLoggEbms
 import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
-import no.nav.emottak.application.api.hentMessageInfo
-import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
 import no.nav.emottak.model.CpaListe
+import no.nav.emottak.model.MessageLogData
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
@@ -70,7 +71,6 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
                 io.mockk.coEvery { messageQueryService.mottakid(any()) } returns getMottakIdInfo()
-                io.mockk.coEvery { messageQueryService.ebmessageid(any()) } returns getEBMessageIdInfo()
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
                 io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
                 io.mockk.coEvery { messageQueryService.partnerliste(any()) } returns getCPAListe()
@@ -106,6 +106,7 @@ class MeldingerApiSpek :
                                         content =
                                             """[{"receivedDate":"2025-11-19T15:11:59.646898+01:00[Europe/Oslo]",
                                             |"readableId":"IN.2511191511.UNKN.123",
+                                            |"requestId":"2af3496a-8d33-4af0-ab3e-fa1da4cd193e",
                                             |"role":"Utleverer",
                                             |"service":"HarBorgerEgenandelFritak",
                                             |"action":"EgenandelForesporsel",
@@ -113,7 +114,8 @@ class MeldingerApiSpek :
                                             |"senderName":"Unknown",
                                             |"cpaId":"nav:qass:123",
                                             |"status":"Meldingen er ferdigbehandlet",
-                                            |"conversationId":"1"}]
+                                            |"conversationId":"1",
+                                            |"messageId":"2"}]
                                             """.trimMargin(),
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
@@ -209,13 +211,41 @@ class MeldingerApiSpek :
                     }
                 }
 
-                it("Should return 200 OK (hentloggebms)") {
+                it("Should return 200 OK (hentloggebms - readableId)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
-                            client.get("/v1/hentloggebms?readableId=IN.2511191511.UNKN.123") {
+                            client.get("/v1/hentloggebms?id=IN.2511191511.UNKN.123") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
+
+                        val msg = Json.decodeFromString<MessageLogData>(String(response.readRawBytes()))
+                        msg.meldingsdetaljer shouldNotBe null
+                        msg.meldingsdetaljer!!.mottakId shouldBe "IN.2511191511.UNKN.123"
+                        msg.meldingsdetaljer.messageId shouldBe "2"
+                        msg.meldingsdetaljer.requestId shouldBe "2af3496a-8d33-4af0-ab3e-fa1da4cd193e"
+                        msg.meldingslogg.size shouldBe 2
+                        msg.meldingslogg[0].hendelsesbeskrivelse shouldBe "Melding mottatt via HTTP"
+                        msg.meldingslogg[1].hendelsesbeskrivelse shouldBe "Melding validert mot CPA"
+                    }
+                }
+
+                it("Should return 200 OK (hentloggebms - requestId)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentloggebms?id=2af3496a-8d33-4af0-ab3e-fa1da4cd193e") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+
+                        val msg = Json.decodeFromString<MessageLogData>(String(response.readRawBytes()))
+                        msg.meldingsdetaljer shouldNotBe null
+                        msg.meldingsdetaljer!!.mottakId shouldBe "IN.2511191511.UNKN.123"
+                        msg.meldingsdetaljer.messageId shouldBe "2"
+                        msg.meldingsdetaljer.requestId shouldBe "2af3496a-8d33-4af0-ab3e-fa1da4cd193e"
+                        msg.meldingslogg.size shouldBe 2
+                        msg.meldingslogg[0].hendelsesbeskrivelse shouldBe "Melding mottatt via HTTP"
+                        msg.meldingslogg[1].hendelsesbeskrivelse shouldBe "Melding validert mot CPA"
                     }
                 }
 
@@ -223,36 +253,6 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentcpa?cpaid=nav:qass:30823") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentmessageinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentmessageinfo?mottakId=123456789012345678901") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentmessageinfoebms)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentmessageinfoebms?readableId=IN.2511191511.UNKN.123") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentebmessageidinfo)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentebmessageidinfo?ebmessageId=20220428-090325-98770@qa.ebxml.nav.no") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -583,9 +583,6 @@ private fun <T> withTestApplicationForApi(
                     hentLogg(messageQueryService)
                     hentLoggEbms(mockHttpClient)
                     hentCpa(messageQueryService)
-                    hentMessageInfo(messageQueryService)
-                    hentMessageInfoEbms(mockHttpClient)
-                    hentEbMessageIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)
                     hentCPAListe(messageQueryService, mockHttpClient)

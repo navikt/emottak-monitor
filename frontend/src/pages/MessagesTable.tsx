@@ -243,12 +243,12 @@ const MessagesTable = () => {
           </Table.Header>
           <Table.Body>
             {showSpinner && (
-                <RowWithContent>
+                <RowWithContent colSpan={headers.length}>
                   <NavFrontendSpinner/>
                 </RowWithContent>
             )}
-            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>Ingen meldinger funnet !</RowWithContent>}
+            {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
             {showData &&
                 groupedMessages.flatMap(({ key, messages }, groupIndex) => {
                   const isExpanded = expandedGroups.has(key);
@@ -259,11 +259,11 @@ const MessagesTable = () => {
                       <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>
                         <Table.DataCell>
                           {
-                            (message.status === "Ferdigbehandlet") ? (
+                            (message.status === "ok") ? (
                                 <img src={ok} alt="ok" />
-                            ) : (message.status === "Information") ? (
+                            ) : (message.status === "info") ? (
                                 <img src={info} alt="info" />
-                            ) : (message.status === "Feil") ? (
+                            ) : (message.status === "error") ? (
                                 <img src={err} alt="error" />
                             ) : ""
                           }
@@ -296,11 +296,11 @@ const MessagesTable = () => {
                                     <tr key={msg.mottakid}>
                                       <td>
                                         {
-                                          (message.status === "Ferdigbehandlet") ? (
+                                          (msg.status === "ok") ? (
                                               <img src={ok} alt="ok" />
-                                          ) : (message.status === "Information") ? (
+                                          ) : (msg.status === "info") ? (
                                               <img src={info} alt="info" />
-                                          ) : (message.status === "Feil") ? (
+                                          ) : (msg.status === "error") ? (
                                               <img src={err} alt="error" />
                                           ) : ""
                                         }

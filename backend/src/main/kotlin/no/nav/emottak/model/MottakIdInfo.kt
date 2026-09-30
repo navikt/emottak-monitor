@@ -1,19 +1,23 @@
 package no.nav.emottak.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MottakIdInfo(
-    val datomottatt: String,
-    val mottakid: String,
+    val datoMottatt: String,
+    val mottakId: String,
+    val requestId: String? = null,
     val role: String? = null,
     val service: String? = null,
     val action: String? = null,
     val ebcomnavn: String? = null,
-    val cpaid: String? = null,
+    val cpaId: String? = null,
     val status: String? = null,
     val meldingsparam: String? = null,
     val refparam: String? = null,
     val avsenderparam: String? = null,
-    val ebconvers_id: String? = null,
-    val ebmessage_id: String? = null,
+    val conversationId: String? = null,
+    val messageId: String? = null,
     val certdn: String? = null,
     val trustdn: String? = null,
     val docsignerdn: String? = null,

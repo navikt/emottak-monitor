@@ -9,6 +9,8 @@ import no.nav.emottak.model.MottakIdInfo
 private data class ReadableIdDto(
     val receivedDate: String,
     val readableId: String,
+    val requestId: String,
+    val messageId: String,
     val role: String? = null,
     val service: String? = null,
     val action: String? = null,
@@ -29,15 +31,17 @@ fun String.toMottakIdInfo(): MottakIdInfo? {
     }
     val messagelog = messagelogList[0]
     return MottakIdInfo(
-        datomottatt = messagelog.receivedDate,
-        mottakid = messagelog.readableId,
+        datoMottatt = messagelog.receivedDate,
+        mottakId = messagelog.readableId,
+        requestId = messagelog.requestId,
         role = messagelog.role,
         service = messagelog.service,
         action = messagelog.action,
         refparam = messagelog.referenceParameter,
         avsenderparam = messagelog.senderName,
-        cpaid = messagelog.cpaId,
+        cpaId = messagelog.cpaId,
         status = messagelog.status,
-        ebconvers_id = messagelog.conversationId,
+        conversationId = messagelog.conversationId,
+        messageId = messagelog.messageId,
     )
 }

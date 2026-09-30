@@ -5,6 +5,7 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
@@ -44,7 +45,7 @@ fun DatabaseInterface.hentHendelser(
             """.trimIndent()
 
         var orderBy = "DESC"
-        if (pageable != null && pageable.sort != null) {
+        if (pageable != null) {
             orderBy = pageable.sort
         }
         sql = "$sql ORDER BY LOGG.HENDELSEDATO $orderBy, MELDING.EBCONVERS_ID, LOGG.MOTTAK_ID"
@@ -81,5 +82,5 @@ fun ResultSet.toHendelseInfo(): HendelseInfo =
         getString("REFERANSEPARAM"),
         getString("AVSENDER"),
         getString("EBCONVERS_ID"),
-        statuslevel = getString("STATUSLEVEL"),
+        statuslevel = convertStatus(getString("STATUSLEVEL")),
     )

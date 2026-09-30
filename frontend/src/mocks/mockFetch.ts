@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:114434",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:49.876352",
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:120166",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.869049",
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:120465",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "error"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.847066",
@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "959469326_889640782_011",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.660944",
@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:108550",
                     "antall": 6,
-                    "status": "Ferdigbehandlet"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:47.244564",
@@ -92,7 +92,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "912206165_889640782_011",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.588353",
@@ -105,7 +105,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "error"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.113456",
@@ -118,7 +118,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:110964",
                     "antall": 7,
-                    "status": "Ferdigbehandlet"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:46.098998",
@@ -131,7 +131,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:108469",
                     "antall": 6,
-                    "status": "Ferdigbehandlet"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:45.954395",
@@ -144,7 +144,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "HELSE STAVANGER HF,  ( 983974678 )",
                     "cpaid": "nav:108469",
                     "antall": 5,
-                    "status": "Ferdigbehandlet"
+                    "status": "error"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:50.588353",
@@ -156,7 +156,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:51.588353",
@@ -168,7 +168,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:52.588353",
@@ -180,7 +180,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:53.588353",
@@ -192,7 +192,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "error"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:54.588353",
@@ -204,7 +204,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "ok"
                 },
                 {
                     "datomottat": "2026-06-17 13:52:55.588353",
@@ -216,7 +216,7 @@ if (process.env.NODE_ENV === 'development') {
                     "avsender": "NAVmottak",
                     "cpaid": "nav:105732",
                     "antall": 7,
-                    "status": "Informasjon"
+                    "status": "info"
                 }
             ],
             "totalPages": 24
@@ -250,6 +250,44 @@ if (process.env.NODE_ENV === 'development') {
         return [200, payload];
     });
 
+    // Mocke kall til v1/hentmeldingerebms?map& (for AssociatedMessages.tsx):
+    mock.onGet(/\/v1\/hentmeldingerebms\?map&/).reply((config) => {
+        console.log("Mocker hentmeldingerebms (for AssociatedMessages.tsx)");
+        const payload = {
+            "page":1,
+            "size":10,
+            "sort":"DESC",
+            "totalElements":2,
+            "content":[
+                {
+                    "datomottat":"2026-06-17T13:35:36.128614+02:00[Europe/Oslo]",
+                    "mottakid":"IN.2606171330.rakk.b927d7",
+                    "role":"Not applicable",
+                    "service":"urn:oasis:names:tc:ebxml-msg:service",
+                    "action":"Acknowledgment",
+                    "referanse":"Unknown",
+                    "avsender":"RAKKESTAD KOMMUNE, Pleie og Omsorg",
+                    "cpaid":"nav:32510",
+                    "antall":64,
+                    "status":"info"
+                }, {
+                    "datomottat":"2026-06-17T13:35:32.651346+02:00[Europe/Oslo]",
+                    "mottakid":"OUT.2606171335.NAVM.58df2a",
+                    "role":"Ytelsesutbetaler",
+                    "service":"Inntektsforesporsel",
+                    "action":"InntektInformasjon",
+                    "referanse":"Unknown",
+                    "avsender":"Nav Mottak",
+                    "cpaid":"nav:85298",
+                    "antall":64,
+                    "status":"ok"
+                }
+            ],
+            "totalPages":1
+        };
+        return [200, payload];
+    });
+
     // Mocke kall til v1/hentmeldingerebms?:
     mock.onGet(/\/v1\/hentmeldingerebms\?/).reply((config) => {
         console.log("Mocker hentmeldingerebms");
@@ -272,7 +310,7 @@ if (process.env.NODE_ENV === 'development') {
                     "status":"Meldingen er ferdigbehandlet"
                 }, {
                     "receivedDate":"2026-06-17T13:35:32.841167+02:00[Europe/Oslo]",
-                    "readableIdList":"IN.2606171335.orkl.8aa6db,OUT.2606171335.NAVM.58df2a,OUT.2606171335.NAVM.dd3344",
+                    "readableIdList":"IN.2606171330.orkl.8aa6db,OUT.2606171331.NAVM.58df2a,OUT.2606171332.NAVM.dd3344",
                     "role":"Ytelsesutbetaler",
                     "service":"urn:oasis:names:tc:ebxml-msg:service",
                     "action":"Acknowledgment",
@@ -280,10 +318,10 @@ if (process.env.NODE_ENV === 'development') {
                     "senderName":"Nav Mottak",
                     "cpaId":"nav:85298",
                     "count":64,
-                    "status":"Meldingen er ferdigbehandlet"
+                    "status":"Meldingen er under behandling"
                 }, {
                     "receivedDate":"2026-06-17T13:35:32.651346+02:00[Europe/Oslo]",
-                    "readableIdList":"IN.2606171335.orkl.8aa6db,OUT.2606171335.NAVM.58df2a,OUT.2606171335.NAVM.dd3344",
+                    "readableIdList":"IN.2606171333.orkl.8aa6db,OUT.2606171334.NAVM.58df2a,OUT.2606171335.NAVM.dd3344",
                     "role":"Ytelsesutbetaler",
                     "service":"Inntektsforesporsel",
                     "action":"InntektInformasjon",
@@ -291,10 +329,10 @@ if (process.env.NODE_ENV === 'development') {
                     "senderName":"Nav Mottak",
                     "cpaId":"nav:85298",
                     "count":64,
-                    "status":"Meldingen er ferdigbehandlet"
+                    "status":"Meldingen feilet under behandling"
                 }, {
                     "receivedDate":"2026-06-17T13:35:32.428185+02:00[Europe/Oslo]",
-                    "readableIdList":"IN.2606171335.orkl.8aa6db,OUT.2606171335.NAVM.58df2a,OUT.2606171335.NAVM.dd3344",
+                    "readableIdList":"IN.2606171336.orkl.8aa6db,OUT.2606171337.NAVM.58df2a,OUT.2606171338.NAVM.dd3344",
                     "role":"Fordringshaver",
                     "service":"Inntektsforesporsel",
                     "action":"Foresporsel",
@@ -321,14 +359,15 @@ if (process.env.NODE_ENV === 'development') {
             "content": [
                 {
                     "hendelsedato": "2026-06-17 13:43:59.998581",
-                    "hendelsedeskr": "Melding ferdig behandlet",
-                    "tillegsinfo": "[a01wavl00008.adeo.no] Melding ble behandlet uten feil",
+                    "hendelsedeskr": "Melding feilet",
+                    "tillegsinfo": "[a01wavl00008.adeo.no] Melding feilet under behandling",
                     "mottakid": "2606171343navm25101",
                     "role": "Frikortregister",
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25193.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "error"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.992901",
@@ -339,7 +378,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25193.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.98543",
@@ -350,7 +390,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "EgenandelForesporsel",
                     "referanse": "1",
-                    "avsender": "HEIANE LEGESENTER AS,  ( 915118305 )"
+                    "avsender": "HEIANE LEGESENTER AS,  ( 915118305 )",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.975155",
@@ -361,7 +402,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "EgenandelForesporsel",
                     "referanse": "1",
-                    "avsender": "HEIANE LEGESENTER AS,  ( 915118305 )"
+                    "avsender": "HEIANE LEGESENTER AS,  ( 915118305 )",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.952546",
@@ -372,7 +414,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25181.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.947538",
@@ -383,7 +426,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25181.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.939374",
@@ -394,7 +438,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25187.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.934633",
@@ -405,7 +450,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25187.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.927684",
@@ -416,7 +462,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25186.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "info"
                 },
                 {
                     "hendelsedato": "2026-06-17 13:43:59.92365",
@@ -427,7 +474,8 @@ if (process.env.NODE_ENV === 'development') {
                     "service": "HarBorgerFrikortMengde",
                     "action": "Svar",
                     "referanse": "2606171343rdbe25186.1",
-                    "avsender": "NAVmottak"
+                    "avsender": "NAVmottak",
+                    "statuslevel": "ok"
                 }
             ],
             "totalPages": 149
@@ -446,9 +494,11 @@ if (process.env.NODE_ENV === 'development') {
                 "content": [
                     {
                         "eventDate": "2026-06-17T13:41:55.656540+02:00[Europe/Oslo]",
-                        "description": "Melding sendt via SMTP",
-                        "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.ba94b4",
+                        "description": "Melding mottatt via SMTP",
+                        "eventData": "{\"senderAddress\":\"fra@edi.nhn.no\",\"receiverAddress\":\"til@nav.no\"}",
+                        "requestId": "a79bf82a-a197-497b-baf4-241e14a8aeee",
+                        "readableId": "OUT.2606171341.NAVM.a8aeee",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "urn:oasis:names:tc:ebxml-msg:service",
                         "action": "Acknowledgment",
@@ -456,9 +506,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.646544+02:00[Europe/Oslo]",
-                        "description": "Melding lest fra kø",
-                        "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.ba94b4",
+                        "description": "Melding lagt på kø",
+                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
+                        "requestId": "2a8b3ab2-ef26-48cb-8924-f02a2a87b15d",
+                        "readableId": "OUT.2606171341.NAVM.87b15d",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "urn:oasis:names:tc:ebxml-msg:service",
                         "action": "Acknowledgment",
@@ -466,9 +518,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.645838+02:00[Europe/Oslo]",
-                        "description": "Melding lagt på kø",
-                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.signal\"}",
-                        "readableId": "OUT.2606171341.NAVM.ba94b4",
+                        "description": "Melding lest fra kø",
+                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
+                        "requestId": "230fa6e8-1c70-4730-b57b-66ed9b513340",
+                        "readableId": "OUT.2606171341.NAVM.513340",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "urn:oasis:names:tc:ebxml-msg:service",
                         "action": "Acknowledgment",
@@ -478,7 +532,9 @@ if (process.env.NODE_ENV === 'development') {
                         "eventDate": "2026-06-17T13:41:55.592714+02:00[Europe/Oslo]",
                         "description": "Melding validert mot CPA",
                         "eventData": "{\"sender_name\":\"NAV\"}",
-                        "readableId": "OUT.2606171341.NAVM.ba94b4",
+                        "requestId": "7fa4d766-24bb-4f9e-af02-97126676b944",
+                        "readableId": "OUT.2606171341.NAVM.76b944",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "urn:oasis:names:tc:ebxml-msg:service",
                         "action": "Acknowledgment",
@@ -486,9 +542,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.571979+02:00[Europe/Oslo]",
-                        "description": "Melding sendt via SMTP",
+                        "description": "Dekomprimering av melding mislykket",
                         "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "requestId": "9a63b17b-444b-4950-b439-932462533a0f",
+                        "readableId": "OUT.2606171341.NAVM.533a0f",
+                        "status": "Feil",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -496,9 +554,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.558518+02:00[Europe/Oslo]",
-                        "description": "Melding lest fra kø",
+                        "description": "Melding rekjøres",
                         "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "requestId": "c4c25b2e-3341-40ab-8bc1-b06269530092",
+                        "readableId": "OUT.2606171341.NAVM.530092",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -508,7 +568,9 @@ if (process.env.NODE_ENV === 'development') {
                         "eventDate": "2026-06-17T13:41:55.558507+02:00[Europe/Oslo]",
                         "description": "Payload mottatt via HTTP",
                         "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "requestId": "c41ded60-5702-446a-9c37-8983348049d8",
+                        "readableId": "OUT.2606171341.NAVM.8049d8",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -518,7 +580,9 @@ if (process.env.NODE_ENV === 'development') {
                         "eventDate": "2026-06-17T13:41:55.553693+02:00[Europe/Oslo]",
                         "description": "Payload lest fra database",
                         "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "requestId": "37b07623-6375-4b72-b818-7a5e5581b89f",
+                        "readableId": "OUT.2606171341.NAVM.81b89f",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -526,9 +590,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.544584+02:00[Europe/Oslo]",
-                        "description": "Melding lagt på kø",
-                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "description": "Payload lagret i database",
+                        "eventData": "{}",
+                        "requestId": "9237cfef-6ec1-4af5-a212-ed0d8de13d6c",
+                        "readableId": "OUT.2606171341.NAVM.e13d6c",
+                        "status": "Informasjon",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -536,9 +602,11 @@ if (process.env.NODE_ENV === 'development') {
                         "senderName": "NAV"
                     }, {
                         "eventDate": "2026-06-17T13:41:55.498688+02:00[Europe/Oslo]",
-                        "description": "Payload lagret i database",
+                        "description": "Melding sendt via SMTP",
                         "eventData": "{}",
-                        "readableId": "OUT.2606171341.NAVM.70d76b",
+                        "requestId": "acd1a61d-36f8-4403-9584-22734be6d8a7",
+                        "readableId": "OUT.2606171341.NAVM.e6d8a7",
+                        "status": "Ferdigbehandlet",
                         "role": "Ytelsesutbetaler",
                         "service": "Inntektsforesporsel",
                         "action": "InntektInformasjon",
@@ -556,64 +624,73 @@ if (process.env.NODE_ENV === 'development') {
     mock.onGet(/\/v1\/hentlogg\?/).reply((config) => {
         console.log("Mocker hentlogg");
         const meldingsdetaljer = {
-            "datomottatt": "2026-06-17 15:30:42.90712",
-            "mottakid": "2608101400navm65888",
+            "datoMottatt": "2026-06-17 15:30:42.90712",
+            "mottakId": "2606171352navm27408",
+            "messageId": "gamle-emottak-id-message",
             "role": "KontrollUtbetaler",
             "service": "BehandlerKrav",
             "action": "Svarmelding",
             "referanse": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "avsender": "NAVmottak",
-            "cpaid": "nav:qass:34961",
+            "cpaId": "nav:qass:34961",
             "status": "Ferdigbehandlet",
+            "conversationId": "gamle-emottak-id-conversation",
         }
         const hendelser = [
             {
                 "hendelsesdato": "2026-06-17 15:30:42.90712",
                 "hendelsesbeskrivelse": "Melding mottatt fra intern avsender",
                 "hendelsesdetaljer": null,
-                "hendelsesid": "155"
+                "hendelsesid": "155",
+                "statuslevel": "info"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.937318",
                 "hendelsesbeskrivelse": "Melding lagret i juridisk logg",
                 "hendelsesdetaljer": "Juridisk ID: 123456",
-                "hendelsesid": "136"
+                "hendelsesid": "136",
+                "statuslevel": "info"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.943654",
                 "hendelsesbeskrivelse": "Melding pakket ut av fellesformat",
                 "hendelsesdetaljer": null,
-                "hendelsesid": "172"
+                "hendelsesid": "172",
+                "statuslevel": "info"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.94729",
                 "hendelsesbeskrivelse": "XML-informasjon hentet fra melding",
                 "hendelsesdetaljer": "Melding lest OK - lengde: 5678",
-                "hendelsesid": "164"
+                "hendelsesid": "164",
+                "statuslevel": "error"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.952282",
                 "hendelsesbeskrivelse": "Melding kryptert",
                 "hendelsesdetaljer": "Sertifikat: ABC 123, CN=Ajhgfdsdfghgfdag f sggae a ae fdafafds, C=jhfdsdfgh, SURNAME=hhgfafgdfs, O=jhgfdafsghdg, TYPE [jdgsgfs] Algoritme: sfdmdslknfdnhnd, Sertifikat: ABC 123, CN=Ajhgfdsghdfg dgdfg gf fddg fdgfdgfdg fdg fdg dfg df fd ggdfghgfdag f sggae a ae fdafafds, C=jhfdsdfgh, SURNAME=hhgfafgdfs, O=jhgfdafsghdg, TYPE [jdgsgfs] Algoritme: sfdmdslknfdnhnd",
-                "hendelsesid": "101"
+                "hendelsesid": "101",
+                "statuslevel": "info"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.957683",
                 "hendelsesbeskrivelse": "Melding lagt på kø",
                 "hendelsesdetaljer": "Kønavn: DEV.QA.SOMETHING.MY_QUEUE",
-                "hendelsesid": "187"
+                "hendelsesid": "187",
+                "statuslevel": "info"
             },
             {
                 "hendelsesdato": "2026-06-17 15:30:42.968198",
                 "hendelsesbeskrivelse": "Melding sendt",
                 "hendelsesdetaljer": "OK",
-                "hendelsesid": "154"
+                "hendelsesid": "154",
+                "statuslevel": "ok"
             }
         ];
         const payload = {
             "meldingsdetaljer": meldingsdetaljer,
             "meldingslogg": hendelser,
-            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2608101400navm65888 (3 stk)!"
+            //"warning": "Fikk flere meldinger meldinger tilbake ved oppslag på 2606171352navm27408 (3 stk)!"
             "warning": null
         }
         return [200, payload];
@@ -623,65 +700,90 @@ if (process.env.NODE_ENV === 'development') {
     mock.onGet(/\/v1\/hentloggebms\?/).reply((config) => {
         console.log("Mocker hentloggebms");
         const meldingsdetaljer = {
-            "datomottatt": "2026-06-17 15:30:42.90712",
-            "mottakid": "IN.2608281121.stor.d33ab2",
+            "datoMottatt": "2026-06-17T15:30:42.90712+02:00[Europe/Oslo]",
+            "mottakId": "IN.2606171330.rakk.b927d7",
+            "requestId": "931c5b8f-7781-4d18-b924-345fb86ecd52",
+            "messageId": "b4617abb-40cf-4210-9039-16c5d78a1c84",
             "role": "Fordringshaver",
             "service": "Inntektsforesporsel",
             "action": "Foresporsel",
             "referanse": null,
-            "avsender": "STORARTET USJENERT BJØRN KOMMUNE TEST",
-            "cpaid": "nav:qass:38576",
+            "avsenderparam": "STORARTET USJENERT BJØRN KOMMUNE TEST",
+            "cpaId": "nav:qass:38576",
             "status": "Ferdigbehandlet",
+            "conversationId": "nye-emottak-id-conversation",
         }
         const hendelser = [
             {
                 "hendelsesdato": "2026-06-17T15:01:01.794804+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding mottatt via SMTP",
-                "hendelsesid": "1"
+                "hendelsesid": "1",
+                "hendelsesdetaljer": "{\"senderAddress\":\"Min Kommune <min_kommune@edi.nhn.no>\",\"receiverAddress\":\"ebms@nav.no\"}",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.961656+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Payload lagret i database",
                 "hendelsesid": "9",
-                "hendelsesdetaljer": null
+                "hendelsesdetaljer": null,
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.981198+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding lagt på kø",
                 "hendelsesid": "15",
-                "hendelsesdetaljer": "Melding lagt på QA.P414.DETTE_ER_EN_QUEUE"
+                "hendelsesdetaljer": "{\"queue_name\":\"team-emottak.smtp.in.ebxml.payload\"}",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.995638+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Payload lest fra database",
-                "hendelsesid": "11"
+                "hendelsesid": "11",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:01.996943+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Payload mottatt via HTTP",
-                "hendelsesid": "13"
+                "hendelsesid": "13",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.016677+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding lest fra kø",
                 "hendelsesid": "17",
-                "hendelsesdetaljer": "Melding lest fra QA.P414.DETTE_ER_EN_QUEUE"
+                "hendelsesdetaljer": "{\"queue_name\":\"team-emottak.smtp.in.ebxml.payload\"}",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.080434+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding validert mot CPA",
-                "hendelsesid": "37"
+                "hendelsesid": "37",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.147888+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding lagret i juridisk logg",
-                "hendelsesid": "19"
+                "hendelsesid": "19",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.171729+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Melding dekryptert",
-                "hendelsesid": "23"
+                "hendelsesid": "23",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.193386+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Signatursjekk vellykket",
-                "hendelsesid": "29"
+                "hendelsesid": "29",
+                "statuslevel": "info"
             }, {
                 "hendelsesdato": "2026-06-17T15:01:02.484754+02:00[Europe/Oslo]",
                 "hendelsesbeskrivelse": "Feil ved utsending melding til fagsystem",
                 "hendelsesid": "34",
-                "hendelsesdetaljer": "Det skjedde en feil"
+                "hendelsesdetaljer": "{\"error_code\":\"Fatal\",\"error_message\":\"Det skjedde en feil\"}",
+                "statuslevel": "error"
+            }, {
+                "hendelsesdato": "2026-06-17T15:01:12.484754+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Forsøker på nytt",
+                "hendelsesid": "34",
+                "statuslevel": "info"
+            }, {
+                "hendelsesdato": "2026-06-17T15:01:22.484754+02:00[Europe/Oslo]",
+                "hendelsesbeskrivelse": "Melding sendt til fagsystem",
+                "hendelsesid": "34",
+                "statuslevel": "ok"
             }
         ];
         const payload = {
@@ -728,7 +830,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "ForesporselFraSaksbehandler",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lagring melding på kø"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -738,7 +841,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "BehandlerKrav",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:59:50.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service)) {
@@ -778,7 +882,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HenvendelseFraLege",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Informasjon"
+                "latestStatus": "Informasjon",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service)) {
@@ -788,7 +893,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "Inntektsforesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lesing melding fra kø"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
@@ -808,7 +914,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "OppgjorsKontroll",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Informasjon"
+                "latestStatus": "Informasjon",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service)) {
@@ -818,7 +925,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "PasientlisteForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Validering mot CPA mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -848,7 +956,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "ForesporselFraSaksbehandler",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Feil ved lagring payload i database"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
@@ -868,7 +977,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HarBorgerEgenandelFritak",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service)) {
@@ -878,7 +988,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "HarBorgerFrikort",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Ferdigbehandlet"
+                "latestStatus": "Ferdigbehandlet",
+                "errorDescription": null
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service)) {
@@ -908,7 +1019,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "Inntektsforesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Dekryptering av melding mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
@@ -938,7 +1050,8 @@ if (process.env.NODE_ENV === 'development') {
                 "service": "PasientlisteForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
-                "latestStatus": "Feil"
+                "latestStatus": "Feil",
+                "errorDescription": "Signatursjekk mislykket"
             })
         }
         if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {

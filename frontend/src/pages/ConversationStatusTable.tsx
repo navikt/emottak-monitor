@@ -11,6 +11,10 @@ import {
     useConversationStatusSearch
 } from "../hooks/useConversationStatusSearch";
 import ConversationStatusFilterForm, {STATUS_OPTIONS} from "../components/ConversationStatusFilter";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
+import {formatDatetime} from "../util";
 
 const ConversationStatusTable = () => {
     const location = useLocation();
@@ -33,12 +37,13 @@ const ConversationStatusTable = () => {
     };
 
     const headers: { key: keyof ConversationStatusDto; name: string }[] = [
+        { key: "latestStatus", name: "" },
         { key: "createdAt", name: "Mottatt" },
         { key: "readableIdList", name: "Mottak-id" },
         { key: "service", name: "Service" },
         { key: "cpaId", name: "CPA-id" },
         { key: "statusAt", name: "Statusdato" },
-        { key: "latestStatus", name: "Status" },
+        { key: "errorDescription", name: "Beskrivelse" },
     ];
 
     const showSpinner = loading;
@@ -61,12 +66,12 @@ const ConversationStatusTable = () => {
                 </Table.Header>
                 <Table.Body>
                     {showSpinner && (
-                        <RowWithContent>
+                        <RowWithContent colSpan={headers.length}>
                             <NavFrontendSpinner/>
                         </RowWithContent>
                     )}
-                    {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-                    {showNoDataMessage && <RowWithContent>Ingen conversations funnet!</RowWithContent>}
+                    {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen conversations funnet!</RowWithContent>}
                     {showData &&
                         messages.map((message, index) => {
                             return (
@@ -74,8 +79,19 @@ const ConversationStatusTable = () => {
                                     key={message.cpaId + index}
                                     className={clsx({[tableStyles.coloredRow]: index % 2})}
                                 >
+                                    <Table.DataCell>
+                                        {
+                                            (message.latestStatus === "Ferdigbehandlet") ? (
+                                                <img src={ok} alt="ok" />
+                                            ) : (message.latestStatus === "Informasjon") ? (
+                                                <img src={info} alt="info" />
+                                            ) : (message.latestStatus === "Feil") ? (
+                                                <img src={err} alt="error" />
+                                            ) : ""
+                                        }
+                                    </Table.DataCell>
                                     <Table.DataCell className="tabell__td--sortert">
-                                        {message.createdAt.substring(0, 23)}
+                                        {formatDatetime(message.createdAt)}
                                     </Table.DataCell>
                                     <Table.DataCell>
                                         {message.readableIdList.split(",").map((readableId, idx, arr) => (
@@ -100,7 +116,7 @@ const ConversationStatusTable = () => {
                                     <Table.DataCell>
                                         {message.statusAt.substring(0, 23)}
                                     </Table.DataCell>
-                                    <Table.DataCell>{message.latestStatus}</Table.DataCell>
+                                    <Table.DataCell>{message.errorDescription}</Table.DataCell>
                                 </Table.Row>
                             );
                         })}
