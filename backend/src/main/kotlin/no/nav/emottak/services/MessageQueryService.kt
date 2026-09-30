@@ -3,7 +3,6 @@ package no.nav.emottak.services
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
 import no.nav.emottak.aksessering.db.hentAbonnementListe
-import no.nav.emottak.aksessering.db.hentEBMessageIdInfo
 import no.nav.emottak.aksessering.db.hentFeilStatistikk
 import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
@@ -11,7 +10,6 @@ import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.aksessering.db.hentPartnerCpaListe
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.AbonnementListeData
-import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -48,8 +46,6 @@ class MessageQueryService(
     fun messagecpa(cpaid: String?): List<MessageCPAInfo> = databaseInterface.getMessageCPA(databasePrefix, cpaid)
 
     fun mottakid(mottakid: String?): List<MottakIdInfo> = databaseInterface.hentMottakIdInfo(databasePrefix, mottakid)
-
-    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> = databaseInterface.hentEBMessageIdInfo(databasePrefix, ebmessageid)
 
     fun feilstatistikk(
         fom: LocalDateTime,

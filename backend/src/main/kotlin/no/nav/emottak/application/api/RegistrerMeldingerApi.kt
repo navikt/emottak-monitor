@@ -174,21 +174,6 @@ fun Route.hentCpa(meldingService: MessageQueryService): Route =
         call.respond(cpaInfo)
     }
 
-// EBMessage-id søk (frontend: /ebmessageidsok)
-@InternalAPI
-fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentebmessageidinfo") {
-        val ebmessageid = call.request.queryParameters["ebmessageId"]
-        if (ebmessageid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: ebmessageId")
-            return@get
-        }
-        log.info("Henter info for $ebmessageid")
-        val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
-        log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
-        call.respond(ebMessageIdIdInfo)
-    }
-
 // Feilstatistikk (frontend: /feilstatistikk)
 @InternalAPI
 fun Route.hentFeilstatistikk(meldingService: MessageQueryService): Route =

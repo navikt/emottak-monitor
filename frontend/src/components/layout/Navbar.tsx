@@ -6,7 +6,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
-import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
@@ -31,7 +30,6 @@ export const pages: Page[] = [
   { title: "Hendelser", path: "/hendelser", enableHeader: true, element: <EventsTable /> },
   { title: "Hendelser ebms", path: "/hendelserebms", enableHeader: true, element: <EventsTableEbms /> },
   { title: "Conversation-status ebms", path: "/hentconversationstatusebms", enableHeader: true, element: <ConversationStatusTable /> },
-  { title: "EBMessage-id søk", path: "/ebmessageidsok", enableHeader: true, element: <EBEMessageIdInfoSok /> },
   { title: "CPA-liste", path: "/cpaliste", enableHeader: false, element: <CpaListeTable /> },
   { title: "Partnerliste", path: "/partnerliste", enableHeader: false, element: <PartnerListeTable /> },
   { title: "Abonnementliste", path: "/hentabonnementliste", enableHeader: false, element: <AbonnementTable /> },
