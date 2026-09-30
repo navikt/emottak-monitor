@@ -14,6 +14,7 @@ import ConversationStatusFilterForm, {STATUS_OPTIONS} from "../components/Conver
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
+import {formatDatetime} from "../util";
 
 const ConversationStatusTable = () => {
     const location = useLocation();
@@ -90,7 +91,7 @@ const ConversationStatusTable = () => {
                                         }
                                     </Table.DataCell>
                                     <Table.DataCell className="tabell__td--sortert">
-                                        {message.createdAt.substring(0, 23)}
+                                        {formatDatetime(message.createdAt)}
                                     </Table.DataCell>
                                     <Table.DataCell>
                                         {message.readableIdList.split(",").map((readableId, idx, arr) => (

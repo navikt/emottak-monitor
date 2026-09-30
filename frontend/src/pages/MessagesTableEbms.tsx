@@ -9,7 +9,7 @@ import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
-import { initialFromDate, initialToDate, initialTime } from "../util";
+import {initialFromDate, initialToDate, initialTime, formatDatetime} from "../util";
 import {Link, useLocation} from "react-router-dom";
 import filterStyles from "../components/Filter.module.scss";
 import {Input} from "nav-frontend-skjema";
@@ -251,7 +251,7 @@ const MessagesTable = () => {
                           }
                         </Table.DataCell>
                         <Table.DataCell className="tabell__td--sortert">
-                          {message.receivedDate.substring(0, 23)}
+                          {formatDatetime(message.receivedDate)}
                         </Table.DataCell>
                         <Table.DataCell>
                           {message.readableIdList.split(",").map((readableId, idx, arr) => (
