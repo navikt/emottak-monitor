@@ -11,6 +11,7 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
+import {formatDatetime} from "../util";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -102,7 +103,7 @@ const LoggTable = (props: LoggTableProps) => {
                   <td><b>{requestIdName}</b></td>
                   <td>{data?.meldingsdetaljer.requestId}</td>
                   <td><b>Mottatt</b></td>
-                  <td>{data?.meldingsdetaljer.datoMottatt}</td>
+                  <td>{formatDatetime(data?.meldingsdetaljer.datoMottatt)}</td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -176,7 +177,7 @@ const LoggTable = (props: LoggTableProps) => {
                               <img src={(logDetails.statuslevel === "ok") ? ok : (logDetails.statuslevel === "error") ? err : info} alt={logDetails.statuslevel} />
                             </Table.DataCell>
                             <Table.DataCell className="tabell__td--sortert">
-                              {logDetails.hendelsesdato.substring(0, 23)}
+                              {formatDatetime(logDetails.hendelsesdato)}
                             </Table.DataCell>
                             <Table.DataCell style={{fontWeight: "bold"}}>
                               {logDetails.hendelsesbeskrivelse}
