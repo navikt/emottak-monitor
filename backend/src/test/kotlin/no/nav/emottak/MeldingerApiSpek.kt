@@ -43,7 +43,6 @@ import no.nav.emottak.application.api.hentLogg
 import no.nav.emottak.application.api.hentLoggEbms
 import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
-import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.setupAuth
@@ -256,16 +255,6 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentcpa?cpaid=nav:qass:30823") {
-                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                            }
-                        response.status shouldBe HttpStatusCode.OK
-                    }
-                }
-
-                it("Should return 200 OK (hentmessageinfoebms)") {
-                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
-                        val response =
-                            client.get("/v1/hentmessageinfoebms?readableId=IN.2511191511.UNKN.123") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -606,7 +595,6 @@ private fun <T> withTestApplicationForApi(
                     hentLogg(messageQueryService)
                     hentLoggEbms(mockHttpClient)
                     hentCpa(messageQueryService)
-                    hentMessageInfoEbms(mockHttpClient)
                     hentEbMessageIdInfo(messageQueryService)
                     hentFeilstatistikk(messageQueryService)
                     hentRollerServicesAction(mockHttpClient)

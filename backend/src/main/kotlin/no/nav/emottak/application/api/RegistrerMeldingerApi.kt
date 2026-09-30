@@ -174,20 +174,6 @@ fun Route.hentCpa(meldingService: MessageQueryService): Route =
         call.respond(cpaInfo)
     }
 
-// Mottak-id søk ebms (frontend: /readableidsokebms)
-@InternalAPI
-fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
-    get("/hentmessageinfoebms") {
-        val readableId = call.request.queryParameters["readableId"]
-        if (readableId.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: readableId")
-            return@get
-        }
-        val url = "$eventManagerUrl/message-details/$readableId"
-        log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
-        executeREST(httpClient, url)
-    }
-
 // EBMessage-id søk (frontend: /ebmessageidsok)
 @InternalAPI
 fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
