@@ -11,6 +11,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.authenticate
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -97,13 +98,12 @@ private fun Application.serverSetup(
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Options)
         allowHeader("Content-Type")
-        // allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
-        allowHost("localhost", schemes = listOf("http", "http"))
+        allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
         allowCredentials = true
     }
     routing {
         registerNaisApi(applicationState)
-        // authenticate("jwt") {
+        authenticate("jwt") {
         route("/v1") {
             hentMeldinger(meldingService)
             hentMeldingerEbms(scopedAuthHttpClient)
@@ -122,6 +122,6 @@ private fun Application.serverSetup(
             hentAbonnementListe(meldingService)
             hentConversationStatusEbms(scopedAuthHttpClient)
         }
-        // }
+        }
     }
 }
