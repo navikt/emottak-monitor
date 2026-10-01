@@ -17,6 +17,7 @@ import {Input} from "nav-frontend-skjema";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
+import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
 type MessageInfo = {
   action: string;
@@ -74,10 +75,6 @@ const MessagesTable = () => {
   const debouncedMessageId = useDebounce(messageId, 1000);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
-  const onToDateChange   = (value: string) => { setCurrentPage(1); setToDate(value); };
-  const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
-  const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
   const [role, setRole] = useState("");
   const [service, setService] = useState("");
   const [action, setAction] = useState("");
@@ -87,6 +84,14 @@ const MessagesTable = () => {
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
       `&role=${role}&service=${service}&action=${action}&page=${currentPage}&size=${pageSize}&sort=DESC`
 
+  const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
+  const onToDateChange   = (value: string) => { setCurrentPage(1); setToDate(value); };
+  const onRoleChange      = (value: string) => { setCurrentPage(1); setRole(value); };
+  const onServiceChange   = (value: string) => { setCurrentPage(1); setService(value); };
+  const onActionChange    = (value: string) => { setCurrentPage(1); setAction(value); };
+  const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
+  const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
+
   const { fetchState, callRequest } = useFetch<Page>(url);
   const { loading, error, data } = fetchState;
   const messages = data?.content ?? [];
@@ -95,25 +100,15 @@ const MessagesTable = () => {
     callRequest();
   }, [callRequest]);
 
-  useEffect(() => {
-    if (!data) return;
-    if (data.page !== currentPage) setCurrentPage(data.page);
-    if (data.size !== pageSize) setPageSize(data.size);
-  }, [data]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action]);
-
   const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
     messages ?? [],
     ["role", "service", "action"]
   );
 
   const filterSetters: Record<FilterKey, (value: string) => void> = {
-    role: setRole,
-    service: setService,
-    action: setAction,
+    role: onRoleChange,
+    service: onServiceChange,
+    action: onActionChange,
   };
 
   const onFilterChange = (key: FilterKey, value: MessageInfo[FilterKey]) => {
@@ -189,7 +184,7 @@ const MessagesTable = () => {
             onToTimeBlur={commitToTime}
             messages={messages ?? []}
             onFilterChange={onFilterChange}
-            filterKeys={["service", "action", "role"]}
+            filterKeys={["role", "action", "service"]}
         />
         <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
           <div style={{gridArea: "mottakId"}}>
