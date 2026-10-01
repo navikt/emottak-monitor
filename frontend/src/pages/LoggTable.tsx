@@ -56,7 +56,7 @@ type LoggTableProps = {
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
   const mottakId = props.mottakid ?? params.mottakid;
-  const url = props.ebms ? `/v1/hentloggebms?readableId=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
+  const url = props.ebms ? `/v1/hentloggebms?id=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
   const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
   const { fetchState, callRequest } = useFetch<MessageLogData>(url);
