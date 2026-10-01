@@ -25,8 +25,8 @@ fun main() {
 
     val vaultSecrets =
         VaultSecrets(
-            databasePassword = getFileAsString("secrets/emottak-monitor/credentials/password"),
-            databaseUsername = getFileAsString("secrets/emottak-monitor/credentials/username"),
+            databasePassword = getFileAsString("/secrets/emottak-monitor/credentials/password"),
+            databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
         )
 
     val wellKnown = getWellKnown(environment.oidcWellKnownUriUrl)
