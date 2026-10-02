@@ -37,6 +37,7 @@ class MessageQueryService(
         role: String? = null,
         service: String? = null,
         action: String? = null,
+        status: String? = null,
         pageable: Pageable? = null,
     ): Page<MessageInfo> =
         databaseInterface.hentMeldinger(
@@ -50,6 +51,7 @@ class MessageQueryService(
             role,
             service,
             action,
+            status,
             pageable,
         )
 

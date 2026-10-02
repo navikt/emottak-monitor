@@ -166,6 +166,63 @@ class HentMeldingerTest {
     }
 
     @Test
+    fun testHentMeldingerStatusFilter() {
+        val fom = LocalDateTime.parse("2025-09-17T00:00:00")
+        val tom = LocalDateTime.parse("2025-09-18T00:00:00")
+        val time = "2025-09-17T12:00:00"
+        val statusTexts =
+            listOf(
+                "Meldingen er ferdigbehandlet",
+                "Ferdigbehandlet",
+                "50",
+                "Meldingen feilet under behandling",
+                "Feil",
+                "30",
+                "Informasjon",
+                "The best status ever",
+            )
+        statusTexts.forEachIndexed { index, text ->
+            val statusLevel = index + 1
+            testDatabase.runSql("insert into STATUS(STATUSLEVEL, STATUSTEXT) values($statusLevel,'$text')")
+            insertMelding(statusLevel, "mId$statusLevel", "$time.00$statusLevel", statusLevel = statusLevel)
+        }
+        insertMelding(9, "related", "$time.009", conversationId = "convers_mId1", statusLevel = 7)
+        insertMelding(10, "outside", "2025-09-16T12:00:00", statusLevel = 1)
+
+        val requestedPage = Pageable(1, 2)
+        val firstPage = messageQueryService.meldinger(fom, tom, status = "ok", pageable = requestedPage)
+        firstPage.totalElements shouldBe 3
+        firstPage.totalPages shouldBe 2
+        firstPage.content.map { it.mottakid } shouldBe listOf("mId2", "mId1", "related")
+        firstPage.content.map { it.status } shouldBe listOf("ok", "ok", "info")
+
+        val secondPage = messageQueryService.meldinger(fom, tom, status = "ok", pageable = requestedPage.next())
+        secondPage.totalElements shouldBe 3
+        secondPage.content.map { it.mottakid } shouldBe listOf("mId3")
+        secondPage.content.map { it.status } shouldBe listOf("ok")
+
+        for ((status, expectedCount) in listOf("ok" to 3L, "error" to 3L, "info" to 3L)) {
+            val result = messageQueryService.meldinger(fom, tom, status = status, pageable = Pageable(1, 10))
+            result.totalElements shouldBe expectedCount
+            result.content.count { it.status == status } shouldBe expectedCount.toInt()
+        }
+
+        val combinedFilters =
+            messageQueryService.meldinger(
+                fom,
+                tom,
+                role = "role_mId2",
+                service = "service_mId2",
+                action = "action_mId2",
+                status = "ok",
+                pageable = requestedPage,
+            )
+        combinedFilters.totalElements shouldBe 1
+        combinedFilters.content.map { it.mottakid } shouldBe listOf("mId2")
+        messageQueryService.meldinger(fom, tom, status = "", pageable = Pageable(1, 10)).totalElements shouldBe 8
+    }
+
+    @Test
     fun testHentMeldingerUnpaged() {
         val fom = LocalDateTime.parse("2025-09-17T00:00:00")
         val tom = LocalDateTime.parse("2025-09-18T00:00:00")
@@ -206,6 +263,7 @@ class HentMeldingerTest {
         mottakid: String,
         tid: String,
         conversationId: String? = null,
+        statusLevel: Int = 1,
     ) {
         testDatabase.runSql(
             "insert into LOGG(HENDELSE_ID, MOTTAK_ID) " +
@@ -216,7 +274,7 @@ class HentMeldingerTest {
             "insert into MELDING(MOTTAK_ID, DATOMOTTAT, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, " +
                 "EBCONVERS_ID, AVTALE_ID, STATUSLEVEL) " +
                 "values('$mottakid','$tid','role_$mottakid','service_$mottakid','action_$mottakid'," +
-                "'param_$mottakid','sender_$mottakid','$conversId','cpa_+mottakid+',1)",
+                "'param_$mottakid','sender_$mottakid','$conversId','cpa_+mottakid+',$statusLevel)",
         )
     }
 

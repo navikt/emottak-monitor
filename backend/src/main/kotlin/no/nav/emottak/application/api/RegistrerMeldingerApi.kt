@@ -45,6 +45,7 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
         val role = getQueryParameter("role")
         val service = getQueryParameter("service")
         val action = getQueryParameter("action")
+        val status = getQueryParameter("status")
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val sort = getURLEncodedQueryParameter("sort")
@@ -52,7 +53,7 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
         if (pageable != null) {
             log.info("Kjører dabasespørring for å hente meldinger...")
             val meldinger =
-                meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, pageable)
+                meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, status, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
             log.info(
                 "Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",

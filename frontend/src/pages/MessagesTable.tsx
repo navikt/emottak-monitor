@@ -17,7 +17,6 @@ import {Input} from "nav-frontend-skjema";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
-import PrepopulatedFilter from "../components/PrepopulatedFilter";
 
 type MessageInfo = {
   action: string;
@@ -33,7 +32,7 @@ type MessageInfo = {
   status: string;
 };
 
-type FilterKey = "role" | "service" | "action";
+type FilterKey = "role" | "service" | "action" | "status";
 
 type Page = {
   page: number;
@@ -78,17 +77,19 @@ const MessagesTable = () => {
   const [role, setRole] = useState("");
   const [service, setService] = useState("");
   const [action, setAction] = useState("");
+  const [status, setStatus] = useState("");
 
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
-      `&role=${role}&service=${service}&action=${action}&page=${currentPage}&size=${pageSize}&sort=DESC`
+      `&role=${role}&service=${service}&action=${action}&status=${status}&page=${currentPage}&size=${pageSize}&sort=DESC`
 
   const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
   const onToDateChange   = (value: string) => { setCurrentPage(1); setToDate(value); };
   const onRoleChange      = (value: string) => { setCurrentPage(1); setRole(value); };
   const onServiceChange   = (value: string) => { setCurrentPage(1); setService(value); };
   const onActionChange    = (value: string) => { setCurrentPage(1); setAction(value); };
+  const onStatusChange    = (value: string) => { setCurrentPage(1); setStatus(value); };
   const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
   const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
@@ -100,16 +101,21 @@ const MessagesTable = () => {
     callRequest();
   }, [callRequest]);
 
-  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
-    messages ?? [],
-    ["role", "service", "action"]
-  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, status]);
 
   const filterSetters: Record<FilterKey, (value: string) => void> = {
     role: onRoleChange,
     service: onServiceChange,
     action: onActionChange,
+    status: onStatusChange,
   };
+
+  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
+      messages ?? [],
+      ["role", "service", "action", "status"]
+  );
 
   const onFilterChange = (key: FilterKey, value: MessageInfo[FilterKey]) => {
     handleFilterChange(key, value);
@@ -184,7 +190,7 @@ const MessagesTable = () => {
             onToTimeBlur={commitToTime}
             messages={messages ?? []}
             onFilterChange={onFilterChange}
-            filterKeys={["role", "action", "service"]}
+            filterKeys={["service", "action", "role", "status"]}
         />
         <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
           <div style={{gridArea: "mottakId"}}>
@@ -267,7 +273,7 @@ const MessagesTable = () => {
                           {
                             (message.status === "ok") ? (
                                 <img src={ok} alt="ok" />
-                            ) : (message.status === "Informasjon") ? (
+                            ) : (message.status === "info") ? (
                                 <img src={info} alt="info" />
                             ) : (message.status === "error") ? (
                                 <img src={err} alt="error" />
