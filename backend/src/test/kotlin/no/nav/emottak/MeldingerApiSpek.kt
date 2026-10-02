@@ -69,7 +69,7 @@ class MeldingerApiSpek :
                 messageQueryService = mockk()
                 val list = getMessages()
                 io.mockk.coEvery {
-                    messageQueryService.meldinger(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
+                    messageQueryService.meldinger(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
                 } returns
                     Page(1, list.size, "DESC", list.size.toLong(), list)
 
