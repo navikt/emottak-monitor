@@ -9,7 +9,7 @@ import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
-import { initialFromDate, initialToDate, initialTime } from "../util";
+import {initialFromDate, initialToDate, initialTime, formatDatetime} from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
@@ -206,7 +206,7 @@ const EventsTable = () => {
                       ) : ""
                     }
                   </Table.DataCell>
-                  <Table.DataCell>{event.eventDate.substring(0, 23)}</Table.DataCell>
+                  <Table.DataCell>{formatDatetime(event.eventDate)}</Table.DataCell>
                   <Table.DataCell>
                       <Ekspanderbartpanel tittel={event.description}>
                         {event.eventData}

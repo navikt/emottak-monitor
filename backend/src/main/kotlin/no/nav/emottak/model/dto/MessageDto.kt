@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.Page
+import no.nav.emottak.model.convertStatus
 
 @Serializable
 data class MessageDto(
@@ -35,7 +36,7 @@ fun String.toPageMessageInfo(): Page<MessageInfo> {
                 avsender = messageDto.senderName,
                 cpaid = messageDto.cpaId,
                 antall = messageDto.count,
-                status = messageDto.status,
+                status = convertStatus(messageDto.status),
             )
         }
     return Page(

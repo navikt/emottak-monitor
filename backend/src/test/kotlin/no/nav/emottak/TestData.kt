@@ -3,7 +3,6 @@ package no.nav.emottak
 import no.nav.emottak.model.Abonnement
 import no.nav.emottak.model.AbonnementListeData
 import no.nav.emottak.model.BehandlerInfo
-import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
@@ -25,8 +24,6 @@ fun getMottakIdInfo(): List<MottakIdInfo> =
             mottakId = "123456789012345678901",
         ),
     )
-
-fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
 

@@ -185,50 +185,6 @@ fun Route.hentCpa(meldingService: MessageQueryService): Route =
         call.respond(cpaInfo)
     }
 
-// Mottak-id søk (frontend: /mottakidsok)
-@InternalAPI
-fun Route.hentMessageInfo(meldingService: MessageQueryService): Route =
-    get("/hentmessageinfo") {
-        val mottakid = call.request.queryParameters["mottakId"]
-        if (mottakid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: mottakId")
-            return@get
-        }
-        log.info("Henter info for $mottakid")
-        val messageInfo = meldingService.mottakid(mottakid)
-        log.info("Melding info for $mottakid: ${messageInfo.size}")
-        call.respond(messageInfo)
-    }
-
-// Mottak-id søk ebms (frontend: /readableidsokebms)
-@InternalAPI
-fun Route.hentMessageInfoEbms(httpClient: HttpClient): Route =
-    get("/hentmessageinfoebms") {
-        val readableId = call.request.queryParameters["readableId"]
-        if (readableId.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: readableId")
-            return@get
-        }
-        val url = "$eventManagerUrl/message-details/$readableId"
-        log.info("Henter info fra events endepunktet til ebms for $readableId ($url)")
-        executeREST(httpClient, url)
-    }
-
-// EBMessage-id søk (frontend: /ebmessageidsok)
-@InternalAPI
-fun Route.hentEbMessageIdInfo(meldingService: MessageQueryService): Route =
-    get("/hentebmessageidinfo") {
-        val ebmessageid = call.request.queryParameters["ebmessageId"]
-        if (ebmessageid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: ebmessageId")
-            return@get
-        }
-        log.info("Henter info for $ebmessageid")
-        val ebMessageIdIdInfo = meldingService.ebmessageid(ebmessageid)
-        log.info("EBMessage ident info for $ebmessageid: ${ebMessageIdIdInfo.size}")
-        call.respond(ebMessageIdIdInfo)
-    }
-
 // Feilstatistikk (frontend: /feilstatistikk)
 @InternalAPI
 fun Route.hentFeilstatistikk(meldingService: MessageQueryService): Route =

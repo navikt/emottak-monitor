@@ -700,7 +700,7 @@ if (process.env.NODE_ENV === 'development') {
     mock.onGet(/\/v1\/hentloggebms\?/).reply((config) => {
         console.log("Mocker hentloggebms");
         const meldingsdetaljer = {
-            "datoMottatt": "2026-06-17 15:30:42.90712",
+            "datoMottatt": "2026-06-17T15:30:42.90712+02:00[Europe/Oslo]",
             "mottakId": "IN.2606171330.rakk.b927d7",
             "requestId": "931c5b8f-7781-4d18-b924-345fb86ecd52",
             "messageId": "b4617abb-40cf-4210-9039-16c5d78a1c84",

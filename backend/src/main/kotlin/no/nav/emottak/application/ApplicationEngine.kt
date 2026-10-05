@@ -30,7 +30,6 @@ import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
-import no.nav.emottak.application.api.hentEbMessageIdInfo
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
 import no.nav.emottak.application.api.hentHendelserEbms
@@ -38,8 +37,6 @@ import no.nav.emottak.application.api.hentLogg
 import no.nav.emottak.application.api.hentLoggEbms
 import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
-import no.nav.emottak.application.api.hentMessageInfo
-import no.nav.emottak.application.api.hentMessageInfoEbms
 import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.api.registerNaisApi
@@ -104,24 +101,21 @@ private fun Application.serverSetup(
     routing {
         registerNaisApi(applicationState)
         authenticate("jwt") {
-        route("/v1") {
-            hentMeldinger(meldingService)
-            hentMeldingerEbms(scopedAuthHttpClient)
-            hentHendelser(meldingService)
-            hentHendelserEbms(scopedAuthHttpClient)
-            hentLogg(meldingService)
-            hentLoggEbms(scopedAuthHttpClient)
-            hentCpa(meldingService)
-            hentMessageInfo(meldingService)
-            hentMessageInfoEbms(scopedAuthHttpClient)
-            hentEbMessageIdInfo(meldingService)
-            hentFeilstatistikk(meldingService)
-            hentRollerServicesAction(scopedAuthHttpClient)
-            hentCPAListe(meldingService, scopedAuthHttpClient)
-            hentPartnerListe(meldingService, scopedAuthHttpClient)
-            hentAbonnementListe(meldingService)
-            hentConversationStatusEbms(scopedAuthHttpClient)
-        }
+            route("/v1") {
+                hentMeldinger(meldingService)
+                hentMeldingerEbms(scopedAuthHttpClient)
+                hentHendelser(meldingService)
+                hentHendelserEbms(scopedAuthHttpClient)
+                hentLogg(meldingService)
+                hentLoggEbms(scopedAuthHttpClient)
+                hentCpa(meldingService)
+                hentFeilstatistikk(meldingService)
+                hentRollerServicesAction(scopedAuthHttpClient)
+                hentCPAListe(meldingService, scopedAuthHttpClient)
+                hentPartnerListe(meldingService, scopedAuthHttpClient)
+                hentAbonnementListe(meldingService)
+                hentConversationStatusEbms(scopedAuthHttpClient)
+            }
         }
     }
 }

@@ -49,4 +49,9 @@ export function initialTime(timeParam: string | null) {
   }
 }
 
+export function formatDatetime(datetimeParam: string | undefined) {
+  if (datetimeParam == undefined || datetimeParam.indexOf("T") == -1) return datetimeParam;
+  return datetimeParam.replace("T", " ").substring(0, 23);
+}
+
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
