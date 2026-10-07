@@ -9,6 +9,7 @@ import ModalLink from "../components/ModalLink";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
+import {formatDatetime} from "../util";
 
 interface AssociatedMessagesProps {
     mottakId: string;
@@ -112,7 +113,7 @@ export default function AssociatedMessages({mottakId, conversationId, ebms}: Ass
                                     }
                                 </Table.DataCell>
                                 <Table.DataCell className="tabell__td--sortert">
-                                    {message.datomottat.substring(0, 23)}
+                                    {formatDatetime(message.datomottat)}
                                 </Table.DataCell>
                                 <Table.DataCell>
                                     <ModalLink
