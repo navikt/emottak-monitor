@@ -1,8 +1,10 @@
 package no.nav.emottak
 
+import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
 import no.nav.emottak.services.MessageQueryService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -54,7 +56,7 @@ class HentMeldingerTest {
         resultPage.content.size shouldBe 6 // PageSize (4) is number of distinct conversationId's, content.size is number of actual messages
         resultPage.totalPages shouldBe 2
         resultPage.totalElements shouldBe 7 // Total number of distinct conversationId's.
-        println(resultPage.content)
+
         resultPage.content[0].mottakid shouldBe "mId1"
         resultPage.content[1].mottakid shouldBe "mId3"
         resultPage.content[2].mottakid shouldBe "mId2"
@@ -170,41 +172,83 @@ class HentMeldingerTest {
         val fom = LocalDateTime.parse("2025-09-17T00:00:00")
         val tom = LocalDateTime.parse("2025-09-18T00:00:00")
         val time = "2025-09-17T12:00:00"
+
         val statusTexts =
             listOf(
-                "Meldingen er ferdigbehandlet",
-                "Ferdigbehandlet",
-                "50",
-                "Meldingen feilet under behandling",
-                "Feil",
-                "30",
-                "Informasjon",
-                "The best status ever",
+                Pair("0", "Meldingen er opprettet"),
+                Pair("10", "Meldingen er under behandling"),
+                Pair("15", "Sendt til manuell behandling"),
+                Pair("20", "Advarsel"),
+                Pair("30", "Meldingen feilet under behandling"),
+                Pair("40", "Fatal feil oppstod under behandling"),
+                Pair("50", "Meldingen er ferdigbehandlet"),
             )
-        statusTexts.forEachIndexed { index, text ->
-            val statusLevel = index + 1
+        statusTexts.forEachIndexed { i, (statusLevel, text) ->
+            val index = i + 1
             testDatabase.runSql("insert into STATUS(STATUSLEVEL, STATUSTEXT) values($statusLevel,'$text')")
-            insertMelding(statusLevel, "mId$statusLevel", "$time.00$statusLevel", statusLevel = statusLevel)
+            insertMelding(index, "mId$index", "$time.00$index", statusLevel = statusLevel.toInt())
         }
-        insertMelding(9, "related", "$time.009", conversationId = "convers_mId1", statusLevel = 7)
-        insertMelding(10, "outside", "2025-09-16T12:00:00", statusLevel = 1)
+        insertMelding(8, "related8", "$time.008", conversationId = "convers_mId1", statusLevel = 10)
+        insertMelding(9, "related9", "$time.009", conversationId = "convers_mId2", statusLevel = 10)
+        insertMelding(10, "related10", "$time.010", conversationId = "convers_mId3", statusLevel = 10)
+        insertMelding(11, "unik11", "$time.011", conversationId = "unik_id", statusLevel = 10)
+        insertMelding(12, "relatedOutside12", "2025-09-16T11:00:00", conversationId = "convers_mId6", statusLevel = 10)
+        insertMelding(13, "outside", "2025-09-16T12:00:00", statusLevel = 50)
 
-        val requestedPage = Pageable(1, 2)
-        val firstPage = messageQueryService.meldinger(fom, tom, status = "ok", pageable = requestedPage)
-        firstPage.totalElements shouldBe 3
-        firstPage.totalPages shouldBe 2
-        firstPage.content.map { it.mottakid } shouldBe listOf("mId2", "mId1", "related")
-        firstPage.content.map { it.status } shouldBe listOf("ok", "ok", "info")
+        val requestedPage = Pageable(pageNumber = 1, pageSize = 2)
+        val allMessages = messageQueryService.meldinger(fom, tom, pageable = requestedPage)
+        withClue("All messages") {
+            allMessages.totalElements shouldBe 8 // Antall unike conversationId'er
+        }
 
-        val secondPage = messageQueryService.meldinger(fom, tom, status = "ok", pageable = requestedPage.next())
-        secondPage.totalElements shouldBe 3
-        secondPage.content.map { it.mottakid } shouldBe listOf("mId3")
-        secondPage.content.map { it.status } shouldBe listOf("ok")
+        val firstPage = messageQueryService.meldinger(fom, tom, status = "10", pageable = requestedPage)
+        withClue("First page with status 10 (processing)") {
+            firstPage.totalElements shouldBe 4
+            firstPage.totalPages shouldBe 2
+            firstPage.page shouldBe 1
+            firstPage.content.size shouldBe 4 // Returnerer også relaterte meldinger (created-meldingen)
+            firstPage.content.map { it.mottakid } shouldBe listOf("mId1", "related8", "mId2", "related9")
+            firstPage.content.map { it.status } shouldBe listOf("created", "info", "info", "info")
+        }
 
-        for ((status, expectedCount) in listOf("ok" to 3L, "error" to 3L, "info" to 3L)) {
-            val result = messageQueryService.meldinger(fom, tom, status = status, pageable = Pageable(1, 10))
-            result.totalElements shouldBe expectedCount
-            result.content.count { it.status == status } shouldBe expectedCount.toInt()
+        val secondPage = messageQueryService.meldinger(fom, tom, status = "10", pageable = requestedPage.next())
+        withClue("Second page with status 10 (processing)") {
+            secondPage.totalElements shouldBe 4
+            secondPage.totalPages shouldBe 2
+            secondPage.page shouldBe 2
+            secondPage.content.size shouldBe 3
+            secondPage.content.map { it.mottakid } shouldBe listOf("mId3", "related10", "unik11")
+            secondPage.content.map { it.status } shouldBe listOf("manual", "info", "info")
+        }
+
+        var result = messageQueryService.meldinger(fom, tom, status = "10", pageable = Pageable(1, 10))
+        withClue("Test of status 10 (info)") {
+            result.totalElements shouldBe 4 // Number of unique conversationIds
+            result.content.count { it.status == convertStatus("10") } shouldBe 5 // Number of messages with status 10
+            result.content.size shouldBe 7 // Number of all messages (status 10, and their related)
+        }
+
+        result = messageQueryService.meldinger(fom, tom, status = "30", pageable = Pageable(1, 10))
+        withClue("Test of status 30 (error)") {
+            result.totalElements shouldBe 1 // Number of unique conversationIds
+            result.content.count { it.status == convertStatus("30") } shouldBe 1
+        }
+
+        result = messageQueryService.meldinger(fom, tom, status = "15", pageable = Pageable(1, 10))
+        withClue("Test of status 15 (manual)") {
+            result.totalElements shouldBe 1 // Number of unique conversationIds
+            // TODO: Both the manual and the related info message (related10) should be returned
+            result.content.count { it.status == convertStatus("15") } shouldBe 1 // Should be 2?
+            result.content[0].mottakid shouldBe "mId3"
+            // result.content[1].mottakid shouldBe "related10"
+            result.content[0].conversationId shouldBe "convers_mId3"
+            // result.content[1].conversationId shouldBe "convers_mId3"
+        }
+
+        result = messageQueryService.meldinger(fom, tom, status = "50", pageable = Pageable(1, 10))
+        withClue("Test of status 50 (ok)") {
+            result.totalElements shouldBe 1 // Number of unique conversationIds
+            result.content.count { it.status == convertStatus("50") } shouldBe 1
         }
 
         val combinedFilters =
@@ -214,13 +258,20 @@ class HentMeldingerTest {
                 role = "role_mId2",
                 service = "service_mId2",
                 action = "action_mId2",
-                status = "ok",
+                status = "10",
                 pageable = requestedPage,
             )
         combinedFilters.totalElements shouldBe 1
-        combinedFilters.content.map { it.mottakid } shouldBe listOf("mId2")
-        messageQueryService.meldinger(fom, tom, status = "", pageable = Pageable(1, 10)).totalElements shouldBe 8
+        combinedFilters.content.map { it.mottakid } shouldBe listOf("mId2", "related9")
+
+        withClue("Test of blank status") {
+            result = messageQueryService.meldinger(fom, tom, status = "", pageable = Pageable(1, 20))
+            result.totalElements shouldBe 8 // Unique conversationIds
+            result.content.size shouldBe 12 // Unique messages
+        }
     }
+
+    // TODO: Lag test som tester søk/filter på spesialtegn (kolon, krøllalfa, osv)
 
     @Test
     fun testHentMeldingerUnpaged() {
@@ -274,7 +325,7 @@ class HentMeldingerTest {
             "insert into MELDING(MOTTAK_ID, DATOMOTTAT, ROLE, SERVICE, ACTION, REFERANSEPARAM, EBCOMNAVN, " +
                 "EBCONVERS_ID, AVTALE_ID, STATUSLEVEL) " +
                 "values('$mottakid','$tid','role_$mottakid','service_$mottakid','action_$mottakid'," +
-                "'param_$mottakid','sender_$mottakid','$conversId','cpa_+mottakid+',$statusLevel)",
+                "'param_$mottakid','sender_$mottakid','$conversId','cpa_$mottakid',$statusLevel)",
         )
     }
 

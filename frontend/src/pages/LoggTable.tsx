@@ -184,7 +184,7 @@ const LoggTable = (props: LoggTableProps) => {
                         </a>
                     )}
                   </td>
-                  <td><b>EbMessageId</b></td>
+                  <td><b>{messageIdName}</b></td>
                   <td>{data?.meldingsdetaljer.messageId && (
                       <a
                           href={GrafanaLogg({
