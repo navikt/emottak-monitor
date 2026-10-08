@@ -9,7 +9,6 @@ import no.nav.emottak.model.convertStatus
 import java.sql.Connection
 import java.sql.ResultSet
 import java.time.LocalDateTime
-import kotlin.use
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
@@ -30,25 +29,13 @@ fun DatabaseInterface.hentMeldinger(
         if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
         if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
         if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
-        if (!role.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ROLE = ?"
-        if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = ?"
-        if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = ?"
-        if (!status.isNullOrBlank()) {
-            filterClause += """
-                AND COALESCE((
-                    SELECT CASE
-                        WHEN STATUS.STATUSTEXT IN ('Meldingen er ferdigbehandlet', 'Ferdigbehandlet', '50') THEN 'ok'
-                        WHEN STATUS.STATUSTEXT IN ('Meldingen feilet under behandling', 'Feil', '30') THEN 'error'
-                        ELSE 'info'
-                    END
-                    FROM $databasePrefix.STATUS
-                    WHERE STATUS.STATUSLEVEL = MELDING_FILTER.STATUSLEVEL
-                ), 'info') = ?
-            """
-        }
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ROLE = '$role'"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = '$service'"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = '$action'"
+        if (!status.isNullOrBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = $status"
 
         // Count number of distinct conversationId's only if conversationId is not set:
-        var totalCount = connection.getTotalCount(databasePrefix, filterClause, fom, tom, conversationId, role, service, action, status)
+        var totalCount = connection.getTotalCount(databasePrefix, filterClause, fom, tom, conversationId)
 
         // We always use ORDER BY, with default DESC
         var orderBy = "DESC"
@@ -71,13 +58,11 @@ fun DatabaseInterface.hentMeldinger(
         if (!conversationId.isNullOrBlank()) {
             statement.setObject(1, conversationId)
         } else {
-            var index = 1
-            statement.setObject(index++, fom)
-            statement.setObject(index++, tom)
-            index = setEqualityFilterParams(statement, index, role, service, action, status)
+            statement.setObject(1, fom)
+            statement.setObject(2, tom)
             if (pageable != null) {
-                statement.setObject(index++, pageable.offset)
-                statement.setObject(index, pageable.pageSize)
+                statement.setObject(3, pageable.offset)
+                statement.setObject(4, pageable.pageSize)
             }
         }
         val list =
@@ -99,10 +84,6 @@ private fun Connection.getTotalCount(
     fom: LocalDateTime,
     tom: LocalDateTime,
     conversationId: String?,
-    role: String?,
-    service: String?,
-    action: String?,
-    status: String?,
 ): Long =
     if (conversationId.isNullOrBlank()) {
         val countStatement =
@@ -116,7 +97,6 @@ private fun Connection.getTotalCount(
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
-        setEqualityFilterParams(countStatement, 3, role, service, action, status)
         countStatement.use {
             val rs = it.executeQuery()
             rs.next()
@@ -125,24 +105,6 @@ private fun Connection.getTotalCount(
     } else {
         0
     }
-
-// Binds the equality filter (role/service/action/status) parameters in the fixed order they were
-// appended to filterClause, returning the next free bind index.
-private fun setEqualityFilterParams(
-    statement: java.sql.PreparedStatement,
-    startIndex: Int,
-    role: String?,
-    service: String?,
-    action: String?,
-    status: String?,
-): Int {
-    var index = startIndex
-    if (!role.isNullOrBlank()) statement.setObject(index++, role)
-    if (!service.isNullOrBlank()) statement.setObject(index++, service)
-    if (!action.isNullOrBlank()) statement.setObject(index++, action)
-    if (!status.isNullOrBlank()) statement.setObject(index++, status)
-    return index
-}
 
 private fun getConversationIdSubQuery(
     databasePrefix: String,

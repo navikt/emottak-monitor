@@ -11,8 +11,8 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
-import {formatDatetime} from "../util";
 import GrafanaLogg from "../components/GrafanaLogg";
+import {formatDatetime} from "../util";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -135,7 +135,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <tbody>
                 <tr>
                   <td><b>{mottakIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.mottakId}</td>
+                  <td>{data?.meldingsdetaljer?.mottakId}</td>
                   <td><b>{requestIdName}</b></td>
                   <td>{data?.meldingsdetaljer.requestId}</td>
                   <td><b>Mottatt</b></td>
@@ -166,7 +166,7 @@ const LoggTable = (props: LoggTableProps) => {
                   <td>{data?.meldingsdetaljer.avsenderparam}</td>
                 </tr>
                 <tr>
-                  <td><b>EbConversationId</b></td>
+                  <td><b>{conversationIdName}</b></td>
                   <td>
                     {data?.meldingsdetaljer.conversationId && (
                         <a
@@ -184,7 +184,7 @@ const LoggTable = (props: LoggTableProps) => {
                         </a>
                     )}
                   </td>
-                  <td><b>EbMessageId</b></td>
+                  <td><b>{messageIdName}</b></td>
                   <td>{data?.meldingsdetaljer.messageId && (
                       <a
                           href={GrafanaLogg({
