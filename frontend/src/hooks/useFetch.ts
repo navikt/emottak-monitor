@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Reducer, useCallback, useReducer } from "react";
+import { Reducer, useCallback, useReducer, useRef } from "react";
 
 export type FetchState<T> = {
   data: T | null;
@@ -38,15 +38,19 @@ const useFetch = <T>(url: string) => {
   const [fetchState, dispatch] = useReducer<
     Reducer<FetchState<T>, FetchAction<T>>
   >(reducer, createInitialState());
+  const latestRequestId = useRef(0);
 
   const callRequest = useCallback(async (overrideUrl?: string) => {
-    url = overrideUrl ?? url;
+    const requestId = ++latestRequestId.current;
+    const requestUrl = overrideUrl ?? url;
     try {
       dispatch({ type: "reqStart" });
-      const res = await axios.get<T>(url);
+      const res = await axios.get<T>(requestUrl);
       const data = await res.data;
+      if (requestId !== latestRequestId.current) return;
       dispatch({type: "reqSuccess", data});
     } catch (e) {
+      if (requestId !== latestRequestId.current) return;
       if (axios.isAxiosError(e)) {
         typeof e.response?.data === "string"
           ? dispatch({ type: "reqError", error: new Error(e.response.data) })
