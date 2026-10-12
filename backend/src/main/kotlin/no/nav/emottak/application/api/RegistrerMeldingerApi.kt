@@ -55,12 +55,13 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
             val status =
                 when (statusParam) {
                     "created" -> "0"
+                    "info" -> "10"
                     "manual" -> "15"
                     "warning" -> "20"
                     "error" -> "30"
                     "fatal" -> "40"
                     "ok" -> "50"
-                    else -> "10"
+                    else -> ""
                 }
             val meldinger =
                 meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, status, pageable)
