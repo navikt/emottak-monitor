@@ -92,6 +92,7 @@ fun DatabaseInterface.hentMeldinger(
         }
         var returnPageable = pageable
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
+        println("${status} : $sql")
         Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)
     }
 

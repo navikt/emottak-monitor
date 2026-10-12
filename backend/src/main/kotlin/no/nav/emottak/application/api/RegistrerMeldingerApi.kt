@@ -67,7 +67,7 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
                 meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, status, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
             log.info(
-                "Meldingsliste !!!! : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",
+                "Meldingsliste !!!! : $statusParam : ${meldinger.content.firstOrNull()?.status} : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",
             )
             call.respond(meldinger)
         }
