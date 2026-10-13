@@ -6,7 +6,6 @@ import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
-import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
@@ -112,28 +111,22 @@ const MessagesTable = () => {
     status: onStatusChange,
   };
 
-  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
-      messages ?? [],
-      ["role", "service", "action", "status"]
-  );
-
   const onFilterChange = (key: FilterKey, value: MessageInfo[FilterKey]) => {
-    handleFilterChange(key, value);
     filterSetters[key]?.(value as string);
   };
 
-  const groupedByConversation = useMemo(() => {
-    const map = new Map<string, MessageInfo[]>();
-    for (const msg of filteredMessages) {
-      const key = msg.conversationId;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(msg);
-    }
-    return Array.from(map.values()).map((group) => {
-      const sortedGroup = [...group].sort((a, b) => a.datomottat.localeCompare(b.datomottat));
-      return { ...sortedGroup[0], groupMessages: sortedGroup };
-    });
-  }, [filteredMessages]);
+    const groupedByConversation = useMemo(() => {
+      const map = new Map<string, MessageInfo[]>();
+      for (const msg of messages) {
+        const key = msg.conversationId;
+        if (!map.has(key)) { map.set(key, []); }
+        map.get(key)!.push(msg);
+      }
+      return Array.from(map.values()).map((group) => {
+        const sortedGroup = [...group].sort((a, b) => a.datomottat.localeCompare(b.datomottat));
+        return { ...sortedGroup[0], groupMessages: sortedGroup };
+      });
+    }, [messages]);
 
   const {
     items: groupedMessages,
