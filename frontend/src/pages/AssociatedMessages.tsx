@@ -1,7 +1,7 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import RowWithContent from "../components/RowWithContent";
 import useFetch from "../hooks/useFetch";
 import tableStyles from "../styles/Table.module.scss";
@@ -9,9 +9,10 @@ import ModalLink from "../components/ModalLink";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
-import {formatDatetime} from "../util";
+import {formatDatetime, initialToDate} from "../util";
 
 interface AssociatedMessagesProps {
+    mottatDate: string;
     mottakId: string;
     conversationId: string;
     ebms: boolean;
@@ -31,10 +32,16 @@ type MessageInfo = {
     status: string;
 };
 
-export default function AssociatedMessages({mottakId, conversationId, ebms}: AssociatedMessagesProps) {
+export default function AssociatedMessages({mottatDate, mottakId, conversationId, ebms}: AssociatedMessagesProps) {
     const loggLink = ebms ? "loggebms" : "logg"
     const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
-    const url = `/v1/${backend}fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`;
+    const [toDate] = useState(() => {
+        const now = new Date();
+        const pad = (value: number) => String(value).padStart(2, "0");
+        return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    });
+    const fromDate = formatDatetime(mottatDate)?.slice(0, 16) ?? mottatDate;
+    const url = `/v1/${backend}fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}&conversationId=${encodeURIComponent(conversationId)}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;

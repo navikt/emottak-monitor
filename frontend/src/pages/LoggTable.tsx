@@ -269,6 +269,7 @@ const LoggTable = (props: LoggTableProps) => {
             </Table>
             {data?.meldingsdetaljer?.conversationId && (
                 <AssociatedMessages
+                    mottatDate={data.meldingsdetaljer.datoMottatt}
                     mottakId={data.meldingsdetaljer.mottakId}
                     conversationId={data.meldingsdetaljer.conversationId}
                     ebms={props.ebms}
