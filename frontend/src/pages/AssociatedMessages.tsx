@@ -12,7 +12,7 @@ import err from "../images/error.gif";
 import {formatDatetime, ISODatetime} from "../util";
 
 interface AssociatedMessagesProps {
-    mottatDate: string;
+    mottattDate: string;
     mottakId: string;
     conversationId: string;
     ebms: boolean;
@@ -32,10 +32,10 @@ type MessageInfo = {
     status: string;
 };
 
-export default function AssociatedMessages({mottatDate, mottakId, conversationId, ebms}: AssociatedMessagesProps) {
+export default function AssociatedMessages({mottattDate, mottakId, conversationId, ebms}: AssociatedMessagesProps) {
     const loggLink = ebms ? "loggebms" : "logg"
     const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
-    const fromDate = formatDatetime(mottatDate)?.slice(0, 16) ?? mottatDate;
+    const fromDate = formatDatetime(mottattDate)?.slice(0, 16) ?? mottattDate;
     const url = `/v1/${backend}fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(ISODatetime())}&conversationId=${encodeURIComponent(conversationId)}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
