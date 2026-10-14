@@ -1,7 +1,7 @@
 import { Table } from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import RowWithContent from "../components/RowWithContent";
 import useFetch from "../hooks/useFetch";
 import tableStyles from "../styles/Table.module.scss";
@@ -9,7 +9,7 @@ import ModalLink from "../components/ModalLink";
 import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
-import {formatDatetime, initialToDate} from "../util";
+import {formatDatetime, ISODatetime} from "../util";
 
 interface AssociatedMessagesProps {
     mottatDate: string;
@@ -35,13 +35,8 @@ type MessageInfo = {
 export default function AssociatedMessages({mottatDate, mottakId, conversationId, ebms}: AssociatedMessagesProps) {
     const loggLink = ebms ? "loggebms" : "logg"
     const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
-    const [toDate] = useState(() => {
-        const now = new Date();
-        const pad = (value: number) => String(value).padStart(2, "0");
-        return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-    });
     const fromDate = formatDatetime(mottatDate)?.slice(0, 16) ?? mottatDate;
-    const url = `/v1/${backend}fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}&conversationId=${encodeURIComponent(conversationId)}`;
+    const url = `/v1/${backend}fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(ISODatetime())}&conversationId=${encodeURIComponent(conversationId)}`;
 
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;

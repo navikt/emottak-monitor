@@ -14,13 +14,19 @@ export const toggleAllExpandables = (image: JQuery, selector: JQuery): void => {
     });
 };
 
+function pad(value: number) {
+    return String(value).padStart(2, "0");
+}
+
 function ISODate(date: Date = new Date()) {
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-  let dayString = day < 10 ? "0" + day : day.toString();
-  let monthString = month < 10 ? "0" + month : month.toString();
-  return year + "-" + monthString + "-" + dayString;
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    return year + "-" + pad(month) + "-" + pad(day);
+}
+
+export function ISODatetime(date: Date = new Date()) {
+    return ISODate(date) + " " + pad(date.getHours()) + ":" + pad(date.getMinutes());
 }
 
 export function initialFromDate(dateParam: string | null) {
