@@ -218,13 +218,13 @@ const Filter = <T, K extends keyof T>({
           }
         >
           <option value="">Velg status</option>
-          {uniqueFilters["status" as K].map((status) => {
-            return (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            );
-          })}
+          <option key="created" value="created">Opprettet</option>
+          <option key="info" value="info">Informasjon</option>
+          <option key="manual" value="manual">Manuell behandling</option>
+          <option key="warning" value="warning">Advarsel</option>
+          <option key="error" value="error">Feil</option>
+          <option key="fatal" value="fatal">Fatal feil</option>
+          <option key="ok" value="ok">Ferdigbehandlet</option>
         </Select>
       )}
       {filterKeys.includes("hendelsedeskr" as K) && (

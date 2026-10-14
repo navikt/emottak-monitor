@@ -14,8 +14,18 @@ fun DatabaseInterface.hentHendelser(
     fom: LocalDateTime,
     tom: LocalDateTime,
     pageable: Pageable? = null,
+    role: String? = null,
+    service: String? = null,
+    action: String? = null,
+    hendelsedeskr: String? = null,
 ): Page<HendelseInfo> =
     connection.use { connection ->
+        var filterClause = ""
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING.ROLE = ?"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING.SERVICE = ?"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING.ACTION = ?"
+        if (!hendelsedeskr.isNullOrBlank()) filterClause += " AND HENDELSE.HENDELSEDESKR = ?"
+
         val countStatement =
             connection.prepareStatement(
                 """
@@ -23,10 +33,16 @@ fun DatabaseInterface.hentHendelser(
                 FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
                 WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
+                $filterClause
             """,
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
+        var index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, hendelsedeskr)
         val totalCount =
             countStatement.use {
                 val rs = it.executeQuery()
@@ -42,6 +58,7 @@ fun DatabaseInterface.hentHendelser(
             JOIN $databasePrefix.LOGG ON MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
             JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
             WHERE LOGG.HENDELSEDATO BETWEEN ? AND ?
+            $filterClause
             """.trimIndent()
 
         var orderBy = "DESC"
@@ -56,9 +73,14 @@ fun DatabaseInterface.hentHendelser(
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
+        index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        index = setFilterEqualsParams(countStatement, index, hendelsedeskr)
         if (pageable != null) {
-            statement.setObject(3, pageable.offset)
-            statement.setObject(4, pageable.pageSize)
+            statement.setObject(index, pageable.offset)
+            statement.setObject(index + 1, pageable.pageSize)
         }
         val list =
             statement

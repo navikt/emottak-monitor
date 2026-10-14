@@ -11,6 +11,7 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
+import GrafanaLogg from "../components/GrafanaLogg";
 import {formatDatetime} from "../util";
 
 type MessageLogData = {
@@ -134,7 +135,7 @@ const LoggTable = (props: LoggTableProps) => {
                 <tbody>
                 <tr>
                   <td><b>{mottakIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.mottakId}</td>
+                  <td>{data?.meldingsdetaljer?.mottakId}</td>
                   <td><b>{requestIdName}</b></td>
                   <td>{data?.meldingsdetaljer.requestId}</td>
                   <td><b>Mottatt</b></td>
@@ -166,9 +167,47 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>{conversationIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.conversationId}</td>
+                  <td>
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.conversationId && (
+                        <a
+                            href={GrafanaLogg({
+                              service_name: "ebms-async",
+                              fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
+                              conversationId: data.meldingsdetaljer.conversationId,
+                              messageId: "",
+                              requestId: data.meldingsdetaljer.requestId ?? "",
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                          {data.meldingsdetaljer.conversationId}
+                        </a>
+                    )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.conversationId)}
+                  </td>
                   <td><b>{messageIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.messageId}</td>
+                  <td>
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.messageId && (
+                      <a
+                          href={GrafanaLogg({
+                            service_name: "ebms-async",
+                            fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
+                            conversationId: "",
+                            messageId: data.meldingsdetaljer.messageId,
+                            requestId: data.meldingsdetaljer.requestId ?? "",
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                      >
+                        {data.meldingsdetaljer.messageId}
+                      </a>
+                    )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.messageId)}
+                  </td>
                   <td></td>
                   <td></td>
                 </tr>
@@ -236,10 +275,11 @@ const LoggTable = (props: LoggTableProps) => {
               {loading && <NavFrontendSpinner/>}
               {error?.message && <p>{error.message}</p>}
             </Table>
-            {data?.meldingsdetaljer && (
+            {data?.meldingsdetaljer?.conversationId && (
                 <AssociatedMessages
+                    mottattDate={data.meldingsdetaljer.datoMottatt}
                     mottakId={data.meldingsdetaljer.mottakId}
-                    conversationId={data.meldingsdetaljer.conversationId!!}
+                    conversationId={data.meldingsdetaljer.conversationId}
                     ebms={props.ebms}
                 />
             )}

@@ -85,3 +85,29 @@ fun base64encodeXml(
     xml: String,
     charset: Charset = Charsets.UTF_8,
 ): String = Base64.getEncoder().encodeToString(xml.toByteArray(charset))
+
+internal fun setFilterEqualsParams(
+    statement: PreparedStatement,
+    index: Int,
+    value: String?,
+): Int {
+    if (!value.isNullOrBlank()) {
+        statement.setObject(index, value)
+        return index + 1
+    }
+    return index
+}
+
+internal fun setFilterLikeParams(
+    statement: PreparedStatement,
+    index: Int,
+    value: String?,
+    toLowercase: Boolean = true,
+): Int {
+    if (!value.isNullOrBlank()) {
+        val likeValue = if (toLowercase) "%${value.lowercase()}%" else "%$value%"
+        statement.setObject(index, likeValue)
+        return index + 1
+    }
+    return index
+}
