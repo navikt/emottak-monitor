@@ -168,7 +168,8 @@ const LoggTable = (props: LoggTableProps) => {
                 <tr>
                   <td><b>{conversationIdName}</b></td>
                   <td>
-                    {data?.meldingsdetaljer.conversationId && (
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.conversationId && (
                         <a
                             href={GrafanaLogg({
                               service_name: "ebms-async",
@@ -183,9 +184,13 @@ const LoggTable = (props: LoggTableProps) => {
                           {data.meldingsdetaljer.conversationId}
                         </a>
                     )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.conversationId)}
                   </td>
                   <td><b>{messageIdName}</b></td>
-                  <td>{data?.meldingsdetaljer.messageId && (
+                  <td>
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.messageId && (
                       <a
                           href={GrafanaLogg({
                             service_name: "ebms-async",
@@ -199,7 +204,10 @@ const LoggTable = (props: LoggTableProps) => {
                       >
                         {data.meldingsdetaljer.messageId}
                       </a>
-                  )}</td>
+                    )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.messageId)}
+                  </td>
                   <td></td>
                   <td></td>
                 </tr>

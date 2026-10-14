@@ -1,3 +1,5 @@
+import {convertDatetimeToUTC} from "../util";
+
 type FilterProps<T, K extends keyof T> = {
     service_name: string;
     fromDate: string;
@@ -42,7 +44,7 @@ const GrafanaLogg = <T, K extends keyof T>({
     console.log(`k8s_cluster_name: ${k8sClusterName}`);
     const parts = [
         p('patterns', '[]'),
-        p('from', fromDate),
+        p('from', convertDatetimeToUTC(fromDate)),
         p('var-filters', createFieldEquals('service_name', service_name)),
         p('var-filters', createFieldEquals('k8s_cluster_name', k8sClusterName)),
         ...activeFields.map(({ key, value }) => p('var-fields', createJsonFieldEquals(key, value))),

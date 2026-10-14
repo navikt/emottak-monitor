@@ -54,4 +54,14 @@ export function formatDatetime(datetimeParam: string | undefined) {
   return datetimeParam.replace("T", " ").substring(0, 23);
 }
 
+export function convertDatetimeToUTC(datetimeParam: string) {
+  if (datetimeParam == undefined) return datetimeParam;
+  // TODO: Lage en mer robust konvertering fra Europe/Oslo til UTC
+  let dateString = datetimeParam.replace(" ", "T");
+  dateString = dateString.split(".")[0] + ".000Z"; // Null ut millisekunder, og legg på Z bakerst
+  let utcDate = new Date(dateString);
+  utcDate.setHours(utcDate.getHours()-2); // Trekk fra 2 timer, også om vinteren..?
+  return utcDate.toISOString();
+}
+
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';
