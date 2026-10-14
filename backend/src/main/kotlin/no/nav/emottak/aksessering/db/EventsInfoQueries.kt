@@ -26,18 +26,6 @@ fun DatabaseInterface.hentHendelser(
         if (!action.isNullOrBlank()) filterClause += " AND MELDING.ACTION = ?"
         if (!hendelsedeskr.isNullOrBlank()) filterClause += " AND HENDELSE.HENDELSEDESKR = ?"
 
-        fun setFilterParams(
-            statement: java.sql.PreparedStatement,
-            startIndex: Int,
-        ): Int {
-            var index = startIndex
-            if (!role.isNullOrBlank()) statement.setObject(index++, role)
-            if (!service.isNullOrBlank()) statement.setObject(index++, service)
-            if (!action.isNullOrBlank()) statement.setObject(index++, action)
-            if (!hendelsedeskr.isNullOrBlank()) statement.setObject(index++, hendelsedeskr)
-            return index
-        }
-
         val countStatement =
             connection.prepareStatement(
                 """
@@ -50,7 +38,11 @@ fun DatabaseInterface.hentHendelser(
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
-        setFilterParams(countStatement, 3)
+        var index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, hendelsedeskr)
         val totalCount =
             countStatement.use {
                 val rs = it.executeQuery()
@@ -81,10 +73,14 @@ fun DatabaseInterface.hentHendelser(
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
-        val nextIndex = setFilterParams(statement, 3)
+        index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        index = setFilterEqualsParams(countStatement, index, hendelsedeskr)
         if (pageable != null) {
-            statement.setObject(nextIndex, pageable.offset)
-            statement.setObject(nextIndex + 1, pageable.pageSize)
+            statement.setObject(index, pageable.offset)
+            statement.setObject(index + 1, pageable.pageSize)
         }
         val list =
             statement

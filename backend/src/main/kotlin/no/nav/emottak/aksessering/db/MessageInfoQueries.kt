@@ -76,7 +76,13 @@ fun DatabaseInterface.hentMeldinger(
             var index = 1
             statement.setObject(index++, fom)
             statement.setObject(index++, tom)
-            index = setFilterParams(statement, index, mottakId, cpaId, messageId, role, service, action, status)
+            index = setFilterLikeParams(statement, index, mottakId)
+            index = setFilterLikeParams(statement, index, cpaId)
+            index = setFilterLikeParams(statement, index, messageId)
+            index = setFilterEqualsParams(statement, index, role)
+            index = setFilterEqualsParams(statement, index, service)
+            index = setFilterEqualsParams(statement, index, action)
+            index = setFilterEqualsParams(statement, index, status)
             if (pageable != null) {
                 statement.setObject(index++, pageable.offset)
                 statement.setObject(index, pageable.pageSize)
@@ -121,7 +127,14 @@ private fun Connection.getTotalCount(
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
-        setFilterParams(countStatement, 3, mottakId, cpaId, messageId, role, service, action, status)
+        var index = 3
+        index = setFilterLikeParams(countStatement, index, mottakId)
+        index = setFilterLikeParams(countStatement, index, cpaId)
+        index = setFilterLikeParams(countStatement, index, messageId)
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, status)
         countStatement.use {
             val rs = it.executeQuery()
             rs.next()
@@ -130,30 +143,6 @@ private fun Connection.getTotalCount(
     } else {
         0
     }
-
-// Binds the filters (role/service/action/status) parameters in the fixed order they were
-// appended to filterClause, returning the next free bind index.
-private fun setFilterParams(
-    statement: java.sql.PreparedStatement,
-    startIndex: Int,
-    mottakId: String?,
-    cpaId: String?,
-    messageId: String?,
-    role: String?,
-    service: String?,
-    action: String?,
-    status: String?,
-): Int {
-    var index = startIndex
-    if (!mottakId.isNullOrBlank()) statement.setObject(index++, "%${mottakId.lowercase()}%")
-    if (!cpaId.isNullOrBlank()) statement.setObject(index++, "%${cpaId.lowercase()}%")
-    if (!messageId.isNullOrBlank()) statement.setObject(index++, "%${messageId.lowercase()}%")
-    if (!role.isNullOrBlank()) statement.setObject(index++, role)
-    if (!service.isNullOrBlank()) statement.setObject(index++, service)
-    if (!action.isNullOrBlank()) statement.setObject(index++, action)
-    if (!status.isNullOrBlank()) statement.setObject(index++, status)
-    return index
-}
 
 private fun getConversationIdSubQuery(
     databasePrefix: String,
