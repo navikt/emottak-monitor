@@ -38,19 +38,19 @@ const useFetch = <T>(url: string) => {
   const [fetchState, dispatch] = useReducer<
     Reducer<FetchState<T>, FetchAction<T>>
   >(reducer, createInitialState());
-  const latestRequestId = useRef(0);
+  const latestFetchId = useRef(0);
 
   const callRequest = useCallback(async (overrideUrl?: string) => {
-    const requestId = ++latestRequestId.current;
+    const fetchId = ++latestFetchId.current;
     const requestUrl = overrideUrl ?? url;
     try {
       dispatch({ type: "reqStart" });
       const res = await axios.get<T>(requestUrl);
       const data = await res.data;
-      if (requestId !== latestRequestId.current) return;
+      if (fetchId !== latestFetchId.current) return;
       dispatch({type: "reqSuccess", data});
     } catch (e) {
-      if (requestId !== latestRequestId.current) return;
+      if (fetchId !== latestFetchId.current) return;
       if (axios.isAxiosError(e)) {
         typeof e.response?.data === "string"
           ? dispatch({ type: "reqError", error: new Error(e.response.data) })

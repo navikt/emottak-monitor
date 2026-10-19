@@ -64,31 +64,6 @@ const EventsTable = () => {
   const [relatedMessagesByConversation, setRelatedMessagesByConversation] =
       useState<Record<string, RelatedMessagesState>>({});
 
-  const fetchRelatedMessages = async (conversationId: string) => {
-    if (!conversationId || relatedMessagesByConversation[conversationId]) return;
-    setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "loading" } }));
-    try {
-      const res = await axios.get<{ content: RelatedMessage[] }>(
-          `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`
-      );
-      setRelatedMessagesByConversation(prev => ({
-        ...prev,
-        [conversationId]: { status: "loaded", messages: res.data.content ?? [] },
-      }));
-    } catch {
-      setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "error" } }));
-    }
-  };
-
-  const toggleGroup = (key: string, conversationId: string) => {
-    setExpandedGroups(prev => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-    fetchRelatedMessages(conversationId);
-  };
-
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
   const [fromDate, setFromDate] = useState(initialFromDate(""));
@@ -170,6 +145,31 @@ const EventsTable = () => {
       setCurrentPage(1);
       setPageSize(newSize);
     }
+  };
+
+  const fetchRelatedMessages = async (conversationId: string) => {
+    if (!conversationId || relatedMessagesByConversation[conversationId]) return;
+    setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "loading" } }));
+    try {
+      const res = await axios.get<{ content: RelatedMessage[] }>(
+          `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`
+      );
+      setRelatedMessagesByConversation(prev => ({
+        ...prev,
+        [conversationId]: { status: "loaded", messages: res.data.content ?? [] },
+      }));
+    } catch {
+      setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "error" } }));
+    }
+  };
+
+  const toggleGroup = (key: string, conversationId: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+    fetchRelatedMessages(conversationId);
   };
 
   const headers: { key: keyof EventInfo | "collapse"; name: string }[] = [
