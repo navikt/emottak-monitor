@@ -4,7 +4,6 @@ import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import no.nav.emottak.aksessering.db.hentMeldinger
 import no.nav.emottak.model.Pageable
-import no.nav.emottak.model.convertStatus
 import no.nav.emottak.services.MessageQueryService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -173,21 +172,7 @@ class HentMeldingerTest {
         val tom = LocalDateTime.parse("2025-09-18T00:00:00")
         val time = "2025-09-17T12:00:00"
 
-        val statusTexts =
-            listOf(
-                Pair("0", "Meldingen er opprettet"),
-                Pair("10", "Meldingen er under behandling"),
-                Pair("15", "Sendt til manuell behandling"),
-                Pair("20", "Advarsel"),
-                Pair("30", "Meldingen feilet under behandling"),
-                Pair("40", "Fatal feil oppstod under behandling"),
-                Pair("50", "Meldingen er ferdigbehandlet"),
-            )
-        statusTexts.forEachIndexed { i, (statusLevel, text) ->
-            val index = i + 1
-            testDatabase.runSql("insert into STATUS(STATUSLEVEL, STATUSTEXT) values($statusLevel,'$text')")
-            insertMelding(index, "mId$index", "$time.00$index", statusLevel = statusLevel.toInt())
-        }
+        insertStatusesAndEvents(time)
         insertMelding(8, "related8", "$time.008", conversationId = "convers_mId1", statusLevel = 10)
         insertMelding(9, "related9", "$time.009", conversationId = "convers_mId2", statusLevel = 10)
         insertMelding(10, "related10", "$time.010", conversationId = "convers_mId3", statusLevel = 10)
@@ -201,7 +186,7 @@ class HentMeldingerTest {
             allMessages.totalElements shouldBe 8 // Antall unike conversationId'er
         }
 
-        val firstPage = messageQueryService.meldinger(fom, tom, status = "10", pageable = requestedPage)
+        val firstPage = messageQueryService.meldinger(fom, tom, status = "info", pageable = requestedPage)
         withClue("First page with status 10 (processing)") {
             firstPage.totalElements shouldBe 4
             firstPage.totalPages shouldBe 2
@@ -211,7 +196,7 @@ class HentMeldingerTest {
             firstPage.content.map { it.status } shouldBe listOf("created", "info", "info", "info")
         }
 
-        val secondPage = messageQueryService.meldinger(fom, tom, status = "10", pageable = requestedPage.next())
+        val secondPage = messageQueryService.meldinger(fom, tom, status = "info", pageable = requestedPage.next())
         withClue("Second page with status 10 (processing)") {
             secondPage.totalElements shouldBe 4
             secondPage.totalPages shouldBe 2
@@ -221,34 +206,34 @@ class HentMeldingerTest {
             secondPage.content.map { it.status } shouldBe listOf("manual", "info", "info")
         }
 
-        var result = messageQueryService.meldinger(fom, tom, status = "10", pageable = Pageable(1, 10))
+        var result = messageQueryService.meldinger(fom, tom, status = "info", pageable = Pageable(1, 10))
         withClue("Test of status 10 (info)") {
             result.totalElements shouldBe 4 // Number of unique conversationIds
-            result.content.count { it.status == convertStatus("10") } shouldBe 5 // Number of messages with status 10
+            result.content.count { it.status == "info" } shouldBe 5 // Number of messages with status 10
             result.content.size shouldBe 7 // Number of all messages (status 10, and their related)
         }
 
-        result = messageQueryService.meldinger(fom, tom, status = "30", pageable = Pageable(1, 10))
+        result = messageQueryService.meldinger(fom, tom, status = "error", pageable = Pageable(1, 10))
         withClue("Test of status 30 (error)") {
             result.totalElements shouldBe 1 // Number of unique conversationIds
-            result.content.count { it.status == convertStatus("30") } shouldBe 1
+            result.content.count { it.status == "error" } shouldBe 1
         }
 
-        result = messageQueryService.meldinger(fom, tom, status = "15", pageable = Pageable(1, 10))
+        result = messageQueryService.meldinger(fom, tom, status = "manual", pageable = Pageable(1, 10))
         withClue("Test of status 15 (manual)") {
             result.totalElements shouldBe 1 // Number of unique conversationIds
             // TODO: Both the manual and the related info message (related10) should be returned
-            result.content.count { it.status == convertStatus("15") } shouldBe 1 // Should be 2?
+            result.content.count { it.status == "manual" } shouldBe 1 // Should be 2?
             result.content[0].mottakid shouldBe "mId3"
             // result.content[1].mottakid shouldBe "related10"
             result.content[0].conversationId shouldBe "convers_mId3"
             // result.content[1].conversationId shouldBe "convers_mId3"
         }
 
-        result = messageQueryService.meldinger(fom, tom, status = "50", pageable = Pageable(1, 10))
+        result = messageQueryService.meldinger(fom, tom, status = "ok", pageable = Pageable(1, 10))
         withClue("Test of status 50 (ok)") {
             result.totalElements shouldBe 1 // Number of unique conversationIds
-            result.content.count { it.status == convertStatus("50") } shouldBe 1
+            result.content.count { it.status == "ok" } shouldBe 1
         }
 
         val combinedFilters =
@@ -258,7 +243,7 @@ class HentMeldingerTest {
                 role = "role_mId2",
                 service = "service_mId2",
                 action = "action_mId2",
-                status = "10",
+                status = "info",
                 pageable = requestedPage,
             )
         combinedFilters.totalElements shouldBe 1
@@ -271,7 +256,52 @@ class HentMeldingerTest {
         }
     }
 
-    // TODO: Lag test som tester søk/filter på spesialtegn (kolon, krøllalfa, osv)
+    @Test
+    fun testHentMeldingerSpecialCharacters() {
+        val fom = LocalDateTime.parse("2025-09-17T00:00:00")
+        val tom = LocalDateTime.parse("2025-09-18T00:00:00")
+        val time = "2025-09-17T12:00:00"
+        val mottakIdColon = "min:mottak:id"
+        val mottakIdPercent = "min%mottak%id"
+        val conversationIdAt = "convers@tion@test"
+        val conversationIdAnd = "convers&tion&test"
+
+        insertStatusesAndEvents(time)
+        insertMelding(10, mottakIdColon, time, conversationIdAt, 50)
+        insertMelding(11, mottakIdPercent, time, conversationIdAnd, 50)
+
+        var result = messageQueryService.meldinger(fom, tom, mottakId = mottakIdColon.uppercase())
+        withClue("Search with colon (:)") {
+            result.totalElements shouldBe 1
+            result.content.size shouldBe 1
+            result.content[0].mottakid shouldBe mottakIdColon
+            result.content[0].conversationId shouldBe conversationIdAt
+        }
+
+        result = messageQueryService.meldinger(fom, tom, mottakId = mottakIdPercent.uppercase())
+        withClue("Search with percent (%)") {
+            result.totalElements shouldBe 1
+            result.content.size shouldBe 1
+            result.content[0].mottakid shouldBe mottakIdPercent
+            result.content[0].conversationId shouldBe conversationIdAnd
+        }
+
+        result = messageQueryService.meldinger(fom, tom, conversationId = conversationIdAt)
+        withClue("Search with at (@)") {
+            result.totalElements shouldBe 1 // Unique conversationIds
+            result.content.size shouldBe 1 // Number of events
+            result.content[0].mottakid shouldBe mottakIdColon
+            result.content[0].conversationId shouldBe conversationIdAt
+        }
+
+        result = messageQueryService.meldinger(fom, tom, conversationId = conversationIdAnd)
+        withClue("Search with and (&)") {
+            result.totalElements shouldBe 1
+            result.content.size shouldBe 1
+            result.content[0].mottakid shouldBe mottakIdPercent
+            result.content[0].conversationId shouldBe conversationIdAnd
+        }
+    }
 
     @Test
     fun testHentMeldingerUnpaged() {
@@ -327,6 +357,24 @@ class HentMeldingerTest {
                 "values('$mottakid','$tid','role_$mottakid','service_$mottakid','action_$mottakid'," +
                 "'param_$mottakid','sender_$mottakid','$conversId','cpa_$mottakid',$statusLevel)",
         )
+    }
+
+    fun insertStatusesAndEvents(time: String) {
+        val statusTexts =
+            listOf(
+                Pair("0", "Meldingen er opprettet"),
+                Pair("10", "Meldingen er under behandling"),
+                Pair("15", "Sendt til manuell behandling"),
+                Pair("20", "Advarsel"),
+                Pair("30", "Meldingen feilet under behandling"),
+                Pair("40", "Fatal feil oppstod under behandling"),
+                Pair("50", "Meldingen er ferdigbehandlet"),
+            )
+        statusTexts.forEachIndexed { i, (statusLevel, text) ->
+            val index = i + 1
+            testDatabase.runSql("insert into STATUS(STATUSLEVEL, STATUSTEXT) values($statusLevel,'$text')")
+            insertMelding(index, "mId$index", "$time.00$index", statusLevel = statusLevel.toInt())
+        }
     }
 
     fun insertStatus() {

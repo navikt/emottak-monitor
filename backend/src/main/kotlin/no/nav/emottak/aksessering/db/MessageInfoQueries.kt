@@ -26,6 +26,7 @@ fun DatabaseInterface.hentMeldinger(
     pageable: Pageable? = null,
 ): Page<MessageInfo> =
     connection.use { connection ->
+        val statuslevel = status.toStatuslevel()
         var filterClause = ""
         if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE ?"
         if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE ?"
@@ -33,8 +34,8 @@ fun DatabaseInterface.hentMeldinger(
         if (!role.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ROLE = ?"
         if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = ?"
         if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = ?"
-        if (!status.isNullOrBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = ?"
-
+        if (statuslevel.isNotBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = ?"
+        println("FilterClause: $filterClause")
         // Count number of distinct conversationId's only if conversationId is not set:
         var totalCount =
             connection.getTotalCount(
@@ -49,7 +50,7 @@ fun DatabaseInterface.hentMeldinger(
                 role,
                 service,
                 action,
-                status,
+                statuslevel,
             )
 
         // We always use ORDER BY, with default DESC
@@ -64,7 +65,7 @@ fun DatabaseInterface.hentMeldinger(
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.EBCONVERS_ID,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
-                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
+                    (SELECT STATUS.STATUSLEVEL FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUSLEVEL
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.EBCONVERS_ID $conversationIdSubQuery
                     ORDER BY MAX(MELDING.DATOMOTTAT) OVER (PARTITION BY MELDING.EBCONVERS_ID) $orderBy, MELDING.DATOMOTTAT ASC
@@ -82,7 +83,7 @@ fun DatabaseInterface.hentMeldinger(
             index = setFilterEqualsParams(statement, index, role)
             index = setFilterEqualsParams(statement, index, service)
             index = setFilterEqualsParams(statement, index, action)
-            index = setFilterEqualsParams(statement, index, status)
+            index = setFilterEqualsParams(statement, index, statuslevel)
             if (pageable != null) {
                 statement.setObject(index++, pageable.offset)
                 statement.setObject(index, pageable.pageSize)
@@ -113,7 +114,7 @@ private fun Connection.getTotalCount(
     role: String?,
     service: String?,
     action: String?,
-    status: String?,
+    statuslevel: String?,
 ): Long =
     if (conversationId.isNullOrBlank()) {
         val countStatement =
@@ -134,7 +135,7 @@ private fun Connection.getTotalCount(
         index = setFilterEqualsParams(countStatement, index, role)
         index = setFilterEqualsParams(countStatement, index, service)
         index = setFilterEqualsParams(countStatement, index, action)
-        setFilterEqualsParams(countStatement, index, status)
+        setFilterEqualsParams(countStatement, index, statuslevel)
         countStatement.use {
             val rs = it.executeQuery()
             rs.next()
@@ -179,5 +180,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        convertStatus(getString("STATUS")),
+        convertStatus(getString("STATUSLEVEL")),
     )

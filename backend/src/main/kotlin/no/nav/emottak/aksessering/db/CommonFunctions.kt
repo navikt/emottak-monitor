@@ -105,9 +105,21 @@ internal fun setFilterLikeParams(
     toLowercase: Boolean = true,
 ): Int {
     if (!value.isNullOrBlank()) {
-        val likeValue = if (toLowercase) "%${value.lowercase()}%" else "%$value%"
+        val likeValue = if (toLowercase) "%${value.lowercase().replace("%", "\\%")}%" else "%$value%"
         statement.setObject(index, likeValue)
         return index + 1
     }
     return index
 }
+
+internal fun String?.toStatuslevel() =
+    when (this) {
+        "created" -> "0"
+        "info" -> "10"
+        "manual" -> "15"
+        "warning" -> "20"
+        "error" -> "30"
+        "fatal" -> "40"
+        "ok" -> "50"
+        else -> ""
+    }

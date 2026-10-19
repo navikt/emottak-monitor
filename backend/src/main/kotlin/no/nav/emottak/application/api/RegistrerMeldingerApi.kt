@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
 val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
+val VALID_STATUS_TEXTS = listOf("created", "info", "manual", "warning", "error", "fatal", "ok")
 
 // Meldinger (frontend: /meldinger)
 @InternalAPI
@@ -45,29 +46,18 @@ fun Route.hentMeldinger(meldingService: MessageQueryService): Route =
         val role = getQueryParameter("role")
         val service = getQueryParameter("service")
         val action = getQueryParameter("action")
-        val statusParam = getQueryParameter("status")
+        val status = getStatusValue("status") ?: return@get
         val page = getURLEncodedQueryParameter("page")
         val size = getURLEncodedQueryParameter("size")
         val sort = getURLEncodedQueryParameter("sort")
         val pageable = getPageable(page, size, sort)
         if (pageable != null) {
             log.info("Kjører dabasespørring for å hente meldinger...")
-            val status =
-                when (statusParam) {
-                    "created" -> "0"
-                    "info" -> "10"
-                    "manual" -> "15"
-                    "warning" -> "20"
-                    "error" -> "30"
-                    "fatal" -> "40"
-                    "ok" -> "50"
-                    else -> ""
-                }
             val meldinger =
                 meldingService.meldinger(fom, tom, mottakId, cpaId, messageId, conversationId, role, service, action, status, pageable)
             log.info("Meldinger antall : ${meldinger.content.size}")
             log.info(
-                "Meldingsliste !!!! : $statusParam : ${meldinger.content.firstOrNull()?.status} : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",
+                "Meldingsliste !!!! : $status : ${meldinger.content.firstOrNull()?.status} : ${meldinger.content.firstOrNull()?.datomottat} : ${meldinger.content.firstOrNull()?.mottakid} : ${meldinger.content.firstOrNull()?.cpaid} : ${meldinger.content.firstOrNull()?.conversationId} ",
             )
             call.respond(meldinger)
         }
@@ -548,3 +538,13 @@ private fun HttpStatusCode.toWarnMessage(component: String) =
     } else {
         null
     }
+
+@InternalAPI
+private suspend fun RoutingContext.getStatusValue(paramName: String): String? {
+    val status = getQueryParameter(paramName)
+    if (status != "" && status !in VALID_STATUS_TEXTS) {
+        returnBadRequest("Ugyldig statuskode: $paramName=$status")
+        return null
+    }
+    return status
+}
