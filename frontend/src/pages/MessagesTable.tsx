@@ -6,7 +6,6 @@ import Filter from "../components/Filter";
 import RowWithContent from "../components/RowWithContent";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
-import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import Pageinformation from "../components/Pageinformation";
@@ -32,6 +31,8 @@ type MessageInfo = {
   status: string;
 };
 
+type FilterKey = "role" | "service" | "action" | "status";
+
 type Page = {
   page: number;
   size: number;
@@ -54,12 +55,10 @@ const MessagesTable = () => {
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-
   const [fromDate, setFromDate] = useState(initialFromDate(""));
   const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
-
   const [mottakId, setMottakId] = useState("");
   const [cpaId, setCpaId] = useState("");
   const [messageId, setMessageId] = useState("");
@@ -72,23 +71,28 @@ const MessagesTable = () => {
   const debouncedMottakId = useDebounce(mottakId, 1000);
   const debouncedCpaId = useDebounce(cpaId, 1000);
   const debouncedMessageId = useDebounce(messageId, 1000);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
+  const [status, setStatus] = useState("");
 
   const url = `/v1/hentmeldinger?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
       `&mottakId=${debouncedMottakId}&cpaId=${debouncedCpaId}&messageId=${debouncedMessageId}` +
-      `&page=${currentPage}&size=${pageSize}&sort=DESC`;
-
-
-  const { fetchState, callRequest } = useFetch<Page>(url);
+      `&role=${role}&service=${service}&action=${action}&status=${status}&page=${currentPage}&size=${pageSize}&sort=DESC`
 
   const onFromDateChange = (value: string) => { setCurrentPage(1); setFromDate(value); };
   const onToDateChange   = (value: string) => { setCurrentPage(1); setToDate(value); };
+  const onRoleChange      = (value: string) => { setCurrentPage(1); setRole(value); };
+  const onServiceChange   = (value: string) => { setCurrentPage(1); setService(value); };
+  const onActionChange    = (value: string) => { setCurrentPage(1); setAction(value); };
+  const onStatusChange    = (value: string) => { setCurrentPage(1); setStatus(value); };
   const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
   const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
+  const { fetchState, callRequest } = useFetch<Page>(url);
   const { loading, error, data } = fetchState;
   const messages = data?.content ?? [];
 
@@ -97,38 +101,38 @@ const MessagesTable = () => {
   }, [callRequest]);
 
   useEffect(() => {
-    if (!data) return;
-    if (data.page !== currentPage) setCurrentPage(data.page);
-    if (data.size !== pageSize) setPageSize(data.size);
-  }, [data]);
-
-  useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, status]);
 
-  const { filteredItems: filteredMessages, handleFilterChange } = useFilter(
-    messages ?? [],
-    ["role", "service", "action", "status"]
-  );
+  const filterSetters: Record<FilterKey, (value: string) => void> = {
+    role: onRoleChange,
+    service: onServiceChange,
+    action: onActionChange,
+    status: onStatusChange,
+  };
+
+  const onFilterChange = (key: FilterKey, value: MessageInfo[FilterKey]) => {
+    filterSetters[key]?.(value as string);
+  };
+
+    const groupedByConversation = useMemo(() => {
+      const map = new Map<string, MessageInfo[]>();
+      for (const msg of messages) {
+        const key = msg.conversationId;
+        if (!map.has(key)) { map.set(key, []); }
+        map.get(key)!.push(msg);
+      }
+      return Array.from(map.values()).map((group) => {
+        const sortedGroup = [...group].sort((a, b) => a.datomottat.localeCompare(b.datomottat));
+        return { ...sortedGroup[0], groupMessages: sortedGroup };
+      });
+    }, [messages]);
 
   const {
-    items: filteredAndSortedMessages,
+    items: groupedMessages,
     requestSort,
     sortConfig,
-  } = useTableSorting(filteredMessages);
-
-  const groupedMessages = useMemo(() => {
-    const map = new Map<string, MessageInfo[]>();
-    for (const msg of filteredAndSortedMessages) {
-      const key = msg.conversationId;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(msg);
-    }
-    return Array.from(map.entries()).map(([key, group]) => ({
-      key,
-      messages: [...group].sort((a, b) => b.datomottat.localeCompare(a.datomottat)),
-    }));
-  }, [filteredAndSortedMessages]);
+  } = useTableSorting(groupedByConversation);
 
   const getClassNamesFor = (name: keyof MessageInfo) => {
     if (!sortConfig) {
@@ -178,7 +182,8 @@ const MessagesTable = () => {
             onFromTimeBlur={commitFromTime}
             onToTimeBlur={commitToTime}
             messages={messages ?? []}
-            onFilterChange={handleFilterChange}
+            onFilterChange={onFilterChange}
+            filterKeys={["service", "action", "role", "status"]}
         />
         <div className={clsx(filterStyles.gridContainer, filterStyles.gridContainerIds)}>
           <div style={{gridArea: "mottakId"}}>
@@ -250,10 +255,10 @@ const MessagesTable = () => {
             {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
             {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
             {showData &&
-                groupedMessages.flatMap(({ key, messages }, groupIndex) => {
+                groupedMessages.map((message, groupIndex) => {
+                  const key = message.conversationId;
                   const isExpanded = expandedGroups.has(key);
-                  const message = messages[0];
-                  const expandableMessages:MessageInfo[] = messages.slice(1);
+                  const expandableMessages:MessageInfo[] = message.groupMessages.slice(1);
 
                   return (
                       <Table.Row key={key} className={ clsx({[tableStyles.coloredRow]: groupIndex % 2}, tableStyles.cellTextAtTop) }>

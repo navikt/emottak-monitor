@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentmeldinger?:
     mock.onGet(/\/v1\/hentmeldinger\?/).reply((config) => {
-        console.log("Mocker hentmeldinger");
+        console.log("Mocker hentmeldinger:", config.url);
         const payload = {
             "page": 1,
             "size": 10,
@@ -226,7 +226,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentcpa?:
     mock.onGet(/\/v1\/hentcpa\?/).reply((config) => {
-        console.log("Mocker hentcpa");
+        console.log("Mocker hentcpa:", config.url);
         const payload = [
             {
                 "partnerid": "12345",
@@ -240,7 +240,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentrollerservicesaction?:
     mock.onGet(/\/v1\/hentrollerservicesaction/).reply((config) => {
-        console.log("Mocker hentrollerservicesaction");
+        console.log("Mocker hentrollerservicesaction:", config.url);
         const payload = {
             roles: ["Behandler","Fastlege","Fastlegeregister","Fordringshaver","Frikortregister","INNTEKTSFORESPORSELsender","KODEVERKREQUESTsender","KontrollUtbetaler","Lege","Nav","Not applicable","POMsender","Saksbehandler","Sykmelder","Utleverer","Ytelsesutbetaler"],
             services: ["BehandlerKrav","DialogmoteInnkalling","ForesporselFraSaksbehandler","HarBorgerEgenandelFritak","HarBorgerFrikort","HarBorgerFrikortMengde","HenvendelseFraLege","Inntektsforesporsel","Legemelding","OppgjorsKontroll","PasientlisteForesporsel","S-DIALOG_AVVIK","S-DIALOG_FORESPORSEL","S-EGENANDELMENGDEFORESPORSEL","S-EGENANDELSVAR","S-FOM","S-INNTEKTSFORESPORSEL","S-KODEVERKREQUEST","S-POM","Sykmelding","Trekkopplysning","urn:oasis:names:tc:ebxml-msg:service"],
@@ -252,7 +252,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentmeldingerebms?map& (for AssociatedMessages.tsx):
     mock.onGet(/\/v1\/hentmeldingerebms\?map&/).reply((config) => {
-        console.log("Mocker hentmeldingerebms (for AssociatedMessages.tsx)");
+        console.log("Mocker hentmeldingerebms (for AssociatedMessages.tsx):", config.url);
         const payload = {
             "page":1,
             "size":10,
@@ -290,7 +290,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentmeldingerebms?:
     mock.onGet(/\/v1\/hentmeldingerebms\?/).reply((config) => {
-        console.log("Mocker hentmeldingerebms");
+        console.log("Mocker hentmeldingerebms:", config.url);
         const payload = {
             "page":1,
             "size":10,
@@ -350,7 +350,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/henthendelser?:
     mock.onGet(/\/v1\/henthendelser\?/).reply((config) => {
-        console.log("Mocker henthendelser");
+        console.log("Mocker henthendelser:", config.url);
         const payload = {
             "page": 1,
             "size": 10,
@@ -485,7 +485,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/henthendelserebms?:
     mock.onGet(/\/v1\/henthendelserebms\?/).reply((config) => {
-        console.log("Mocker henthendelserebms");
+        console.log("Mocker henthendelserebms:", config.url);
         const payload = {
                 "page": 1,
                 "size": 10,
@@ -622,7 +622,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentlogg?:
     mock.onGet(/\/v1\/hentlogg\?/).reply((config) => {
-        console.log("Mocker hentlogg");
+        console.log("Mocker hentlogg:", config.url);
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17 15:30:42.90712",
             "mottakId": "2606171352navm27408",
@@ -698,7 +698,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentloggebms?:
     mock.onGet(/\/v1\/hentloggebms\?/).reply((config) => {
-        console.log("Mocker hentloggebms");
+        console.log("Mocker hentloggebms:", config.url);
         const meldingsdetaljer = {
             "datoMottatt": "2026-06-17T15:30:42.90712+02:00[Europe/Oslo]",
             "mottakId": "IN.2606171330.rakk.b927d7",
@@ -1109,7 +1109,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentcpaliste:
     mock.onGet(/\/v1\/hentcpaliste/).reply((config) => {
-        console.log("Mocker hentcpaliste");
+        console.log("Mocker hentcpaliste:", config.url);
         let cpaListe = [];
         cpaListe.push({
             partnerName: "Partner1",
@@ -1162,7 +1162,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentpartnerliste:
     mock.onGet(/\/v1\/hentpartnerliste/).reply((config) => {
-        console.log("Mocker hentpartnerliste");
+        console.log("Mocker hentpartnerliste:", config.url);
         let partnerListe = [];
         partnerListe.push({
             "partnerName": "Apotek ABC",
@@ -1226,7 +1226,7 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/hentabonnementliste:
     mock.onGet(/\/v1\/hentabonnementliste/).reply((config) => {
-        console.log("Mocker hentabonnementliste");
+        console.log("Mocker hentabonnementliste:", config.url);
         let abonnementliste = [
             {
                 "partnerNavn": "SERIALNUMBER=123456789, CN=Noe AS, O=Noe AS, C=NO",

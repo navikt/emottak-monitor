@@ -19,16 +19,39 @@ fun DatabaseInterface.hentMeldinger(
     cpaId: String? = null,
     messageId: String? = null,
     conversationId: String? = null,
+    role: String? = null,
+    service: String? = null,
+    action: String? = null,
+    status: String? = null,
     pageable: Pageable? = null,
 ): Page<MessageInfo> =
     connection.use { connection ->
+        val statuslevel = status.toStatuslevel()
         var filterClause = ""
-        if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
-        if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
-        if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
-
+        if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE ?"
+        if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE ?"
+        if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE ?"
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ROLE = ?"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = ?"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = ?"
+        if (statuslevel.isNotBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = ?"
+        println("FilterClause: $filterClause")
         // Count number of distinct conversationId's only if conversationId is not set:
-        var totalCount = connection.getTotalCount(databasePrefix, filterClause, fom, tom, conversationId)
+        var totalCount =
+            connection.getTotalCount(
+                databasePrefix,
+                filterClause,
+                fom,
+                tom,
+                conversationId,
+                mottakId,
+                cpaId,
+                messageId,
+                role,
+                service,
+                action,
+                statuslevel,
+            )
 
         // We always use ORDER BY, with default DESC
         var orderBy = "DESC"
@@ -42,7 +65,7 @@ fun DatabaseInterface.hentMeldinger(
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.EBCONVERS_ID,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
-                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
+                    (SELECT STATUS.STATUSLEVEL FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUSLEVEL
                     FROM $databasePrefix.MELDING
                     WHERE MELDING.EBCONVERS_ID $conversationIdSubQuery
                     ORDER BY MAX(MELDING.DATOMOTTAT) OVER (PARTITION BY MELDING.EBCONVERS_ID) $orderBy, MELDING.DATOMOTTAT ASC
@@ -51,11 +74,19 @@ fun DatabaseInterface.hentMeldinger(
         if (!conversationId.isNullOrBlank()) {
             statement.setObject(1, conversationId)
         } else {
-            statement.setObject(1, fom)
-            statement.setObject(2, tom)
+            var index = 1
+            statement.setObject(index++, fom)
+            statement.setObject(index++, tom)
+            index = setFilterLikeParams(statement, index, mottakId)
+            index = setFilterLikeParams(statement, index, cpaId)
+            index = setFilterLikeParams(statement, index, messageId)
+            index = setFilterEqualsParams(statement, index, role)
+            index = setFilterEqualsParams(statement, index, service)
+            index = setFilterEqualsParams(statement, index, action)
+            index = setFilterEqualsParams(statement, index, statuslevel)
             if (pageable != null) {
-                statement.setObject(3, pageable.offset)
-                statement.setObject(4, pageable.pageSize)
+                statement.setObject(index++, pageable.offset)
+                statement.setObject(index, pageable.pageSize)
             }
         }
         val list =
@@ -77,6 +108,13 @@ private fun Connection.getTotalCount(
     fom: LocalDateTime,
     tom: LocalDateTime,
     conversationId: String?,
+    mottakId: String? = null,
+    cpaId: String? = null,
+    messageId: String? = null,
+    role: String?,
+    service: String?,
+    action: String?,
+    statuslevel: String?,
 ): Long =
     if (conversationId.isNullOrBlank()) {
         val countStatement =
@@ -90,6 +128,14 @@ private fun Connection.getTotalCount(
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
+        var index = 3
+        index = setFilterLikeParams(countStatement, index, mottakId)
+        index = setFilterLikeParams(countStatement, index, cpaId)
+        index = setFilterLikeParams(countStatement, index, messageId)
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, statuslevel)
         countStatement.use {
             val rs = it.executeQuery()
             rs.next()
@@ -134,5 +180,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        convertStatus(getString("STATUS")),
+        convertStatus(getString("STATUSLEVEL")),
     )
