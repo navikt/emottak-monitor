@@ -13,7 +13,11 @@ data class MessageLogInfo(
 
 fun convertStatus(value: String?): String =
     when (value) {
-        "Meldingen er ferdigbehandlet", "Ferdigbehandlet", "50" -> "ok"
+        "Meldingen er opprettet", "Opprettet", "0" -> "created"
+        "Sendt til manuell behandling", "Manuell behandling", "15" -> "manual"
+        "Advarsel under behandling", "Advarsel", "20" -> "warning"
         "Meldingen feilet under behandling", "Feil", "30" -> "error"
+        "Fatal feil oppstod under behandling", "Fatal feil", "40" -> "fatal"
+        "Meldingen er ferdigbehandlet", "Ferdigbehandlet", "50" -> "ok"
         else -> "info"
     }

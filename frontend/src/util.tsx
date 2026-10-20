@@ -14,13 +14,19 @@ export const toggleAllExpandables = (image: JQuery, selector: JQuery): void => {
     });
 };
 
+function pad(value: number) {
+    return String(value).padStart(2, "0");
+}
+
 function ISODate(date: Date = new Date()) {
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-  let dayString = day < 10 ? "0" + day : day.toString();
-  let monthString = month < 10 ? "0" + month : month.toString();
-  return year + "-" + monthString + "-" + dayString;
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    return year + "-" + pad(month) + "-" + pad(day);
+}
+
+export function ISODatetime(date: Date = new Date()) {
+    return ISODate(date) + " " + pad(date.getHours()) + ":" + pad(date.getMinutes());
 }
 
 export function initialFromDate(dateParam: string | null) {
@@ -52,6 +58,16 @@ export function initialTime(timeParam: string | null) {
 export function formatDatetime(datetimeParam: string | undefined) {
   if (datetimeParam == undefined || datetimeParam.indexOf("T") == -1) return datetimeParam;
   return datetimeParam.replace("T", " ").substring(0, 23);
+}
+
+export function convertDatetimeToUTC(datetimeParam: string) {
+  if (datetimeParam == undefined) return datetimeParam;
+  // TODO: Lage en mer robust konvertering fra Europe/Oslo til UTC
+  let dateString = datetimeParam.replace(" ", "T");
+  dateString = dateString.split(".")[0] + ".000Z"; // Null ut millisekunder, og legg på Z bakerst
+  let utcDate = new Date(dateString);
+  utcDate.setHours(utcDate.getHours()-2); // Trekk fra 2 timer, også om vinteren..?
+  return utcDate.toISOString();
 }
 
 export const isProdEnv = import.meta.env.VITE_DEPLOY_TARGET === 'prod';

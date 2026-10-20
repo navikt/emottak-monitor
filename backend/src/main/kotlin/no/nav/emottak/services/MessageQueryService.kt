@@ -32,14 +32,36 @@ class MessageQueryService(
         cpaId: String? = null,
         messageId: String? = null,
         conversationId: String? = null,
+        role: String? = null,
+        service: String? = null,
+        action: String? = null,
+        status: String? = null,
         pageable: Pageable? = null,
-    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, fom, tom, mottakId, cpaId, messageId, conversationId, pageable)
+    ): Page<MessageInfo> =
+        databaseInterface.hentMeldinger(
+            databasePrefix,
+            fom,
+            tom,
+            mottakId,
+            cpaId,
+            messageId,
+            conversationId,
+            role,
+            service,
+            action,
+            status,
+            pageable,
+        )
 
     fun hendelser(
         fom: LocalDateTime,
         tom: LocalDateTime,
         pageable: Pageable? = null,
-    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom, pageable)
+        role: String? = null,
+        service: String? = null,
+        action: String? = null,
+        hendelsedeskr: String? = null,
+    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, fom, tom, pageable, role, service, action, hendelsedeskr)
 
     fun messagelogg(mottakid: String?): List<MessageLogInfo> = databaseInterface.getMessageLogg(databasePrefix, mottakid)
 
