@@ -41,7 +41,8 @@ export default function AssociatedMessages({mottattDate, mottakId, conversationI
     const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
     const { loading, error, data } = fetchState;
     const messages = data?.content ?? [];
-    const associatedMessages = messages.filter((message) => message.mottakid !== mottakId);
+    const sortedMessages = messages.sort((a, b) => a.datomottat.localeCompare(b.datomottat));
+    const associatedMessages = sortedMessages.filter((message) => message.mottakid !== mottakId);
 
     useEffect(() => {
         callRequest();
