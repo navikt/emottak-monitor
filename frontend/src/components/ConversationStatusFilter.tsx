@@ -32,8 +32,10 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
     // Text- and dropdown-inputs:
     const [cpaId, setCpaId] = useState(currentParams.cpaIdPattern);
     const [service, setService] = useState(currentParams.service);
+    const [action, seAction] = useState(currentParams.action);
     const onCpaIdChange     = (value: string) => { setCpaId(value); };
     const onServiceChange   = (value: string) => { setService(value); };
+    const onActionChange   = (value: string) => { seAction(value); };
 
     // Date and time-inputs:
     const [showFromField, setShowFromField] = useState(false);
@@ -82,6 +84,7 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
             statuses: statuses,
             cpaIdPattern: cpaId,
             service: service,
+            action: action,
             fromDate: showFromField ? fromDate : undefined,
             fromTime: showFromField ? fromTime : undefined,
             toDate: showToField ? toDate : undefined,
@@ -124,6 +127,10 @@ export default function ConversationStatusFilterForm({ onSearch, currentParams, 
                     <PrepopulatedSelectFilter
                         field={FIELD.SERVICE}
                         onFieldChange={onServiceChange}
+                    />
+                    <PrepopulatedSelectFilter
+                        field={FIELD.ACTION}
+                        onFieldChange={onActionChange}
                     />
                 </fieldset>
                 <fieldset>

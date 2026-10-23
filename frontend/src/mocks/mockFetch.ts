@@ -808,6 +808,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
                 "service": "BehandlerKrav",
+                "action": "Bekreftelse",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -818,6 +819,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
                 "service": "DialogmoteInnkalling",
+                "action": "Bekreftelse",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon"
@@ -828,6 +830,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301252.UNKN.c885f9,IN.2504301254.UNKN.13b2cd,OUT.2504301258.NAVM.ec27e9",
                 "service": "ForesporselFraSaksbehandler",
+                "action": "Foresporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -839,6 +842,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311259.UNKN.4947c4",
                 "service": "BehandlerKrav",
+                "action": "Svarmelding",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet",
@@ -850,6 +854,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504311256.NAVM.23532f",
                 "service": "HarBorgerEgenandelFritak",
+                "action": "EgenandelForesporsel",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -860,6 +865,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311252.UNKN.c885f9,IN.2504311254.UNKN.13b2cd,OUT.2504311258.NAVM.ec27e9",
                 "service": "HarBorgerFrikort",
+                "action": "EgenandelForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -870,6 +876,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301259.UNKN.4947c3",
                 "service": "HarBorgerFrikortMengde",
+                "action": "EgenandelForesporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -880,6 +887,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2505301256.NAVM.23532f",
                 "service": "HenvendelseFraLege",
+                "action": "Bekreftelse",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon",
@@ -891,6 +899,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301252.UNKN.c885f9,IN.2505301254.UNKN.13b2cd,OUT.2505301258.NAVM.ec27e9",
                 "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -902,6 +911,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301259.UNKN.4947c3",
                 "service": "Legemelding",
+                "action": "Legeerklaring",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -912,6 +922,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2506301256.NAVM.23532f",
                 "service": "OppgjorsKontroll",
+                "action": "Oppgjorskrav",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon",
@@ -923,6 +934,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301252.UNKN.c885f9,IN.2506301254.UNKN.13b2cd,OUT.2506301258.NAVM.ec27e9",
                 "service": "PasientlisteForesporsel",
+                "action": "Pasientliste",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -934,6 +946,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
                 "service": "BehandlerKrav",
+                "action": "Svarmelding",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -944,6 +957,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
                 "service": "DialogmoteInnkalling",
+                "action": "MoteInnkalling",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon"
@@ -954,6 +968,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301252.UNKN.c885f9,IN.2504301254.UNKN.13b2cd,OUT.2504301258.NAVM.ec27e9",
                 "service": "ForesporselFraSaksbehandler",
+                "action": "Foresporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -965,6 +980,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311259.UNKN.4947c4",
                 "service": "BehandlerKrav",
+                "action": "Svarmelding",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -975,6 +991,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504311256.NAVM.23532f",
                 "service": "HarBorgerEgenandelFritak",
+                "action": "Svar",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet",
@@ -986,6 +1003,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-31T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311252.UNKN.c885f9,IN.2504311254.UNKN.13b2cd,OUT.2504311258.NAVM.ec27e9",
                 "service": "HarBorgerFrikort",
+                "action": "Svar",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-31T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet",
@@ -997,6 +1015,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301259.UNKN.4947c3",
                 "service": "HarBorgerFrikortMengde",
+                "action": "Svar",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -1007,6 +1026,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2505301256.NAVM.23532f",
                 "service": "HenvendelseFraLege",
+                "action": "Henvendelse",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon"
@@ -1017,6 +1037,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-05-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301252.UNKN.c885f9,IN.2505301254.UNKN.13b2cd,OUT.2505301258.NAVM.ec27e9",
                 "service": "Inntektsforesporsel",
+                "action": "Foresporsel",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-05-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -1028,6 +1049,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301259.UNKN.4947c3",
                 "service": "Legemelding",
+                "action": "Legeerklaring",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -1038,6 +1060,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2506301256.NAVM.23532f",
                 "service": "OppgjorsKontroll",
+                "action": "Oppgjorskrav",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon"
@@ -1048,6 +1071,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-06-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301252.UNKN.c885f9,IN.2506301254.UNKN.13b2cd,OUT.2506301258.NAVM.ec27e9",
                 "service": "PasientlisteForesporsel",
+                "action": "StartAbonnement",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-06-30T12:58:49.000+02:00[Europe/Oslo]",
                 "latestStatus": "Feil",
@@ -1059,6 +1083,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
                 "service": "BehandlerKrav",
+                "action": "OppgjorsMelding",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
@@ -1069,6 +1094,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
                 "service": "DialogmoteInnkalling",
+                "action": "MoteInnkalling",
                 "cpaId": "another-cpa-id",
                 "statusAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "latestStatus": "Informasjon"
@@ -1083,6 +1109,7 @@ if (process.env.NODE_ENV === 'development') {
                 "createdAt": "2026-01-01T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2601011259.UNKN.12345",
                 "service": "BehandlerKrav",
+                "action": "OppgjorsMelding",
                 "cpaId": "ny-side-cpa-id",
                 "statusAt": "2026-01-01T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"

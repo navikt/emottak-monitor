@@ -1,6 +1,6 @@
 import {Table} from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useLocation } from "react-router-dom";
 import RowWithContent from "../components/RowWithContent";
 import tableStyles from "../styles/Table.module.scss";
@@ -25,6 +25,7 @@ const ConversationStatusTable = () => {
         statuses: STATUS_OPTIONS[1], // "Feil" default valgt
         cpaIdPattern: "",
         service: "",
+        action: "",
         currentPage: 1,
         pageSize: 25,
         sortOrder: "DESC"
@@ -40,7 +41,7 @@ const ConversationStatusTable = () => {
 
     const { filteredItems: filteredEvents } = useFilter(
         messages ?? [],
-        ["createdAt", "readableIdList", "service", "cpaId", "statusAt", "errorDescription"]
+        ["createdAt", "readableIdList", "service", "action", "cpaId", "statusAt", "errorDescription"]
     );
 
     const {
@@ -54,6 +55,7 @@ const ConversationStatusTable = () => {
         { key: "createdAt", name: "Mottatt" },
         { key: "readableIdList", name: "Mottak-id" },
         { key: "service", name: "Service" },
+        { key: "action", name: "action" },
         { key: "cpaId", name: "CPA-id" },
         { key: "statusAt", name: "Statusdato" },
         { key: "errorDescription", name: "Beskrivelse" },
@@ -122,6 +124,7 @@ const ConversationStatusTable = () => {
                                         ))}
                                     </Table.DataCell>
                                     <Table.DataCell>{message.service}</Table.DataCell>
+                                    <Table.DataCell>{message.action}</Table.DataCell>
                                     <Table.DataCell>
                                         <Link
                                             key={message.cpaId}
