@@ -1,8 +1,8 @@
-import { Select } from "@navikt/ds-react";
 import { Datepicker, isISODateString } from "nav-datovelger";
 import React from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
+import SelectFilter from "./SelectFilter";
 
 type FilterProps<T, K extends keyof T> = {
   messages: T[];
@@ -85,57 +85,26 @@ const Filter = <T, K extends keyof T>({
         </div>
       </div>
       {filterKeys.includes("role" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            textAlign: "left",
-            gridArea: "role",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="role"
           label="Rolle"
-          size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "role" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
+          placeholder="Velg rolle"
+          options={uniqueFilters["role" as K]}
+          onChange={(value) =>
+            onFilterChange("role" as K, value as unknown as T[K])
           }
-        >
-          <option value="">Velg rolle</option>
-          {uniqueFilters["role" as K].map((role) => {
-            return (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            );
-          })}
-        </Select>
+        />
       )}
       {filterKeys.includes("service" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "service",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="service"
           label="Service"
-          size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "service" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
+          placeholder="Velg service"
+          options={uniqueFilters["service" as K]}
+          onChange={(value) =>
+            onFilterChange("service" as K, value as unknown as T[K])
           }
-        >
-          <option value="">Velg service</option>
-          {uniqueFilters["service" as K].map((service) => {
-            return (
-              <option key={service} value={service}>
-                {service}
-              </option>
-            );
-          })}
-        </Select>
+        />
       )}
       <div
         style={{
@@ -176,83 +145,46 @@ const Filter = <T, K extends keyof T>({
         </div>
       </div>
       {filterKeys.includes("action" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "action",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="action"
           label="Action"
-          size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "action" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
+          placeholder="Velg action"
+          options={uniqueFilters["action" as K]}
+          onChange={(value) =>
+            onFilterChange("action" as K, value as unknown as T[K])
           }
-        >
-          <option value="">Velg action</option>
-          {uniqueFilters["action" as K].map((action) => {
-            return (
-              <option key={action} value={action}>
-                {action}
-              </option>
-            );
-          })}
-        </Select>
+        />
       )}
       {filterKeys.includes("status" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "status",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="status"
           label="Status"
-          size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "status" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
+          placeholder="Velg status"
+          options={[
+            { value: "created", label: "🆕 Opprettet" },
+            { value: "info", label: "ℹ️ Informasjon" },
+            { value: "manual", label: "🔧 Manuell behandling" },
+            { value: "warning", label: "⚠️ Advarsel" },
+            { value: "error", label: "❌ Feil" },
+            { value: "fatal", label: "🚫 Fatal feil" },
+            { value: "ok", label: "✅ Ferdigbehandlet" },
+          ]}
+          onChange={(value) =>
+            onFilterChange("status" as K, value as unknown as T[K])
           }
-        >
-          <option value="">Velg status</option>
-          <option key="created" value="created">Opprettet</option>
-          <option key="info" value="info">Informasjon</option>
-          <option key="manual" value="manual">Manuell behandling</option>
-          <option key="warning" value="warning">Advarsel</option>
-          <option key="error" value="error">Feil</option>
-          <option key="fatal" value="fatal">Fatal feil</option>
-          <option key="ok" value="ok">Ferdigbehandlet</option>
-        </Select>
+        />
       )}
       {filterKeys.includes("hendelsedeskr" as K) && (
-      <Select
-        className={styles.selectFilter}
-        style={{
-          gridArea: "hendelsedeskr",
-          marginTop: "0.5rem",
-        }}
-        label="Hendelse"
-        size="small"
-        onChange={(event) =>
-          onFilterChange(
-            "hendelsedeskr" as K,
-            event.currentTarget.value as unknown as T[K]
-          )
-        }
-      >
-        <option value="">Velg hendelse</option>
-        {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
-          return (
-            <option key={hendelsedeskr} value={hendelsedeskr}>
-              {hendelsedeskr}
-            </option>
-          );
-        })}
-      </Select>
-    )}
+        <SelectFilter
+          gridArea="hendelsedeskr"
+          label="Hendelse"
+          placeholder="Velg hendelse"
+          options={uniqueFilters["hendelsedeskr" as K]}
+          onChange={(value) =>
+            onFilterChange("hendelsedeskr" as K, value as unknown as T[K])
+          }
+        />
+      )}
     </div>
   );
 };
