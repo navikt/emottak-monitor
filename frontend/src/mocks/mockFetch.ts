@@ -281,6 +281,17 @@ if (process.env.NODE_ENV === 'development') {
                     "cpaid":"nav:85298",
                     "antall":64,
                     "status":"ok"
+                }, {
+                    "datomottat":"2026-06-17T13:35:30.123123+02:00[Europe/Oslo]",
+                    "mottakid":"IN.2606171330.NAVM.b927d7",
+                    "role":"Not applicable",
+                    "service":"urn:oasis:names:tc:ebxml-msg:service",
+                    "action":"Acknowledgment",
+                    "referanse":"Unknown",
+                    "avsender":"RAKKESTAD KOMMUNE, Pleie og Omsorg",
+                    "cpaid":"nav:32510",
+                    "antall":64,
+                    "status":"info"
                 }
             ],
             "totalPages":1
