@@ -812,20 +812,21 @@ if (process.env.NODE_ENV === 'development') {
         const statuses = url.searchParams.get('statuses') ?? '';
         const cpaId = url.searchParams.get('cpaId') ?? '';
         const service = url.searchParams.get('service') ?? '';
+        const action = url.searchParams.get('action') ?? '';
         console.log("Mocker hentconversationstatusebms: " + url);
         let content = [];
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service) && "OppgjorsMelding".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
                 "service": "BehandlerKrav",
-                "action": "Bekreftelse",
+                "action": "OppgjorsMelding",
                 "cpaId": "test-cpa-id",
                 "statusAt": "2025-04-30T12:59:50.000+02:00[Europe/Oslo]",
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service) && "Bekreftelse".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
@@ -836,7 +837,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Informasjon"
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "ForesporselFraSaksbehandler".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "ForesporselFraSaksbehandler".includes(service) && "Foresporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301252.UNKN.c885f9,IN.2504301254.UNKN.13b2cd,OUT.2504301258.NAVM.ec27e9",
@@ -848,7 +849,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Feil ved lagring melding på kø"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service) && "Svarmelding".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311259.UNKN.4947c4",
@@ -860,7 +861,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": null
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service) && "EgenandelForesporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504311256.NAVM.23532f",
@@ -871,7 +872,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service) && "EgenandelForesporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311252.UNKN.c885f9,IN.2504311254.UNKN.13b2cd,OUT.2504311258.NAVM.ec27e9",
@@ -882,7 +883,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service) && "EgenandelForesporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301259.UNKN.4947c3",
@@ -893,7 +894,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "HenvendelseFraLege".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "HenvendelseFraLege".includes(service) && "Bekreftelse".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2505301256.NAVM.23532f",
@@ -905,7 +906,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": null
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service) && "InntektInformasjon".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301252.UNKN.c885f9,IN.2505301254.UNKN.13b2cd,OUT.2505301258.NAVM.ec27e9",
@@ -917,7 +918,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Feil ved lesing melding fra kø"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service) && "Legeerklaring".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301259.UNKN.4947c3",
@@ -928,7 +929,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "OppgjorsKontroll".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "OppgjorsKontroll".includes(service) && "Oppgjorskrav".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2506301256.NAVM.23532f",
@@ -940,7 +941,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": null
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service) && "Pasientliste".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301252.UNKN.c885f9,IN.2506301254.UNKN.13b2cd,OUT.2506301258.NAVM.ec27e9",
@@ -952,7 +953,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Validering mot CPA mislykket"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service) && "Svarmelding".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
@@ -963,7 +964,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service) && "MoteInnkalling".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
@@ -974,7 +975,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Informasjon"
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "ForesporselFraSaksbehandler".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "ForesporselFraSaksbehandler".includes(service) && "Foresporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301252.UNKN.c885f9,IN.2504301254.UNKN.13b2cd,OUT.2504301258.NAVM.ec27e9",
@@ -986,7 +987,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Feil ved lagring payload i database"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service) && "Svarmelding".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311259.UNKN.4947c4",
@@ -997,7 +998,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "another-cpa-id".includes(cpaId) && "HarBorgerEgenandelFritak".includes(service) && "Svar".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504311256.NAVM.23532f",
@@ -1009,7 +1010,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": null
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikort".includes(service) && "Svar".includes(action)) {
             content.push({
                 "createdAt": "2025-04-31T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504311252.UNKN.c885f9,IN.2504311254.UNKN.13b2cd,OUT.2504311258.NAVM.ec27e9",
@@ -1021,7 +1022,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": null
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "HarBorgerFrikortMengde".includes(service) && "Svar".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301259.UNKN.4947c3",
@@ -1032,7 +1033,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "HenvendelseFraLege".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "HenvendelseFraLege".includes(service) && "Henvendelse".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2505301256.NAVM.23532f",
@@ -1043,7 +1044,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Informasjon"
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "Inntektsforesporsel".includes(service) && "Foresporsel".includes(action)) {
             content.push({
                 "createdAt": "2025-05-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2505301252.UNKN.c885f9,IN.2505301254.UNKN.13b2cd,OUT.2505301258.NAVM.ec27e9",
@@ -1055,7 +1056,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Dekryptering av melding mislykket"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "Legemelding".includes(service) && "Legeerklaring".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301259.UNKN.4947c3",
@@ -1066,7 +1067,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "OppgjorsKontroll".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "OppgjorsKontroll".includes(service) && "Oppgjorskrav".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2506301256.NAVM.23532f",
@@ -1077,7 +1078,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Informasjon"
             })
         }
-        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service)) {
+        if (statuses.includes("Feil") && "test-cpa-id".includes(cpaId) && "PasientlisteForesporsel".includes(service) && "StartAbonnement".includes(action)) {
             content.push({
                 "createdAt": "2025-06-30T12:52:45.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2506301252.UNKN.c885f9,IN.2506301254.UNKN.13b2cd,OUT.2506301258.NAVM.ec27e9",
@@ -1089,7 +1090,7 @@ if (process.env.NODE_ENV === 'development') {
                 "errorDescription": "Signatursjekk mislykket"
             })
         }
-        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service)) {
+        if (statuses.includes("Ferdigbehandlet") && "test-cpa-id".includes(cpaId) && "BehandlerKrav".includes(service) && "OppgjorsMelding".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:59:49.000+02:00[Europe/Oslo]",
                 "readableIdList": "IN.2504301259.UNKN.4947c3",
@@ -1100,7 +1101,7 @@ if (process.env.NODE_ENV === 'development') {
                 "latestStatus": "Ferdigbehandlet"
             })
         }
-        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service)) {
+        if (statuses.includes("Informasjon") && "another-cpa-id".includes(cpaId) && "DialogmoteInnkalling".includes(service) && "MoteInnkalling".includes(action)) {
             content.push({
                 "createdAt": "2025-04-30T12:56:47.000+02:00[Europe/Oslo]",
                 "readableIdList": "OUT.2504301256.NAVM.23532f",
