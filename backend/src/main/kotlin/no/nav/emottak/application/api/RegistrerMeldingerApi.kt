@@ -12,6 +12,9 @@ import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.get
 import io.ktor.server.util.toLocalDateTime
 import io.ktor.utils.io.InternalAPI
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
@@ -502,6 +505,9 @@ private suspend fun RoutingContext.executeREST(
             if (useCallRespond) call.respond(response.status, responseText) else return Pair(response.status, responseText)
         }
     } catch (e: Exception) {
+        if (e is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
         log.error("Feil ved kall mot $url: ${e.message}", e)
         if (useCallRespond) {
             call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
