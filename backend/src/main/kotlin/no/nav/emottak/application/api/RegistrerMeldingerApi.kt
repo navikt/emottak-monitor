@@ -104,14 +104,15 @@ fun Route.hentHendelserEbms(httpClient: HttpClient): Route =
         val role = getURLEncodedQueryParameter("role")
         val service = getURLEncodedQueryParameter("service")
         val action = getURLEncodedQueryParameter("action")
+        val status = getStatusDbValueEbms()
         val pageable = getPageable(page, size, sort) // just for validation
         if (pageable != null) {
             log.info(
-                "Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+                "Fom: $fom, Tom: $tom, role: '$role', service: '$service', action: '$action', status: '$status', page: $page, size: $size, sort: $sort",
             )
             val url =
                 "$eventManagerUrl/events?fromDate=$fom&toDate=$tom" +
-                    "&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+                    "&role=$role&service=$service&action=$action&status=$status&page=$page&size=$size&sort=$sort"
             log.info("Henter hendelser fra events endepunktet til ebms ($url)")
             executeREST(httpClient, url)
         }
@@ -440,7 +441,7 @@ private suspend fun RoutingContext.hentMeldingerEbms(
 
         if (!mappingRequired) {
             executeREST(httpClient, url)
-        } else { // Mapping to  required for AssociatedMessages.tsx:
+        } else { // Mapping to MessageInfo required for AssociatedMessages.tsx:
             val (responseCode, responseString) = executeREST(httpClient, url, useCallRespond = false)
             if (responseCode != HttpStatusCode.OK) {
                 log.error("hentMeldingerEbms() feilet (HTTP $responseCode): $responseString")
@@ -484,6 +485,14 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
 // Use this (not getURLEncodedQueryParameter) for values used directly in SQL filters,
 // since re-encoding them (e.g. ":" -> "%3A" in cpaId values like "nav:105732") breaks matching.
 private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
+
+private fun RoutingContext.getStatusDbValueEbms() =
+    when (getURLEncodedQueryParameter("status")) {
+        "Meldingen er under behandling" -> "Informasjon"
+        "Meldingen feilet under behandling" -> "Feil"
+        "Meldingen er ferdigbehandlet" -> "Ferdigbehandlet"
+        else -> ""
+    }
 
 @InternalAPI
 private suspend fun RoutingContext.executeREST(

@@ -496,135 +496,147 @@ if (process.env.NODE_ENV === 'development') {
 
     // Mocke kall til v1/henthendelserebms?:
     mock.onGet(/\/v1\/henthendelserebms\?/).reply((config) => {
-        console.log("Mocker henthendelserebms:", config.url);
+        const url = new URL(config.url ?? '', window.location.origin);
+        console.log("Mocker henthendelserebms:", url);
+        const status = url.searchParams.get('status') ?? '';
+        var content = [
+            {
+                "eventDate": "2026-06-17T13:41:55.656540+02:00[Europe/Oslo]",
+                "description": "Melding mottatt via SMTP",
+                "eventData": "{\"senderAddress\":\"fra@edi.nhn.no\",\"receiverAddress\":\"til@nav.no\"}",
+                "requestId": "a79bf82a-a197-497b-baf4-241e14a8aeee",
+                "readableId": "OUT.2606171341.NAVM.a8aeee",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "urn:oasis:names:tc:ebxml-msg:service",
+                "action": "Acknowledgment",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.646544+02:00[Europe/Oslo]",
+                "description": "Melding lagt på kø",
+                "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
+                "requestId": "2a8b3ab2-ef26-48cb-8924-f02a2a87b15d",
+                "readableId": "OUT.2606171341.NAVM.87b15d",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "urn:oasis:names:tc:ebxml-msg:service",
+                "action": "Acknowledgment",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.645838+02:00[Europe/Oslo]",
+                "description": "Melding lest fra kø",
+                "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
+                "requestId": "230fa6e8-1c70-4730-b57b-66ed9b513340",
+                "readableId": "OUT.2606171341.NAVM.513340",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "urn:oasis:names:tc:ebxml-msg:service",
+                "action": "Acknowledgment",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.592714+02:00[Europe/Oslo]",
+                "description": "Melding validert mot CPA",
+                "eventData": "{\"sender_name\":\"NAV\"}",
+                "requestId": "7fa4d766-24bb-4f9e-af02-97126676b944",
+                "readableId": "OUT.2606171341.NAVM.76b944",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "urn:oasis:names:tc:ebxml-msg:service",
+                "action": "Acknowledgment",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.571979+02:00[Europe/Oslo]",
+                "description": "Dekomprimering av melding mislykket",
+                "eventData": "{}",
+                "requestId": "9a63b17b-444b-4950-b439-932462533a0f",
+                "readableId": "OUT.2606171341.NAVM.533a0f",
+                "status": "Feil",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.558518+02:00[Europe/Oslo]",
+                "description": "Melding rekjøres",
+                "eventData": "{}",
+                "requestId": "c4c25b2e-3341-40ab-8bc1-b06269530092",
+                "readableId": "OUT.2606171341.NAVM.530092",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.558507+02:00[Europe/Oslo]",
+                "description": "Payload mottatt via HTTP",
+                "eventData": "{}",
+                "requestId": "c41ded60-5702-446a-9c37-8983348049d8",
+                "readableId": "OUT.2606171341.NAVM.8049d8",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.553693+02:00[Europe/Oslo]",
+                "description": "Payload lest fra database",
+                "eventData": "{}",
+                "requestId": "37b07623-6375-4b72-b818-7a5e5581b89f",
+                "readableId": "OUT.2606171341.NAVM.81b89f",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.544584+02:00[Europe/Oslo]",
+                "description": "Payload lagret i database",
+                "eventData": "{}",
+                "requestId": "9237cfef-6ec1-4af5-a212-ed0d8de13d6c",
+                "readableId": "OUT.2606171341.NAVM.e13d6c",
+                "status": "Informasjon",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }, {
+                "eventDate": "2026-06-17T13:41:55.498688+02:00[Europe/Oslo]",
+                "description": "Melding sendt via SMTP",
+                "eventData": "{}",
+                "requestId": "acd1a61d-36f8-4403-9584-22734be6d8a7",
+                "readableId": "OUT.2606171341.NAVM.e6d8a7",
+                "status": "Ferdigbehandlet",
+                "role": "Ytelsesutbetaler",
+                "service": "Inntektsforesporsel",
+                "action": "InntektInformasjon",
+                "referenceParameter": null,
+                "senderName": "NAV"
+            }
+        ];
+        if (status != null) {
+            const code = getStatusCode(status);
+            if (code != "") {
+                console.log("Filtrerer på status: '"+code+"'");
+                content = content.filter(function (event) {
+                    return event.status == code;
+                });
+            }
+        }
         const payload = {
                 "page": 1,
                 "size": 10,
                 "sort": "DESC",
                 "totalElements": 332,
-                "content": [
-                    {
-                        "eventDate": "2026-06-17T13:41:55.656540+02:00[Europe/Oslo]",
-                        "description": "Melding mottatt via SMTP",
-                        "eventData": "{\"senderAddress\":\"fra@edi.nhn.no\",\"receiverAddress\":\"til@nav.no\"}",
-                        "requestId": "a79bf82a-a197-497b-baf4-241e14a8aeee",
-                        "readableId": "OUT.2606171341.NAVM.a8aeee",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "urn:oasis:names:tc:ebxml-msg:service",
-                        "action": "Acknowledgment",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.646544+02:00[Europe/Oslo]",
-                        "description": "Melding lagt på kø",
-                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
-                        "requestId": "2a8b3ab2-ef26-48cb-8924-f02a2a87b15d",
-                        "readableId": "OUT.2606171341.NAVM.87b15d",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "urn:oasis:names:tc:ebxml-msg:service",
-                        "action": "Acknowledgment",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.645838+02:00[Europe/Oslo]",
-                        "description": "Melding lest fra kø",
-                        "eventData": "{\"queue_name\":\"team-emottak.smtp.out.ebxml.payload\"}",
-                        "requestId": "230fa6e8-1c70-4730-b57b-66ed9b513340",
-                        "readableId": "OUT.2606171341.NAVM.513340",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "urn:oasis:names:tc:ebxml-msg:service",
-                        "action": "Acknowledgment",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.592714+02:00[Europe/Oslo]",
-                        "description": "Melding validert mot CPA",
-                        "eventData": "{\"sender_name\":\"NAV\"}",
-                        "requestId": "7fa4d766-24bb-4f9e-af02-97126676b944",
-                        "readableId": "OUT.2606171341.NAVM.76b944",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "urn:oasis:names:tc:ebxml-msg:service",
-                        "action": "Acknowledgment",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.571979+02:00[Europe/Oslo]",
-                        "description": "Dekomprimering av melding mislykket",
-                        "eventData": "{}",
-                        "requestId": "9a63b17b-444b-4950-b439-932462533a0f",
-                        "readableId": "OUT.2606171341.NAVM.533a0f",
-                        "status": "Feil",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.558518+02:00[Europe/Oslo]",
-                        "description": "Melding rekjøres",
-                        "eventData": "{}",
-                        "requestId": "c4c25b2e-3341-40ab-8bc1-b06269530092",
-                        "readableId": "OUT.2606171341.NAVM.530092",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.558507+02:00[Europe/Oslo]",
-                        "description": "Payload mottatt via HTTP",
-                        "eventData": "{}",
-                        "requestId": "c41ded60-5702-446a-9c37-8983348049d8",
-                        "readableId": "OUT.2606171341.NAVM.8049d8",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.553693+02:00[Europe/Oslo]",
-                        "description": "Payload lest fra database",
-                        "eventData": "{}",
-                        "requestId": "37b07623-6375-4b72-b818-7a5e5581b89f",
-                        "readableId": "OUT.2606171341.NAVM.81b89f",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.544584+02:00[Europe/Oslo]",
-                        "description": "Payload lagret i database",
-                        "eventData": "{}",
-                        "requestId": "9237cfef-6ec1-4af5-a212-ed0d8de13d6c",
-                        "readableId": "OUT.2606171341.NAVM.e13d6c",
-                        "status": "Informasjon",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }, {
-                        "eventDate": "2026-06-17T13:41:55.498688+02:00[Europe/Oslo]",
-                        "description": "Melding sendt via SMTP",
-                        "eventData": "{}",
-                        "requestId": "acd1a61d-36f8-4403-9584-22734be6d8a7",
-                        "readableId": "OUT.2606171341.NAVM.e6d8a7",
-                        "status": "Ferdigbehandlet",
-                        "role": "Ytelsesutbetaler",
-                        "service": "Inntektsforesporsel",
-                        "action": "InntektInformasjon",
-                        "referenceParameter": null,
-                        "senderName": "NAV"
-                    }
-                ],
+                "content": content,
                 "totalPages": 34
             }
         ;
@@ -1303,4 +1315,13 @@ if (process.env.NODE_ENV === 'development') {
 
         return [200, payload];
     });
+}
+
+function getStatusCode(status: string): string {
+    switch (status) {
+        case "Meldingen er under behandling": return "Informasjon";
+        case "Meldingen feilet under behandling": return "Feil";
+        case "Meldingen er ferdigbehandlet": return "Ferdigbehandlet";
+        default: return "";
+    }
 }

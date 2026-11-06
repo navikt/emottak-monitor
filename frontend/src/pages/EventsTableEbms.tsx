@@ -59,6 +59,7 @@ const EventsTable = () => {
   const [role, setRole] = useState("");
   const [service, setService] = useState("");
   const [action, setAction] = useState("");
+  const [status, setStatus] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -66,7 +67,7 @@ const EventsTable = () => {
   const { fetchState, callRequest } = useFetch<PageDto>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
-      `&role=${role}&service=${service}&action=${action}` +
+      `&role=${role}&service=${service}&action=${action}&status=${status}` +
       `&page=${currentPage}&size=${pageSize}&sort=DESC`
   );
 
@@ -75,6 +76,7 @@ const EventsTable = () => {
   const onRoleChange     = (value: string) => { setCurrentPage(1); setRole(value); };
   const onServiceChange  = (value: string) => { setCurrentPage(1); setService(value); };
   const onActionChange   = (value: string) => { setCurrentPage(1); setAction(value); };
+  const onStatusChange   = (value: string) => { setCurrentPage(1); setStatus(value); };
   const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
   const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
@@ -97,7 +99,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action", "description"]
+    ["role", "service", "action", "status"]
   );
 
   const {
@@ -153,10 +155,11 @@ const EventsTable = () => {
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
-        filterKeys={["service", "action", "role", "description"]}
+        filterKeys={["service", "action", "role", "status"]}
         onRoleChange={onRoleChange}
         onServiceChange={onServiceChange}
         onActionChange={onActionChange}
+        onStatusChange={onStatusChange}
       />
       <Pageinformation
           pageSize={pageSize}
