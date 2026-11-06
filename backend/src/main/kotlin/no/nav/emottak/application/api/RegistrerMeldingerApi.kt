@@ -210,9 +210,7 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
 @InternalAPI
 fun Route.hentAbonnementListe(meldingService: MessageQueryService): Route =
     get("/hentabonnementliste") {
-        val sok = call.request.queryParameters["sok"] ?: ""
-        log.info("Henter abonnement info for $sok")
-        val abonnementInfo = meldingService.abonnementListe(sok)
+        val abonnementInfo = meldingService.abonnementListe()
         call.respond(abonnementInfo)
     }
 

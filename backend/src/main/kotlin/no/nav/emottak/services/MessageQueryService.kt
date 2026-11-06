@@ -79,5 +79,5 @@ class MessageQueryService(
     fun partnerliste(searchColmn: String): PartnerCpaListeData =
         databaseInterface.hentPartnerCpaListe(databasePrefix, searchColmn, isPartner = true)
 
-    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
+    fun abonnementListe(sok: String = ""): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sok)
 }

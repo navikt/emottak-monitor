@@ -46,13 +46,13 @@ const AbonnementTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
     const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
-    const [searchColmn, setSearchColmn] = useState('');
+    const [searchFilter, setSearchFilter] = useState({ text: '', comparison: 'er lik', column: '' });
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
 
-    const url = `/v1/hentabonnementliste?sok=${searchColmn}`;
+    const url = "/v1/hentabonnementliste";
     const { fetchState, callRequest } = useFetch<AbonnementData>(url);
 
     const { loading, error, data } = fetchState;
@@ -74,13 +74,39 @@ const AbonnementTable = () => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchColmn]);
+    }, [searchFilter]);
+
+    const filteredAbonnementInfo = useMemo(() => {
+        const searchText = searchFilter.text.toLowerCase();
+        if (!searchText) return abonnementInfo;
+
+        return abonnementInfo.filter(item => {
+            const fieldsByColumn: Record<string, (string | null)[]> = {
+                PARTNER_NAVN: [item.partnerNavn],
+                PARTNER_ID: [item.partnerId],
+                OrgNr: [item.partnerOrgnr],
+                HerId: [item.partnerHerId],
+                KEY: [item.tssId],
+                BEHANDLER_NAVN: [item.Fornavn, item.Familienavn],
+                BEHANDLER_HERID: [item.HER_Id],
+                BEHANDLER_HPR: [item.HPR],
+            };
+            const fields = fieldsByColumn[searchFilter.column] ?? Object.values(fieldsByColumn).flat();
+            return fields.some(field => {
+                if (field == null) return false;
+                const value = field.toLowerCase();
+                if (searchFilter.comparison === 'starter med') return value.startsWith(searchText);
+                if (searchFilter.comparison === 'inneholder') return value.includes(searchText);
+                return value === searchText;
+            });
+        });
+    }, [abonnementInfo, searchFilter]);
 
     const {
         items: filteredAndSortedAbonnements,
         requestSort,
         sortConfig,
-    } = useTableSorting(abonnementInfo);
+    } = useTableSorting(filteredAbonnementInfo);
 
     const getClassNamesFor = (name: keyof abonnementDetail) => {
         if (!sortConfig) {
@@ -109,7 +135,7 @@ const AbonnementTable = () => {
     const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setErrorMessage('');
-        setSearchColmn('');
+        setSearchFilter({ text: '', comparison: 'er lik', column: '' });
         setInnValue('');
         setSelectedColnValue("");
         setSelectedCEqualValue("er lik");
@@ -118,19 +144,11 @@ const AbonnementTable = () => {
     const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setErrorMessage('');
-        const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
-        if (result.endsWith("PARTNER_ID")) {
-            if (innValue === '' || Number.isInteger(Number(innValue))) {
-                setErrorMessage("");
-                setSearchColmn(result);
-            } else {
-                // If not an integer, set an error message
-                setErrorMessage("Partner_id skal være nummer!");
-                setSearchColmn(999999 + result);
-                return
-            }
-        }  else
-            setSearchColmn(result);
+        if (selectedColnValue === "PARTNER_ID" && innValue !== '' && !Number.isInteger(Number(innValue))) {
+            setErrorMessage("Partner_id skal være nummer!");
+            return;
+        }
+        setSearchFilter({ text: innValue, comparison: selectedCEqualValue, column: selectedColnValue });
     };
 
     const currentTableData = useMemo(() => {
@@ -157,8 +175,8 @@ const AbonnementTable = () => {
     const showSpinner = loading;
     const showErrorMessage = !loading && error?.message;
     const showNoDataMessage =
-        !loading && !error?.message && abonnementInfo?.length === 0;
-    const showData = !loading && !error?.message && !!abonnementInfo?.length;
+        !loading && !error?.message && filteredAndSortedAbonnements.length === 0;
+    const showData = !loading && !error?.message && filteredAndSortedAbonnements.length > 0;
 
     return (
         <>
@@ -189,7 +207,7 @@ const AbonnementTable = () => {
                             <label htmlFor="coln-select"  style={{display: "inline-flex", alignItems: "center", gap: 20}}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;i
                                 <select className={inputStyles.input} id="coln-select"  value={selectedColnValue} onChange={onSelectColn}>
-                                    <option value={"TOMT"}></option>
+                                    <option value={""}></option>
                                     <option value={"PARTNER_NAVN"}>partnernavn</option>
                                     <option value={"PARTNER_ID"}>partnerId</option>
                                     <option value={"OrgNr"}>OrgNr</option>
