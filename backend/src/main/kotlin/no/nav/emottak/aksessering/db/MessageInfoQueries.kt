@@ -35,7 +35,7 @@ fun DatabaseInterface.hentMeldinger(
         if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = ?"
         if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = ?"
         if (statuslevel.isNotBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = ?"
-        println("FilterClause: $filterClause")
+
         // Count number of distinct conversationId's only if conversationId is not set:
         var totalCount =
             connection.getTotalCount(
