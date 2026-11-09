@@ -488,7 +488,7 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
 private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
 
 private fun RoutingContext.getStatusDbValueEbms() =
-    when (getURLEncodedQueryParameter("status")) {
+    when (getQueryParameter("status")) {
         "Meldingen er under behandling" -> "Informasjon"
         "Meldingen feilet under behandling" -> "Feil"
         "Meldingen er ferdigbehandlet" -> "Ferdigbehandlet"
