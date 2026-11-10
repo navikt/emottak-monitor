@@ -4,6 +4,7 @@ import no.nav.emottak.model.Abonnement
 import no.nav.emottak.model.AbonnementListeData
 import no.nav.emottak.model.BehandlerInfo
 import no.nav.emottak.model.FeilStatistikkInfo
+import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLogInfo
@@ -12,6 +13,8 @@ import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
 
 fun getMessages(): List<MessageInfo> = emptyList()
+
+fun getEvents(): List<HendelseInfo> = emptyList()
 
 fun getMessageLogg(): List<MessageLogInfo> = emptyList()
 

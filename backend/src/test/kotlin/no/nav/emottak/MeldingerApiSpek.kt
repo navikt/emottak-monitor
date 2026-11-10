@@ -52,6 +52,7 @@ import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.model.PartnerListe
 import no.nav.emottak.model.PartnerListeData
+import no.nav.emottak.model.dto.EventDto
 import no.nav.emottak.services.MessageQueryService
 import java.nio.file.Paths
 
@@ -64,11 +65,18 @@ class MeldingerApiSpek :
 
             beforeSpec {
                 messageQueryService = mockk()
-                val list = getMessages()
+
+                val msgList = getMessages()
                 io.mockk.coEvery {
                     messageQueryService.meldinger(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
                 } returns
-                    Page(1, list.size, "DESC", list.size.toLong(), list)
+                    Page(1, msgList.size, "DESC", msgList.size.toLong(), msgList)
+
+                val eventsList = getEvents()
+                io.mockk.coEvery {
+                    messageQueryService.hendelser(any(), any(), any(), any(), any(), any(), any())
+                } returns
+                    Page(1, eventsList.size, "DESC", eventsList.size.toLong(), eventsList)
 
                 io.mockk.coEvery { messageQueryService.messagelogg(any()) } returns getMessageLogg()
                 io.mockk.coEvery { messageQueryService.messagecpa(any()) } returns getMessageCpa()
@@ -76,7 +84,7 @@ class MeldingerApiSpek :
                 io.mockk.coEvery { messageQueryService.feilstatistikk(any(), any()) } returns getFeilStatistikkInfo()
                 io.mockk.coEvery { messageQueryService.cpaliste(any()) } returns getCPAListe()
                 io.mockk.coEvery { messageQueryService.partnerliste(any()) } returns getCPAListe()
-                io.mockk.coEvery { messageQueryService.abonnementListe(any()) } returns getAbonnementListe()
+                io.mockk.coEvery { messageQueryService.abonnementListe() } returns getAbonnementListe()
 
                 val restBackendMock =
                     MockEngine { request ->
@@ -128,6 +136,37 @@ class MeldingerApiSpek :
                                         status = HttpStatusCode.OK,
                                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
                                     )
+                                contains("events?") -> {
+                                    var c = "[]"
+                                    var a = 0
+                                    if (request.url.fullPath.contains("&status=")) {
+                                        val status =
+                                            request.url.fullPath
+                                                .split("&status=")[1]
+                                                .split("&")[0]
+                                        if (status != "") {
+                                            a = 1
+                                            c = "[" +
+                                                "{\"eventDate\":\"2026-11-09T13:22:59.943350+01:00[Europe/Oslo]\"," +
+                                                "\"description\":\"Melding lest fra kø\"," +
+                                                "\"status\":\"$status\"," +
+                                                "\"eventData\":\"\"," +
+                                                "\"requestId\":\"a79bf82a-a197-497b-baf4-241e14a8aeee\"," +
+                                                "\"readableId\":\"OUT.2606171341.NAVM.a8aeee\"," +
+                                                "\"role\":\"Sykmelder\"," +
+                                                "\"service\":\"Sykmelding\"," +
+                                                "\"action\":\"Svar\"," +
+                                                "\"referenceParameter\":null," +
+                                                "\"senderName\":\"NAV\"}" +
+                                                "]"
+                                        }
+                                    }
+                                    respond(
+                                        content = """{"page":1,"size":10,"sort":"DESC","totalElements":$a,"content":$c,"totalPages":1}""",
+                                        status = HttpStatusCode.OK,
+                                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                                    )
+                                }
                                 contains("cpa/timestamps/last_used") ->
                                     respond(
                                         // Returned timestamps are in UTC:
@@ -165,7 +204,7 @@ class MeldingerApiSpek :
                     HttpClient(restBackendMock) {}
             }
 
-            describe("Validate requests with authentication") {
+            describe("Authentication tests") {
 
                 it("Should return 401 Unauthorized (messageQueryService)") {
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
@@ -197,6 +236,26 @@ class MeldingerApiSpek :
                     withTestApplicationForApi(messageQueryService, mockHttpClient) {
                         val response =
                             client.get("/v1/hentmeldingerebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
+                it("Should return 200 OK (henthendelser)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/henthendelser?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
+                it("Should return 200 OK (henthendelserebms)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10") {
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
@@ -544,6 +603,116 @@ class MeldingerApiSpek :
                                 header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
                             }
                         response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+            }
+
+            describe("Validate requests parameters") {
+
+                it("henthendelserebms: Should filter on status Informasjon") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get(
+                                "/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=Meldingen%20er%20under%20behandling",
+                            ) {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 1
+                        page.content[0].status shouldBe "Informasjon"
+                    }
+                }
+
+                it("henthendelserebms: Should filter on status Feil") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get(
+                                "/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=Meldingen%20feilet%20under%20behandling",
+                            ) {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 1
+                        page.content[0].status shouldBe "Feil"
+                    }
+                }
+
+                it("henthendelserebms: Should filter on status Ferdigbehandlet") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get(
+                                "/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=Meldingen%20er%20ferdigbehandlet",
+                            ) {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 1
+                        page.content[0].status shouldBe "Ferdigbehandlet"
+                    }
+                }
+
+                it("henthendelserebms: Should ignore empty status filter") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 0
+                    }
+                }
+
+                it("henthendelserebms: Status with spaces is fine") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get(
+                                "/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=Meldingen er under behandling",
+                            ) {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 1
+                        page.content[0].status shouldBe "Informasjon"
+                    }
+                }
+
+                it("henthendelserebms: Status with plus is fine") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get(
+                                "/v1/henthendelserebms?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=Meldingen+er+under+behandling",
+                            ) {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                        val page = LENIENT_JSON_PARSER.decodeFromString<Page<EventDto>>(response.bodyAsText())
+                        page.totalElements shouldBe 1
+                        page.content[0].status shouldBe "Informasjon"
+                    }
+                }
+
+                it("hentmeldinger: Should accept valid status (info)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=info") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.OK
+                    }
+                }
+
+                it("hentmeldinger: Should return BadRequest at invalid status (informasjon)") {
+                    withTestApplicationForApi(messageQueryService, mockHttpClient) {
+                        val response =
+                            client.get("/v1/hentmeldinger?fromDate=02-10-2021 10:10:10&toDate=03-10-2021 10:30:10&status=informasjon") {
+                                header(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                            }
+                        response.status shouldBe HttpStatusCode.BadRequest
                     }
                 }
             }

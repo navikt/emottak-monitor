@@ -12,6 +12,9 @@ import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.get
 import io.ktor.server.util.toLocalDateTime
 import io.ktor.utils.io.InternalAPI
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.Json
 import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
@@ -104,14 +107,15 @@ fun Route.hentHendelserEbms(httpClient: HttpClient): Route =
         val role = getURLEncodedQueryParameter("role")
         val service = getURLEncodedQueryParameter("service")
         val action = getURLEncodedQueryParameter("action")
+        val status = getStatusDbValueEbms()
         val pageable = getPageable(page, size, sort) // just for validation
         if (pageable != null) {
             log.info(
-                "Fom : $fom, Tom : $tom, role : $role, service : $service, action : $action, page : $page, size : $size, sort : $sort",
+                "Fom: $fom, Tom: $tom, role: '$role', service: '$service', action: '$action', status: '$status', page: $page, size: $size, sort: $sort",
             )
             val url =
                 "$eventManagerUrl/events?fromDate=$fom&toDate=$tom" +
-                    "&role=$role&service=$service&action=$action&page=$page&size=$size&sort=$sort"
+                    "&role=$role&service=$service&action=$action&status=$status&page=$page&size=$size&sort=$sort"
             log.info("Henter hendelser fra events endepunktet til ebms ($url)")
             executeREST(httpClient, url)
         }
@@ -210,9 +214,7 @@ fun Route.hentRollerServicesAction(httpClient: HttpClient): Route =
 @InternalAPI
 fun Route.hentAbonnementListe(meldingService: MessageQueryService): Route =
     get("/hentabonnementliste") {
-        val sok = call.request.queryParameters["sok"] ?: ""
-        log.info("Henter abonnement info for $sok")
-        val abonnementInfo = meldingService.abonnementListe(sok)
+        val abonnementInfo = meldingService.abonnementListe()
         call.respond(abonnementInfo)
     }
 
@@ -441,7 +443,7 @@ private suspend fun RoutingContext.hentMeldingerEbms(
 
         if (!mappingRequired) {
             executeREST(httpClient, url)
-        } else { // Mapping to  required for AssociatedMessages.tsx:
+        } else { // Mapping to MessageInfo required for AssociatedMessages.tsx:
             val (responseCode, responseString) = executeREST(httpClient, url, useCallRespond = false)
             if (responseCode != HttpStatusCode.OK) {
                 log.error("hentMeldingerEbms() feilet (HTTP $responseCode): $responseString")
@@ -486,6 +488,14 @@ private fun RoutingContext.getURLEncodedQueryParameter(paramName: String): Strin
 // since re-encoding them (e.g. ":" -> "%3A" in cpaId values like "nav:105732") breaks matching.
 private fun RoutingContext.getQueryParameter(paramName: String): String = call.request.queryParameters[paramName]?.trim() ?: ""
 
+private fun RoutingContext.getStatusDbValueEbms() =
+    when (getQueryParameter("status")) {
+        "Meldingen er under behandling" -> "Informasjon"
+        "Meldingen feilet under behandling" -> "Feil"
+        "Meldingen er ferdigbehandlet" -> "Ferdigbehandlet"
+        else -> ""
+    }
+
 @InternalAPI
 private suspend fun RoutingContext.executeREST(
     httpClient: HttpClient,
@@ -505,6 +515,9 @@ private suspend fun RoutingContext.executeREST(
             if (useCallRespond) call.respond(response.status, responseText) else return Pair(response.status, responseText)
         }
     } catch (e: Exception) {
+        if (e is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
         log.error("Feil ved kall mot $url: ${e.message}", e)
         if (useCallRespond) {
             call.respond(HttpStatusCode.InternalServerError, "Feil ved kall mot $url: ${e.message}")
