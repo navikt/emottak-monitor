@@ -354,6 +354,7 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
         val tom = "toDate=${toDate ?: ""}"
         val cpaId = getURLEncodedQueryParameter("cpaId")
         val service = getURLEncodedQueryParameter("service")
+        val action = getURLEncodedQueryParameter("action")
         val statuses = getURLEncodedQueryParameter("statuses")
         val pageable = getPageable(page, size, sort) // just for validation
         if (pageable != null) {
@@ -363,7 +364,7 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
             )
             val url =
                 "$eventManagerUrl/conversation-status?$fom&$tom&cpaId=$cpaId" +
-                    "&service=$service&statuses=$statuses&page=$page&size=$size&sort=$sort"
+                    "&service=$service&action=$action&statuses=$statuses&page=$page&size=$size&sort=$sort"
             log.info("Henter conversation-statuses for ebms ($url)")
             executeREST(httpClient, url)
         }
