@@ -16,7 +16,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.Json
-import no.nav.emottak.getEnvVar
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListe
 import no.nav.emottak.model.MessageLogData
@@ -28,6 +27,7 @@ import no.nav.emottak.model.dto.toMessageLogInfoList
 import no.nav.emottak.model.dto.toMottakIdInfo
 import no.nav.emottak.model.dto.toPageMessageInfo
 import no.nav.emottak.services.MessageQueryService
+import no.nav.emottak.utils.environment.getEnvVar
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
