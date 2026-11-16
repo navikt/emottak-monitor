@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 
 fun DatabaseInterface.hentFeilStatistikk(
     databasePrefix: String,
+    sqlTimeout: Int,
     fom: LocalDateTime,
     tom: LocalDateTime,
 ): List<FeilStatistikkInfo> =
@@ -27,6 +28,7 @@ fun DatabaseInterface.hentFeilStatistikk(
         statement.setObject(1, fom)
         statement.setObject(2, tom)
         statement.use {
+            it.queryTimeout = sqlTimeout
             it.executeQuery().toList { toFeilStatikk() }
         }
     }

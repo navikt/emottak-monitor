@@ -7,6 +7,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.getMessageCPA(
     databasePrefix: String,
+    sqlTimeout: Int,
     cpaid: String?,
 ): List<MessageCPAInfo> =
     connection.use { connection ->
@@ -21,6 +22,7 @@ fun DatabaseInterface.getMessageCPA(
             )
         statement.setObject(1, cpaid)
         statement.use {
+            it.queryTimeout = sqlTimeout
             it.executeQuery().toList { toMessageCPAInfo() }
         }
     }

@@ -13,6 +13,7 @@ import kotlin.use
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
+    sqlTimeout: Int,
     fom: LocalDateTime,
     tom: LocalDateTime,
     mottakId: String? = null,
@@ -40,6 +41,7 @@ fun DatabaseInterface.hentMeldinger(
         var totalCount =
             connection.getTotalCount(
                 databasePrefix,
+                sqlTimeout,
                 filterClause,
                 fom,
                 tom,
@@ -92,6 +94,7 @@ fun DatabaseInterface.hentMeldinger(
         val list =
             statement
                 .use {
+                    it.queryTimeout = sqlTimeout
                     it.executeQuery().toList { toMessageInfo() }
                 }.toList()
         if (!conversationId.isNullOrBlank()) {
@@ -104,6 +107,7 @@ fun DatabaseInterface.hentMeldinger(
 
 private fun Connection.getTotalCount(
     databasePrefix: String,
+    sqlTimeout: Int,
     filterClause: String,
     fom: LocalDateTime,
     tom: LocalDateTime,
@@ -137,6 +141,7 @@ private fun Connection.getTotalCount(
         index = setFilterEqualsParams(countStatement, index, action)
         setFilterEqualsParams(countStatement, index, statuslevel)
         countStatement.use {
+            it.queryTimeout = sqlTimeout
             val rs = it.executeQuery()
             rs.next()
             rs.getLong(1)

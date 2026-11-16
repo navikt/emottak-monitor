@@ -20,7 +20,7 @@ on:
         type: string
 
 jobs:
-  test_and_build_and_deploy:
+  test_and_build_and_deploy_frontend:
     permissions:
       contents: read
       id-token: write

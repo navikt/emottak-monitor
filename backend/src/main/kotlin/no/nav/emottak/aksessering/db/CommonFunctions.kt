@@ -56,6 +56,7 @@ data class ColumnSearch(
 }
 
 internal fun Connection.executeCountQuery(
+    sqlTimeout: Int,
     sqlQuery: String,
     sok: String?,
 ): Long {
@@ -65,6 +66,7 @@ internal fun Connection.executeCountQuery(
         preparedStatement.setObjects(sqlQuery, sok)
     }
     return preparedStatement.use {
+        it.queryTimeout = sqlTimeout
         val rs = it.executeQuery()
         rs.next()
         rs.getLong(1)

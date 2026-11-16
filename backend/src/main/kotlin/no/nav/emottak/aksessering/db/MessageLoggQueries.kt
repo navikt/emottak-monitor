@@ -8,6 +8,7 @@ import java.sql.ResultSet
 
 fun DatabaseInterface.getMessageLogg(
     databasePrefix: String,
+    sqlTimeout: Int,
     mottakid: String?,
 ): List<MessageLogInfo> =
     connection.use { connection ->
@@ -22,6 +23,7 @@ fun DatabaseInterface.getMessageLogg(
             )
         statement.setObject(1, mottakid)
         statement.use {
+            it.queryTimeout = sqlTimeout
             it.executeQuery().toList { toMessageLoggInfo() }
         }
     }

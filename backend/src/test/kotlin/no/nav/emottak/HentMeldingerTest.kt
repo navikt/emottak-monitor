@@ -18,7 +18,7 @@ class HentMeldingerTest {
     fun setup() {
         testDatabase = TestDatabase()
         testDatabase.runSqlScript("/hendelse_melding_ddl.sql")
-        messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix)
+        messageQueryService = MessageQueryService(testDatabase, testDatabase.prefix, 120)
     }
 
     @AfterEach
@@ -64,7 +64,7 @@ class HentMeldingerTest {
         resultPage.content[5].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", 120, fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 3
         resultPage.totalPages shouldBe 2
@@ -147,7 +147,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakid shouldBe "mId6"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", 120, fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 2
         resultPage.content.size shouldBe 4
         resultPage.totalPages shouldBe 3
@@ -158,7 +158,7 @@ class HentMeldingerTest {
         resultPage.content[3].mottakid shouldBe "mId2"
 
         requestedPage = requestedPage.next()
-        resultPage = testDatabase.hentMeldinger("PUBLIC", fom, tom, pageable = requestedPage)
+        resultPage = testDatabase.hentMeldinger("PUBLIC", 120, fom, tom, pageable = requestedPage)
         resultPage.page shouldBe 3
         resultPage.content.size shouldBe 1
         resultPage.totalPages shouldBe 3

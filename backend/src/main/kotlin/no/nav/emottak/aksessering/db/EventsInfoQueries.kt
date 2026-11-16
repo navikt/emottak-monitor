@@ -11,6 +11,7 @@ import java.time.LocalDateTime
 
 fun DatabaseInterface.hentHendelser(
     databasePrefix: String,
+    sqlTimeout: Int,
     fom: LocalDateTime,
     tom: LocalDateTime,
     pageable: Pageable? = null,
@@ -45,6 +46,7 @@ fun DatabaseInterface.hentHendelser(
         setFilterEqualsParams(countStatement, index, hendelsedeskr)
         val totalCount =
             countStatement.use {
+                it.queryTimeout = sqlTimeout
                 val rs = it.executeQuery()
                 rs.next()
                 rs.getLong(1)
@@ -85,6 +87,7 @@ fun DatabaseInterface.hentHendelser(
         val list =
             statement
                 .use {
+                    it.queryTimeout = sqlTimeout
                     it.executeQuery().toList { toHendelseInfo() }
                 }.toList()
         var returnPageable = pageable

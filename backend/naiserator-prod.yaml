@@ -65,6 +65,8 @@ spec:
         - application: cpa-repo
           namespace: team-emottak
           cluster: prod-fss
+  envFrom:
+    - configmap: emottak-monitor
   env:
 #    - name: AADACCESSTOKEN_URL
 #      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token

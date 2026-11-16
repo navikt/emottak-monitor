@@ -11,7 +11,10 @@ import java.sql.Connection
 import java.sql.ResultSet
 import kotlin.use
 
-fun DatabaseInterface.hentAbonnementListe(databasePrefix: String): AbonnementListeData =
+fun DatabaseInterface.hentAbonnementListe(
+    databasePrefix: String,
+    sqlTimeout: Int,
+): AbonnementListeData =
     connection.use { connection ->
         val sqlQuery = """
             SELECT PARTNER.NAVN AS partner_navn, PARTNER.PARTNER_ID AS partner_id, PARTNER.HER_ID, PARTNER.ORGNUMMER AS partner_orgnr, 
@@ -21,14 +24,22 @@ fun DatabaseInterface.hentAbonnementListe(databasePrefix: String): AbonnementLis
             ORDER BY PARTNER.PARTNER_ID ASC
         """
         log.debug("SQL FOR ABONNENTER: '{}'", sqlQuery)
-        val listColmSearch = connection.exeuteAbonnementListeQuery(sqlQuery)
+        val listColmSearch = connection.exeuteAbonnementListeQuery(sqlTimeout, sqlQuery)
         AbonnementListeData(listColmSearch, listColmSearch.size.toLong())
     }
 
-private fun Connection.exeuteAbonnementListeQuery(query: String): List<Abonnement> {
+private fun Connection.exeuteAbonnementListeQuery(
+    sqlTimeout: Int,
+    query: String,
+): List<Abonnement> {
     try {
         val preparedStatement = this.prepareStatement(query)
-        return preparedStatement.use { it.executeQuery().toList { toAbonnementListe() } }.toList().also { checkForDuplicates(it) }
+        return preparedStatement
+            .use {
+                it.queryTimeout = sqlTimeout
+                it.executeQuery().toList { toAbonnementListe() }
+            }.toList()
+            .also { checkForDuplicates(it) }
     } catch (e: Exception) {
         this.rollback()
         log.error("Error: ($e)")
