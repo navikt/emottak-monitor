@@ -21,6 +21,7 @@ export interface ConversationStatusDto {
     cpaId: string;
     statusAt: string;
     latestStatus: string;
+    errorDescription?: string;
 }
 
 export interface PageDto {

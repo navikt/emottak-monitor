@@ -1,7 +1,8 @@
-import { Table } from "@navikt/ds-react";
+import {Button, Table} from "@navikt/ds-react";
+import axios from "axios";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useLocation } from "react-router-dom";
 import Filter from "../components/Filter";
 import Pageinformation from "../components/Pageinformation";
@@ -13,6 +14,25 @@ import useTableSorting from "../hooks/useTableSorting";
 import { initialFromDate, initialToDate, initialTime } from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
+
+type RelatedMessage = {
+  action: string;
+  avsender: string | null;
+  datomottat: string;
+  mottakid: string;
+  referanse: string | null;
+  role: string;
+  service: string;
+  status: string;
+};
+
+type RelatedMessagesState =
+  | { status: "loading" }
+  | { status: "error" }
+  | { status: "loaded"; messages: RelatedMessage[] };
 
 type EventInfo = {
   action: string;
@@ -24,7 +44,11 @@ type EventInfo = {
   role: string;
   service: string;
   tillegsinfo: string | null;
+  ebconversid: string;
+  statuslevel: string;
 };
+
+type FilterKey = "role" | "service" | "action" | "hendelsedeskr";
 
 type Page = {
   page: number;
@@ -36,26 +60,30 @@ type Page = {
 
 const EventsTable = () => {
   const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [relatedMessagesByConversation, setRelatedMessagesByConversation] =
+      useState<Record<string, RelatedMessagesState>>({});
 
   const [fromTimeDraft, setFromTimeDraft] = useState(initialTime(""));
   const [toTimeDraft, setToTimeDraft] = useState(initialTime(""));
-
   const [fromDate, setFromDate] = useState(initialFromDate(""));
   const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
-
-  // using debounce to not use value until there has been no new changes
   const debouncedFromDate = useDebounce(fromDate, 200);
   const debouncedToDate = useDebounce(toDate, 200);
   const debouncedFromTime = useDebounce(fromTime, 200);
   const debouncedToTime = useDebounce(toTime, 200);
-
+  const [role, setRole] = useState("");
+  const [service, setService] = useState("");
+  const [action, setAction] = useState("");
+  const [hendelsedeskr, setHendelsedeskr] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   const { fetchState, callRequest } = useFetch<Page>(
     `/v1/henthendelser?fromDate=${debouncedFromDate}%20${debouncedFromTime}&toDate=${debouncedToDate}%20${debouncedToTime}` +
+      `&role=${role}&service=${service}&action=${action}&hendelsedeskr=${encodeURIComponent(hendelsedeskr)}` +
       `&page=${currentPage}&size=${pageSize}&sort=DESC`
   );
 
@@ -79,13 +107,24 @@ const EventsTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime]);
+  }, [debouncedFromDate, debouncedFromTime, debouncedToDate, debouncedToTime, role, service, action, hendelsedeskr]);
 
+  const filterSetters: Record<FilterKey, (value: string) => void> = {
+    role: setRole,
+    service: setService,
+    action: setAction,
+    hendelsedeskr: setHendelsedeskr,
+  };
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
     ["role", "service", "action", "hendelsedeskr"]
   );
+
+  const onFilterChange = (key: FilterKey, value: EventInfo[FilterKey]) => {
+    handleFilterChange(key, value);
+    filterSetters[key]?.(value as string);
+  };
 
   const {
     items: filteredAndSortedEvents,
@@ -108,9 +147,36 @@ const EventsTable = () => {
     }
   };
 
-  const headers: { key: keyof EventInfo; name: string }[] = [
+  const fetchRelatedMessages = async (conversationId: string) => {
+    if (!conversationId || relatedMessagesByConversation[conversationId]) return;
+    setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "loading" } }));
+    try {
+      const res = await axios.get<{ content: RelatedMessage[] }>(
+          `/v1/hentmeldinger?fromDate=1970-01-01%2000:00&toDate=2100-01-01%2000:00&conversationId=${encodeURIComponent(conversationId)}`
+      );
+      setRelatedMessagesByConversation(prev => ({
+        ...prev,
+        [conversationId]: { status: "loaded", messages: res.data.content ?? [] },
+      }));
+    } catch {
+      setRelatedMessagesByConversation(prev => ({ ...prev, [conversationId]: { status: "error" } }));
+    }
+  };
+
+  const toggleGroup = (key: string, conversationId: string) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+    fetchRelatedMessages(conversationId);
+  };
+
+  const headers: { key: keyof EventInfo | "collapse"; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsedato", name: "Mottatt" },
     { key: "hendelsedeskr", name: "Hendelse" },
+    { key: "collapse", name: "" },
     { key: "mottakid", name: "Mottak-id" },
     { key: "role", name: "Role" },
     { key: "service", name: "Service" },
@@ -138,7 +204,7 @@ const EventsTable = () => {
             onFromTimeBlur={commitFromTime}
             onToTimeBlur={commitToTime}
             messages={events ?? []}
-            onFilterChange={handleFilterChange}
+            onFilterChange={onFilterChange}
             filterKeys={["service", "action", "role", "hendelsedeskr"]}
         />
         <Pageinformation
@@ -154,8 +220,13 @@ const EventsTable = () => {
               {headers.map(({key, name}) => (
                   <Table.HeaderCell
                       key={key}
-                      onClick={() => requestSort(key)}
-                      className={getClassNamesFor(key)}
+                      onClick={() => key !== "collapse" && requestSort(key)}
+                      className={key !== "collapse" ? getClassNamesFor(key) : undefined}
+                      style={
+                        key === "collapse" ? {width: "1px", padding: "0 4px", whiteSpace: "nowrap"} :
+                            key === "hendelsedato" ? { width: "11.5em"} :
+                                undefined
+                      }
                   >
                     {name}
                   </Table.HeaderCell>
@@ -164,34 +235,115 @@ const EventsTable = () => {
           </Table.Header>
           <Table.Body>
             {showSpinner && (
-                <RowWithContent>
+                <RowWithContent colSpan={headers.length}>
                   <NavFrontendSpinner/>
                 </RowWithContent>
             )}
 
-            {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
+            {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen hendelser funnet !</RowWithContent>}
             {showData &&
-                filteredAndSortedEvents.map((event, index) => {
+                filteredAndSortedEvents.map((event, rowIndex) => {
+                  const rowKey = `${event.mottakid}-${event.hendelsedato}-${rowIndex}`;
+                  const isExpanded = expandedGroups.has(rowKey);
+                  const canExpand = !!event.ebconversid;
+                  const relatedState = event.ebconversid
+                      ? relatedMessagesByConversation[event.ebconversid]
+                      : undefined;
+                  const relatedMessages: RelatedMessage[] =
+                      relatedState?.status === "loaded"
+                          ? Array.from(
+                              relatedState.messages
+                                  .filter((msg) => msg.mottakid !== event.mottakid)
+                                  .reduce((acc, msg) => {
+                                    const existing = acc.get(msg.mottakid);
+                                    if (!existing || msg.datomottat > existing.datomottat) {
+                                      acc.set(msg.mottakid, msg);
+                                    }
+                                    return acc;
+                                  }, new Map<string, RelatedMessage>())
+                                  .values()
+                          ).sort((a, b) => b.datomottat.localeCompare(a.datomottat))
+                          : [];
+
                   return (
-                      <Table.Row
-                          key={event.hendelsedeskr + index}
-                          className={clsx({[tableStyles.coloredRow]: index % 2})}
-                      >
-                        <Table.DataCell>{event.hendelsedato.substring(0, 23)}</Table.DataCell>
+                      <Table.Row key={rowKey} className={ clsx({[tableStyles.coloredRow]: rowIndex % 2}, tableStyles.cellTextAtTop) } >
                         <Table.DataCell>
+                          {
+                            (event.statuslevel === "ok") ? (
+                                <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                            ) : (event.statuslevel === "info") ? (
+                                <img src={info} alt="info" title="Meldingen er under behandling" />
+                            ) : (event.statuslevel === "error") ? (
+                                <img src={err} alt="error" title="Meldingen feilet under behandling" />
+                            ) : ""
+                          }
+                        </Table.DataCell>
+                        <Table.DataCell className="tabell__td--sortert">
+                          {event.hendelsedato.substring(0, 23)}
+                        </Table.DataCell>
+                        <Table.DataCell  className="tabell__td--sortert">
                           <Ekspanderbartpanel tittel={event.hendelsedeskr}>
                             {event.tillegsinfo}
                           </Ekspanderbartpanel>
                         </Table.DataCell>
+                        <Table.DataCell style={{width: "1px", padding: "0 1px", whiteSpace: "nowrap"}}>
+                          {canExpand && (
+                              <Button
+                                  variant="primary"
+                                  size="xsmall"
+                                  onClick={() => toggleGroup(rowKey, event.ebconversid)}
+                              >
+                                {isExpanded ? "-" : "+"}
+                              </Button>
+                          )}
+                        </Table.DataCell>
                         <Table.DataCell>
                           <Link
-                              key={event.mottakid}
                               to={`/logg/${event.mottakid}`}
                               state={{backgroundLocation: location}}
                           >
                             {event.mottakid}
                           </Link>
+                          { isExpanded && (
+                              relatedState?.status === "loading" ? (
+                                  <div style={{padding: "4px"}}><NavFrontendSpinner type="XS" /></div>
+                              ) : relatedState?.status === "error" ? (
+                                  <div style={{padding: "4px"}}>Kunne ikke hente relaterte meldinger</div>
+                              ) : relatedState?.status === "loaded" && relatedMessages.length === 0 ? (
+                                  <div style={{padding: "4px"}}>Ingen relaterte meldinger funnet</div>
+                              ) : (
+                              <table className={tableStyles.expandableTable}>
+                                <tbody>
+                                {relatedMessages.map((msg, msgIndex) => (
+                                    <tr key={`${msg.mottakid}-${msg.datomottat}-${msgIndex}`}>
+                                      <td>
+                                        {
+                                          (msg.status === "ok") ? (
+                                              <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                                          ) : (msg.status === "info") ? (
+                                              <img src={info} alt="info" title="Meldingen er under behandling" />
+                                          ) : (msg.status === "error") ? (
+                                              <img src={err} alt="error" title="Meldingen feilet under behandling" />
+                                          ) : ""
+                                        }
+                                      </td>
+                                      <td>
+                                        <Link
+                                            to={`/logg/${msg.mottakid}`}
+                                            state={{backgroundLocation: location}}
+                                        >{msg.mottakid}</Link>
+                                      </td>
+                                      <td>{msg.role}</td>
+                                      <td>{msg.service}</td>
+                                      <td>{msg.action}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                              </table>
+                              )
+                            )
+                          }
                         </Table.DataCell>
                         <Table.DataCell>{event.role}</Table.DataCell>
                         <Table.DataCell>{event.service}</Table.DataCell>

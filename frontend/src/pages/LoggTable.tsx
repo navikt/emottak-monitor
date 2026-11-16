@@ -7,6 +7,12 @@ import useTableSorting from "../hooks/useTableSorting";
 import tableStyles from "../styles/Table.module.scss";
 import logStyles from "../styles/Logg.module.scss";
 import clsx from "clsx";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
+import AssociatedMessages from "./AssociatedMessages";
+import GrafanaLogg from "../components/GrafanaLogg";
+import {formatDatetime} from "../util";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
@@ -15,15 +21,24 @@ type MessageLogData = {
 };
 
 type MottakIdInfo = {
-  datomottatt: string;
-  mottakid: string;
+  datoMottatt: string;
+  mottakId: string;
+  requestId?: string;
   role?: string;
   service?: string;
   action?: string;
-  referanse?: string;
-  avsender?: string;
-  cpaid?: string;
+  ebcomnavn?: string;
+  cpaId?: string;
   status?: string;
+  meldingsparam?: string;
+  refparam?: string;
+  avsenderparam?: string;
+  conversationId?: string;
+  messageId?: string;
+  certdn?: string;
+  trustdn?: string;
+  docsignerdn?: string;
+  docsignerissuerdn?: string;
 };
 
 type MessageLogInfo = {
@@ -31,19 +46,61 @@ type MessageLogInfo = {
   hendelsesbeskrivelse: string;
   hendelsesdetaljer?: string,
   hendelsesid: string;
+  statuslevel: string;
 };
 
 type LoggTableProps = {
   mottakid?: string;
+  ebms: boolean;
 };
+
+const parseJsonDetails = (details: string): [string, unknown][] | null => {
+  try {
+    const parsed: unknown = JSON.parse(details);
+    return parsed !== null && typeof parsed === "object"
+      ? Object.entries(parsed as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
+};
+
+const formatJsonValue = (value: unknown): string =>
+  typeof value === "string" ? value : JSON.stringify(value) ?? String(value);
+
+const jsonDetails = (entries: [string, unknown][]) => (
+  <ul className={logStyles.detailsList}>
+    {entries.map(([key, value]) => (
+      <li key={key}>
+        <b>{key}:</b> {formatJsonValue(value)}
+      </li>
+    ))}
+  </ul>
+);
+
+const textDetails = (details: string) => (
+  <div
+    className={details.length > 120 ? logStyles.truncate : undefined}
+    onClick={details.length > 120
+      ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
+      : undefined}
+  >
+    {details}
+  </div>
+);
 
 const LoggTable = (props: LoggTableProps) => {
   const params = useParams();
-  const mottakid = props.mottakid ?? params.mottakid;
+  const mottakId = props.mottakid ?? params.mottakid;
+  const url = props.ebms ? `/v1/hentloggebms?id=${mottakId}` : `/v1/hentlogg?mottakId=${mottakId}`;
 
-  const { fetchState, callRequest } = useFetch<MessageLogData>(
-    `/v1/hentlogg?mottakId=${mottakid}`
-  );
+  // Kolonnenavn gamle vs nye emottak:
+  const mottakIdName = props.ebms ? "ReadableId" : "MottakId";
+  const requestIdName = props.ebms ? "RequestId" : "";
+  const conversationIdName = props.ebms ? "ConversationId" : "EbConversationId";
+  const messageIdName = props.ebms ? "MessageId" : "EbMessageId";
+
+  const { fetchState, callRequest } = useFetch<MessageLogData>(url);
 
   const { loading, error, data: data } = fetchState;
 
@@ -53,11 +110,12 @@ const LoggTable = (props: LoggTableProps) => {
 
   const { items } = useTableSorting(data?.meldingslogg ?? []);
 
-  if (!mottakid) {
-    return <div>Ingen gyldig mottakid</div>;
+  if (!mottakId) {
+    return <div>Ingen gyldig {mottakIdName}</div>;
   }
 
   const headers: { key: keyof MessageLogInfo; name: string }[] = [
+    { key: "statuslevel", name: "" },
     { key: "hendelsesdato", name: "Dato" },
     { key: "hendelsesbeskrivelse", name: "Hendelse" },
     { key: "hendelsesdetaljer", name: "Detaljer" },
@@ -76,12 +134,12 @@ const LoggTable = (props: LoggTableProps) => {
               <table>
                 <tbody>
                 <tr>
-                  <td><b>MottakId</b></td>
-                  <td>{data?.meldingsdetaljer.mottakid}</td>
-                  <td><b>Mottatt dato</b></td>
-                  <td>{data?.meldingsdetaljer.datomottatt}</td>
-                  <td></td>
-                  <td></td>
+                  <td><b>{mottakIdName}</b></td>
+                  <td>{data?.meldingsdetaljer?.mottakId}</td>
+                  <td><b>{requestIdName}</b></td>
+                  <td>{data?.meldingsdetaljer.requestId}</td>
+                  <td><b>Mottatt</b></td>
+                  <td>{formatDatetime(data?.meldingsdetaljer.datoMottatt)}</td>
                 </tr>
                 <tr>
                   <td><b>Rolle</b></td>
@@ -93,20 +151,86 @@ const LoggTable = (props: LoggTableProps) => {
                 </tr>
                 <tr>
                   <td><b>Avsender</b></td>
-                  <td>{data?.meldingsdetaljer.avsender}</td>
+                  <td>{data?.meldingsdetaljer.ebcomnavn}</td>
                   <td><b>CPA-id</b></td>
-                  <td>{data?.meldingsdetaljer.cpaid}</td>
+                  <td>{data?.meldingsdetaljer.cpaId}</td>
                   <td></td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td><b>Referanse</b></td>
-                  <td>{data?.meldingsdetaljer.referanse}</td>
-                  <td><b>Status</b></td>
-                  <td>{data?.meldingsdetaljer.status}</td>
+                  <td><b>Melding.param</b></td>
+                  <td>{data?.meldingsdetaljer.meldingsparam}</td>
+                  <td><b>Ref.param</b></td>
+                  <td>{data?.meldingsdetaljer.refparam}</td>
+                  <td><b>Avsender.param</b></td>
+                  <td>{data?.meldingsdetaljer.avsenderparam}</td>
+                </tr>
+                <tr>
+                  <td><b>{conversationIdName}</b></td>
+                  <td>
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.conversationId && (
+                        <a
+                            href={GrafanaLogg({
+                              service_name: "ebms-async",
+                              fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
+                              conversationId: data.meldingsdetaljer.conversationId,
+                              messageId: "",
+                              requestId: data.meldingsdetaljer.requestId ?? "",
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                          {data.meldingsdetaljer.conversationId}
+                        </a>
+                    )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.conversationId)}
+                  </td>
+                  <td><b>{messageIdName}</b></td>
+                  <td>
+                    {/* Nye emottak: Lenke til grafana */}
+                    {props.ebms && data?.meldingsdetaljer.messageId && (
+                      <a
+                          href={GrafanaLogg({
+                            service_name: "ebms-async",
+                            fromDate: data.meldingsdetaljer.datoMottatt.substring(0, 23),
+                            conversationId: "",
+                            messageId: data.meldingsdetaljer.messageId,
+                            requestId: data.meldingsdetaljer.requestId ?? "",
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                      >
+                        {data.meldingsdetaljer.messageId}
+                      </a>
+                    )}
+                    {/* Gamle emottak: Ingen lenke til grafana */}
+                    {!props.ebms && (data?.meldingsdetaljer.messageId)}
+                  </td>
                   <td></td>
                   <td></td>
                 </tr>
+                {!props.ebms && /* Felter kun for gamle emottak: */
+                    <>
+                      <tr>
+                        <td><b>ebXML signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.certdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.trustdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Payload signer</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerdn}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Utsteder</b></td>
+                        <td colSpan={5}>{data?.meldingsdetaljer.docsignerissuerdn}</td>
+                      </tr>
+                    </>
+                }
                 </tbody>
               </table>
             </fieldset>
@@ -124,22 +248,24 @@ const LoggTable = (props: LoggTableProps) => {
                       return (
                           <Table.Row key={logDetails.hendelsesid}>
                             <Table.DataCell className="tabell__td--sortert">
-                              {logDetails.hendelsesdato.substring(0, 23)}
+                              <img src={(logDetails.statuslevel === "ok") ? ok : (logDetails.statuslevel === "error") ? err : info} alt={logDetails.statuslevel} />
+                            </Table.DataCell>
+                            <Table.DataCell className="tabell__td--sortert">
+                              {formatDatetime(logDetails.hendelsesdato)}
                             </Table.DataCell>
                             <Table.DataCell style={{fontWeight: "bold"}}>
                               {logDetails.hendelsesbeskrivelse}
                             </Table.DataCell>
                             <Table.DataCell>
-                              <div
-                                  className={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
-                                      ? logStyles.truncate
-                                      : undefined}
-                                  onClick={(logDetails.hendelsesdetaljer?.length ?? 0) > 120
-                                      ? (e) => e.currentTarget.classList.remove(logStyles.truncate)
-                                      : undefined}
-                              >
-                                {logDetails.hendelsesdetaljer}
-                              </div>
+                              {(() => {
+                                const details = logDetails.hendelsesdetaljer;
+                                if (!details) return null;
+                                if (!props.ebms) return textDetails(details);
+                                else {
+                                  const entries = parseJsonDetails(details);
+                                  return entries ? jsonDetails(entries) : textDetails(details);
+                                }
+                              })()}
                             </Table.DataCell>
                             <Table.DataCell>{logDetails.hendelsesid}</Table.DataCell>
                           </Table.Row>
@@ -148,7 +274,16 @@ const LoggTable = (props: LoggTableProps) => {
               </Table.Body>
               {loading && <NavFrontendSpinner/>}
               {error?.message && <p>{error.message}</p>}
-            </Table></>
+            </Table>
+            {data?.meldingsdetaljer?.conversationId && (
+                <AssociatedMessages
+                    mottattDate={data.meldingsdetaljer.datoMottatt}
+                    mottakId={data.meldingsdetaljer.mottakId}
+                    conversationId={data.meldingsdetaljer.conversationId}
+                    ebms={props.ebms}
+                />
+            )}
+          </>
       )}
     </div>
   );

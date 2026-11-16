@@ -70,142 +70,6 @@ class AbonnementListeQueriesTest :
             }
         }
 
-        describe("afterSQLFiltering tests") {
-
-            it("should not filter if there's no filter applied") {
-                val originalList = createAbonnementList(0)
-                val resultList = originalList.afterSQLFiltering(ColumnSearch.createInstance("Ola¤er lik¤"))
-                resultList shouldBe originalList
-            }
-
-            it("should not filter if applied filter is a SQL-filter") {
-                val originalList = createAbonnementList(0)
-                val resultList =
-                    originalList.afterSQLFiltering(
-                        ColumnSearch.createInstance("Ola¤er lik¤PARTNER_NAVN"),
-                    )
-                resultList shouldBe originalList
-            }
-
-            it("should filter on both BehandlerInfo-names (equals)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("Ola¤er lik¤BEHANDLER_NAVN"),
-                    )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Ola"
-            }
-
-            it("should filter on both BehandlerInfo-names (contains)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("Tor¤inneholder¤BEHANDLER_NAVN"),
-                    )
-                resultList.size shouldBe 3
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
-                resultList[1].behandlerInfo shouldNotBe null
-                resultList[1].behandlerInfo!!.fornavn shouldBe "Ola"
-                resultList[1].behandlerInfo!!.etternavn shouldBe "Don Toresen"
-                resultList[2].behandlerInfo shouldNotBe null
-                resultList[2].behandlerInfo!!.fornavn shouldBe "Kari"
-                resultList[2].behandlerInfo!!.etternavn shouldBe "Toresen"
-            }
-
-            it("should filter on both BehandlerInfo-names (begins with)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("Tor¤starter med¤BEHANDLER_NAVN"),
-                    )
-                resultList.size shouldBe 2
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
-                resultList[1].behandlerInfo shouldNotBe null
-                resultList[1].behandlerInfo!!.fornavn shouldBe "Kari"
-                resultList[1].behandlerInfo!!.etternavn shouldBe "Toresen"
-            }
-
-            it("should filter on BehandlerInfo-HPR (equals)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("011¤er lik¤BEHANDLER_HPR"),
-                    )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
-                resultList[0].behandlerInfo!!.hpr shouldBe "011"
-            }
-
-            it("should filter on BehandlerInfo-HPR (contains)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("11¤inneholder¤BEHANDLER_HPR"),
-                    )
-                resultList.size shouldBe 2
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
-                resultList[0].behandlerInfo!!.hpr shouldBe "011"
-                resultList[1].behandlerInfo shouldNotBe null
-                resultList[1].behandlerInfo!!.fornavn shouldBe "Tor"
-                resultList[1].behandlerInfo!!.hpr shouldBe "191411842"
-            }
-
-            it("should filter on BehandlerInfo-HPR (begins with)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("9¤starter med¤BEHANDLER_HPR"),
-                    )
-                resultList.size shouldBe 2
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Ola"
-                resultList[0].behandlerInfo!!.hpr shouldBe "98765"
-                resultList[1].behandlerInfo shouldNotBe null
-                resultList[1].behandlerInfo!!.fornavn shouldBe "Kari"
-                resultList[1].behandlerInfo!!.hpr shouldBe "98766"
-            }
-
-            it("should filter on BehandlerInfo-HerId (equals)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("678¤er lik¤BEHANDLER_HERID"),
-                    )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Abbas"
-            }
-
-            it("should filter on BehandlerInfo-HerId (contains)") {
-                val resultList =
-                    createAbonnementList(0).afterSQLFiltering(
-                        ColumnSearch.createInstance("44¤inneholder¤BEHANDLER_HERID"),
-                    )
-                resultList.size shouldBe 1
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Kari"
-                resultList[0].behandlerInfo!!.etternavn shouldBe "Toresen"
-                resultList[0].behandlerInfo!!.herId shouldBe "12344"
-            }
-
-            it("should filter BehandlerInfo - with duplikates") {
-                val resultList =
-                    createAbonnementList(2).afterSQLFiltering(
-                        ColumnSearch.createInstance("Tor¤inneholder¤BEHANDLER_NAVN"),
-                    )
-                resultList.size shouldBe 4
-                resultList[0].behandlerInfo shouldNotBe null
-                resultList[0].behandlerInfo!!.fornavn shouldBe "Tor"
-                resultList[1].behandlerInfo shouldNotBe null
-                resultList[1].behandlerInfo!!.fornavn shouldBe "Ola"
-                resultList[1].behandlerInfo!!.etternavn shouldBe "Don Toresen"
-                resultList[2].behandlerInfo shouldNotBe null
-                resultList[2].behandlerInfo!!.fornavn shouldBe "Kari"
-                resultList[2].behandlerInfo!!.etternavn shouldBe "Toresen"
-                resultList[3].behandlerInfo shouldNotBe null
-                resultList[3].behandlerInfo!!.fornavn shouldBe "Tor"
-            }
-        }
-
         describe("Database query tests") {
             lateinit var testDatabase: TestDatabase
             lateinit var messageQueryService: MessageQueryService
@@ -224,7 +88,7 @@ class AbonnementListeQueriesTest :
             describe("HentAbonnementListe") {
 
                 it("should retrieve all abonnements") {
-                    val resultat = messageQueryService.abonnementListe("")
+                    val resultat = messageQueryService.abonnementListe()
                     resultat.abonnementListe shouldNotBe null
                     resultat.totalNumberOfEntries shouldBe 5
                     resultat.abonnementListe.size shouldBe 5
@@ -238,112 +102,31 @@ class AbonnementListeQueriesTest :
                     resultat.abonnementListe[2].partnerNavn shouldBe "Partner 3"
                     resultat.abonnementListe[3].partnerNavn shouldBe "Partner 4"
                     resultat.abonnementListe[4].partnerNavn shouldBe "Partner 4"
-                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
-                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Åse"
-                    resultat.abonnementListe[2].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[2].behandlerInfo!!.fornavn shouldBe ""
-                    resultat.abonnementListe[3].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[3].behandlerInfo!!.fornavn shouldBe "Ærling"
-                    resultat.abonnementListe[4].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[4].behandlerInfo!!.fornavn shouldBe "Erling"
-                }
-
-                it("should retrieve abonnements where partnerId equals 105") {
-                    val resultat = messageQueryService.abonnementListe("105¤er lik¤PARTNER_ID")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 1
-                    resultat.abonnementListe[0].partnerId shouldBe "105"
-                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
-                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
-                }
-
-                it("should retrieve abonnements where partnerId contains 00") {
-                    val resultat = messageQueryService.abonnementListe("00¤inneholder¤PARTNER_ID")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 2
-                    resultat.abonnementListe[0].partnerId shouldBe "200"
-                    resultat.abonnementListe[1].partnerId shouldBe "300"
-                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 2"
-                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 3"
-                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Åse"
-                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe ""
-                }
-
-                it("should retrieve abonnements here partnerNavn begins with 'Partner'") {
-                    val resultat = messageQueryService.abonnementListe("Partner¤starter med¤PARTNER_NAVN")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 5
-                    resultat.abonnementListe[0].partnerId shouldBe "105"
-                    resultat.abonnementListe[1].partnerId shouldBe "200"
-                    resultat.abonnementListe[2].partnerId shouldBe "300"
-                    resultat.abonnementListe[3].partnerId shouldBe "401"
-                    resultat.abonnementListe[4].partnerId shouldBe "401"
-                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
-                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 2"
-                    resultat.abonnementListe[2].partnerNavn shouldBe "Partner 3"
-                    resultat.abonnementListe[3].partnerNavn shouldBe "Partner 4"
-                    resultat.abonnementListe[4].partnerNavn shouldBe "Partner 4"
-                }
-
-                it("should not retrieve abonnements if there's no match (search in all db-columns)") {
-                    val resultat = messageQueryService.abonnementListe("Per¤inneholder¤")
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.abonnementListe.size shouldBe 0
-                }
-
-                it("should retrieve abonnements where BehandlerInfo-names contains 'mann'") {
-                    val resultat = messageQueryService.abonnementListe("mann¤inneholder¤BEHANDLER_NAVN")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 2
-                    resultat.abonnementListe[0].partnerId shouldBe "105"
-                    resultat.abonnementListe[1].partnerId shouldBe "200"
-                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 1"
-                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 2"
                     resultat.abonnementListe[0].behandlerInfo shouldNotBe null
                     resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ola"
                     resultat.abonnementListe[0].behandlerInfo!!.etternavn shouldBe "Normann"
+                    resultat.abonnementListe[0].behandlerInfo!!.herId shouldBe ""
+                    resultat.abonnementListe[0].behandlerInfo!!.hpr shouldBe "010101010"
                     resultat.abonnementListe[1].behandlerInfo shouldNotBe null
                     resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Åse"
                     resultat.abonnementListe[1].behandlerInfo!!.etternavn shouldBe "Nordmann"
-                }
-
-                it("should retrieve abonnements where some database fields contains '5'") {
-                    val resultat = messageQueryService.abonnementListe("5¤inneholder¤")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 1
-                    resultat.abonnementListe[0].partnerId shouldBe "105"
-                }
-
-                it("should retrieve abonnements where some database fields equals 'Partner 4'") {
-                    val resultat = messageQueryService.abonnementListe("Partner 4¤er lik¤")
-                    resultat.abonnementListe shouldNotBe null
-                    resultat.totalNumberOfEntries shouldBe 5
-                    resultat.abonnementListe.size shouldBe 2
-                    resultat.abonnementListe[0].partnerId shouldBe "401"
-                    resultat.abonnementListe[1].partnerId shouldBe "401"
-                    resultat.abonnementListe[0].partnerNavn shouldBe "Partner 4"
-                    resultat.abonnementListe[1].partnerNavn shouldBe "Partner 4"
-                    resultat.abonnementListe[0].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[1].behandlerInfo shouldNotBe null
-                    resultat.abonnementListe[0].behandlerInfo!!.fornavn shouldBe "Ærling"
-                    resultat.abonnementListe[1].behandlerInfo!!.fornavn shouldBe "Erling"
-                    resultat.abonnementListe[0].behandlerInfo!!.etternavn shouldBe "Håland"
-                    resultat.abonnementListe[1].behandlerInfo!!.etternavn shouldBe "Haaland"
-                    resultat.abonnementListe[0].behandlerInfo!!.hpr shouldBe "44044"
-                    resultat.abonnementListe[1].behandlerInfo!!.hpr shouldBe "44055"
-                    resultat.abonnementListe[0].behandlerInfo!!.herId shouldBe "040404040"
                     resultat.abonnementListe[1].behandlerInfo!!.herId shouldBe ""
+                    resultat.abonnementListe[1].behandlerInfo!!.hpr shouldBe ""
+                    resultat.abonnementListe[2].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[2].behandlerInfo!!.fornavn shouldBe ""
+                    resultat.abonnementListe[2].behandlerInfo!!.etternavn shouldBe ""
+                    resultat.abonnementListe[2].behandlerInfo!!.herId shouldBe ""
+                    resultat.abonnementListe[2].behandlerInfo!!.hpr shouldBe ""
+                    resultat.abonnementListe[3].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[3].behandlerInfo!!.fornavn shouldBe "Ærling"
+                    resultat.abonnementListe[3].behandlerInfo!!.etternavn shouldBe "Håland"
+                    resultat.abonnementListe[3].behandlerInfo!!.herId shouldBe "040404040"
+                    resultat.abonnementListe[3].behandlerInfo!!.hpr shouldBe "44044"
+                    resultat.abonnementListe[4].behandlerInfo shouldNotBe null
+                    resultat.abonnementListe[4].behandlerInfo!!.fornavn shouldBe "Erling"
+                    resultat.abonnementListe[4].behandlerInfo!!.etternavn shouldBe "Haaland"
+                    resultat.abonnementListe[4].behandlerInfo!!.herId shouldBe ""
+                    resultat.abonnementListe[4].behandlerInfo!!.hpr shouldBe "44055"
                 }
             }
         }

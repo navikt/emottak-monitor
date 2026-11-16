@@ -3,7 +3,6 @@ package no.nav.emottak.services
 import no.nav.emottak.aksessering.db.getMessageCPA
 import no.nav.emottak.aksessering.db.getMessageLogg
 import no.nav.emottak.aksessering.db.hentAbonnementListe
-import no.nav.emottak.aksessering.db.hentEBMessageIdInfo
 import no.nav.emottak.aksessering.db.hentFeilStatistikk
 import no.nav.emottak.aksessering.db.hentHendelser
 import no.nav.emottak.aksessering.db.hentMeldinger
@@ -11,7 +10,6 @@ import no.nav.emottak.aksessering.db.hentMottakIdInfo
 import no.nav.emottak.aksessering.db.hentPartnerCpaListe
 import no.nav.emottak.db.DatabaseInterface
 import no.nav.emottak.model.AbonnementListeData
-import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
@@ -34,23 +32,45 @@ class MessageQueryService(
         mottakId: String? = null,
         cpaId: String? = null,
         messageId: String? = null,
+        conversationId: String? = null,
+        role: String? = null,
+        service: String? = null,
+        action: String? = null,
+        status: String? = null,
         pageable: Pageable? = null,
-    ): Page<MessageInfo> = databaseInterface.hentMeldinger(databasePrefix, sqlTimeout, fom, tom, mottakId, cpaId, messageId, pageable)
+    ): Page<MessageInfo> =
+        databaseInterface.hentMeldinger(
+            databasePrefix,
+            sqlTimeout,
+            fom,
+            tom,
+            mottakId,
+            cpaId,
+            messageId,
+            conversationId,
+            role,
+            service,
+            action,
+            status,
+            pageable,
+        )
 
     fun hendelser(
         fom: LocalDateTime,
         tom: LocalDateTime,
         pageable: Pageable? = null,
-    ): Page<HendelseInfo> = databaseInterface.hentHendelser(databasePrefix, sqlTimeout, fom, tom, pageable)
+        role: String? = null,
+        service: String? = null,
+        action: String? = null,
+        hendelsedeskr: String? = null,
+    ): Page<HendelseInfo> =
+        databaseInterface.hentHendelser(databasePrefix, sqlTimeout, fom, tom, pageable, role, service, action, hendelsedeskr)
 
     fun messagelogg(mottakid: String?): List<MessageLogInfo> = databaseInterface.getMessageLogg(databasePrefix, sqlTimeout, mottakid)
 
     fun messagecpa(cpaid: String?): List<MessageCPAInfo> = databaseInterface.getMessageCPA(databasePrefix, sqlTimeout, cpaid)
 
     fun mottakid(mottakid: String?): List<MottakIdInfo> = databaseInterface.hentMottakIdInfo(databasePrefix, sqlTimeout, mottakid)
-
-    fun ebmessageid(ebmessageid: String?): List<EBMessageIdInfo> =
-        databaseInterface.hentEBMessageIdInfo(databasePrefix, sqlTimeout, ebmessageid)
 
     fun feilstatistikk(
         fom: LocalDateTime,
@@ -62,5 +82,5 @@ class MessageQueryService(
     fun partnerliste(searchColmn: String): PartnerCpaListeData =
         databaseInterface.hentPartnerCpaListe(databasePrefix, sqlTimeout, searchColmn, isPartner = true)
 
-    fun abonnementListe(sok: String): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sqlTimeout, sok)
+    fun abonnementListe(): AbonnementListeData = databaseInterface.hentAbonnementListe(databasePrefix, sqlTimeout)
 }

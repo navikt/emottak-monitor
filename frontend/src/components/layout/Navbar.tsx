@@ -6,12 +6,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.scss";
 import MessagesTable from "../../pages/MessagesTable";
 import EventsTable from "../../pages/EventsTable";
-import MottakIdSok from "../../pages/MottakIdSok";
-import EBEMessageIdInfoSok from "../../pages/EBMessageIdSok";
 import FeilStatistikk from "../../pages/FeilStatistikk";
 import EventsTableEbms from "../../pages/EventsTableEbms";
 import MessagesTableEbms from "../../pages/MessagesTableEbms";
-import ReadableIdSokEbms from "../../pages/ReadableIdSokEbms";
 import CpaListeTable from "../../pages/CpaListeTable";
 import PartnerListeTable from "../../pages/PartnerListeTable";
 import LogsGrafana from "../../pages/LogsGrafana";
@@ -33,9 +30,6 @@ export const pages: Page[] = [
   { title: "Hendelser", path: "/hendelser", enableHeader: true, element: <EventsTable /> },
   { title: "Hendelser ebms", path: "/hendelserebms", enableHeader: true, element: <EventsTableEbms /> },
   { title: "Conversation-status ebms", path: "/hentconversationstatusebms", enableHeader: true, element: <ConversationStatusTable /> },
-  { title: "Mottak-id søk", path: "/mottakidsok", enableHeader: true, element: <MottakIdSok /> },
-  { title: "Mottak-id søk ebms", path: "/readableidsokebms", enableHeader: true, element: <ReadableIdSokEbms /> },
-  { title: "EBMessage-id søk", path: "/ebmessageidsok", enableHeader: true, element: <EBEMessageIdInfoSok /> },
   { title: "CPA-liste", path: "/cpaliste", enableHeader: false, element: <CpaListeTable /> },
   { title: "Partnerliste", path: "/partnerliste", enableHeader: false, element: <PartnerListeTable /> },
   { title: "Abonnementliste", path: "/hentabonnementliste", enableHeader: false, element: <AbonnementTable /> },

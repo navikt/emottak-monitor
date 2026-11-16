@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 type Compactness = 'tight' | 'loose';
 
 export const useCompactness = () => {
-    const [compactness, setCompactness] = useState<Compactness>('loose');
+    const [compactness, setCompactness] = useState<Compactness>('tight');
 
     useEffect(() => {
         const stored = localStorage.getItem('compactness') as Compactness | null;

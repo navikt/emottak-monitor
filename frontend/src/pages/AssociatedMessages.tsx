@@ -1,0 +1,144 @@
+import { Table } from "@navikt/ds-react";
+import clsx from "clsx";
+import NavFrontendSpinner from "nav-frontend-spinner";
+import React, {useEffect} from "react";
+import RowWithContent from "../components/RowWithContent";
+import useFetch from "../hooks/useFetch";
+import tableStyles from "../styles/Table.module.scss";
+import ModalLink from "../components/ModalLink";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
+import {formatDatetime, ISODatetime} from "../util";
+
+interface AssociatedMessagesProps {
+    mottattDate: string;
+    mottakId: string;
+    conversationId: string;
+    ebms: boolean;
+}
+
+type MessageInfo = {
+    action: string;
+    antall: number;
+    avsender: string;
+    cpaid: string;
+    datomottat: string;
+    mottakid: string;
+    conversationId: string;
+    referanse: string;
+    role: string;
+    service: string;
+    status: string;
+};
+
+export default function AssociatedMessages({mottattDate, mottakId, conversationId, ebms}: AssociatedMessagesProps) {
+    const loggLink = ebms ? "loggebms" : "logg"
+    const backend = ebms ? "hentmeldingerebms?map&" : "hentmeldinger?"
+    const fromDate = formatDatetime(mottattDate)?.slice(0, 16) ?? mottattDate;
+    const url = `/v1/${backend}fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(ISODatetime())}&conversationId=${encodeURIComponent(conversationId)}`;
+
+    const { fetchState, callRequest } = useFetch<{ content: MessageInfo[] }>(url);
+    const { loading, error, data } = fetchState;
+    const messages = data?.content ?? [];
+    const sortedMessages = messages.sort((a, b) => a.datomottat.localeCompare(b.datomottat));
+    const associatedMessages = sortedMessages.filter((message) => message.mottakid !== mottakId);
+
+    useEffect(() => {
+        callRequest();
+    }, [callRequest]);
+
+    const showSpinner = loading;
+    const showErrorMessage = !loading && error?.message;
+    const showNoDataMessage =
+        !loading && !error?.message && associatedMessages.length === 0;
+    const showData = !loading && !error?.message && associatedMessages.length > 0;
+
+    const headers: { key: keyof MessageInfo; name: string }[] = [
+        { key: "status", name: "" },
+        { key: "datomottat", name: "Mottatt" },
+        { key: "mottakid", name: "Mottak-id" },
+        { key: "role", name: "Rolle" },
+        { key: "service", name: "Service" },
+        { key: "action", name: "Action" },
+        { key: "referanse", name: "Referanse" },
+        { key: "avsender", name: "Avsender" },
+        { key: "cpaid", name: "CPA-id" },
+    ];
+
+    return (
+        <>
+            <Table className={tableStyles.table} style={{marginTop:"6px"}}>
+                <Table.Header className={tableStyles.tableHeader}>
+                    <Table.Row>
+                        <Table.HeaderCell colSpan={9} style={{textAlign:"center"}}>
+                            TILKNYTTEDE MELDINGER
+                        </Table.HeaderCell>
+                    </Table.Row>
+                    <Table.Row>
+                        {headers.map(({key, name}) => (
+                            <Table.HeaderCell key={key}>
+                                {name}
+                            </Table.HeaderCell>
+                        ))}
+                    </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                    {showSpinner && (
+                        <RowWithContent colSpan={headers.length}>
+                            <NavFrontendSpinner/>
+                        </RowWithContent>
+                    )}
+                    {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen meldinger funnet !</RowWithContent>}
+                    {showData &&
+                        associatedMessages.map((message, index) => {
+                            return (
+                            <Table.Row
+                                key={message.mottakid}
+                                className={clsx(
+                                    {
+                                        [tableStyles.coloredRow]: index % 2,
+                                    },
+                                    tableStyles.cellTextAtTop
+                                )}
+                            >
+                                <Table.DataCell>
+                                    {
+                                        (message.status === "ok") ? (
+                                            <img src={ok} alt="ok" />
+                                        ) : (message.status === "info") ? (
+                                            <img src={info} alt="info" />
+                                        ) : (message.status === "error") ? (
+                                            <img src={err} alt="error" />
+                                        ) : ""
+                                    }
+                                </Table.DataCell>
+                                <Table.DataCell className="tabell__td--sortert">
+                                    {formatDatetime(message.datomottat)}
+                                </Table.DataCell>
+                                <Table.DataCell>
+                                    <ModalLink
+                                        to={`/${loggLink}/${message.mottakid}`}
+                                    >{message.mottakid}</ModalLink>
+                                </Table.DataCell>
+                                <Table.DataCell>{message.role}</Table.DataCell>
+                                <Table.DataCell>{message.service}</Table.DataCell>
+                                <Table.DataCell>{message.action}</Table.DataCell>
+                                <Table.DataCell>{message.referanse}</Table.DataCell>
+                                <Table.DataCell>{message.avsender}</Table.DataCell>
+                                <Table.DataCell>
+                                    <ModalLink
+                                        to={`/cpa/${message.cpaid}`}
+                                        alwaysModal={true}
+                                    >{message.cpaid}</ModalLink>
+                                </Table.DataCell>
+                            </Table.Row>
+                            );
+                        })}
+                </Table.Body>
+            </Table>
+        </>
+    );
+} ;

@@ -9,16 +9,21 @@ import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
 import useFilter from "../hooks/useFilter";
 import useTableSorting from "../hooks/useTableSorting";
-import { initialFromDate, initialToDate, initialTime } from "../util";
+import {initialFromDate, initialToDate, initialTime, formatDatetime} from "../util";
 import tableStyles from "../styles/Table.module.scss";
 import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import PrepopulatedFilter from "../components/PrepopulatedFilter";
+import ok from "../images/ok.gif";
+import info from "../images/info.gif";
+import err from "../images/error.gif";
 
 type EventDto = {
   action: string;
   senderName: string | null;
   eventDate: string;
   description: string;
+  status: string;
+  requestId: string;
   readableId: string;
   referenceParameter: string | null;
   role: string;
@@ -54,6 +59,7 @@ const EventsTable = () => {
   const [role, setRole] = useState("");
   const [service, setService] = useState("");
   const [action, setAction] = useState("");
+  const [status, setStatus] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -61,7 +67,7 @@ const EventsTable = () => {
   const { fetchState, callRequest } = useFetch<PageDto>(
     `/v1/henthendelserebms?fromDate=${debouncedFromDate}%20${debouncedFromTime}` +
       `&toDate=${debouncedToDate}%20${debouncedToTime}` +
-      `&role=${role}&service=${service}&action=${action}` +
+      `&role=${role}&service=${service}&action=${action}&status=${status}` +
       `&page=${currentPage}&size=${pageSize}&sort=DESC`
   );
 
@@ -70,6 +76,7 @@ const EventsTable = () => {
   const onRoleChange     = (value: string) => { setCurrentPage(1); setRole(value); };
   const onServiceChange  = (value: string) => { setCurrentPage(1); setService(value); };
   const onActionChange   = (value: string) => { setCurrentPage(1); setAction(value); };
+  const onStatusChange   = (value: string) => { setCurrentPage(1); setStatus(value); };
   const commitFromTime   = () => { setCurrentPage(1); setFromTime(fromTimeDraft); };
   const commitToTime     = () => { setCurrentPage(1); setToTime(toTimeDraft); };
 
@@ -92,7 +99,7 @@ const EventsTable = () => {
 
   const { filteredItems: filteredEvents, handleFilterChange } = useFilter(
     events ?? [],
-    ["role", "service", "action", "description"]
+    ["role", "service", "action", "status"]
   );
 
   const {
@@ -117,6 +124,7 @@ const EventsTable = () => {
   };
 
   const headers: { key: keyof EventDto; name: string }[] = [
+    { key: "status", name: "" },
     { key: "eventDate", name: "Mottatt" },
     { key: "description", name: "Hendelse" },
     { key: "readableId", name: "Mottak-id" },
@@ -147,10 +155,11 @@ const EventsTable = () => {
         onToTimeBlur={commitToTime}
         messages={events ?? []}
         onFilterChange={handleFilterChange}
-        filterKeys={["service", "action", "role", "description"]}
+        filterKeys={["service", "action", "role", "status"]}
         onRoleChange={onRoleChange}
         onServiceChange={onServiceChange}
         onActionChange={onActionChange}
+        onStatusChange={onStatusChange}
       />
       <Pageinformation
           pageSize={pageSize}
@@ -175,13 +184,13 @@ const EventsTable = () => {
         </Table.Header>
         <Table.Body>
           {showSpinner && (
-            <RowWithContent>
+            <RowWithContent colSpan={headers.length}>
               <NavFrontendSpinner />
             </RowWithContent>
           )}
 
-          {showErrorMessage && <RowWithContent>{error.message}</RowWithContent>}
-          {showNoDataMessage && <RowWithContent>Ingen hendelser funnet !</RowWithContent>}
+          {showErrorMessage && <RowWithContent colSpan={headers.length}>{error.message}</RowWithContent>}
+          {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen hendelser funnet !</RowWithContent>}
           {showData &&
               filteredAndSortedEvents.map((event, index) => {
               return (
@@ -189,7 +198,18 @@ const EventsTable = () => {
                   key={event.description + index}
                   className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                 >
-                  <Table.DataCell>{event.eventDate.substring(0, 23)}</Table.DataCell>
+                  <Table.DataCell>
+                    {
+                      (event.status === "Ferdigbehandlet") ? (
+                          <img src={ok} alt="ok" title="Meldingen er ferdigbehandlet" />
+                      ) : (event.status === "Informasjon") ? (
+                          <img src={info} alt="info" title="Meldingen er under behandling" />
+                      ) : (event.status === "Feil") ? (
+                          <img src={err} alt="error" title="Meldingen feilet under behandling" />
+                      ) : ""
+                    }
+                  </Table.DataCell>
+                  <Table.DataCell>{formatDatetime(event.eventDate)}</Table.DataCell>
                   <Table.DataCell>
                       <Ekspanderbartpanel tittel={event.description}>
                         {event.eventData}
@@ -197,8 +217,8 @@ const EventsTable = () => {
                   </Table.DataCell>
                   <Table.DataCell>
                       <Link
-                        key={event.readableId}
-                        to={`/loggebms/${event.readableId}`}
+                        key={event.requestId}
+                        to={`/loggebms/${event.requestId}`}
                         state={{ backgroundLocation: location }}
                       >{event.readableId}</Link>
                   </Table.DataCell>

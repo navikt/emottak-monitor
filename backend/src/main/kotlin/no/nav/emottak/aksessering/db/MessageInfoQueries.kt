@@ -5,8 +5,11 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
+import java.sql.Connection
 import java.sql.ResultSet
 import java.time.LocalDateTime
+import kotlin.use
 
 fun DatabaseInterface.hentMeldinger(
     databasePrefix: String,
@@ -16,32 +19,41 @@ fun DatabaseInterface.hentMeldinger(
     mottakId: String? = null,
     cpaId: String? = null,
     messageId: String? = null,
+    conversationId: String? = null,
+    role: String? = null,
+    service: String? = null,
+    action: String? = null,
+    status: String? = null,
     pageable: Pageable? = null,
 ): Page<MessageInfo> =
     connection.use { connection ->
+        val statuslevel = status.toStatuslevel()
         var filterClause = ""
-        if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE '%${mottakId.lowercase()}%'"
-        if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE '%${cpaId.lowercase()}%'"
-        if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE '%${messageId.lowercase()}%'"
+        if (!mottakId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.MOTTAK_ID) LIKE ?"
+        if (!cpaId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.AVTALE_ID) LIKE ?"
+        if (!messageId.isNullOrBlank()) filterClause += " AND LOWER(MELDING_FILTER.EBMESAGE_ID) LIKE ?"
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ROLE = ?"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING_FILTER.SERVICE = ?"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING_FILTER.ACTION = ?"
+        if (statuslevel.isNotBlank()) filterClause += " AND MELDING_FILTER.STATUSLEVEL = ?"
 
-        val countStatement =
-            connection.prepareStatement(
-                """
-                SELECT COUNT(DISTINCT MELDING_FILTER.EBCONVERS_ID)
-                    FROM $databasePrefix.MELDING MELDING_FILTER
-                    WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
-                    $filterClause
-            """,
+        // Count number of distinct conversationId's only if conversationId is not set:
+        var totalCount =
+            connection.getTotalCount(
+                databasePrefix,
+                sqlTimeout,
+                filterClause,
+                fom,
+                tom,
+                conversationId,
+                mottakId,
+                cpaId,
+                messageId,
+                role,
+                service,
+                action,
+                statuslevel,
             )
-        countStatement.setObject(1, fom)
-        countStatement.setObject(2, tom)
-        val totalCount =
-            countStatement.use {
-                it.queryTimeout = sqlTimeout
-                val rs = it.executeQuery()
-                rs.next()
-                rs.getLong(1)
-            }
 
         // We always use ORDER BY, with default DESC
         var orderBy = "DESC"
@@ -49,34 +61,35 @@ fun DatabaseInterface.hentMeldinger(
             orderBy = pageable.sort
         }
 
-        var groupSql = """
-                        SELECT MELDING_FILTER.EBCONVERS_ID
-                        FROM $databasePrefix.MELDING MELDING_FILTER
-                        WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
-                        $filterClause
-                    GROUP BY MELDING_FILTER.EBCONVERS_ID
-                    ORDER BY MAX(MELDING_FILTER.DATOMOTTAT) $orderBy
-                """
-        // We only use LIMIT and OFFSET when asked for a page
-        if (pageable != null) {
-            groupSql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
-        }
+        val conversationIdSubQuery = getConversationIdSubQuery(databasePrefix, filterClause, orderBy, conversationId, pageable)
 
         val sql = """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.EBCONVERS_ID,
                     MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
                     (SELECT COUNT(*) FROM $databasePrefix.LOGG WHERE (MELDING.MOTTAK_ID = LOGG.MOTTAK_ID)) AS ANTALL,
-                    (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
+                    (SELECT STATUS.STATUSLEVEL FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUSLEVEL
                     FROM $databasePrefix.MELDING
-                    WHERE MELDING.EBCONVERS_ID IN ($groupSql)
+                    WHERE MELDING.EBCONVERS_ID $conversationIdSubQuery
                     ORDER BY MAX(MELDING.DATOMOTTAT) OVER (PARTITION BY MELDING.EBCONVERS_ID) $orderBy, MELDING.DATOMOTTAT ASC
                 """
         val statement = connection.prepareStatement(sql)
-        statement.setObject(1, fom)
-        statement.setObject(2, tom)
-        if (pageable != null) {
-            statement.setObject(3, pageable.offset)
-            statement.setObject(4, pageable.pageSize)
+        if (!conversationId.isNullOrBlank()) {
+            statement.setObject(1, conversationId)
+        } else {
+            var index = 1
+            statement.setObject(index++, fom)
+            statement.setObject(index++, tom)
+            index = setFilterLikeParams(statement, index, mottakId)
+            index = setFilterLikeParams(statement, index, cpaId)
+            index = setFilterLikeParams(statement, index, messageId)
+            index = setFilterEqualsParams(statement, index, role)
+            index = setFilterEqualsParams(statement, index, service)
+            index = setFilterEqualsParams(statement, index, action)
+            index = setFilterEqualsParams(statement, index, statuslevel)
+            if (pageable != null) {
+                statement.setObject(index++, pageable.offset)
+                statement.setObject(index, pageable.pageSize)
+            }
         }
         val list =
             statement
@@ -84,10 +97,81 @@ fun DatabaseInterface.hentMeldinger(
                     it.queryTimeout = sqlTimeout
                     it.executeQuery().toList { toMessageInfo() }
                 }.toList()
+        if (!conversationId.isNullOrBlank()) {
+            totalCount = if (list.isEmpty()) 0 else 1
+        }
         var returnPageable = pageable
         if (returnPageable == null) returnPageable = Pageable(1, list.size)
         Page(returnPageable.pageNumber, returnPageable.pageSize, returnPageable.sort, totalCount, list)
     }
+
+private fun Connection.getTotalCount(
+    databasePrefix: String,
+    sqlTimeout: Int,
+    filterClause: String,
+    fom: LocalDateTime,
+    tom: LocalDateTime,
+    conversationId: String?,
+    mottakId: String? = null,
+    cpaId: String? = null,
+    messageId: String? = null,
+    role: String?,
+    service: String?,
+    action: String?,
+    statuslevel: String?,
+): Long =
+    if (conversationId.isNullOrBlank()) {
+        val countStatement =
+            this.prepareStatement(
+                """
+                        SELECT COUNT(DISTINCT MELDING_FILTER.EBCONVERS_ID)
+                            FROM $databasePrefix.MELDING MELDING_FILTER
+                            WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
+                            $filterClause
+                    """,
+            )
+        countStatement.setObject(1, fom)
+        countStatement.setObject(2, tom)
+        var index = 3
+        index = setFilterLikeParams(countStatement, index, mottakId)
+        index = setFilterLikeParams(countStatement, index, cpaId)
+        index = setFilterLikeParams(countStatement, index, messageId)
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, statuslevel)
+        countStatement.use {
+            it.queryTimeout = sqlTimeout
+            val rs = it.executeQuery()
+            rs.next()
+            rs.getLong(1)
+        }
+    } else {
+        0
+    }
+
+private fun getConversationIdSubQuery(
+    databasePrefix: String,
+    filterClause: String,
+    orderBy: String,
+    conversationId: String?,
+    pageable: Pageable? = null,
+): String {
+    if (!conversationId.isNullOrBlank()) return "= ?"
+    var groupSql = """
+                SELECT MELDING_FILTER.EBCONVERS_ID
+                FROM $databasePrefix.MELDING MELDING_FILTER
+                WHERE MELDING_FILTER.DATOMOTTAT BETWEEN ? AND ? AND MELDING_FILTER.EBCONVERS_ID IS NOT NULL
+                $filterClause
+            GROUP BY MELDING_FILTER.EBCONVERS_ID
+            ORDER BY MAX(MELDING_FILTER.DATOMOTTAT) $orderBy
+        """
+    // We only use LIMIT and OFFSET when asked for a page
+    if (pageable != null) {
+        groupSql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
+    }
+    return "IN ($groupSql)"
+}
 
 fun ResultSet.toMessageInfo(): MessageInfo =
     MessageInfo(
@@ -101,5 +185,5 @@ fun ResultSet.toMessageInfo(): MessageInfo =
         getString("EBCOMNAVN"),
         getString("CPA_ID"),
         getInt("ANTALL"),
-        getString("STATUS"),
+        convertStatus(getString("STATUSLEVEL")),
     )

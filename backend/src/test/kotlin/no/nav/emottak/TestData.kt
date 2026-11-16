@@ -3,8 +3,8 @@ package no.nav.emottak
 import no.nav.emottak.model.Abonnement
 import no.nav.emottak.model.AbonnementListeData
 import no.nav.emottak.model.BehandlerInfo
-import no.nav.emottak.model.EBMessageIdInfo
 import no.nav.emottak.model.FeilStatistikkInfo
+import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.MessageCPAInfo
 import no.nav.emottak.model.MessageInfo
 import no.nav.emottak.model.MessageLogInfo
@@ -14,6 +14,8 @@ import no.nav.emottak.model.PartnerCpaListeData
 
 fun getMessages(): List<MessageInfo> = emptyList()
 
+fun getEvents(): List<HendelseInfo> = emptyList()
+
 fun getMessageLogg(): List<MessageLogInfo> = emptyList()
 
 fun getMessageCpa(): List<MessageCPAInfo> = emptyList()
@@ -21,12 +23,10 @@ fun getMessageCpa(): List<MessageCPAInfo> = emptyList()
 fun getMottakIdInfo(): List<MottakIdInfo> =
     listOf(
         MottakIdInfo(
-            datomottatt = "2026-08-20 12:13:14",
-            mottakid = "123456789012345678901",
+            datoMottatt = "2026-08-20 12:13:14",
+            mottakId = "123456789012345678901",
         ),
     )
-
-fun getEBMessageIdInfo(): List<EBMessageIdInfo> = emptyList()
 
 fun getFeilStatistikkInfo(): List<FeilStatistikkInfo> = emptyList()
 

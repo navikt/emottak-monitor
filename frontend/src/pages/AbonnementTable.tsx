@@ -31,6 +31,10 @@ type abonnementDetail = {
     behandlerInfo: BehandlerInfo;
     partnerId: string;
     abId: string;
+    Fornavn: string;
+    Familienavn: string;
+    HER_Id: string;
+    HPR: string;
 };
 
 type AbonnementData = {
@@ -42,17 +46,27 @@ const AbonnementTable = () => {
     const [selectedColnValue, setSelectedColnValue] = useState('');
     const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
-    const [searchColmn, setSearchColmn] = useState('');
+    const [searchFilter, setSearchFilter] = useState({ text: '', comparison: 'er lik', column: '' });
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(25);
 
-    const url = `/v1/hentabonnementliste?sok=${searchColmn}`;
+    const url = "/v1/hentabonnementliste";
     const { fetchState, callRequest } = useFetch<AbonnementData>(url);
 
     const { loading, error, data } = fetchState;
-    const abonnementInfo = data?.abonnementListe ?? [];
+    const abonnementInfo = useMemo(
+        () =>
+            (data?.abonnementListe ?? []).map((item) => ({
+                ...item,
+                Fornavn: item.behandlerInfo?.fornavn ?? "",
+                Familienavn: item.behandlerInfo?.etternavn ?? "",
+                HER_Id: item.behandlerInfo?.herId ?? "",
+                HPR: item.behandlerInfo?.hpr ?? "",
+            })),
+        [data]
+    );
 
     useEffect(() => {
         callRequest();
@@ -60,13 +74,39 @@ const AbonnementTable = () => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchColmn]);
+    }, [searchFilter]);
+
+    const filteredAbonnementInfo = useMemo(() => {
+        const searchText = searchFilter.text.toLowerCase();
+        if (!searchText) return abonnementInfo;
+
+        return abonnementInfo.filter(item => {
+            const fieldsByColumn: Record<string, (string | null)[]> = {
+                PARTNER_NAVN: [item.partnerNavn],
+                PARTNER_ID: [item.partnerId],
+                OrgNr: [item.partnerOrgnr],
+                HerId: [item.partnerHerId],
+                KEY: [item.tssId],
+                BEHANDLER_NAVN: [item.Fornavn, item.Familienavn],
+                BEHANDLER_HERID: [item.HER_Id],
+                BEHANDLER_HPR: [item.HPR],
+            };
+            const fields = fieldsByColumn[searchFilter.column] ?? Object.values(fieldsByColumn).flat();
+            return fields.some(field => {
+                if (field == null) return false;
+                const value = field.toLowerCase();
+                if (searchFilter.comparison === 'starter med') return value.startsWith(searchText);
+                if (searchFilter.comparison === 'inneholder') return value.includes(searchText);
+                return value === searchText;
+            });
+        });
+    }, [abonnementInfo, searchFilter]);
 
     const {
         items: filteredAndSortedAbonnements,
         requestSort,
         sortConfig,
-    } = useTableSorting(abonnementInfo);
+    } = useTableSorting(filteredAbonnementInfo);
 
     const getClassNamesFor = (name: keyof abonnementDetail) => {
         if (!sortConfig) {
@@ -95,7 +135,7 @@ const AbonnementTable = () => {
     const handleBtnNullstil = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setErrorMessage('');
-        setSearchColmn('');
+        setSearchFilter({ text: '', comparison: 'er lik', column: '' });
         setInnValue('');
         setSelectedColnValue("");
         setSelectedCEqualValue("er lik");
@@ -104,19 +144,11 @@ const AbonnementTable = () => {
     const handleBtnSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setErrorMessage('');
-        const result: string = innValue + "¤" + selectedCEqualValue + "¤" +  selectedColnValue;
-        if (result.endsWith("PARTNER_ID")) {
-            if (innValue === '' || Number.isInteger(Number(innValue))) {
-                setErrorMessage("");
-                setSearchColmn(result);
-            } else {
-                // If not an integer, set an error message
-                setErrorMessage("Partner_id skal være nummer!");
-                setSearchColmn(999999 + result);
-                return
-            }
-        }  else
-            setSearchColmn(result);
+        if (selectedColnValue === "PARTNER_ID" && innValue !== '' && !Number.isInteger(Number(innValue))) {
+            setErrorMessage("Partner_id skal være nummer!");
+            return;
+        }
+        setSearchFilter({ text: innValue, comparison: selectedCEqualValue, column: selectedColnValue });
     };
 
     const currentTableData = useMemo(() => {
@@ -134,13 +166,17 @@ const AbonnementTable = () => {
         { key: "sluttDato", name: "slutt_dato" },
         { key: "tssId", name: "TssID" },
         { key: "abId", name: "AB_ID" },
+        { key: "Fornavn", name: "Fornavn" },
+        { key: "Familienavn", name: "Familienavn" },
+        { key: "HER_Id", name: "HER-Id" },
+        { key: "HPR", name: "HPR" },
     ];
 
     const showSpinner = loading;
     const showErrorMessage = !loading && error?.message;
     const showNoDataMessage =
-        !loading && !error?.message && abonnementInfo?.length === 0;
-    const showData = !loading && !error?.message && !!abonnementInfo?.length;
+        !loading && !error?.message && filteredAndSortedAbonnements.length === 0;
+    const showData = !loading && !error?.message && filteredAndSortedAbonnements.length > 0;
 
     return (
         <>
@@ -171,7 +207,7 @@ const AbonnementTable = () => {
                             <label htmlFor="coln-select"  style={{display: "inline-flex", alignItems: "center", gap: 20}}>
                                 &nbsp;&nbsp;&nbsp;&nbsp;i
                                 <select className={inputStyles.input} id="coln-select"  value={selectedColnValue} onChange={onSelectColn}>
-                                    <option value={"TOMT"}></option>
+                                    <option value={""}></option>
                                     <option value={"PARTNER_NAVN"}>partnernavn</option>
                                     <option value={"PARTNER_ID"}>partnerId</option>
                                     <option value={"OrgNr"}>OrgNr</option>
@@ -222,21 +258,17 @@ const AbonnementTable = () => {
                                 {name}
                             </Table.HeaderCell>
                         ))}
-                        <Table.HeaderCell>Fornavn</Table.HeaderCell>
-                        <Table.HeaderCell>Familienavn</Table.HeaderCell>
-                        <Table.HeaderCell>HER-id</Table.HeaderCell>
-                        <Table.HeaderCell>HPR</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
                     {showSpinner && (
-                        <RowWithContent colSpan={12}>
+                        <RowWithContent colSpan={headers.length}>
                             <NavFrontendSpinner /><br />
                             Vennligst vent - tung spørring kjøres...
                         </RowWithContent>
                     )}
-                    {showErrorMessage && <RowWithContent colSpan={12}>{error?.message}</RowWithContent>}
-                    {showNoDataMessage && <RowWithContent colSpan={12}>Ingen data funnet !</RowWithContent>}
+                    {showErrorMessage && <RowWithContent colSpan={headers.length}>{error?.message}</RowWithContent>}
+                    {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen data funnet !</RowWithContent>}
                     {showData &&
                         currentTableData.map((message, index) => {
                             return (
@@ -252,10 +284,10 @@ const AbonnementTable = () => {
                                     <Table.DataCell>{message.sluttDato}</Table.DataCell>
                                     <Table.DataCell>{message.tssId}</Table.DataCell>
                                     <Table.DataCell>{message.abId}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.fornavn}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.etternavn}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.herId}</Table.DataCell>
-                                    <Table.DataCell>{message.behandlerInfo?.hpr}</Table.DataCell>
+                                    <Table.DataCell>{message.Fornavn}</Table.DataCell>
+                                    <Table.DataCell>{message.Familienavn}</Table.DataCell>
+                                    <Table.DataCell>{message.HER_Id}</Table.DataCell>
+                                    <Table.DataCell>{message.HPR}</Table.DataCell>
                                 </Table.Row>
                             );
                         })}

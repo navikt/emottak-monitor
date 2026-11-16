@@ -1,8 +1,8 @@
-import { Select } from "@navikt/ds-react";
 import { Datepicker, isISODateString } from "nav-datovelger";
 import React, {useEffect} from "react";
 import TimePicker from "react-time-picker";
 import styles from "./Filter.module.scss";
+import SelectFilter from "./SelectFilter";
 import useFetch from "../hooks/useFetch";
 import NavFrontendSpinner from "nav-frontend-spinner";
 
@@ -23,6 +23,8 @@ type FilterProps<T, K extends keyof T> = {
   onRoleChange: (value: string) => void;
   onServiceChange: (value: string) => void;
   onActionChange: (value: string) => void;
+  onStatusChange?: (value: string) => void;
+  onHendelsedeskrChange?: (value: string) => void;
 };
 
 type DistinctRolesServicesActions = {
@@ -48,7 +50,15 @@ const PrepopulatedFilter = <T, K extends keyof T>({
   filterKeys = ["role", "service", "action", "status"] as K[],
   onRoleChange,
   onServiceChange,
-  onActionChange
+  onActionChange,
+  onStatusChange = (value: string) => { onFilterChange(
+        "status" as K,
+        value as unknown as T[K]
+    ) },
+  onHendelsedeskrChange = (value: string) => { onFilterChange(
+      "hendelsedeskr" as K,
+      value as unknown as T[K]
+  ) }
 }: FilterProps<T, K>) => {
   const uniqueFilters = filterKeys.reduce((prevVal, filterKey) => {
     return {
@@ -83,17 +93,11 @@ const PrepopulatedFilter = <T, K extends keyof T>({
     return <p>Feilet med å hente filter-verdier!</p>
   return (
     <div className={styles.gridContainer}>
-      <div
-        style={{
-          gridArea: "fromTime",
-        }}
-      >
+      <div style={{ gridArea: "fromTime" }}>
         <label
           className="navds-select__label navds-label navds-label--small"
           htmlFor="datepicker-input-fom"
-        >
-          Fra og med dato
-        </label>
+        >Fra og med dato</label>
         <div style={{ display: "flex", marginTop: "0.5rem" }}>
           <Datepicker
             locale={"nb"}
@@ -122,58 +126,28 @@ const PrepopulatedFilter = <T, K extends keyof T>({
         </div>
       </div>
       {filterKeys.includes("role" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "role",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="role"
           label="Rolle"
-          size="small"
-          onChange={(event) => onRoleChange(event.target.value)}
-        >
-          <option value="">Velg rolle</option>
-          {roles.map((role) => {
-            return (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            );
-          })}
-        </Select>
+          placeholder="Velg rolle"
+          options={roles}
+          onChange={onRoleChange}
+        />
       )}
       {filterKeys.includes("service" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "service",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="service"
           label="Service"
-          size="small"
-          onChange={(event) => onServiceChange(event.target.value)}
-        >
-          <option value="">Velg service</option>
-          {services.map((service) => {
-            return (
-              <option key={service} value={service}>
-                {service}
-              </option>
-            );
-          })}
-        </Select>
+          placeholder="Velg service"
+          options={services}
+          onChange={onServiceChange}
+        />
       )}
-      <div
-        style={{
-          gridArea: "toTime",
-        }}
-      >
+      <div style={{ gridArea: "toTime" }}>
         <label
           className="navds-select__label navds-label navds-label--small"
           htmlFor="datepicker-input-tom"
-        >
-          Til og med
-        </label>
+        >Til og med</label>
         <div style={{ display: "flex", marginTop: "0.5rem" }}>
           <Datepicker
             locale={"nb"}
@@ -202,78 +176,40 @@ const PrepopulatedFilter = <T, K extends keyof T>({
         </div>
       </div>
       {filterKeys.includes("action" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "action",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="action"
           label="Action"
-          size="small"
-          onChange={(event) => onActionChange(event.target.value)}
-        >
-          <option value="">Velg action</option>
-          {actions.map((action) => {
-            return (
-              <option key={action} value={action}>
-                {action}
-              </option>
-            );
-          })}
-        </Select>
+          placeholder="Velg action"
+          options={actions}
+          onChange={onActionChange}
+        />
       )}
       {filterKeys.includes("status" as K) && (
-        <Select
-          className={styles.selectFilter}
-          style={{
-            gridArea: "status",
-            marginTop: "0.5rem",
-          }}
+        <SelectFilter
+          gridArea="status"
           label="Status"
-          size="small"
-          onChange={(event) =>
-            onFilterChange(
-              "status" as K,
-              event.currentTarget.value as unknown as T[K]
-            )
-          }
-        >
-          <option value="">Velg status</option>
-          {uniqueFilters["status" as K].map((status) => {
-            return (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            );
-          })}
-        </Select>
+          placeholder="Velg status"
+          options={[
+            // { value: "created", label: "Opprettet" },
+            { value: "Meldingen er under behandling", label: "ℹ️ Informasjon" },
+            // { value: "manual", label: "Manuell behandling" },
+            // { value: "warning", label: "Advarsel" },
+            { value: "Meldingen feilet under behandling", label: "❌ Feil" },
+            // { value: "fatal", label: "Fatal feil" },
+            { value: "Meldingen er ferdigbehandlet", label: "✅ Ferdigbehandlet" },
+          ]}
+          onChange={onStatusChange}
+        />
       )}
-        {filterKeys.includes("hendelsedeskr" as K) && (
-        <Select
-            className={styles.selectFilter}
-            style={{
-                gridArea: "hendelsedeskr",
-                marginTop: "0.5rem",
-            }}
-            label="Hendelse"
-            size="small"
-            onChange={(event) =>
-                onFilterChange(
-                    "hendelsedeskr" as K,
-                    event.currentTarget.value as unknown as T[K]
-                )
-            }
-        >
-            <option value="">Velg hendelse</option>
-            {uniqueFilters["hendelsedeskr" as K].map((hendelsedeskr) => {
-                return (
-                    <option key={hendelsedeskr} value={hendelsedeskr}>
-                        {hendelsedeskr}
-                    </option>
-                );
-            })}
-        </Select>
-    )}
+      {filterKeys.includes("hendelsedeskr" as K) && (
+        <SelectFilter
+          gridArea="hendelsedeskr"
+          label="Hendelse"
+          placeholder="Velg hendelse"
+          options={uniqueFilters["hendelsedeskr" as K]}
+          onChange={onHendelsedeskrChange}
+        />
+      )}
     </div>
   );
 };

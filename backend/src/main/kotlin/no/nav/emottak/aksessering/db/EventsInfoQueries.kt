@@ -5,6 +5,7 @@ import no.nav.emottak.db.toList
 import no.nav.emottak.model.HendelseInfo
 import no.nav.emottak.model.Page
 import no.nav.emottak.model.Pageable
+import no.nav.emottak.model.convertStatus
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
@@ -14,8 +15,18 @@ fun DatabaseInterface.hentHendelser(
     fom: LocalDateTime,
     tom: LocalDateTime,
     pageable: Pageable? = null,
+    role: String? = null,
+    service: String? = null,
+    action: String? = null,
+    hendelsedeskr: String? = null,
 ): Page<HendelseInfo> =
     connection.use { connection ->
+        var filterClause = ""
+        if (!role.isNullOrBlank()) filterClause += " AND MELDING.ROLE = ?"
+        if (!service.isNullOrBlank()) filterClause += " AND MELDING.SERVICE = ?"
+        if (!action.isNullOrBlank()) filterClause += " AND MELDING.ACTION = ?"
+        if (!hendelsedeskr.isNullOrBlank()) filterClause += " AND HENDELSE.HENDELSEDESKR = ?"
+
         val countStatement =
             connection.prepareStatement(
                 """
@@ -23,10 +34,16 @@ fun DatabaseInterface.hentHendelser(
                 FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
                 WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
                 AND LOGG.HENDELSEDATO BETWEEN ? AND ?
+                $filterClause
             """,
             )
         countStatement.setObject(1, fom)
         countStatement.setObject(2, tom)
+        var index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        setFilterEqualsParams(countStatement, index, hendelsedeskr)
         val totalCount =
             countStatement.use {
                 it.queryTimeout = sqlTimeout
@@ -35,30 +52,37 @@ fun DatabaseInterface.hentHendelser(
                 rs.getLong(1)
             }
 
-        var sql = """
-                SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.ROLE,
-                MELDING.SERVICE, MELDING.ACTION, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
-                FROM $databasePrefix.LOGG, $databasePrefix.MELDING, $databasePrefix.HENDELSE
-                WHERE LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID AND MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
-                AND LOGG.HENDELSEDATO BETWEEN ? AND ?
-                ORDER BY LOGG.HENDELSEDATO  
+        var sql =
             """
-        // We always use ORDER BY, with default DESC
+            SELECT LOGG.HENDELSEDATO, HENDELSE.HENDELSEDESKR, LOGG.TILLEGSINFO, LOGG.MOTTAK_ID, MELDING.EBCONVERS_ID,
+            MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION,  MELDING.STATUSLEVEL, MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN AS AVSENDER
+            FROM $databasePrefix.MELDING
+            JOIN $databasePrefix.LOGG ON MELDING.MOTTAK_ID = LOGG.MOTTAK_ID
+            JOIN $databasePrefix.HENDELSE ON LOGG.HENDELSE_ID = HENDELSE.HENDELSE_ID
+            WHERE LOGG.HENDELSEDATO BETWEEN ? AND ?
+            $filterClause
+            """.trimIndent()
+
         var orderBy = "DESC"
         if (pageable != null) {
             orderBy = pageable.sort
         }
-        sql = sql + orderBy
-        // We only use LIMIT and OFFSET when asked for a page
+        sql = "$sql ORDER BY LOGG.HENDELSEDATO $orderBy, MELDING.EBCONVERS_ID, LOGG.MOTTAK_ID"
+
         if (pageable != null) {
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
+            sql = "$sql OFFSET ? ROWS FETCH NEXT ? ROWS ONLY "
         }
         val statement = connection.prepareStatement(sql)
         statement.setObject(1, fom)
         statement.setObject(2, tom)
+        index = 3
+        index = setFilterEqualsParams(countStatement, index, role)
+        index = setFilterEqualsParams(countStatement, index, service)
+        index = setFilterEqualsParams(countStatement, index, action)
+        index = setFilterEqualsParams(countStatement, index, hendelsedeskr)
         if (pageable != null) {
-            statement.setObject(3, pageable.offset)
-            statement.setObject(4, pageable.pageSize)
+            statement.setObject(index, pageable.offset)
+            statement.setObject(index + 1, pageable.pageSize)
         }
         val list =
             statement
@@ -82,4 +106,6 @@ fun ResultSet.toHendelseInfo(): HendelseInfo =
         getString("ACTION"),
         getString("REFERANSEPARAM"),
         getString("AVSENDER"),
+        getString("EBCONVERS_ID"),
+        statuslevel = convertStatus(getString("STATUSLEVEL")),
     )

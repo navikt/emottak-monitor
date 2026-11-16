@@ -257,12 +257,12 @@ const CpaListeTable = () => {
           </Table.Header>
           <Table.Body>
             {showSpinner && (
-                <RowWithContent>
+                <RowWithContent colSpan={headers.length}>
                   <NavFrontendSpinner />
                 </RowWithContent>
             )}
-            {showErrorMessage && <RowWithContent>{error}</RowWithContent>}
-            {showNoDataMessage && <RowWithContent>Ingen data funnet !</RowWithContent>}
+            {showErrorMessage && <RowWithContent colSpan={headers.length}>{error}</RowWithContent>}
+            {showNoDataMessage && <RowWithContent colSpan={headers.length}>Ingen data funnet !</RowWithContent>}
             {showData &&
                 currentTableData.map((message, index) => {
                   return (

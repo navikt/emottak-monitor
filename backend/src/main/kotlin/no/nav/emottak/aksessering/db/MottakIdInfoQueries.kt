@@ -15,7 +15,13 @@ fun DatabaseInterface.hentMottakIdInfo(
             connection.prepareStatement(
                 """
                     SELECT MELDING.DATOMOTTAT, MELDING.MOTTAK_ID, MELDING.ROLE, MELDING.SERVICE, MELDING.ACTION, 
-                    MELDING.REFERANSEPARAM, MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID,
+                    MELDING.EBCOMNAVN, MELDING.AVTALE_ID AS CPA_ID, 
+                    MELDING.MELDINGSPARAM, MELDING.REFERANSEPARAM, MELDING.AVSENDERPARAM,
+                    MELDING.EBCONVERS_ID, MELDING.EBMESAGE_ID,
+                    MELDING.CERTDN,
+                    MELDING.TRUSTDN,
+                    MELDING.DOCSIGNERDN,
+                    MELDING.DOCSIGNERISSUERDN, 
                     (SELECT STATUS.STATUSTEXT FROM $databasePrefix.STATUS WHERE (MELDING.STATUSLEVEL = STATUS.STATUSLEVEL)) AS STATUS
                     FROM $databasePrefix.MELDING 
                     WHERE MELDING.MOTTAK_ID = ?
@@ -30,13 +36,21 @@ fun DatabaseInterface.hentMottakIdInfo(
 
 fun ResultSet.toMottakIdInfo(): MottakIdInfo =
     MottakIdInfo(
-        getString("DATOMOTTAT"),
-        getString("MOTTAK_ID"),
-        getString("ROLE"),
-        getString("SERVICE"),
-        getString("ACTION"),
-        getString("REFERANSEPARAM"),
-        getString("EBCOMNAVN"),
-        getString("CPA_ID"),
-        getString("STATUS"),
+        datoMottatt = getString("DATOMOTTAT"),
+        mottakId = getString("MOTTAK_ID"),
+        role = getString("ROLE"),
+        service = getString("SERVICE"),
+        action = getString("ACTION"),
+        ebcomnavn = getString("EBCOMNAVN"),
+        cpaId = getString("CPA_ID"),
+        status = getString("STATUS"),
+        meldingsparam = getString("MELDINGSPARAM"),
+        refparam = getString("REFERANSEPARAM"),
+        avsenderparam = getString("AVSENDERPARAM"),
+        conversationId = getString("EBCONVERS_ID"),
+        messageId = getString("EBMESAGE_ID"),
+        certdn = getString("CERTDN"),
+        trustdn = getString("TRUSTDN"),
+        docsignerdn = getString("DOCSIGNERDN"),
+        docsignerissuerdn = getString("DOCSIGNERISSUERDN"),
     )

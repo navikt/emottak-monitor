@@ -5,13 +5,13 @@ group = "no.nav.emottak"
 version = "1.0.0"
 
 val coroutinesVersion = "1.10.2"
-val jacksonVersion = "2.18.2"
-val ktorVersion = "3.1.3"
+val jacksonVersion = "2.22.3"
+val ktorVersion = "3.6.0"
 val kotestVersion = "5.9.1"
-val logbackVersion = "1.5.19"
+val logbackVersion = "1.6.5"
 val logstashEncoderVersion = "9.0"
-val micrometerRegistryPrometheusVersion = "1.14.6"
-val nimbusjosejwtVersion = "9.48"
+val micrometerRegistryPrometheusVersion = "1.17.1"
+val nimbusjosejwtVersion = "10.10"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val mockkVersion = "1.14.0"
@@ -19,7 +19,7 @@ val junitVersion = "6.0.0"
 val h2Version = "2.3.232"
 
 plugins {
-    val kotlinVersion = "2.1.20"
+    val kotlinVersion = "2.4.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("com.diffplug.spotless") version "8.0.0"
@@ -68,12 +68,11 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
+    implementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-framework-datatest:$kotestVersion")
-    testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
     testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
