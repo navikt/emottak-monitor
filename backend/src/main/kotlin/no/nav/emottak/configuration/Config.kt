@@ -6,6 +6,7 @@ data class Config(
     val application: Application,
     val database: Database,
     val isDevelopment: Boolean,
+    val backendEndpoints: BackendEndpoints,
 )
 
 data class Application(
@@ -21,6 +22,11 @@ data class Database(
     val url: Url,
     val prefix: Prefix,
     val maximumPoolSize: PoolSize,
+)
+
+data class BackendEndpoints(
+    val eventManagerUrl: Url,
+    val cpaRepoUrl: Url,
 )
 
 @JvmInline
