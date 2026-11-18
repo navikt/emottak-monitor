@@ -13,6 +13,7 @@ import erase from "../images/erase.gif";
 import filterStyles from "../components/Filter.module.scss";
 import buttonStyles from "../styles/Button.module.scss";
 import inputStyles from "../styles/Input.module.scss";
+import {Link, useLocation} from "react-router-dom";
 
 type CpaDetails = {
     partnerName: string;
@@ -35,6 +36,7 @@ type CpaListeData = {
 }
 
 const CpaListeTable = () => {
+    const location = useLocation();
     const [selectedColnValue, setSelectedColnValue] = useState('');
     const [selectedCEqualValue, setSelectedCEqualValue] = useState('er lik');
     const [innValue, setInnValue] = useState('');
@@ -271,7 +273,13 @@ const CpaListeTable = () => {
                           className={clsx({ [tableStyles.coloredRow]: index % 2 })}
                           title={message.partnerSubjectDN}
                       >
-                          <Table.DataCell>{message.cpaID}</Table.DataCell>
+                          <Table.DataCell>
+                              <Link
+                                  key={message.cpaID}
+                                  to={`/cpaxmldetail/${encodeURIComponent(message.cpaID)}`}
+                                  state={{ backgroundLocation: location }}
+                              >{message.cpaID}</Link>
+                          </Table.DataCell>
                           <Table.DataCell>{message.partnerID}</Table.DataCell>
                           <Table.DataCell>{message.herID}</Table.DataCell>
                           <Table.DataCell>{message.orgNummer}</Table.DataCell>

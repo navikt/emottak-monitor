@@ -6,6 +6,7 @@ import { Location, Navigate, Route, Routes, useLocation } from "react-router-dom
 import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
+import CpaXmlModal from "./components/CpaXmlModal";
 import CpaIdTable from "./pages/CpaIdTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/meldinger" />} />
             <Route path="/logg/:mottakid" element={<LoggTable ebms={false} />} />
             <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
+            <Route path="/cpaxmldetail/:cpaId" element={"some thing todo"} />
           </Route>
           <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
           <Route path="/isalive" element={<IsAlive />} />
@@ -61,6 +63,7 @@ export default function App() {
           <Route path="/logg/:mottakid" element={<LoggTableModal ebms={false} />} />
           <Route path="/loggebms/:mottakid" element={<LoggTableModal ebms={true} />} />
           <Route path="/cpa/:cpaid" element={<CpaIdTableModal />} />
+          <Route path="/cpaxmldetail/:cpaId" element={<CpaXmlModal />} />
         </Routes>
       )}
     </div>

@@ -244,7 +244,7 @@ if (process.env.NODE_ENV === 'development') {
         const payload = {
             roles: ["Behandler","Fastlege","Fastlegeregister","Fordringshaver","Frikortregister","INNTEKTSFORESPORSELsender","KODEVERKREQUESTsender","KontrollUtbetaler","Lege","Nav","Not applicable","POMsender","Saksbehandler","Sykmelder","Utleverer","Ytelsesutbetaler"],
             services: ["BehandlerKrav","DialogmoteInnkalling","ForesporselFraSaksbehandler","HarBorgerEgenandelFritak","HarBorgerFrikort","HarBorgerFrikortMengde","HenvendelseFraLege","Inntektsforesporsel","Legemelding","OppgjorsKontroll","PasientlisteForesporsel","S-DIALOG_AVVIK","S-DIALOG_FORESPORSEL","S-EGENANDELMENGDEFORESPORSEL","S-EGENANDELSVAR","S-FOM","S-INNTEKTSFORESPORSEL","S-KODEVERKREQUEST","S-POM","Sykmelding","Trekkopplysning","urn:oasis:names:tc:ebxml-msg:service"],
-            actions: ["APPREC","Acknowledgment","DIALOG_AVVIK","EGENANDELMENGDEFORESPORSEL","EgenandelForesporsel","FOM","Foresporsel","ForesporselSvar","HentPasientliste","Henvendelse","INNTEKTSFORESPORSEL","Innmelding","InntektInformasjon","KODEVERKREQUEST","Kvittering","Legeerklaring","MessageError","MoteRespons","OppgjorsMelding","Oppgjorskrav","POM","Registrering","StartAbonnement","Svar","Svarmelding"],
+            actions: ["APPREC","Acknowledgment", "Bekreftelse", "DIALOG_AVVIK","EGENANDELMENGDEFORESPORSEL","EgenandelForesporsel","FOM","Foresporsel","ForesporselSvar","HentPasientliste","Henvendelse","INNTEKTSFORESPORSEL","Innmelding","InntektInformasjon","KODEVERKREQUEST","Kvittering","Legeerklaring","MessageError","MoteRespons","OppgjorsMelding","Oppgjorskrav","POM","Registrering","StartAbonnement","Svar","Svarmelding"],
             refreshedAt:"2026-03-03T11:18:02.444978Z"
         };
         return [200, payload];

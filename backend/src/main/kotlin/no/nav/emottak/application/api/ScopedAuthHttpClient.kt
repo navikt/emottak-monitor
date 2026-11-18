@@ -29,6 +29,9 @@ val LENIENT_JSON_PARSER =
 private const val APP_NAME = "emottak-event-manager"
 private const val APP_SCOPE_PROPERTY = "EMOTTAK_EVENT_MANAGER_SCOPE"
 
+private const val APP_REPO_NAME = "cpa-repo"
+private const val APP_REPO_SCOPE_PROPERTY = "EMOTTAK_CPA_REPO_SCOPE"
+
 fun getScope(): String =
     getEnvVar(
         APP_SCOPE_PROPERTY,

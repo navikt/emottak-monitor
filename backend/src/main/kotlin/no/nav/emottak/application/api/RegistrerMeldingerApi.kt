@@ -7,6 +7,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.encodeURLParameter
 import io.ktor.http.isSuccess
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.get
@@ -119,6 +120,28 @@ fun Route.hentHendelserEbms(httpClient: HttpClient): Route =
             log.info("Henter hendelser fra events endepunktet til ebms ($url)")
             executeREST(httpClient, url)
         }
+    }
+
+// Cpa detaljer ebms (frontend: /cpaxmldetail)
+@InternalAPI
+fun Route.hentCpaxmlDetailEbms(httpClient: HttpClient): Route =
+    get("/cpaxmldetail") {
+        val cpaid = call.request.queryParameters["cpaId"]
+        if (cpaid.isNullOrEmpty()) {
+            returnBadRequest("Mangler parameter: cpaid")
+            return@get
+        }
+        log.info("Henter cpa info for $cpaid")
+        val response =
+            httpClient.get("$cpaRepoUrl/cpa/view") {
+                url {
+                    parameters.append("id", cpaid)
+                    log.info("Henter cpa i xml format ($url)")
+                }
+            }
+        // val responseCode = response.status
+        val responseBody = response.bodyAsText()
+        call.respondText(responseBody, contentType = io.ktor.http.ContentType.Text.Html)
     }
 
 // Modal: Ved klikk på mottak-id (frontend: /logg)

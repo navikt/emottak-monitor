@@ -30,6 +30,7 @@ import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
 import no.nav.emottak.application.api.hentCpa
+import no.nav.emottak.application.api.hentCpaxmlDetailEbms
 import no.nav.emottak.application.api.hentFeilstatistikk
 import no.nav.emottak.application.api.hentHendelser
 import no.nav.emottak.application.api.hentHendelserEbms
@@ -108,6 +109,7 @@ private fun Application.serverSetup(
                 hentHendelserEbms(scopedAuthHttpClient)
                 hentLogg(meldingService)
                 hentLoggEbms(scopedAuthHttpClient)
+                hentCpaxmlDetailEbms(scopedAuthHttpClient)
                 hentCpa(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)
