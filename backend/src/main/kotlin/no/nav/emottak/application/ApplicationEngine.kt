@@ -25,7 +25,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
-import no.nav.emottak.Environment
 import no.nav.emottak.application.api.hentAbonnementListe
 import no.nav.emottak.application.api.hentCPAListe
 import no.nav.emottak.application.api.hentConversationStatusEbms
@@ -40,32 +39,33 @@ import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentPartnerListe
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.api.registerNaisApi
+import no.nav.emottak.configuration.Config
 import no.nav.emottak.services.MessageQueryService
 import org.slf4j.event.Level
 
 @InternalAPI
 fun createApplicationEngine(
-    env: Environment,
+    config: Config,
     applicationState: ApplicationState,
     jwkProvider: JwkProvider,
     issuer: String,
     meldingService: MessageQueryService,
     scopedAuthHttpClient: HttpClient,
 ): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
-    embeddedServer(Netty, env.applicationPort) {
-        serverSetup(env, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient)
+    embeddedServer(Netty, config.application.port.value) {
+        serverSetup(config, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient)
     }
 
 @InternalAPI
 private fun Application.serverSetup(
-    env: Environment,
+    config: Config,
     jwkProvider: JwkProvider,
     issuer: String,
     applicationState: ApplicationState,
     meldingService: MessageQueryService,
     scopedAuthHttpClient: HttpClient,
 ) {
-    setupAuth(env, jwkProvider, issuer)
+    setupAuth(config.application.emottakMonitorClientId.value, jwkProvider, issuer)
     install(ContentNegotiation) {
         jackson {
             registerKotlinModule()
@@ -95,7 +95,7 @@ private fun Application.serverSetup(
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Options)
         allowHeader("Content-Type")
-        allowHost(env.emottakFrontEndUrl, schemes = listOf("https", "https"))
+        allowHost(config.application.emottakFrontEndUrl.value, schemes = listOf("https", "https"))
         allowCredentials = true
     }
     routing {

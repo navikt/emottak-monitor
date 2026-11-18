@@ -9,7 +9,9 @@ import no.nav.emottak.application.api.getScope
 import no.nav.emottak.application.api.scopedAuthHttpClient
 import no.nav.emottak.application.createApplicationEngine
 import no.nav.emottak.application.getWellKnown
+import no.nav.emottak.configuration.config
 import no.nav.emottak.db.Database
+import no.nav.emottak.db.VaultSecrets
 import no.nav.emottak.services.MessageQueryService
 import no.nav.emottak.util.getFileAsString
 import org.slf4j.Logger
@@ -21,7 +23,7 @@ val log: Logger = LoggerFactory.getLogger("no.nav.emottak.emottakMonitor")
 
 @InternalAPI
 fun main() {
-    val environment = Environment()
+    val config = config
 
     val vaultSecrets =
         VaultSecrets(
@@ -29,7 +31,7 @@ fun main() {
             databaseUsername = getFileAsString("/secrets/emottak-monitor/credentials/username"),
         )
 
-    val wellKnown = getWellKnown(environment.oidcWellKnownUriUrl)
+    val wellKnown = getWellKnown(config.application.oidcWellKnownUriUrl.value)
     log.info("WellKnown is ok")
     val jwkProvider =
         JwkProviderBuilder(URL(wellKnown.jwks_uri))
@@ -37,16 +39,16 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val database = Database(environment, vaultSecrets)
+    val database = Database(config.database, vaultSecrets)
     log.info("Database is ok")
-    val messageQueryService = MessageQueryService(database, environment.databasePrefix)
+    val messageQueryService = MessageQueryService(database, config.database.prefix.value)
     val scopedAuthHttpClient: HttpClient = scopedAuthHttpClient(getScope()).invoke()
 
     val applicationState = ApplicationState()
 
     val applicationEngine =
         createApplicationEngine(
-            environment,
+            config,
             applicationState,
             jwkProvider,
             wellKnown.issuer,

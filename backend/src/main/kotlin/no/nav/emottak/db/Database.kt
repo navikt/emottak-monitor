@@ -2,22 +2,20 @@ package no.nav.emottak.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.emottak.Environment
-import no.nav.emottak.VaultSecrets
 import java.sql.Connection
 import java.sql.ResultSet
 
 class Database(
-    private val env: Environment,
+    private val dbConfig: no.nav.emottak.configuration.Database,
     private val vaultCredentials: VaultSecrets,
 ) : DatabaseInterface {
     private val dataSource: HikariDataSource =
         HikariDataSource(
             HikariConfig().apply {
-                jdbcUrl = env.databaseUrl
+                jdbcUrl = dbConfig.url.value
                 username = vaultCredentials.databaseUsername
                 password = vaultCredentials.databasePassword
-                maximumPoolSize = 3
+                maximumPoolSize = dbConfig.maximumPoolSize.value
                 isAutoCommit = false
                 driverClassName = "oracle.jdbc.OracleDriver"
                 validate()
@@ -38,3 +36,8 @@ fun <T> ResultSet.toList(mapper: ResultSet.() -> T) =
 interface DatabaseInterface {
     val connection: Connection
 }
+
+data class VaultSecrets(
+    val databaseUsername: String,
+    val databasePassword: String,
+)

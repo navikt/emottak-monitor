@@ -16,7 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.json.Json
-import no.nav.emottak.getEnvVar
+import no.nav.emottak.configuration.config
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListe
 import no.nav.emottak.model.MessageLogData
@@ -33,8 +33,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
-val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
+val eventManagerUrl: String = config.backendEndpoints.eventManagerUrl.value
+val cpaRepoUrl: String = config.backendEndpoints.cpaRepoUrl.value
 val VALID_STATUS_TEXTS = listOf("created", "info", "manual", "warning", "error", "fatal", "ok")
 
 // Meldinger (frontend: /meldinger)
