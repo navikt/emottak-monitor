@@ -1,4 +1,3 @@
-C:\Workspace\temp2\emottak-monitor\backend\src\main\kotlin\no\nav\emottak\application\ApplicationEngine.ktimport "@navikt/ds-css";
 import "@navikt/ds-css-internal";
 import "nav-frontend-tabell-style";
 import React from "react";
