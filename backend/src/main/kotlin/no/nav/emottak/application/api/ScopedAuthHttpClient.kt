@@ -38,6 +38,12 @@ fun getScope(): String =
         "api://${getEnvVar("NAIS_CLUSTER_NAME", "dev-fss")}.team-emottak.$APP_NAME/.default",
     )
 
+fun getCpaRepoScope(): String =
+    getEnvVar(
+        APP_REPO_SCOPE_PROPERTY,
+        "api://${getEnvVar("NAIS_CLUSTER_NAME", "dev-fss")}.team-emottak.$APP_REPO_NAME/.default",
+    )
+
 private fun proxiedHttpClient() =
     HttpClient(CIO) {
         engine {

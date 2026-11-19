@@ -52,9 +52,10 @@ fun createApplicationEngine(
     issuer: String,
     meldingService: MessageQueryService,
     scopedAuthHttpClient: HttpClient,
+    cpaRepoHttpClient: HttpClient,
 ): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> =
     embeddedServer(Netty, env.applicationPort) {
-        serverSetup(env, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient)
+        serverSetup(env, jwkProvider, issuer, applicationState, meldingService, scopedAuthHttpClient, cpaRepoHttpClient)
     }
 
 @InternalAPI
@@ -65,6 +66,7 @@ private fun Application.serverSetup(
     applicationState: ApplicationState,
     meldingService: MessageQueryService,
     scopedAuthHttpClient: HttpClient,
+    cpaRepoHttpClient: HttpClient,
 ) {
     setupAuth(env, jwkProvider, issuer)
     install(ContentNegotiation) {
@@ -109,7 +111,7 @@ private fun Application.serverSetup(
                 hentHendelserEbms(scopedAuthHttpClient)
                 hentLogg(meldingService)
                 hentLoggEbms(scopedAuthHttpClient)
-                hentCpaxmlDetailEbms(scopedAuthHttpClient)
+                hentCpaxmlDetailEbms(cpaRepoHttpClient)
                 hentCpa(meldingService)
                 hentFeilstatistikk(meldingService)
                 hentRollerServicesAction(scopedAuthHttpClient)

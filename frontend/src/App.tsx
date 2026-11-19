@@ -1,4 +1,4 @@
-import "@navikt/ds-css";
+C:\Workspace\temp2\emottak-monitor\backend\src\main\kotlin\no\nav\emottak\application\ApplicationEngine.ktimport "@navikt/ds-css";
 import "@navikt/ds-css-internal";
 import "nav-frontend-tabell-style";
 import React from "react";
@@ -7,6 +7,7 @@ import Layout from "./components/layout/Layout";
 import { pages } from "./components/layout/Navbar";
 import LoggTableModal from "./components/LoggTableModal";
 import CpaXmlModal from "./components/CpaXmlModal";
+import CpaXmlDetail from "./pages/CpaXmlDetail";
 import CpaIdTable from "./pages/CpaIdTable";
 import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
@@ -48,7 +49,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/meldinger" />} />
             <Route path="/logg/:mottakid" element={<LoggTable ebms={false} />} />
             <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
-            <Route path="/cpaxmldetail/:cpaId" element={"some thing todo"} />
+            <Route path="/cpaxmldetail/:cpaId" element={<CpaXmlDetail />} />
           </Route>
           <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
           <Route path="/isalive" element={<IsAlive />} />

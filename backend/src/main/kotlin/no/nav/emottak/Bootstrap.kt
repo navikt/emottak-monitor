@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.utils.io.InternalAPI
 import no.nav.emottak.application.ApplicationServer
 import no.nav.emottak.application.ApplicationState
+import no.nav.emottak.application.api.getCpaRepoScope
 import no.nav.emottak.application.api.getScope
 import no.nav.emottak.application.api.scopedAuthHttpClient
 import no.nav.emottak.application.createApplicationEngine
@@ -41,6 +42,7 @@ fun main() {
     log.info("Database is ok")
     val messageQueryService = MessageQueryService(database, environment.databasePrefix)
     val scopedAuthHttpClient: HttpClient = scopedAuthHttpClient(getScope()).invoke()
+    val cpaRepoHttpClient: HttpClient = scopedAuthHttpClient(getCpaRepoScope()).invoke()
 
     val applicationState = ApplicationState()
 
@@ -52,6 +54,7 @@ fun main() {
             wellKnown.issuer,
             messageQueryService,
             scopedAuthHttpClient,
+            cpaRepoHttpClient,
         )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
 

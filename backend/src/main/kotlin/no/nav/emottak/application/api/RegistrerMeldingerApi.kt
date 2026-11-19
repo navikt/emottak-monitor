@@ -1,6 +1,7 @@
-package no.nav.emottak.application.api
+ package no.nav.emottak.application.api
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -35,7 +36,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 val eventManagerUrl: String = getEnvVar("EVENT_MANAGER_URL", "localhost:8080")
-val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "localhost:8080")
+val cpaRepoUrl: String = getEnvVar("CPA_REPO_URL", "http://localhost:8080")
 val VALID_STATUS_TEXTS = listOf("created", "info", "manual", "warning", "error", "fatal", "ok")
 
 // Meldinger (frontend: /meldinger)
@@ -127,21 +128,21 @@ fun Route.hentHendelserEbms(httpClient: HttpClient): Route =
 fun Route.hentCpaxmlDetailEbms(httpClient: HttpClient): Route =
     get("/cpaxmldetail") {
         val cpaid = call.request.queryParameters["cpaId"]
-        if (cpaid.isNullOrEmpty()) {
-            returnBadRequest("Mangler parameter: cpaid")
+        if (cpaid.isNullOrBlank()) {
+            returnBadRequest("Mangler parameter: cpaId")
             return@get
         }
         log.info("Henter cpa info for $cpaid")
         val response =
             httpClient.get("$cpaRepoUrl/cpa/view") {
+                expectSuccess = false
                 url {
                     parameters.append("id", cpaid)
-                    log.info("Henter cpa i xml format ($url)")
+                    log.info("Henter CPA i HTML-format ($url)")
                 }
             }
-        // val responseCode = response.status
         val responseBody = response.bodyAsText()
-        call.respondText(responseBody, contentType = io.ktor.http.ContentType.Text.Html)
+        call.respondText(responseBody, contentType = io.ktor.http.ContentType.Text.Html, status = response.status)
     }
 
 // Modal: Ved klikk på mottak-id (frontend: /logg)
