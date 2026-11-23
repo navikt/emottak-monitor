@@ -1,9 +1,15 @@
 package no.nav.emottak.application.api
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.http.encodeURLParameter
 import io.ktor.http.isSuccess
 import io.ktor.server.response.respond
@@ -15,7 +21,10 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonDecodingException
 import no.nav.emottak.configuration.config
 import no.nav.emottak.log
 import no.nav.emottak.model.CpaListe
@@ -24,18 +33,32 @@ import no.nav.emottak.model.Pageable
 import no.nav.emottak.model.PartnerCpaListeData
 import no.nav.emottak.model.PartnerListe
 import no.nav.emottak.model.PartnerListeData
+import no.nav.emottak.model.RetryMessageData
+import no.nav.emottak.model.dto.FindByUuidRequestDto
+import no.nav.emottak.model.dto.FindByUuidResponseDto
+import no.nav.emottak.model.dto.ReadableIdDto
 import no.nav.emottak.model.dto.toMessageLogInfoList
 import no.nav.emottak.model.dto.toMottakIdInfo
 import no.nav.emottak.model.dto.toPageMessageInfo
 import no.nav.emottak.services.MessageQueryService
+import no.nav.emottak.services.RetryConsumerDisabledException
+import no.nav.emottak.services.RetryMessageReadException
+import no.nav.emottak.services.RetryQueueKafkaReaderService
+import no.nav.emottak.services.RetryReadTimeoutException
+import org.apache.kafka.common.KafkaException
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.collections.listOfNotNull
+import kotlin.uuid.Uuid
 
 val eventManagerUrl: String = config.backendEndpoints.eventManagerUrl.value
 val cpaRepoUrl: String = config.backendEndpoints.cpaRepoUrl.value
 val VALID_STATUS_TEXTS = listOf("created", "info", "manual", "warning", "error", "fatal", "ok")
+
+const val MAX_PAGE_SIZE = 1000
 
 // Meldinger (frontend: /meldinger)
 @InternalAPI
@@ -369,7 +392,120 @@ fun Route.hentConversationStatusEbms(httpClient: HttpClient): Route =
         }
     }
 
-const val MAX_PAGE_SIZE = 1000
+// Henting av meldinger som ligger på retry-kø (frontend: /retrymeldinger)
+fun Route.hentRetryMeldinger(
+    service: RetryQueueKafkaReaderService,
+    httpClient: HttpClient,
+): Route =
+    get("/hentretrymeldinger") {
+        try {
+            log.info("Henter meldinger fra Kafka retry-kø...")
+            val retryQueueMessages = service.hentRetryMeldinger()
+            log.info("Leste {} retry-meldinger; {}", retryQueueMessages.retryMessages.size, retryQueueMessages.warning ?: "")
+            log.debug("ID'er: {}", retryQueueMessages.retryMessages.map { it.requestId })
+            if (retryQueueMessages.retryMessages.isEmpty()) {
+                call.respond(retryQueueMessages)
+                return@get
+            }
+            val (bulkResponse, error) = getMessagesMetadata(httpClient, retryQueueMessages.retryMessages.map { it.requestId }.distinct())
+            call.respond(mergeRetryData(retryQueueMessages, bulkResponse, error))
+        } catch (_: RetryConsumerDisabledException) {
+            call.respond(HttpStatusCode.ServiceUnavailable, "Retry-visning er ikke aktivert.")
+        } catch (e: RetryReadTimeoutException) {
+            val message = "Tidsavbrudd ved lesing av retry-meldinger."
+            log.warn(message, e)
+            call.respond(HttpStatusCode.GatewayTimeout, message)
+        } catch (e: RetryMessageReadException) {
+            val message = "Kunne ikke lese retry-meldinger: ${e.message}."
+            log.error(message)
+            call.respond(HttpStatusCode.BadGateway, message)
+        } catch (e: KafkaException) {
+            val message = "Retry-meldinger er midlertidig utilgjengelige."
+            log.error(message, e)
+            call.respond(HttpStatusCode.ServiceUnavailable, message)
+        }
+    }
+
+private suspend fun getMessagesMetadata(
+    httpClient: HttpClient,
+    ids: List<String>,
+): Pair<HttpResponse?, String?> {
+    var error: String?
+    try {
+        log.info("Henter meldingsdetaljer for ${ids.size} meldinger...")
+        val response =
+            httpClient.post("$eventManagerUrl/message-details/bulk") {
+                // expectSuccess = false
+                contentType(ContentType.Application.Json)
+                setBody(FindByUuidRequestDto(ids))
+            }
+        return Pair(response, null)
+    } catch (e: HttpRequestTimeoutException) {
+        error = "Tidsavbrudd ved henting av meldingsdetaljer."
+        log.warn(error, e)
+    } catch (e: IOException) {
+        error = "Kunne ikke hente meldingsdetaljer fra emottak-event-manager."
+        log.error(error, e)
+    } catch (e: SerializationException) {
+        error = "emottak-event-manager returnerte ugyldig JSON (SerializationException)."
+        log.error(error, e)
+    }
+    return Pair(null, error)
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+private suspend fun mergeRetryData(
+    retryQueueMessages: RetryMessageData,
+    bulkResponse: HttpResponse?,
+    error: String?,
+): RetryMessageData {
+    val warnings = mutableListOf<String?>(retryQueueMessages.warning, error)
+    if (bulkResponse == null) {
+        return retryQueueMessages.copy(
+            warning = warnings.toNonNullString(),
+        )
+    }
+    if (!bulkResponse.status.isSuccess()) {
+        val msg = "Feilet med å hente data fra emottak-event-manager: HTTP ${bulkResponse.status.value} ${bulkResponse.status.description}."
+        log.warn(msg)
+        warnings.add(msg)
+        return retryQueueMessages.copy(
+            warning = warnings.toNonNullString(),
+        )
+    }
+    val messagesMetadata =
+        try {
+            Json.decodeFromString<FindByUuidResponseDto<ReadableIdDto>>(bulkResponse.bodyAsText())
+        } catch (e: JsonDecodingException) {
+            val error = "emottak-event-manager returnerte ugyldig JSON (JsonDecodingException)."
+            log.error(error, e)
+            warnings.add(error)
+            return retryQueueMessages.copy(
+                warning = warnings.toNonNullString(),
+            )
+        }
+    if (messagesMetadata.invalidIds.isNotEmpty()) {
+        val msg = "${messagesMetadata.invalidIds.size} ID'er var ugyldige"
+        log.warn("$msg: {}", messagesMetadata.invalidIds)
+        warnings.add("$msg.")
+    }
+    val retryMessages =
+        retryQueueMessages.retryMessages.map { retryMessage ->
+            retryMessage.copy(message = Uuid.parseOrNull(retryMessage.requestId)?.let { messagesMetadata.content[it]?.toMottakIdInfo() })
+        }
+    val missingCount = retryMessages.count { it.message == null }
+    if (missingCount > 0) {
+        val msg = "Mangler meldingsdetaljer for $missingCount retry-meldinger."
+        log.warn(msg)
+        warnings.add(msg)
+    }
+    return retryQueueMessages.copy(
+        retryMessages = retryMessages,
+        warning = warnings.toNonNullString(),
+    )
+}
+
+private fun List<String?>.toNonNullString() = this.filterNotNull().takeIf { it.isNotEmpty() }?.joinToString("\n")
 
 private suspend fun RoutingContext.getPageable(
     page: String?,
@@ -383,7 +519,7 @@ private suspend fun RoutingContext.getPageable(
             returnBadRequest("Page size ($size) must be numeric")
             return null
         }
-        if (size.toInt() > MAX_PAGE_SIZE || size.toInt() < 1) {
+        if (size.toInt() !in 1..MAX_PAGE_SIZE) {
             returnBadRequest("Page size $size must be between 1 and $MAX_PAGE_SIZE")
             return null
         }

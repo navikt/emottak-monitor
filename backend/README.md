@@ -13,6 +13,7 @@ Application for getting out messages from emottak database
 * Gradle
 * Azure
 * Oracle
+* Kafka
 * Spek
 * JDK
 
@@ -80,6 +81,17 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 
 Remeber to also update the gradle version in the build.gradle.kts file
 ```gradleVersion = "$gradleVersjon"```
+
+## Environment-variables
+
+Important environment variables to be aware of:
+| Environment variable | Default | Description |
+| --- | --- | --- |
+| `EVENT_MANAGER_URL` | `localhost:8080` | URL to `emottak-event-manager`, where events from EBMS are stored.|
+| `CPA_REPO_URL` | `localhost:8080` | URL to `cpa-repo`, used by page "Partnerliste" to get last used-timestamps for CPAs (`/cpa/timestamps/last_used`) used on EBMS. |
+| `ENABLE_RETRY_KAFKA_CONSUMER` | `false` | Defines if reading from retry-topic on Kafka is enabled or not.|
+| `RETRY_TOPIC` | `team-emottak.ebxml.retry` | The single-partition retry topic to read from|
+| `RETRY_READ_TIMEOUT_SECONDS` | `30` | Timeout in seconds when reading from kafka queue. Must be between 1 and 60.|
 
 ## Inquiries
 

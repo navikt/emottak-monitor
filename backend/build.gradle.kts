@@ -15,6 +15,7 @@ val nimbusjosejwtVersion = "10.10"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
 val hopliteVersion = "3.0.7"
+val kotlinKafka = "0.4.1"
 val emottakUtilsVersion = "0.5.2"
 val mockkVersion = "1.14.0"
 val junitVersion = "6.0.0"
@@ -74,6 +75,7 @@ dependencies {
 
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:${hopliteVersion}")
+    implementation("io.github.nomisrev:kotlin-kafka:${kotlinKafka}")
     implementation("no.nav.emottak:emottak-utils:$emottakUtilsVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
