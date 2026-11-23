@@ -37,10 +37,12 @@ import no.nav.emottak.application.api.hentLoggEbms
 import no.nav.emottak.application.api.hentMeldinger
 import no.nav.emottak.application.api.hentMeldingerEbms
 import no.nav.emottak.application.api.hentPartnerListe
+import no.nav.emottak.application.api.hentRetryMeldinger
 import no.nav.emottak.application.api.hentRollerServicesAction
 import no.nav.emottak.application.api.registerNaisApi
 import no.nav.emottak.configuration.Config
 import no.nav.emottak.services.MessageQueryService
+import no.nav.emottak.services.RetryQueueKafkaReaderService
 import org.slf4j.event.Level
 
 @InternalAPI
@@ -65,6 +67,7 @@ private fun Application.serverSetup(
     meldingService: MessageQueryService,
     scopedAuthHttpClient: HttpClient,
 ) {
+    val retryQueueKafkaReaderService = RetryQueueKafkaReaderService(config.retryConsumer, config.kafka)
     setupAuth(config.application.emottakMonitorClientId.value, jwkProvider, issuer)
     install(ContentNegotiation) {
         jackson {
@@ -115,6 +118,7 @@ private fun Application.serverSetup(
                 hentPartnerListe(meldingService, scopedAuthHttpClient)
                 hentAbonnementListe(meldingService)
                 hentConversationStatusEbms(scopedAuthHttpClient)
+                hentRetryMeldinger(retryQueueKafkaReaderService, scopedAuthHttpClient)
             }
         }
     }

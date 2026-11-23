@@ -6,7 +6,7 @@ import no.nav.emottak.log
 import no.nav.emottak.model.MottakIdInfo
 
 @Serializable
-private data class ReadableIdDto(
+data class ReadableIdDto(
     val receivedDate: String,
     val readableId: String,
     val requestId: String,
@@ -29,19 +29,21 @@ fun String.toMottakIdInfo(): MottakIdInfo? {
     if (messagelogList.isEmpty()) {
         return null
     }
-    val messagelog = messagelogList[0]
-    return MottakIdInfo(
-        datoMottatt = messagelog.receivedDate,
-        mottakId = messagelog.readableId,
-        requestId = messagelog.requestId,
-        role = messagelog.role,
-        service = messagelog.service,
-        action = messagelog.action,
-        refparam = messagelog.referenceParameter,
-        avsenderparam = messagelog.senderName,
-        cpaId = messagelog.cpaId,
-        status = messagelog.status,
-        conversationId = messagelog.conversationId,
-        messageId = messagelog.messageId,
-    )
+    return messagelogList[0].toMottakIdInfo()
 }
+
+fun ReadableIdDto.toMottakIdInfo(): MottakIdInfo =
+    MottakIdInfo(
+        datoMottatt = receivedDate,
+        mottakId = readableId,
+        requestId = requestId,
+        role = role,
+        service = service,
+        action = action,
+        refparam = referenceParameter,
+        avsenderparam = senderName,
+        cpaId = cpaId,
+        status = status,
+        conversationId = conversationId,
+        messageId = messageId,
+    )

@@ -11,6 +11,12 @@ import no.nav.emottak.model.MessageLogInfo
 import no.nav.emottak.model.MottakIdInfo
 import no.nav.emottak.model.PartnerCpaListe
 import no.nav.emottak.model.PartnerCpaListeData
+import no.nav.emottak.model.RetryMessage
+import no.nav.emottak.model.RetryMessageData
+import no.nav.emottak.model.dto.FindByUuidResponseDto
+import no.nav.emottak.model.dto.ReadableIdDto
+import no.nav.emottak.utils.common.parseOrGenerateUuid
+import kotlin.uuid.Uuid
 
 fun getMessages(): List<MessageInfo> = emptyList()
 
@@ -124,3 +130,50 @@ fun getAbonnementListe(): AbonnementListeData =
             ),
         totalNumberOfEntries = 3,
     )
+
+fun getRetryMessages(ids: List<String> = listOf(Uuid.random().toString())) =
+    RetryMessageData(
+        retryMessages =
+            ids.map { id ->
+                RetryMessage(
+                    requestId = id,
+                    timestamp = "123456789",
+                    senderAddress = "senderAddress",
+                    retryCount = "2",
+                    retryReason = "reason",
+                    retryableAfter = "2026-11-18T12:00:00",
+                )
+            },
+        warning = null,
+    )
+
+fun getBulkMessageDetails(ids: List<String> = listOf(Uuid.random().toString())): FindByUuidResponseDto<ReadableIdDto> {
+    var counter = 0
+    return FindByUuidResponseDto(
+        content =
+            ids.associate { id ->
+                counter++
+                val uuid = id.parseOrGenerateUuid()
+                uuid to createReadableIdDto(id, "IN.$counter")
+            },
+        invalidIds = emptyList(),
+    )
+}
+
+fun createReadableIdDto(
+    id: String,
+    readableId: String,
+) = ReadableIdDto(
+    receivedDate = "2026-11-18T11:00:00Z",
+    readableId = readableId,
+    requestId = id,
+    messageId = "message-id",
+    conversationId = "conversation-id",
+    role = "role",
+    service = "service",
+    action = "action",
+    referenceParameter = "reference",
+    senderName = "sender-name",
+    cpaId = "cpa-id",
+    status = "status",
+)

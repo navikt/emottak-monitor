@@ -12,6 +12,7 @@ fun config() =
     ConfigLoader
         .builder()
         .addEnvironmentSource()
+        .addResourceSource("/kafka_common.conf")
         .addResourceSource("/application.conf")
         .withExplicitSealedTypes()
         .build()
