@@ -11,6 +11,7 @@ import IsAlive from "./pages/IsAlive";
 import IsReady from "./pages/IsReady";
 import LoggTable from "./pages/LoggTable";
 import CpaIdTableModal from "./components/CpaIdTableModal";
+import {AssociatedMessagesTable, AssociatedMessagesTableModal} from "./pages/AssociatedMessages";
 import { RouteLocationContext } from "./components/RouteLocationContext";
 import { useTheme } from './hooks/useTheme';
 import { useCompactness } from './hooks/useCompactness';
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/loggebms/:mottakid" element={<LoggTable ebms={true} />} />
           </Route>
           <Route path="/cpa/:cpaid" element={<CpaIdTable />} />
+          <Route path="/conversation/:conversationId/readableId/:readableId" element={<AssociatedMessagesTable />} />
           <Route path="/isalive" element={<IsAlive />} />
           <Route path="/isready" element={<IsReady />} />
           <Route path="/metrics" element={<div>Metrics</div>} />
@@ -61,6 +63,7 @@ export default function App() {
           <Route path="/logg/:mottakid" element={<LoggTableModal ebms={false} />} />
           <Route path="/loggebms/:mottakid" element={<LoggTableModal ebms={true} />} />
           <Route path="/cpa/:cpaid" element={<CpaIdTableModal />} />
+          <Route path="/conversation/:conversationId/readableId/:readableId" element={<AssociatedMessagesTableModal />} />
         </Routes>
       )}
     </div>

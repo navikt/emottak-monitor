@@ -39,7 +39,11 @@ const Filter = <T, K extends keyof T>({
     return {
       ...prevVal,
       [filterKey]: Array.from(
-        new Set(messages.map((message) => message[filterKey]))
+        new Set(
+          messages
+            .map((message) => message[filterKey])
+            .filter((value) => (value !== null && value !== undefined))
+        )
       ),
     };
   }, {} as Record<K, string[]>);

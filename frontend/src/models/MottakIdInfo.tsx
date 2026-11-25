@@ -1,0 +1,20 @@
+export type MottakIdInfo = {
+    datoMottatt: string;
+    mottakId: string;
+    requestId?: string;
+    role?: string;
+    service?: string;
+    action?: string;
+    ebcomnavn?: string;
+    cpaId?: string;
+    status?: string;
+    meldingsparam?: string;
+    refparam?: string;
+    avsenderparam?: string;
+    conversationId?: string;
+    messageId?: string;
+    certdn?: string;
+    trustdn?: string;
+    docsignerdn?: string;
+    docsignerissuerdn?: string;
+};
