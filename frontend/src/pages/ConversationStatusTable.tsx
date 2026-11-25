@@ -1,6 +1,6 @@
 import {Table} from "@navikt/ds-react";
 import NavFrontendSpinner from "nav-frontend-spinner";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import RowWithContent from "../components/RowWithContent";
 import tableStyles from "../styles/Table.module.scss";
