@@ -14,6 +14,8 @@ val micrometerRegistryPrometheusVersion = "1.17.1"
 val nimbusjosejwtVersion = "10.10"
 val ojdbc8Version = "19.3.0.0"
 val hikariVersion = "7.0.0"
+val hopliteVersion = "3.0.7"
+val emottakUtilsVersion = "0.5.2"
 val mockkVersion = "1.14.0"
 val junitVersion = "6.0.0"
 val h2Version = "2.3.232"
@@ -70,6 +72,10 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusjosejwtVersion")
 
+    implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-hocon:${hopliteVersion}")
+    implementation("no.nav.emottak:emottak-utils:$emottakUtilsVersion")
+
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-framework-datatest:$kotestVersion")
@@ -95,12 +101,14 @@ tasks {
     }
     withType<KotlinCompile> {
         compilerOptions {
+            optIn.add("com.sksamuel.hoplite.ExperimentalHoplite")
             jvmTarget = JvmTarget.JVM_21
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
         compilerOptions {
+            optIn.add("com.sksamuel.hoplite.ExperimentalHoplite")
             jvmTarget = JvmTarget.JVM_21
         }
     }
@@ -118,5 +126,17 @@ tasks {
 
     "check" {
         dependsOn("formatKotlin")
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Emottak Utils"
+        url = uri("https://maven.pkg.github.com/navikt/emottak-utils")
+        credentials {
+            username = "token"
+            password = System.getenv("GITHUB_TOKEN")
+        }
     }
 }

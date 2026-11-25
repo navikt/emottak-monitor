@@ -9,11 +9,10 @@ import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import net.logstash.logback.argument.StructuredArguments
-import no.nav.emottak.Environment
 import no.nav.emottak.log
 
 fun Application.setupAuth(
-    env: Environment,
+    emottakMonitorClientId: String,
     jwkProvider: JwkProvider,
     issuer: String,
 ) {
@@ -22,7 +21,7 @@ fun Application.setupAuth(
             verifier(jwkProvider, issuer)
             validate { credentials ->
                 when {
-                    hasEmottakAdminClientIdAudience(credentials, env) -> JWTPrincipal(credentials.payload)
+                    hasEmottakAdminClientIdAudience(credentials, emottakMonitorClientId) -> JWTPrincipal(credentials.payload)
                     else -> {
                         unauthorized(credentials)
                     }
@@ -43,5 +42,5 @@ fun unauthorized(credentials: JWTCredential): Principal? {
 
 fun hasEmottakAdminClientIdAudience(
     credentials: JWTCredential,
-    env: Environment,
-): Boolean = credentials.payload.audience.contains(env.emottakMonitorClientId)
+    emottakMonitorClientId: String,
+): Boolean = credentials.payload.audience.contains(emottakMonitorClientId)

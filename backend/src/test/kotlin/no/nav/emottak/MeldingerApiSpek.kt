@@ -732,18 +732,10 @@ private fun <T> withTestApplicationForApi(
                 registerKotlinModule()
             }
         }
-        val env =
-            Environment(
-                emottakMonitorClientId = "clientId",
-                databaseUrl = "http://localhost:8080",
-                databasePrefix = "db",
-                emottakFrontEndUrl = "http://localhost:8080",
-                oidcWellKnownUriUrl = "https://sts.issuer.net/myid",
-            )
         val path = "src/test/resources/jwkset.json"
         val uri = Paths.get(path).toUri().toURL()
         val jwkProvider = JwkProviderBuilder(uri).build()
-        setupAuth(env, jwkProvider, "https://sts.issuer.net/myid")
+        setupAuth("clientId", jwkProvider, "https://sts.issuer.net/myid")
         routing {
             authenticate("jwt") {
                 route("/v1") {
