@@ -15,6 +15,7 @@ import LogsGrafana from "../../pages/LogsGrafana";
 import ConversationStatusTable from "../../pages/ConversationStatusTable";
 import { isProdEnv } from "../../util";
 import AbonnementTable from "../../pages/AbonnementTable";
+import RetryMeldingerEbms from "../../pages/RetryMeldingerEbms";
 
 
 type Page = {
@@ -35,6 +36,7 @@ export const pages: Page[] = [
   { title: "Abonnementliste", path: "/hentabonnementliste", enableHeader: false, element: <AbonnementTable /> },
   { title: "Logs i Grafana", path: "/grafana", enableHeader: true, element: <LogsGrafana /> },
   { title: "Feilstatistikk", path: "/feilstatistikk", enableHeader: true, element: <FeilStatistikk /> },
+  { title: "Retry-meldinger", path: "/retrymeldinger", enableHeader: true, element: <RetryMeldingerEbms /> },
 ];
 
 type NavbarProps = {

@@ -1,5 +1,6 @@
 import React from "react";
 import $ from 'jquery';
+import dayjs from 'dayjs';
 
 export const toggleAllExpandables = (image: JQuery, selector: JQuery): void => {
     if (image.hasClass('collapsible')) {
@@ -58,6 +59,10 @@ export function initialTime(timeParam: string | null) {
 export function formatDatetime(datetimeParam: string | undefined) {
   if (datetimeParam == undefined || datetimeParam.indexOf("T") == -1) return datetimeParam;
   return datetimeParam.replace("T", " ").substring(0, 23);
+}
+
+export function toTimestamp(epochMillis: string) {
+  return dayjs(Number.parseInt(epochMillis)).format('DD.MM.YYYY HH:mm:ss');
 }
 
 export function convertDatetimeToUTC(datetimeParam: string) {
