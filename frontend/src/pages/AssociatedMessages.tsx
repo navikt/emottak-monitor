@@ -1,4 +1,4 @@
-import { Table } from "@navikt/ds-react";
+import {Button, Modal, Table} from "@navikt/ds-react";
 import clsx from "clsx";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import React, {useEffect} from "react";
@@ -10,6 +10,7 @@ import ok from "../images/ok.gif";
 import info from "../images/info.gif";
 import err from "../images/error.gif";
 import {formatDatetime, ISODatetime} from "../util";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 interface AssociatedMessagesProps {
     mottattDate: string;
@@ -141,4 +142,50 @@ export default function AssociatedMessages({mottattDate, mottakId, conversationI
             </Table>
         </>
     );
-} ;
+};
+
+export const AssociatedMessagesTable = () => {
+    const {conversationId, readableId} = useParams();
+    console.log(`ConversationId: ${conversationId}, ReadableId: ${readableId}`);
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    const aMonthAgo = ISODatetime(date);
+    return (
+        <AssociatedMessages
+            mottattDate={aMonthAgo}
+            mottakId={readableId!!}
+            conversationId={conversationId!!}
+            ebms={true}
+        />
+    );
+};
+
+export const AssociatedMessagesTableModal = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const onClose = () => {
+        navigate(-1);
+    };
+
+    useEffect(() => {
+        Modal.setAppElement?.("body");
+    }, []);
+
+    return (
+        <Modal open={true} onClose={onClose}>
+            <Modal.Content>
+                <div>
+                    <Button
+                        onClick={() => {
+                            navigate(location, { replace: true, state: location });
+                        }}
+                    >
+                        Åpne som egen side
+                    </Button>
+                    <AssociatedMessagesTable />
+                </div>
+            </Modal.Content>
+        </Modal>
+    );
+};
