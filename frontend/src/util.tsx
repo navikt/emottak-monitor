@@ -40,6 +40,12 @@ export function initialFromDate(dateParam: string | null) {
   }
 }
 
+export function initialDateXDaysAgo(daysParam: number) {
+  const date = new Date();
+    date.setDate(date.getDate() - daysParam);
+  return ISODate(date);
+}
+
 export function initialToDate(dateParam: string | null) {
   if (dateParam) {
     return dateParam;

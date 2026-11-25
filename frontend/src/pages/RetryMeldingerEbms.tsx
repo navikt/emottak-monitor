@@ -2,7 +2,7 @@ import NavFrontendSpinner from "nav-frontend-spinner";
 import React, { useEffect, useMemo, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import useTableSorting from "../hooks/useTableSorting";
-import {initialFromDate, initialToDate, initialTime, formatDatetime, toTimestamp} from "../util";
+import {initialToDate, initialTime, formatDatetime, toTimestamp, initialDateXDaysAgo} from "../util";
 import { Table } from "@navikt/ds-react";
 import styles from "../styles/Table.module.scss";
 import RowWithContent from "../components/RowWithContent";
@@ -51,7 +51,7 @@ type RetryMessageDisplay = {
 const RetryMeldingerEbms = () => {
   const location = useLocation();
 
-  const [fromDate, setFromDate] = useState(initialFromDate(""));
+  const [fromDate, setFromDate] = useState(initialDateXDaysAgo(31));
   const [toDate, setToDate] = useState(initialToDate(""));
   const [fromTime, setFromTime] = useState(initialTime(""));
   const [toTime, setToTime] = useState(initialTime(""));
@@ -81,7 +81,7 @@ const RetryMeldingerEbms = () => {
       retryCount: retryMessage.retryCount,
       retryReason: retryMessage.retryReason,
       retryableAfter: retryMessage.retryableAfter,
-      datoMottatt: retryMessage.message?.datoMottatt,
+      datoMottatt: retryMessage.message?.datoMottatt ?? undefined,
       mottakId: retryMessage.message?.mottakId ?? undefined,
       role: retryMessage.message?.role ?? undefined,
       service: retryMessage.message?.service ?? undefined,
@@ -103,13 +103,27 @@ const RetryMeldingerEbms = () => {
       ["role", "service", "action"]
   );
 
+  const fromDateTime = fromDate
+      ? new Date(`${fromDate}T${fromTime || "00:00:00"}`).getTime()
+      : -Infinity;
+  const toDateTime = toDate
+      ? new Date(`${toDate}T${toTime || "23:59:59.999"}`).getTime()
+      : Infinity;
+
+  const dateTimeFilteredMessages = filteredMessages.filter((message) => {
+    if (message.datoMottatt === null || message.datoMottatt === undefined) {
+      return true;
+    }
+    // Keep the UTC offset, but remove Java's bracketed zone ID before parsing.
+    const receivedAt = new Date(message.datoMottatt.replace(/\[[^\]]+\]$/, "")).getTime();
+    return receivedAt >= fromDateTime && receivedAt <= toDateTime;
+  });
+
   const {
     items: filteredAndSortedMessages,
     requestSort,
     sortConfig,
-  } = useTableSorting(filteredMessages);
-  console.log("filteredAndSortedMessages:");
-  console.log(filteredAndSortedMessages);
+  } = useTableSorting(dateTimeFilteredMessages);
 
   const getClassNamesFor = (name: keyof RetryMessageDisplay) => {
     if (!sortConfig) {
