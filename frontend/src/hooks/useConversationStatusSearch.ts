@@ -5,6 +5,7 @@ export interface ConversationStatusSearchParams {
     statuses: string;
     cpaIdPattern: string;
     service: string;
+    action: string;
     fromDate?: string;
     fromTime?: string;
     toDate?: string;
@@ -18,6 +19,7 @@ export interface ConversationStatusDto {
     createdAt: string;
     readableIdList: string;
     service: string;
+    action: string;
     cpaId: string;
     statusAt: string;
     latestStatus: string;
@@ -35,7 +37,7 @@ export interface PageDto {
 const buildUrl = (params: ConversationStatusSearchParams): string => {
     let url = `/v1/hentconversationstatusebms?` +
         `&cpaId=${params.cpaIdPattern}&service=${params.service}` +
-        `&statuses=${params.statuses}` +
+        `&action=${params.action}&statuses=${params.statuses}` +
         `&page=${params.currentPage}&size=${params.pageSize}&sort=${params.sortOrder}`;
     if (params.fromDate != null && params.fromTime != null) {
         url += `&fromDate=${params.fromDate}%20${params.fromTime}`;
