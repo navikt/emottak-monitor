@@ -13,32 +13,12 @@ import err from "../images/error.gif";
 import AssociatedMessages from "./AssociatedMessages";
 import GrafanaLogg from "../components/GrafanaLogg";
 import {formatDatetime} from "../util";
+import {MottakIdInfo} from "../models/MottakIdInfo";
 
 type MessageLogData = {
   meldingsdetaljer: MottakIdInfo;
   meldingslogg: MessageLogInfo[];
   warning?: string;
-};
-
-type MottakIdInfo = {
-  datoMottatt: string;
-  mottakId: string;
-  requestId?: string;
-  role?: string;
-  service?: string;
-  action?: string;
-  ebcomnavn?: string;
-  cpaId?: string;
-  status?: string;
-  meldingsparam?: string;
-  refparam?: string;
-  avsenderparam?: string;
-  conversationId?: string;
-  messageId?: string;
-  certdn?: string;
-  trustdn?: string;
-  docsignerdn?: string;
-  docsignerissuerdn?: string;
 };
 
 type MessageLogInfo = {
