@@ -61,7 +61,16 @@ const Pageinformation = ({
                 </tbody>
             </table>
         </fieldset>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {errorMessage && (
+            <p style={{ color: 'red' }}>
+                {errorMessage.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                        {index > 0 && <br />}
+                        {line}
+                    </React.Fragment>
+                ))}
+            </p>
+        )}
       </>
     );
 }
